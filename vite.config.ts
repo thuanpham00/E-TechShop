@@ -1,7 +1,7 @@
 // eslint-disable-next-line import/no-unresolved
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
-import path from 'path'
+import { defineConfig } from "vite"
+import react from "@vitejs/plugin-react"
+import path from "path"
 // import { visualizer } from "rollup-plugin-visualizer"
 
 // https://vitejs.dev/config/
@@ -15,7 +15,7 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      src: path.resolve(__dirname, './src')
+      src: path.resolve(__dirname, "./src")
     }
   }
 })

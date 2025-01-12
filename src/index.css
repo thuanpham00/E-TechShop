@@ -1,3 +1,32 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* loại bỏ css mặc định của thẻ #root */
+#root {
+  all: unset !important;
+}
+
+*,
+::after,
+::before {
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 62.5%;
+}
+
+body {
+  background: #fff;
+  font-size: 1.6rem;
+  font-family: "Poppins", sans-serif;
+}
+
+input,
+select,
+textarea,
+button {
+  font-size: inherit;
+  font-family: inherit;
+}

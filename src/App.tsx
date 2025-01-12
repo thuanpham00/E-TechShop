@@ -1,11 +1,10 @@
+import { HelmetProvider } from "react-helmet-async"
 import "./App.css"
+import useRouterElement from "./Client/Routes/useRouterElement"
 
 function App() {
-  return (
-    <div>
-      <div className="text-blue-500-500">Thuan</div>
-    </div>
-  )
+  const routerElementClient = useRouterElement()
+  return <HelmetProvider>{routerElementClient}</HelmetProvider>
 }
 
 export default App
