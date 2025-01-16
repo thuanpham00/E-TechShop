@@ -2,25 +2,43 @@ import { useRoutes } from "react-router-dom"
 import MainLayout from "../Layout/MainLayout"
 import { path } from "../Constants/path"
 import { lazy, Suspense } from "react"
+import MainLayoutAuth from "../Layout/MainLayoutAuth"
 
 const Home = lazy(() => import("../Pages/Home"))
 const Login = lazy(() => import("../Pages/Login"))
 const Register = lazy(() => import("../Pages/Register"))
+const LoginGoogle = lazy(() => import("../Pages/LoginGoogle"))
 
-export default function useRouterElement() {
+export default function useRouterClient() {
   const routerElement = useRoutes([
     {
       path: "",
       element: <MainLayout />,
       children: [
         {
-          path: path.Home,
+          path: "",
+          index: true,
           element: (
             <Suspense>
               <Home />
             </Suspense>
           )
         },
+        {
+          path: path.Home,
+          index: true,
+          element: (
+            <Suspense>
+              <Home />
+            </Suspense>
+          )
+        }
+      ]
+    },
+    {
+      path: "",
+      element: <MainLayoutAuth />,
+      children: [
         {
           path: path.Register,
           element: (
@@ -34,6 +52,14 @@ export default function useRouterElement() {
           element: (
             <Suspense>
               <Login />
+            </Suspense>
+          )
+        },
+        {
+          path: path.LoginGoogle,
+          element: (
+            <Suspense>
+              <LoginGoogle />
             </Suspense>
           )
         }
