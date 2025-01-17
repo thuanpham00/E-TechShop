@@ -3,7 +3,6 @@ import MainLayout from "../Layout/MainLayout"
 import { path } from "../Constants/path"
 import { lazy, Suspense } from "react"
 import MainLayoutAuth from "../Layout/MainLayoutAuth"
-
 const Home = lazy(() => import("../Pages/Home"))
 const Login = lazy(() => import("../Pages/Login"))
 const Register = lazy(() => import("../Pages/Register"))
@@ -17,7 +16,6 @@ export default function useRouterClient() {
       children: [
         {
           path: "",
-          index: true,
           element: (
             <Suspense>
               <Home />
@@ -26,7 +24,6 @@ export default function useRouterClient() {
         },
         {
           path: path.Home,
-          index: true,
           element: (
             <Suspense>
               <Home />

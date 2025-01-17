@@ -12,6 +12,7 @@ type TypeInitialState = {
   setNameUser: React.Dispatch<React.SetStateAction<string>>
 }
 
+// giá trị khởi tạo cho state global
 const initialStateContext: TypeInitialState = {
   isAuthenticated: Boolean(getAccessTokenFromLS()),
   setIsAuthenticated: () => null,

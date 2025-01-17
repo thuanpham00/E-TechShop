@@ -1,6 +1,19 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { yupResolver } from "@hookform/resolvers/yup"
+import { useMutation } from "@tanstack/react-query"
+import { useContext } from "react"
 import { Helmet } from "react-helmet-async"
-import { Link } from "react-router-dom"
+import { useForm } from "react-hook-form"
+import { Link, useNavigate } from "react-router-dom"
+import { toast } from "react-toastify"
+import { userAPI } from "src/Client/Apis/user.api"
 import { path } from "src/Client/Constants/path"
+import { AppContext } from "src/Client/Context/authContext"
+import { schemaAuth, SchemaAuthType } from "src/Client/Utils/rule"
+import Button from "src/Components/Button"
+import Input from "src/Components/Input"
+import { isError422 } from "src/Helpers/utils"
+import { ErrorResponse } from "src/Types/utils.type"
 
 const getGoogleAuthUrl = () => {
   const { VITE_GOOGLE_CLIENT_ID, VITE_GOOGLE_AUTHORIZED_REDIRECT_URI } = import.meta.env
@@ -18,10 +31,62 @@ const getGoogleAuthUrl = () => {
   const queryString = new URLSearchParams(query) // tạo ra query "?"
   return `${url}?${queryString}`
 }
-
 const googleAuth = getGoogleAuthUrl()
 
+type FormData = Pick<SchemaAuthType, "email" | "password">
+
+const formData = schemaAuth.pick(["email", "password"])
+
 export default function Login() {
+  const { setIsAuthenticated, setNameUser } = useContext(AppContext)
+  const navigate = useNavigate()
+  const {
+    formState: { errors },
+    setError,
+    register,
+    handleSubmit
+  } = useForm<FormData>({ resolver: yupResolver(formData) })
+
+  const loginMutation = useMutation({
+    mutationFn: (body: FormData) => {
+      return userAPI.loginUser(body)
+    }
+  })
+
+  // submit đi nó sẽ kiểm tra validation form ở fe -> ok -> gửi req tới server
+  const handleSubmitForm = handleSubmit((data) => {
+    loginMutation.mutate(data, {
+      onSuccess: (response) => {
+        toast.success(response.data.message, {
+          autoClose: 2000
+        })
+        const role = response.data.result.userInfo.role
+        if (role === "Admin") {
+          navigate("Admin")
+        } else {
+          navigate(path.Home)
+        }
+        setIsAuthenticated(true)
+        setNameUser(response.data.result.userInfo.name)
+      },
+      onError: (error) => {
+        if (isError422<ErrorResponse<FormData>>(error)) {
+          const formError = error.response?.data.errors
+          console.log(error)
+          if (formError?.email)
+            setError("email", {
+              message: (formError.email as any).msg
+            })
+          if (formError?.password) {
+            setError("password", {
+              message: (formError.password as any).msg
+            })
+          }
+        }
+      }
+    })
+  })
+
   return (
     <div>
       <Helmet>
@@ -45,34 +110,29 @@ export default function Login() {
           <span className="text-sm font-semibold">Đăng nhập với Google</span>
         </Link>
         <div className="flex items-center justify-center mt-2">
-          <div className="w-[45%] h-[1px] bg-gray-500"></div>
+          <div className="w-[40%] h-[1px] bg-gray-500"></div>
           <span className="w-[10%] text-center block text-gray-400">or</span>
-          <div className="w-[45%] h-[1px] bg-gray-500"></div>
+          <div className="w-[40%] h-[1px] bg-gray-500"></div>
         </div>
-        <form className="mt-2">
-          <div>
-            <span>Email</span>
-            <input
-              type="text"
-              name="email"
-              className="mt-1 p-2 w-full border border-black/60 rounded-sm focus:border-blue-500 focus:ring-2 outline-none"
-              placeholder="Nhập email"
-            />
-            <span className="mt-1 text-red-500 text-sm min-h-[1.25rem] block"></span>
-          </div>
-          <div>
-            <span>Mật khẩu</span>
-            <input
-              type="text"
-              name="email"
-              className="mt-1 p-2 w-full border border-black/60 rounded-sm focus:border-blue-500 focus:ring-2 outline-none"
-              placeholder="Nhập mật khẩu"
-            />
-            <span className="mt-1 text-red-500 text-sm min-h-[1.25rem] block"></span>
-          </div>
-          <button className="p-4 bg-blue-500 mt-2 w-full text-white font-semibold rounded-sm hover:bg-blue-500/80 duration-200">
-            Đăng nhập
-          </button>
+        <form onSubmit={handleSubmitForm} className="mt-2">
+          <Input
+            name="email"
+            register={register}
+            placeholder="Nhập email"
+            messageErrorInput={errors.email?.message}
+            nameInput="Email"
+          />
+          <Input
+            name="password"
+            register={register}
+            placeholder="Nhập password"
+            messageErrorInput={errors.password?.message}
+            nameInput="Mật khẩu"
+            type="password"
+            classNameError="text-red-500 text-[13px] font-semibold min-h-[2.25rem] block"
+            classNameEye="absolute right-2 top-[40%] -translate-y-1/2"
+          />
+          <Button nameButton="Đăng nhập" type="submit" />
         </form>
         <div className="bg-gray-500 w-full h-[1px] mt-4"></div>
         <div className="mt-2 flex items-center justify-center gap-1">
