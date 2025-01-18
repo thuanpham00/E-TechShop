@@ -20,6 +20,7 @@ class http {
     // sau khi login xong thì server gửi về access_token
     this.instance.interceptors.request.use(
       (config) => {
+        // tất cả api đều đi qua chỗ này và thực hiện gửi AT
         if (config.headers && this.accessToken) {
           config.headers.authorization = `Bearer ${this.accessToken}`
           return config
@@ -37,6 +38,7 @@ class http {
           this.accessToken = data.result.accessToken
           setAccessTokenToLS(this.accessToken)
           setNameUserToLS(data.result.userInfo.name)
+          // đã xử lý lưu Rt vào cookie dưới server
         }
         return response
       },

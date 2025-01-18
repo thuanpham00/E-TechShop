@@ -1,9 +1,10 @@
 import logo from "src/Assets/img/logo_cut.png"
-import { Heart, ShoppingCart, UserRound } from "lucide-react"
-import { useNavigate } from "react-router-dom"
+import { Heart, Info, LogOut, PackageSearch, ShoppingCart, UserRound } from "lucide-react"
+import { Link, useNavigate } from "react-router-dom"
 import { path } from "src/Client/Constants/path"
 import { useContext } from "react"
 import { AppContext } from "src/Client/Context/authContext"
+import Popover from "src/Components/Popover"
 
 export default function Header() {
   const navigate = useNavigate()
@@ -61,32 +62,19 @@ export default function Header() {
             <div className="flex items-center gap-2">
               <div className="flex-1">
                 <div className="flex items-center justify-center gap-1">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    strokeWidth={1.5}
-                    stroke="white"
-                    className="h-5 w-5 flex-shrink-0"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 0 0 2.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 0 0-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 0 0 .75-.75 2.25 2.25 0 0 0-.1-.664m-5.8 0A2.251 2.251 0 0 1 13.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25ZM6.75 12h.008v.008H6.75V12Zm0 3h.008v.008H6.75V15Zm0 3h.008v.008H6.75V18Z"
-                    />
-                  </svg>
+                  <PackageSearch color="white" size={36} />
                   <span className="text-[13px] text-white font-semibold text-center">Tra cứu đơn hàng</span>
                 </div>
               </div>
               <div className="flex-1">
                 <div className="flex items-center justify-center gap-1">
-                  <Heart color="white" size={20} />
+                  <Heart color="white" size={24} />
                   <span className="text-[13px] text-white font-semibold">Yêu thích</span>
                 </div>
               </div>
               <div className="flex-1">
                 <div className="flex items-center justify-center gap-1">
-                  <ShoppingCart color="white" size={20} />
+                  <ShoppingCart color="white" size={24} />
                   <span className="text-[13px] text-white font-semibold">Giỏ hàng</span>
                 </div>
               </div>
@@ -94,27 +82,52 @@ export default function Header() {
           </div>
           <div className="col-span-2">
             {isAuthenticated ? (
-              <div className="flex items-center gap-1 py-1 px-3 rounded-[4px] bg-secondRed text-white font-semibold hover:bg-secondRed/50 duration-200 transition ease-linear cursor-pointer">
-                <UserRound />
-                <div>
-                  <span className="text-xs">Xin chào</span>
-                  <span className="block text-[13px] truncate w-32">Phạm Minh Thuận</span>
-                </div>
-              </div>
+              <Popover
+                renderPopover={
+                  <div className="bg-white relative shadow-md rounded-sm border border-gray-200">
+                    <div className="flex flex-col">
+                      <button
+                        // onClick={toggleLight}
+                        className="text-sm md:text-[13px] flex items-center gap-1 px-3 py-2 hover:text-primaryRed hover:bg-slate-200 hover:underline hover:font-semibold"
+                      >
+                        Thông tin tài khoản
+                        <Info size={16} />
+                      </button>
+                      <button
+                        // onClick={toggleDark}
+                        className="text-sm md:text-[13px] flex items-center gap-1 px-3 py-2 hover:text-primaryRed hover:bg-slate-200 hover:underline hover:font-semibold"
+                      >
+                        Đăng xuất
+                        <LogOut size={16} />
+                      </button>
+                    </div>
+                  </div>
+                }
+              >
+                {
+                  <div className="flex items-center gap-1 py-1 px-3 rounded-[4px] bg-secondRed text-white font-semibold hover:bg-secondRed/50 duration-200 transition ease-linear cursor-pointer">
+                    <UserRound />
+                    <div>
+                      <span className="text-xs">Xin chào</span>
+                      <span className="block text-[13px] truncate w-32">Phạm Minh Thuận</span>
+                    </div>
+                  </div>
+                }
+              </Popover>
             ) : (
               <div className="flex items-center gap-2">
-                <button
-                  onClick={() => navigate(path.Register)}
+                <Link
+                  to={path.Register}
                   className="py-2 px-3 rounded-[4px] bg-secondRed text-white text-[13px] font-semibold hover:bg-secondRed/50 duration-200 transition ease-linear"
                 >
                   Đăng ký
-                </button>
-                <button
-                  onClick={() => navigate(path.Login)}
+                </Link>
+                <Link
+                  to={path.Login}
                   className="py-2 px-3 rounded-[4px] bg-secondRed text-white text-[13px] font-semibold hover:bg-secondRed/50 duration-200 transition ease-linear"
                 >
                   Đăng nhập
-                </button>
+                </Link>
               </div>
             )}
           </div>

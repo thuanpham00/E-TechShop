@@ -6,7 +6,7 @@ const Home = lazy(() => import("src/Admin/Pages/Home"))
 export default function useRouterAdmin() {
   const useRouterElement = useRoutes([
     {
-      path: "/Admin",
+      path: "/Admin/Home",
       element: (
         <Suspense>
           <Home />

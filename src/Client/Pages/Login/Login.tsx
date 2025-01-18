@@ -58,11 +58,11 @@ export default function Login() {
     loginMutation.mutate(data, {
       onSuccess: (response) => {
         toast.success(response.data.message, {
-          autoClose: 2000
+          autoClose: 1500
         })
         const role = response.data.result.userInfo.role
         if (role === "Admin") {
-          navigate("Admin")
+          navigate(path.Admin)
         } else {
           navigate(path.Home)
         }
