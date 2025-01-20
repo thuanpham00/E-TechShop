@@ -31,3 +31,8 @@ button {
 a {
   font-size: 13px;
 }
+
+.mySwiper .swiper-button-next::after,
+.mySwiper .swiper-button-prev::after {
+  font-size: 30px !important;
+}

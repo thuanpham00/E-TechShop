@@ -45,6 +45,7 @@ export default function Popover({
               ref={refs.setFloating}
               style={{
                 position: strategy,
+                zIndex: 30,
                 top: y ?? 0,
                 left: x ?? 0,
                 width: "max-content",

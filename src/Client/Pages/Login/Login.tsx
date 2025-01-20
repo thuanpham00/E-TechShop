@@ -7,7 +7,7 @@ import { useForm } from "react-hook-form"
 import { Link, useNavigate } from "react-router-dom"
 import { toast } from "react-toastify"
 import { userAPI } from "src/Client/Apis/user.api"
-import { path } from "src/Client/Constants/path"
+import { path } from "src/Constants/path"
 import { AppContext } from "src/Client/Context/authContext"
 import { schemaAuth, SchemaAuthType } from "src/Client/Utils/rule"
 import Button from "src/Components/Button"
@@ -68,11 +68,14 @@ export default function Login() {
         }
         setIsAuthenticated(true)
         setNameUser(response.data.result.userInfo.name)
+        // nếu không set state tại đây thì nó chỉ set LS và không re-render app
+        // -> dẫn đến UI không cập nhật (mới nhất sau khi login) -> cần set state
+        // để app re-render lại và đặt giá trị mới cho state global
+        // và giá trị khởi tạo cho state global (LS) - set trong response
       },
       onError: (error) => {
         if (isError422<ErrorResponse<FormData>>(error)) {
           const formError = error.response?.data.errors
-          console.log(error)
           if (formError?.email)
             setError("email", {
               message: (formError.email as any).msg
@@ -86,7 +89,6 @@ export default function Login() {
       }
     })
   })
-
   return (
     <div>
       <Helmet>
@@ -125,17 +127,18 @@ export default function Login() {
           <Input
             name="password"
             register={register}
-            placeholder="Nhập password"
+            placeholder="Nhập mật khẩu"
             messageErrorInput={errors.password?.message}
             nameInput="Mật khẩu"
             type="password"
             classNameError="text-red-500 text-[13px] font-semibold min-h-[2.25rem] block"
             classNameEye="absolute right-2 top-[40%] -translate-y-1/2"
+            value="Thuan123@"
           />
-          <Button nameButton="Đăng nhập" type="submit" />
+          <Button nameButton="Đăng nhập" type="submit" disabled={loginMutation.isPending} />
         </form>
         <div className="bg-gray-500 w-full h-[1px] mt-4"></div>
-        <div className="mt-2 flex items-center justify-center gap-1">
+        <div className="mt-2 flex items-center justify-center gap-1 ">
           <span className="text-sm font-semibold">Bạn chưa có tài khoản?</span>
           <Link to={path.Register} className="font-bold underline underline-offset-2">
             Đăng ký

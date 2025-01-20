@@ -10,6 +10,10 @@ export type ErrorResponse<Data> = {
   errors?: Data
 }
 
+export type MessageResponse = {
+  message: string
+}
+
 export type AuthResponse = SuccessResponse<{
   accessToken: string
   refreshToken: string

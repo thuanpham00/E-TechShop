@@ -13,3 +13,8 @@ export const setNameUserToLS = (name: string) => {
 export const getNameUserFromLS = () => {
   return localStorage.getItem("name_user") || ""
 }
+
+export const clearLS = () => {
+  localStorage.removeItem("access_token")
+  localStorage.removeItem("name_user")
+}

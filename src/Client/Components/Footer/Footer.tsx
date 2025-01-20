@@ -127,10 +127,10 @@ export default function Footer() {
       <div className="mt-10 border-t border-gray-300 py-3 text-center">
         <h4 className="text-base mb-2 font-semibold">KẾT NỐI VỚI CHÚNG TÔI</h4>
         <div className="flex justify-center items-center space-x-2">
-          <a href="#facebook" className="hover:scale-110 transition">
+          <a href="https://www.facebook.com/thuanpham.plus/" className="hover:scale-110 transition">
             <img src={logo_fb} alt="Facebook" className="w-8 h-8" />
           </a>
-          <a href="#instagram" className="hover:scale-110 transition">
+          <a href="https://www.instagram.com/minthuan_/" className="hover:scale-110 transition">
             <img src={logo_ins} alt="YouTube" className="w-[36px] h-[36px]" />
           </a>
         </div>
