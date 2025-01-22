@@ -8,7 +8,7 @@ import banner_3 from "src/Assets/img/banner_home/banner_3.webp"
 import banner_4 from "src/Assets/img/banner_home/banner_4.webp"
 import banner_9 from "src/Assets/img/banner_home/banner_9.webp"
 import { useContext } from "react"
-import { AppContext } from "src/Client/Context/authContext"
+import { AppContext } from "src/Context/authContext"
 
 export default function Home() {
   const { isShowCategory, setIsShowCategory } = useContext(AppContext)
@@ -69,7 +69,7 @@ export default function Home() {
         {isShowCategory ? (
           <div className="container">
             <div className="grid grid-cols-12">
-              <div className="col-span-2 top-24 z-40 fixed">
+              <div className="col-span-2 top-24 z-40 fixed transition ease-in-out duration-100">
                 <div className=" bg-white rounded-[4px] h-[370px] shadow mt-1 pl-4 pr-2 pt-2">
                   <CategoryItem nameCategory="Laptop" iconCategory={<Laptop size={22} />} />
                   <CategoryItem nameCategory="Laptop Gaming" iconCategory={<LaptopMinimal size={22} />} />

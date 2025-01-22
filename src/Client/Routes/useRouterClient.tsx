@@ -3,7 +3,8 @@ import MainLayout from "../Layout/MainLayout"
 import { path } from "../../Constants/path"
 import { lazy, Suspense, useContext } from "react"
 import MainLayoutAuth from "../Layout/MainLayoutAuth"
-import { AppContext } from "../Context/authContext"
+import MyProfile from "../Pages/MyProfile"
+import { AppContext } from "src/Context/authContext"
 
 const Home = lazy(() => import("../Pages/Home"))
 const Login = lazy(() => import("../Pages/Login"))
@@ -61,6 +62,14 @@ export default function useRouterClient() {
               element: (
                 <Suspense>
                   <Cart />
+                </Suspense>
+              )
+            },
+            {
+              path: "my-profile",
+              element: (
+                <Suspense>
+                  <MyProfile />
                 </Suspense>
               )
             }

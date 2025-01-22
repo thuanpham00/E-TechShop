@@ -5,6 +5,7 @@ import App from "./App.tsx"
 import { BrowserRouter } from "react-router-dom"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools"
+import AppClientProvider from "./Context/authContext.tsx"
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -19,7 +20,9 @@ createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <BrowserRouter>
       <QueryClientProvider client={queryClient}>
-        <App />
+        <AppClientProvider>
+          <App />
+        </AppClientProvider>
         <ReactQueryDevtools initialIsOpen={false} />
       </QueryClientProvider>
     </BrowserRouter>

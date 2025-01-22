@@ -11,5 +11,8 @@ export const userAPI = {
   },
   logoutUser: () => {
     return Http.post<MessageResponse>(URL_Logout)
+  },
+  getMe: () => {
+    return Http.get<AuthResponse>("/users/me")
   }
 }

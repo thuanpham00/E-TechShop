@@ -1,10 +1,10 @@
 import { useContext, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 import { path } from "src/Constants/path"
-import { AppContext } from "src/Client/Context/authContext"
 import { setAccessTokenToLS, setNameUserToLS } from "src/Helpers/auth"
 import useQueryParams from "src/Hook/useQueryParams"
 import { httpRaw } from "src/Helpers/http"
+import { AppContext } from "src/Context/authContext"
 
 export default function LoginGoogle() {
   const { access_token, name } = useQueryParams()

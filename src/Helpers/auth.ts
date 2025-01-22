@@ -14,7 +14,13 @@ export const getNameUserFromLS = () => {
   return localStorage.getItem("name_user") || ""
 }
 
+export const LocalStorageEventTarget = new EventTarget() // tạo ra 1 event target để lắng nghe sự kiện thay đổi LocalStorage
+
 export const clearLS = () => {
   localStorage.removeItem("access_token")
   localStorage.removeItem("name_user")
+  const ClearLSEvent = new Event("ClearLS")
+  LocalStorageEventTarget.dispatchEvent(ClearLSEvent) // phát sự kiện
 }
+
+// component nào lắng nghe sự kiện này (ClearLS) thì sẽ thực hiện hành động reset state

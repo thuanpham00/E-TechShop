@@ -2,26 +2,31 @@ import { HelmetProvider } from "react-helmet-async"
 import "./App.css"
 import useRouterClient from "./Client/Routes/useRouterClient"
 import useRouterAdmin from "./Admin/Routes/useRouterAdmin"
-import AppClientProvider from "./Client/Context/authContext"
 import { ToastContainer } from "react-toastify"
-import { useLocation } from "react-router-dom"
-import { useMemo } from "react"
+import { useContext, useEffect } from "react"
+import { LocalStorageEventTarget } from "./Helpers/auth"
+import { AppContext } from "./Context/authContext"
 
 function App() {
   const routerClient = useRouterClient()
   const routerAdmin = useRouterAdmin()
-  const { pathname } = useLocation()
+  const { reset } = useContext(AppContext)
 
-  const route = useMemo(() => {
-    if (pathname.startsWith("/admin")) {
-      return routerAdmin
+  useEffect(() => {
+    LocalStorageEventTarget.addEventListener("ClearLS", reset) // lắng nghe sự kiện
+    return () => {
+      LocalStorageEventTarget.removeEventListener("ClearLS", reset) // destroy event
     }
-    return routerClient
-  }, [pathname, routerAdmin, routerClient])
+  }, [reset])
+
+  /**
+   * Nếu bạn đặt lắng nghe sự kiện ClearLS ở bất kỳ component nào, thì chỉ component đó sẽ lắng nghe và thực hiện hành động khi sự kiện được phát.
+   */
 
   return (
     <HelmetProvider>
-      {pathname.startsWith("/admin") ? route : <AppClientProvider>{route}</AppClientProvider>}
+      {routerAdmin}
+      {routerClient}
       <ToastContainer />
     </HelmetProvider>
   )

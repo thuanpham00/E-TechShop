@@ -8,12 +8,12 @@ import { Link, useNavigate } from "react-router-dom"
 import { toast } from "react-toastify"
 import { userAPI } from "src/Client/Apis/user.api"
 import { path } from "src/Constants/path"
-import { AppContext } from "src/Client/Context/authContext"
 import { schemaAuth, SchemaAuthType } from "src/Client/Utils/rule"
 import Button from "src/Components/Button"
 import Input from "src/Components/Input"
 import { isError422 } from "src/Helpers/utils"
 import { ErrorResponse } from "src/Types/utils.type"
+import { AppContext } from "src/Context/authContext"
 
 const getGoogleAuthUrl = () => {
   const { VITE_GOOGLE_CLIENT_ID, VITE_GOOGLE_AUTHORIZED_REDIRECT_URI } = import.meta.env

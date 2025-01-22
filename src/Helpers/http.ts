@@ -4,10 +4,12 @@ import { clearLS, getAccessTokenFromLS, setAccessTokenToLS, setNameUserToLS } fr
 import { config } from "src/Constants/config"
 import { AuthResponse, MessageResponse } from "src/Types/utils.type"
 import { isAxiosExpiredTokenError, isError401 } from "./utils"
+import { toast } from "react-toastify"
 
 class http {
   instance: AxiosInstance
   public accessToken: string
+
   constructor() {
     this.accessToken = getAccessTokenFromLS()
     this.instance = axios.create({
@@ -51,18 +53,16 @@ class http {
         return response
       },
       (error) => {
-        // lỗi Unauthorized (401) có nhiều trường hợp
-        // - token không đúng
-        // - không truyền token
-        // - token hết hạn*
-        // nếu là lỗi 401
         if (isError401(error)) {
           const config = error.response?.config || ({ headers: {} } as InternalAxiosRequestConfig)
           const { url } = config
 
           if (isAxiosExpiredTokenError<MessageResponse>(error) && url !== URL_RefreshToken) {
-            
+            this.accessToken = ""
+            clearLS()
+            toast.error("Phiên làm việc hết hạn", { autoClose: 1500 })
           }
+          // chưa xử lý refresh token
         }
         return Promise.reject(error)
       }

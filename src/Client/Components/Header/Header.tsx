@@ -3,11 +3,11 @@ import { Heart, Info, LogOut, PackageSearch, ShoppingCart, UserRound } from "luc
 import { Link, useNavigate } from "react-router-dom"
 import { path } from "src/Constants/path"
 import { useContext } from "react"
-import { AppContext } from "src/Client/Context/authContext"
 import Popover from "src/Components/Popover"
 import { useMutation } from "@tanstack/react-query"
 import { userAPI } from "src/Client/Apis/user.api"
 import { toast } from "react-toastify"
+import { AppContext } from "src/Context/authContext"
 
 export default function Header() {
   const navigate = useNavigate()
@@ -137,10 +137,13 @@ export default function Header() {
                     renderPopover={
                       <div className="bg-white shadow-md rounded-sm border border-gray-200">
                         <div className="flex flex-col">
-                          <button className="text-sm md:text-[13px] flex items-center gap-1 px-3 py-2 hover:text-primaryRed hover:bg-slate-200 hover:underline hover:font-semibold">
+                          <Link
+                            to={"my-profile"}
+                            className="text-sm md:text-[13px] flex items-center gap-1 px-3 py-2 hover:text-primaryRed hover:bg-slate-200 hover:underline hover:font-semibold"
+                          >
                             Thông tin tài khoản
                             <Info size={16} />
-                          </button>
+                          </Link>
                           <button
                             onClick={handleLogout}
                             className="text-sm md:text-[13px] flex items-center gap-1 px-3 py-2 hover:text-primaryRed hover:bg-slate-200 hover:underline hover:font-semibold"
