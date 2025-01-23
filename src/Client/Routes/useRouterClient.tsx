@@ -3,7 +3,7 @@ import MainLayout from "../Layout/MainLayout"
 import { path } from "../../Constants/path"
 import { lazy, Suspense, useContext } from "react"
 import MainLayoutAuth from "../Layout/MainLayoutAuth"
-import MyProfile from "../Pages/MyProfile"
+import MyProfile from "../Pages/Profile"
 import { AppContext } from "src/Context/authContext"
 
 const Home = lazy(() => import("../Pages/Home"))
@@ -66,7 +66,7 @@ export default function useRouterClient() {
               )
             },
             {
-              path: "my-profile",
+              path: path.Profile,
               element: (
                 <Suspense>
                   <MyProfile />

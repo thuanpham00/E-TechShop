@@ -33,9 +33,8 @@ const getGoogleAuthUrl = () => {
 }
 const googleAuth = getGoogleAuthUrl()
 
-type FormData = Pick<SchemaAuthType, "email" | "password">
-
-const formData = schemaAuth.pick(["email", "password"])
+type FormData = Pick<SchemaAuthType, "email" | "password"> // kiểu dữ liệu của form
+const formData = schemaAuth.pick(["email", "password"]) // validate ở client
 
 export default function Login() {
   const { setIsAuthenticated, setNameUser } = useContext(AppContext)
@@ -58,7 +57,7 @@ export default function Login() {
     loginMutation.mutate(data, {
       onSuccess: (response) => {
         toast.success(response.data.message, {
-          autoClose: 1500
+          autoClose: 1000
         })
         const role = response.data.result.userInfo.role
         if (role === "Admin") {
@@ -78,7 +77,7 @@ export default function Login() {
           const formError = error.response?.data.errors
           if (formError?.email)
             setError("email", {
-              message: (formError.email as any).msg
+              message: (formError.email as any).msg // lỗi 422 từ server trả về
             })
           if (formError?.password) {
             setError("password", {

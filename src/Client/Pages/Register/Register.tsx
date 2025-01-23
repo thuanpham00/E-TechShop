@@ -1,8 +1,29 @@
+import { yupResolver } from "@hookform/resolvers/yup"
 import { Helmet } from "react-helmet-async"
-import { Link } from "react-router-dom"
+import { useForm } from "react-hook-form"
+import { Link, useNavigate } from "react-router-dom"
+import { schemaAuth, SchemaAuthType } from "src/Client/Utils/rule"
+import Button from "src/Components/Button"
+import Input from "src/Components/Input"
 import { path } from "src/Constants/path"
+import logo from "src/Assets/img/logo_techzone.png"
+
+type FormData = Pick<SchemaAuthType, "email" | "password" | "confirm_password">
+const formData = schemaAuth.pick(["email", "password", "confirm_password"])
 
 export default function Register() {
+  const navigate = useNavigate()
+  const {
+    formState: { errors },
+    setError,
+    register,
+    handleSubmit
+  } = useForm<FormData>({ resolver: yupResolver(formData) })
+
+  const handleSubmitForm = handleSubmit((data) => {
+    console.log(data)
+  })
+
   return (
     <div>
       <Helmet>
@@ -11,31 +32,46 @@ export default function Register() {
       </Helmet>
 
       <div className="bg-white rounded-sm p-6 w-[400px] shadow-md">
+        <img src={logo} alt="logo" className="mx-auto" />
         <h1 className="text-xl font-semibold text-center">Đăng ký</h1>
-        <form className="mt-2">
-          <div>
-            <span>Email</span>
-            <input
-              type="text"
-              name="email"
-              className="mt-1 p-2 w-full border border-black/60 rounded-sm focus:border-blue-500 focus:ring-2 outline-none"
-              placeholder="Nhập email"
-            />
-            <span className="mt-1 text-red-500 text-sm min-h-[1.25rem] block"></span>
-          </div>
-          <div>
-            <span>Mật khẩu</span>
-            <input
-              type="text"
-              name="email"
-              className="mt-1 p-2 w-full border border-black/60 rounded-sm focus:border-blue-500 focus:ring-2 outline-none"
-              placeholder="Nhập mật khẩu"
-            />
-            <span className="mt-1 text-red-500 text-sm min-h-[1.25rem] block"></span>
-          </div>
-          <button className="p-4 bg-blue-500 mt-2 w-full text-white font-semibold rounded-sm hover:bg-blue-500/80 duration-200">
-            Đăng ký
-          </button>
+        <form onSubmit={handleSubmitForm} className="mt-2">
+          <Input
+            name="name"
+            register={register}
+            placeholder="Nhập tên"
+            messageErrorInput={errors.email?.message}
+            nameInput="Tên"
+          />
+          <Input
+            name="email"
+            register={register}
+            placeholder="Nhập email"
+            messageErrorInput={errors.email?.message}
+            nameInput="Email"
+          />
+          <Input
+            name="password"
+            register={register}
+            placeholder="Nhập mật khẩu"
+            messageErrorInput={errors.password?.message}
+            nameInput="Mật khẩu"
+            type="password"
+            classNameError="text-red-500 text-[13px] font-semibold min-h-[2.25rem] block"
+            classNameEye="absolute right-2 top-[40%] -translate-y-1/2"
+            value="Thuan123@"
+          />
+          <Input
+            name="confirm_password"
+            register={register}
+            placeholder="Nhập lại mật khẩu"
+            messageErrorInput={errors.confirm_password?.message}
+            nameInput="Xác nhận mật khẩu"
+            type="password"
+            classNameError="text-red-500 text-[13px] font-semibold min-h-[2.25rem] block"
+            classNameEye="absolute right-2 top-[40%] -translate-y-1/2"
+            value="Thuan123@"
+          />
+          <Button nameButton="Đăng ký" type="submit" disabled={true} />
         </form>
         <div className="bg-gray-500 w-full h-[1px] mt-4"></div>
 

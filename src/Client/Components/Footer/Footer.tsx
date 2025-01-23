@@ -123,7 +123,6 @@ export default function Footer() {
           </div>
         </div>
       </div>
-
       <div className="mt-10 border-t border-gray-300 py-3 text-center">
         <h4 className="text-base mb-2 font-semibold">KẾT NỐI VỚI CHÚNG TÔI</h4>
         <div className="flex justify-center items-center space-x-2">

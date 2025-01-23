@@ -22,5 +22,3 @@ export const clearLS = () => {
   const ClearLSEvent = new Event("ClearLS")
   LocalStorageEventTarget.dispatchEvent(ClearLSEvent) // phát sự kiện
 }
-
-// component nào lắng nghe sự kiện này (ClearLS) thì sẽ thực hiện hành động reset state

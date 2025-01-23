@@ -16,6 +16,5 @@ export type MessageResponse = {
 
 export type AuthResponse = SuccessResponse<{
   accessToken: string
-  refreshToken: string
   userInfo: User
 }>

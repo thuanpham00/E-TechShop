@@ -18,7 +18,7 @@ export default function Home() {
   }
 
   return (
-    <div className="h-[800px]">
+    <div>
       <Helmet>
         <title>TECHZONE | Laptop, PC, Màn hình, điện thoại, linh kiện Chính Hãng</title>
         <meta
@@ -26,11 +26,11 @@ export default function Home() {
           content="Đây là trang TECHZONE | Laptop, PC, Màn hình, điện thoại, linh kiện Chính Hãng"
         />
       </Helmet>
-      <div className="mt-2">
+      <div className="mt-4">
         <div className="container">
-          <div className="grid grid-cols-12 gap-1">
+          <div className="grid grid-cols-12 gap-2">
             <div className="col-span-2">
-              <div className="bg-white rounded-[4px] h-[370px] shadow mt-1 pl-4 pr-2 pt-2">
+              <div className="bg-white rounded-[4px] h-[370px] shadow mt-1 pl-3 pr-2 pt-2">
                 <CategoryItem nameCategory="Laptop" iconCategory={<Laptop size={22} />} />
                 <CategoryItem nameCategory="Laptop Gaming" iconCategory={<LaptopMinimal size={22} />} />
                 <CategoryItem nameCategory="PC GVN" iconCategory={<Laptop size={22} />} />
@@ -70,7 +70,7 @@ export default function Home() {
           <div className="container">
             <div className="grid grid-cols-12">
               <div className="col-span-2 top-24 z-40 fixed transition ease-in-out duration-100">
-                <div className=" bg-white rounded-[4px] h-[370px] shadow mt-1 pl-4 pr-2 pt-2">
+                <div className=" bg-white rounded-[4px] h-[370px] shadow mt-1 pl-3 pr-2 pt-2">
                   <CategoryItem nameCategory="Laptop" iconCategory={<Laptop size={22} />} />
                   <CategoryItem nameCategory="Laptop Gaming" iconCategory={<LaptopMinimal size={22} />} />
                   <CategoryItem nameCategory="PC GVN" iconCategory={<Laptop size={22} />} />

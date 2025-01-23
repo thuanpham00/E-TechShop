@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query"
 import { userAPI } from "src/Client/Apis/user.api"
 
-export default function MyProfile() {
+export default function Profile() {
   const getMeQuery = useQuery({
     queryKey: ["getMe"],
     queryFn: () => userAPI.getMe()

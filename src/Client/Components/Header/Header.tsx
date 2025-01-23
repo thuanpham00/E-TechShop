@@ -26,17 +26,14 @@ export default function Header() {
         setIsAuthenticated(false)
         setNameUser(null)
         toast.success(response.data.message, {
-          autoClose: 1500
+          autoClose: 1000
         })
-      },
-      onError: (error) => {
-        console.log(error)
       }
     })
   }
 
   const handleShowCategory = () => {
-    setIsShowCategory((prev) => !prev)
+    setIsShowCategory(true)
   }
 
   return (
@@ -138,7 +135,7 @@ export default function Header() {
                       <div className="bg-white shadow-md rounded-sm border border-gray-200">
                         <div className="flex flex-col">
                           <Link
-                            to={"my-profile"}
+                            to={path.Profile}
                             className="text-sm md:text-[13px] flex items-center gap-1 px-3 py-2 hover:text-primaryRed hover:bg-slate-200 hover:underline hover:font-semibold"
                           >
                             Thông tin tài khoản

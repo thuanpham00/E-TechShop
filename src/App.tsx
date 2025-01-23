@@ -1,5 +1,4 @@
 import { HelmetProvider } from "react-helmet-async"
-import "./App.css"
 import useRouterClient from "./Client/Routes/useRouterClient"
 import useRouterAdmin from "./Admin/Routes/useRouterAdmin"
 import { ToastContainer } from "react-toastify"
@@ -20,7 +19,9 @@ function App() {
   }, [reset])
 
   /**
-   * Nếu bạn đặt lắng nghe sự kiện ClearLS ở bất kỳ component nào, thì chỉ component đó sẽ lắng nghe và thực hiện hành động khi sự kiện được phát.
+   * Chỉ khi hàm clearLS() được gọi, sự kiện ClearLS mới được phát thông qua dispatchEvent, và khi đó, useEffect trong App (hoặc bất kỳ component nào đang lắng nghe sự kiện ClearLS) sẽ được kích hoạt.
+   *
+   * useEffect không tự kích hoạt lại khi không có sự kiện. Chỉ khi sự kiện ClearLS được phát, hàm reset (listener) mới được gọi.
    */
 
   return (
