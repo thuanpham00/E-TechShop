@@ -1,5 +1,6 @@
 import logo from "src/Assets/img/logo_cut.png"
-import { Heart, Info, LogOut, PackageSearch, ShoppingCart, UserRound } from "lucide-react"
+import avatarDefault from "src/Assets/img/avatarDefault.png"
+import { Heart, Info, LogOut, PackageSearch, ShoppingCart } from "lucide-react"
 import { Link, useNavigate } from "react-router-dom"
 import { path } from "src/Constants/path"
 import { useContext } from "react"
@@ -11,8 +12,8 @@ import { AppContext } from "src/Context/authContext"
 
 export default function Header() {
   const navigate = useNavigate()
-  const { setIsAuthenticated, setNameUser, setIsShowCategory } = useContext(AppContext)
-  const { isAuthenticated, nameUser } = useContext(AppContext)
+  const { isAuthenticated, nameUser, setIsAuthenticated, setNameUser, setRole, setIsShowCategory } =
+    useContext(AppContext)
 
   const logoutMutation = useMutation({
     mutationFn: () => {
@@ -25,6 +26,7 @@ export default function Header() {
       onSuccess: (response) => {
         setIsAuthenticated(false)
         setNameUser(null)
+        setRole(null)
         toast.success(response.data.message, {
           autoClose: 1000
         })
@@ -153,8 +155,8 @@ export default function Header() {
                     }
                   >
                     {
-                      <div className="flex items-center gap-1 py-1 px-3 rounded-[4px] bg-secondRed text-white font-semibold hover:bg-secondRed/50 duration-200 transition ease-linear cursor-pointer">
-                        <UserRound />
+                      <div className="flex items-center gap-1 py-1 px-2 rounded-[4px] bg-secondRed text-white font-semibold hover:bg-secondRed/50 duration-200 transition ease-linear cursor-pointer">
+                        <img src={avatarDefault} className="h-8 w-8" alt="avatar default" />
                         <div>
                           <span className="text-xs">Xin chào</span>
                           <span className="block text-[13px] truncate w-32">{nameUser}</span>

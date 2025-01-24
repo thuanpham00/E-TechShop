@@ -1,11 +1,16 @@
 import Http from "src/Helpers/http"
 import { AuthResponse, MessageResponse } from "src/Types/utils.type"
 
+export const URL_Register = "/users/register"
 export const URL_Login = "/users/login"
 export const URL_Logout = "/users/logout"
+export const URL_GetMe = "/users/me"
 export const URL_RefreshToken = "/users/refresh-token"
 
 export const userAPI = {
+  registerUser: (body: { email: string; password: string; confirm_password: string; name: string }) => {
+    return Http.post<AuthResponse>(URL_Register, body)
+  },
   loginUser: (body: { email: string; password: string }) => {
     return Http.post<AuthResponse>(URL_Login, body)
   },
@@ -13,6 +18,6 @@ export const userAPI = {
     return Http.post<MessageResponse>(URL_Logout)
   },
   getMe: () => {
-    return Http.get<AuthResponse>("/users/me")
+    return Http.get<AuthResponse>(URL_GetMe)
   }
 }

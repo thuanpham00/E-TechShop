@@ -1,6 +1,6 @@
 import axios, { AxiosInstance, InternalAxiosRequestConfig } from "axios"
 import { URL_Login, URL_Logout, URL_RefreshToken } from "src/Client/Apis/user.api"
-import { clearLS, getAccessTokenFromLS, setAccessTokenToLS, setNameUserToLS } from "src/Helpers/auth"
+import { clearLS, getAccessTokenFromLS, setAccessTokenToLS, setNameUserToLS, setRoleToLS } from "src/Helpers/auth"
 import { config } from "src/Constants/config"
 import { AuthResponse, MessageResponse } from "src/Types/utils.type"
 import { isAxiosExpiredTokenError, isError401 } from "./utils"
@@ -41,13 +41,12 @@ class http {
           this.accessToken = data.result.accessToken
           setAccessTokenToLS(this.accessToken)
           setNameUserToLS(data.result.userInfo.name)
-          console.log(this.accessToken)
+          setRoleToLS(data.result.userInfo.role)
           // ở server sẽ tự động lưu RT vào cookie ở trình duyệt
         }
         if (response.config.url === URL_Logout) {
           clearLS()
           this.accessToken = ""
-          console.log(this.accessToken)
           // ở server sẽ tự động xóa cookie đã lưu trên trình duyệt
         }
         return response

@@ -5,6 +5,7 @@ import { lazy, Suspense, useContext } from "react"
 import MainLayoutAuth from "../Layout/MainLayoutAuth"
 import MyProfile from "../Pages/Profile"
 import { AppContext } from "src/Context/authContext"
+import { RoleType } from "src/Constants/enum"
 
 const Home = lazy(() => import("../Pages/Home"))
 const Login = lazy(() => import("../Pages/Login"))
@@ -19,10 +20,13 @@ const ProjectRouter = () => {
 }
 
 const RejectRouter = () => {
-  const { isAuthenticated } = useContext(AppContext)
+  const { isAuthenticated, role } = useContext(AppContext)
   const [searchParams] = useSearchParams()
-  const navigate = searchParams.get("redirect_url") || path.Home
-  return !isAuthenticated ? <Outlet /> : <Navigate to={navigate} />
+  if (!isAuthenticated) {
+    return <Outlet />
+  }
+  const navigate = role === RoleType.ADMIN ? path.Admin : searchParams.get("redirect_url") || path.Home
+  return <Navigate to={navigate} />
 }
 
 export default function useRouterClient() {

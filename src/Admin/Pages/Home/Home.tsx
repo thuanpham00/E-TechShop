@@ -1,3 +1,3 @@
 export default function Home() {
-  return <div>Home admin</div>
+  return <div className="h-[700px]">Home admin</div>
 }
