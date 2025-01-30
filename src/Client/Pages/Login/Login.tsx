@@ -69,6 +69,7 @@ export default function Login() {
         // và giá trị khởi tạo cho state global (LS) - set trong response
       },
       onError: (error) => {
+        // lỗi từ server trả về
         if (isError422<ErrorResponse<FormData>>(error)) {
           const formError = error.response?.data.errors
           if (formError?.email)

@@ -3,7 +3,6 @@ import MainLayout from "../Layout/MainLayout"
 import { path } from "../../Constants/path"
 import { lazy, Suspense, useContext } from "react"
 import MainLayoutAuth from "../Layout/MainLayoutAuth"
-import MyProfile from "../Pages/Profile"
 import { AppContext } from "src/Context/authContext"
 import { RoleType } from "src/Constants/enum"
 
@@ -12,6 +11,7 @@ const Login = lazy(() => import("../Pages/Login"))
 const Register = lazy(() => import("../Pages/Register"))
 const LoginGoogle = lazy(() => import("../Pages/LoginGoogle"))
 const Cart = lazy(() => import("../Pages/Cart"))
+const Profile = lazy(() => import("../Pages/Profile"))
 
 const ProjectRouter = () => {
   const { isAuthenticated } = useContext(AppContext)
@@ -73,7 +73,7 @@ export default function useRouterClient() {
               path: path.Profile,
               element: (
                 <Suspense>
-                  <MyProfile />
+                  <Profile />
                 </Suspense>
               )
             }

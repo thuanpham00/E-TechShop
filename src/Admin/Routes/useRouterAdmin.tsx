@@ -9,7 +9,7 @@ const Home = lazy(() => import("src/Admin/Pages/Home"))
 const ProtectedRoute = () => {
   const { isAuthenticated } = useContext(AppContext)
   return isAuthenticated ? <Outlet /> : <Navigate to={path.Login} />
-}
+} // bắt buộc đăng nhập
 
 export default function useRouterAdmin() {
   const useRouterElement = useRoutes([

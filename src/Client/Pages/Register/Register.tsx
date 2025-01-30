@@ -2,7 +2,7 @@
 import { yupResolver } from "@hookform/resolvers/yup"
 import { Helmet } from "react-helmet-async"
 import { useForm } from "react-hook-form"
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import { schemaAuth, SchemaAuthType } from "src/Client/Utils/rule"
 import Button from "src/Components/Button"
 import Input from "src/Components/Input"
@@ -18,11 +18,11 @@ type FormData = Pick<SchemaAuthType, "email" | "password" | "confirm_password" |
 const formData = schemaAuth.pick(["email", "password", "confirm_password", "name"])
 
 export default function Register() {
+  const navigate = useNavigate()
   const {
     formState: { errors },
     setError,
     register,
-    reset,
     handleSubmit
   } = useForm<FormData>({ resolver: yupResolver(formData) })
 
@@ -35,10 +35,11 @@ export default function Register() {
   const handleSubmitForm = handleSubmit((data) => {
     registerMutation.mutate(data, {
       onSuccess: (response) => {
-        reset()
         toast.success(response.data.message, { autoClose: 1000 })
+        navigate(path.Login)
       },
       onError: (error) => {
+        // lỗi từ server trả về
         if (isError422<ErrorResponse<FormData>>(error)) {
           const formError = error.response?.data.errors
           if (formError?.email) {
