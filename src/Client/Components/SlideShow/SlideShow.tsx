@@ -25,16 +25,16 @@ export default function SlideShow() {
       modules={[Navigation, Pagination, Keyboard, Autoplay]}
     >
       <SwiperSlide>
-        <img src={banner_1} className="object-cover w-full h-[380px] block rounded-[4px]" alt="banner_1" />
+        <img src={banner_1} className="object-cover w-full h-[350px] block rounded-[4px]" alt="banner_1" />
       </SwiperSlide>
       <SwiperSlide>
-        <img src={banner_2} className="object-cover w-full h-[380px] block rounded-[4px]" alt="banner_2" />
+        <img src={banner_2} className="object-cover w-full h-[350px] block rounded-[4px]" alt="banner_2" />
       </SwiperSlide>
       <SwiperSlide>
-        <img src={banner_3} className="object-cover w-full h-[380px] block rounded-[4px]" alt="banner_3" />
+        <img src={banner_3} className="object-cover w-full h-[350px] block rounded-[4px]" alt="banner_3" />
       </SwiperSlide>
       <SwiperSlide>
-        <img src={banner_4} className="object-cover w-full h-[380px] block rounded-[4px]" alt="banner_4" />
+        <img src={banner_4} className="object-cover w-full h-[350px] block rounded-[4px]" alt="banner_4" />
       </SwiperSlide>
     </Swiper>
   )

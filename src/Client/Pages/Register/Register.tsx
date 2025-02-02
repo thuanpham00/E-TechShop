@@ -21,8 +21,8 @@ export default function Register() {
   const navigate = useNavigate()
   const {
     formState: { errors },
-    setError,
     register,
+    setError,
     handleSubmit
   } = useForm<FormData>({ resolver: yupResolver(formData) })
 
