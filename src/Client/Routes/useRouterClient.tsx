@@ -12,6 +12,8 @@ const Register = lazy(() => import("../Pages/Register"))
 const LoginGoogle = lazy(() => import("../Pages/LoginGoogle"))
 const Cart = lazy(() => import("../Pages/Cart"))
 const Profile = lazy(() => import("../Pages/Profile"))
+const Collection = lazy(() => import("../Pages/Collection"))
+const NotFound = lazy(() => import("../Pages/NotFound"))
 
 const ProjectRouter = () => {
   const { isAuthenticated } = useContext(AppContext)
@@ -48,6 +50,14 @@ export default function useRouterClient() {
           element: (
             <Suspense>
               <Home />
+            </Suspense>
+          )
+        },
+        {
+          path: path.Collection,
+          element: (
+            <Suspense>
+              <Collection />
             </Suspense>
           )
         }
@@ -116,6 +126,14 @@ export default function useRouterClient() {
           ]
         }
       ]
+    },
+    {
+      path: "*",
+      element: (
+        <Suspense>
+          <NotFound />
+        </Suspense>
+      )
     }
   ])
   return routerElement

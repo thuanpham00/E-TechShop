@@ -16,6 +16,10 @@ export function isError401<FormError>(error: unknown): error is AxiosError<FormE
   return isAxiosError(error) && error.response?.status === HttpStatusCode.Unauthorized
 }
 
+export function isError404<FormError>(error: unknown): error is AxiosError<FormError> {
+  return isAxiosError(error) && error.response?.status === HttpStatusCode.NotFound
+}
+
 export function isAxiosExpiredTokenError<FormError>(error: unknown): error is AxiosError<FormError> {
   return isError401<MessageResponse>(error) && error.response?.data.message === "jwt expired"
 }

@@ -3,7 +3,7 @@ import { URL_Login, URL_Logout, URL_RefreshToken } from "src/Client/Apis/user.ap
 import { clearLS, getAccessTokenFromLS, setAccessTokenToLS, setNameUserToLS, setRoleToLS } from "src/Helpers/auth"
 import { config } from "src/Constants/config"
 import { AuthResponse, MessageResponse } from "src/Types/utils.type"
-import { isAxiosExpiredTokenError, isError401 } from "./utils"
+import { isAxiosExpiredTokenError, isError401, isError404 } from "./utils"
 import { toast } from "react-toastify"
 
 class http {
@@ -52,6 +52,10 @@ class http {
         return response
       },
       (error) => {
+        if (isError404<MessageResponse>(error)) {
+          toast.error(error.response?.data.message)
+          // toast.error(error.)
+        }
         if (isError401(error)) {
           const config = error.response?.config || ({ headers: {} } as InternalAxiosRequestConfig)
           const { url } = config

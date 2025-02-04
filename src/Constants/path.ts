@@ -6,6 +6,7 @@ export const path = {
   Login: "/login",
   LoginGoogle: "/login/oauth",
   Profile: "/profile",
+  Collection: "/collections/:slug",
 
   // admin
   Admin: "/admin/home"
