@@ -25,19 +25,17 @@ export const MenuCategoryDetail: MenuItem[][] = [
       value: [
         { name: "ASUS", path: "laptop-asus-hoc-tap-va-lam-viec" },
         { name: "ACER", path: "laptop-acer-hoc-tap-va-lam-viec" },
-        { name: "MSI", path: "laptop-asus-hoc-tap-va-lam-viec" },
-        { name: "LENOVO", path: "laptop-asus-hoc-tap-va-lam-viec" },
+        { name: "MSI", path: "laptop-msi-hoc-tap-va-lam-viec" },
+        { name: "LENOVO", path: "laptop-lenovo-hoc-tap-va-lam-viec" },
         { name: "DELL", path: "laptop-asus-hoc-tap-va-lam-viec" }
       ]
     },
     {
       heading: "Giá bán",
       value: [
-        { name: "Dưới 15 triệu", path: "laptop-asus-hoc-tap-va-lam-viec" },
-        { name: "Từ 15 đến 20tr", path: "laptop-asus-hoc-tap-va-lam-viec" },
-        { name: "Trên 20 triệu", path: "laptop-asus-hoc-tap-va-lam-viec" },
-        { name: "LENOVO", path: "laptop-asus-hoc-tap-va-lam-viec" },
-        { name: "DELL", path: "laptop-asus-hoc-tap-va-lam-viec" }
+        { name: "Dưới 15 triệu", path: "laptop-duoi-15-trieu" },
+        { name: "Từ 15 đến 20tr", path: "laptop-tu-15-den-20-trieu" },
+        { name: "Trên 20 triệu", path: "laptop-tren-20-trieu" }
       ]
     },
     {
@@ -55,8 +53,15 @@ export const MenuCategoryDetail: MenuItem[][] = [
 
 import bannerLaptopAcer from "src/Assets/img/banner_category/acer.webp"
 import bannerLaptopAsus from "src/Assets/img/banner_category/asus.webp"
+import bannerLaptopDuoi15trieu from "src/Assets/img/banner_category/laptop_duoi_15_trieu.webp"
+import bannerLaptopLenovo from "src/Assets/img/banner_category/lenovo.webp"
 
 export const CategoryBanner = {
   "laptop-acer-hoc-tap-va-lam-viec": bannerLaptopAcer,
-  "laptop-asus-hoc-tap-va-lam-viec": bannerLaptopAsus
+  "laptop-asus-hoc-tap-va-lam-viec": bannerLaptopAsus,
+  "laptop-duoi-15-trieu": bannerLaptopDuoi15trieu,
+  "laptop-tu-15-den-20-trieu": bannerLaptopDuoi15trieu,
+  "laptop-tren-20-trieu": bannerLaptopDuoi15trieu,
+  "laptop-lenovo-hoc-tap-va-lam-viec": bannerLaptopLenovo,
+  "laptop-msi-hoc-tap-va-lam-viec": bannerLaptopDuoi15trieu
 }

@@ -3,7 +3,7 @@ import { getNameParams } from "src/Helpers/common"
 
 export default function Breadcrumb({ slug }: { slug: string }) {
   return (
-    <div className="my-4 flex gap-2">
+    <div className="my-3 flex gap-2">
       <span className="text-[14px] flex items-center gap-1 text-[#1982F9] font-semibold">
         <House size={15} color="#1982F9" />
         Trang chủ

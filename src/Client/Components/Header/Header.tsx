@@ -39,7 +39,7 @@ export default function Header() {
   }
 
   return (
-    <div className="bg-primaryRed sticky top-0 left-0 z-20">
+    <div className="bg-primaryBlue sticky top-0 left-0 z-20">
       <div className="container">
         <div className="grid grid-cols-12 items-center gap-4 py-3">
           <div className="col-span-3">
@@ -49,7 +49,7 @@ export default function Header() {
               </button>
               <button
                 onClick={handleShowCategory}
-                className="w-[45%] bg-secondRed rounded-[4px] p-3 hover:bg-secondRed/50 transition ease-in duration-100 cursor-pointer flex items-center gap-2"
+                className="w-[45%] bg-secondBlue rounded-[4px] p-3 hover:bg-secondBlue/50 transition ease-in duration-100 cursor-pointer flex items-center gap-2"
               >
                 <svg width="18" height="14" viewBox="0 0 18 14" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <rect x="-0.00012207" y="0.000190735" width="18" height="2" rx="1" fill="white"></rect>
@@ -138,14 +138,14 @@ export default function Header() {
                         <div className="flex flex-col">
                           <Link
                             to={path.Profile}
-                            className="text-sm md:text-[13px] flex items-center gap-1 px-3 py-2 hover:text-primaryRed hover:bg-slate-200 hover:underline hover:font-semibold"
+                            className="text-sm md:text-[13px] flex items-center gap-1 px-3 py-2 hover:text-primaryBlue hover:bg-slate-200 hover:underline hover:font-semibold"
                           >
                             Thông tin tài khoản
                             <Info size={16} />
                           </Link>
                           <button
                             onClick={handleLogout}
-                            className="text-sm md:text-[13px] flex items-center gap-1 px-3 py-2 hover:text-primaryRed hover:bg-slate-200 hover:underline hover:font-semibold"
+                            className="text-sm md:text-[13px] flex items-center gap-1 px-3 py-2 hover:text-primaryBlue hover:bg-slate-200 hover:underline hover:font-semibold"
                           >
                             Đăng xuất
                             <LogOut size={16} />
@@ -155,7 +155,7 @@ export default function Header() {
                     }
                   >
                     {
-                      <div className="flex items-center gap-1 py-1 px-2 rounded-[4px] bg-secondRed text-white font-semibold hover:bg-secondRed/50 duration-200 transition ease-linear cursor-pointer">
+                      <div className="flex items-center gap-1 py-1 px-2 rounded-[4px] bg-secondBlue text-white font-semibold hover:bg-secondBlue/50 duration-200 transition ease-linear cursor-pointer">
                         <img src={avatarDefault} className="h-8 w-8" alt="avatar default" />
                         <div>
                           <span className="text-xs">Xin chào</span>
@@ -168,13 +168,13 @@ export default function Header() {
                   <div className="flex items-center justify-end gap-1">
                     <Link
                       to={path.Register}
-                      className="py-2 px-3 rounded-[4px] bg-secondRed text-white text-[13px] font-semibold hover:bg-secondRed/50 duration-200 transition ease-linear"
+                      className="py-2 px-3 rounded-[4px] bg-secondBlue text-white text-[13px] font-semibold hover:bg-secondBlue/50 duration-200 transition ease-linear"
                     >
                       Đăng ký
                     </Link>
                     <Link
                       to={path.Login}
-                      className="py-2 px-3 rounded-[4px] bg-secondRed text-white text-[13px] font-semibold hover:bg-secondRed/50 duration-200 transition ease-linear"
+                      className="py-2 px-3 rounded-[4px] bg-secondBlue text-white text-[13px] font-semibold hover:bg-secondBlue/50 duration-200 transition ease-linear"
                     >
                       Đăng nhập
                     </Link>

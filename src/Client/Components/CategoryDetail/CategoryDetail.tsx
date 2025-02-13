@@ -18,14 +18,14 @@ export default function CategoryDetail({ showDetail }: Props) {
 
   return (
     <div className="flex items-start">
-      {MenuCategoryDetail[Number(showDetail)].map((item, index) => (
+      {MenuCategoryDetail[Number(showDetail)]?.map((item, index) => (
         <div key={index} className="mr-20">
-          <span className="text-[14px] font-semibold text-primaryRed">{item.heading}</span>
+          <span className="text-[14px] font-semibold text-primaryBlue">{item.heading}</span>
           {item.value.map((valueItem, indexValue) => (
             <button
               onClick={() => handleNavigate(valueItem.path)}
               key={indexValue}
-              className="block my-3 text-[13px] font-medium cursor-pointer hover:text-primaryRed"
+              className="block my-3 text-[13px] font-medium cursor-pointer hover:text-primaryBlue"
             >
               {valueItem.name}
             </button>

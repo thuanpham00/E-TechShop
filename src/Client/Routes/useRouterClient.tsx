@@ -39,6 +39,7 @@ export default function useRouterClient() {
       children: [
         {
           path: "",
+          index: true,
           element: (
             <Suspense>
               <Home />
@@ -58,6 +59,14 @@ export default function useRouterClient() {
           element: (
             <Suspense>
               <Collection />
+            </Suspense>
+          )
+        },
+        {
+          path: path.NotFound,
+          element: (
+            <Suspense>
+              <NotFound />
             </Suspense>
           )
         }
@@ -126,14 +135,6 @@ export default function useRouterClient() {
           ]
         }
       ]
-    },
-    {
-      path: "*",
-      element: (
-        <Suspense>
-          <NotFound />
-        </Suspense>
-      )
     }
   ])
   return routerElement

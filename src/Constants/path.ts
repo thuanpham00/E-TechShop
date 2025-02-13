@@ -7,7 +7,7 @@ export const path = {
   LoginGoogle: "/login/oauth",
   Profile: "/profile",
   Collection: "/collections/:slug",
-
+  NotFound: "*",
   // admin
   Admin: "/admin/home"
 }

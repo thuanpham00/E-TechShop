@@ -4,7 +4,7 @@ import MainLayoutAdmin from "../Layouts/MainLayoutAdmin"
 import { path } from "src/Constants/path"
 import { AppContext } from "src/Context/authContext"
 
-const Home = lazy(() => import("src/Admin/Pages/Home"))
+const HomeAdmin = lazy(() => import("src/Admin/Pages/HomeAdmin"))
 
 const ProtectedRoute = () => {
   const { isAuthenticated } = useContext(AppContext)
@@ -14,7 +14,7 @@ const ProtectedRoute = () => {
 export default function useRouterAdmin() {
   const useRouterElement = useRoutes([
     {
-      path: "",
+      path: "/admin",
       element: <ProtectedRoute />,
       children: [
         {
@@ -25,7 +25,7 @@ export default function useRouterAdmin() {
               path: path.Admin,
               element: (
                 <Suspense>
-                  <Home />
+                  <HomeAdmin />
                 </Suspense>
               )
             }

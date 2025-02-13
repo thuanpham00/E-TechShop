@@ -44,14 +44,14 @@ export default function HeaderAdmin() {
               <div className="flex flex-col">
                 <Link
                   to={path.Profile}
-                  className="text-sm md:text-[13px] flex items-center gap-1 px-3 py-2 hover:text-primaryRed hover:bg-slate-200 hover:underline hover:font-semibold"
+                  className="text-sm md:text-[13px] flex items-center gap-1 px-3 py-2 hover:text-primaryBlue hover:bg-slate-200 hover:underline hover:font-semibold"
                 >
                   Thông tin tài khoản
                   <Info size={16} />
                 </Link>
                 <button
                   onClick={handleLogout}
-                  className="text-sm md:text-[13px] flex items-center gap-1 px-3 py-2 hover:text-primaryRed hover:bg-slate-200 hover:underline hover:font-semibold"
+                  className="text-sm md:text-[13px] flex items-center gap-1 px-3 py-2 hover:text-primaryBlue hover:bg-slate-200 hover:underline hover:font-semibold"
                 >
                   Đăng xuất
                   <LogOut size={16} />
