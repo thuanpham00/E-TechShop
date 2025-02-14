@@ -103,7 +103,6 @@ export default function Register() {
             type="password"
             classNameError="text-red-500 text-[13px] font-semibold min-h-[2.25rem] block"
             classNameEye="absolute right-2 top-[40%] -translate-y-1/2"
-            value="Thuan123@"
           />
           <Input
             name="confirm_password"

@@ -9,7 +9,7 @@ import { AppContext } from "./Context/authContext"
 function App() {
   const routerClient = useRouterClient()
   const routerAdmin = useRouterAdmin()
-  const { reset } = useContext(AppContext)
+  const { reset, role } = useContext(AppContext)
 
   useEffect(() => {
     LocalStorageEventTarget.addEventListener("ClearLS", reset) // lắng nghe sự kiện
@@ -26,8 +26,7 @@ function App() {
 
   return (
     <HelmetProvider>
-      {routerAdmin}
-      {routerClient}
+      {role === "Admin" ? routerAdmin : routerClient}
       <ToastContainer />
     </HelmetProvider>
   )

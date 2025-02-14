@@ -68,6 +68,7 @@ class http {
           if (isAxiosExpiredTokenError<MessageResponse>(error) && url !== URL_RefreshToken) {
             this.refreshTokenRequest = this.refreshTokenRequest ? this.refreshTokenRequest : this.handleRefreshToken()
 
+            // nếu không return ở đây nó sẽ chạy xuống bên dưới
             return this.refreshTokenRequest.then((accessToken) => {
               if (error.response?.config.headers) {
                 return this.instance({
@@ -77,6 +78,7 @@ class http {
               }
             }) // return để không bị clear nếu chạy trong if
           }
+
           // nếu refresh-token hết hạn thì nó clearLS
           this.accessToken = ""
           clearLS()
@@ -94,16 +96,22 @@ class http {
       .then((res) => {
         const { accessToken } = res.data.result
         this.accessToken = accessToken
+        this.refreshTokenRequest = null
         setAccessTokenToLS(accessToken)
         return accessToken
       })
       .catch((err) => {
         clearLS()
         this.accessToken = ""
+        this.refreshTokenRequest = null
         throw err
       })
   }
 }
+
+/**
+ * nếu ko set lại refreshTokenRequest = null thì khi lần sau token hết hạn thì gọi lại promise cũ và promise cũ có token đã hết hạn dẫn đến nó gọi server check Token đó (hết hạn) và lỗi => dẫn đến liên tục gửi request đến server
+ */
 
 export const httpRaw = new http()
 

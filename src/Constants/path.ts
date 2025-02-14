@@ -9,5 +9,14 @@ export const path = {
   Collection: "/collections/:slug",
   NotFound: "*",
   // admin
-  Admin: "/admin/home"
+  AdminDashboard: "/admin/dashboard",
+  AdminCustomers: "/admin/customers",
+  AdminEmployees: "/admin/employees",
+  AdminCategories: "/admin/categories",
+  AdminProducts: "/admin/products",
+  AdminOrders: "/admin/orders",
+  AdminReceipts: "/admin/receipts",
+  AdminSupplies: "/admin/supplies",
+  AdminSuppliers: "/admin/suppliers",
+  AdminRole: "/admin/roles"
 }

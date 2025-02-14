@@ -1,11 +1,12 @@
 import { Helmet } from "react-helmet-async"
 import { Link } from "react-router-dom"
+import { path } from "src/Constants/path"
 
 // khi đường dẫn url sai nó trỏ đến trang này
 
-export default function NotFound() {
+export default function NotFound({ role }: { role: string | null }) {
   return (
-    <div className="bg-[#fff] w-full px-16 md:px-0 h-[500px] flex items-center justify-center">
+    <div className=" w-full px-16 md:px-0 my-16 flex items-center justify-center">
       <Helmet>
         <title>Không tìm thấy</title>
         <meta name="description" content="Không tìm thấy" />
@@ -18,8 +19,8 @@ export default function NotFound() {
           Sorry, the page you are looking for could not be found.
         </p>
         <Link
-          to="/"
-          className="flex items-center space-x-2 bg-primaryColor hover:bg-blue-700 text-gray-100 px-4 py-2 mt-6 rounded transition duration-150"
+          to={`${role === "Admin" ? path.Admin : path.Home}`}
+          className="flex items-center space-x-2 bg-primaryBlue hover:bg-blue-700 text-gray-100 px-4 py-2 mt-6 rounded transition duration-150"
           title="Return Home"
         >
           <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
@@ -29,7 +30,7 @@ export default function NotFound() {
               clipRule="evenodd"
             />
           </svg>
-          <span>Return Home</span>
+          <span>Trở về Trang chủ</span>
         </Link>
       </div>
     </div>

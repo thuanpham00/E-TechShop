@@ -1,20 +1,29 @@
-import { useContext } from "react"
+import { memo, useState } from "react"
 import { Outlet } from "react-router-dom"
 import HeaderAdmin from "src/Admin/Components/HeaderAdmin"
 import Sidebar from "src/Admin/Components/Sidebar"
-import { AppContext } from "src/Context/authContext"
 
-export default function MainLayoutAdmin() {
-  const { isShowCategory } = useContext(AppContext)
+function MainLayoutAdminInner() {
+  const [isShowSidebar, setIsShowSidebar] = useState<boolean>(false)
+
+  const handleSidebar = (boolean: boolean) => {
+    setIsShowSidebar(boolean)
+  }
+
   return (
     <div className="flex">
-      <div className={` ${isShowCategory ? "w-0 opacity-0" : "w-[15%] opacity-1 "} transition-all ease-in`}>
+      <div className={` ${isShowSidebar ? "w-0 opacity-0" : "w-[17%] opacity-1 "} transition-all ease-in`}>
         <Sidebar />
       </div>
-      <div className={` ${isShowCategory ? "w-full" : "w-[85%]"} `}>
-        <HeaderAdmin />
+      <div className={` ${isShowSidebar ? "w-full" : "w-[83%]"} `}>
+        <HeaderAdmin handleSidebar={handleSidebar} isShowSidebar={isShowSidebar} />
         <Outlet />
       </div>
     </div>
   )
 }
+
+const MainLayoutAdmin = memo(MainLayoutAdminInner)
+export default MainLayoutAdmin
+// ngăn chặn việc component MainLayout re-render khi không cần thiết
+// vì sao nó re-render là do sử dụng route

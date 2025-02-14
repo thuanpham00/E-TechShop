@@ -60,9 +60,9 @@ export default function Login() {
           autoClose: 1000
         })
         const role = response.data.result.userInfo.role
-        setRole(role)
         setIsAuthenticated(true)
         setNameUser(response.data.result.userInfo.name)
+        setRole(role)
         // nếu không set state tại đây thì nó chỉ set LS và không re-render app
         // -> dẫn đến UI không cập nhật (mới nhất sau khi login) -> cần set state
         // để app re-render lại và đặt giá trị mới cho state global
@@ -132,7 +132,6 @@ export default function Login() {
             type="password"
             classNameError="text-red-500 text-[13px] font-semibold min-h-[2.25rem] block"
             classNameEye="absolute right-2 top-[40%] -translate-y-1/2"
-            value="Thuan123@"
           />
           <Button nameButton="Đăng nhập" type="submit" disabled={loginMutation.isPending} />
         </form>

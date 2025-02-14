@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { memo, useEffect, useState } from "react"
 import { Outlet } from "react-router-dom"
 import banner_1 from "src/Assets/img/banner_background/banner_1.webp"
 import banner_2 from "src/Assets/img/banner_background/banner_2.webp"
@@ -8,7 +8,7 @@ import banner_5 from "src/Assets/img/banner_background/banner_5.webp"
 
 const bannerImg = [banner_1, banner_2, banner_3, banner_4, banner_5]
 
-export default function MainLayoutAuth() {
+function MainLayoutAuthInner() {
   const [indexBanner, setIndexBanner] = useState(0)
 
   useEffect(() => {
@@ -33,3 +33,9 @@ export default function MainLayoutAuth() {
     </div>
   )
 }
+
+const MainLayoutAuth = memo(MainLayoutAuthInner)
+export default MainLayoutAuth
+
+// ngăn chặn việc component MainLayout re-render khi không cần thiết
+// vì sao nó re-render là do sử dụng route

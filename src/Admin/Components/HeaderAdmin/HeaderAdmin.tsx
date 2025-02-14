@@ -1,7 +1,8 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Info, LogOut, Menu } from "lucide-react"
 import avatarDefault from "src/Assets/img/avatarDefault.png"
 import { useContext } from "react"
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import Popover from "src/Components/Popover"
 import { path } from "src/Constants/path"
 import { AppContext } from "src/Context/authContext"
@@ -9,10 +10,16 @@ import { toast } from "react-toastify"
 import { useMutation } from "@tanstack/react-query"
 import { userAPI } from "src/Client/Apis/user.api"
 
-export default function HeaderAdmin() {
-  const { nameUser, role, setIsAuthenticated, setNameUser, setRole, setIsShowCategory } = useContext(AppContext)
-  const handleSideBar = () => {
-    setIsShowCategory((prev) => !prev)
+interface Props {
+  handleSidebar: (boolean: boolean) => void
+  isShowSidebar: boolean
+}
+
+export default function HeaderAdmin({ handleSidebar, isShowSidebar }: Props) {
+  const { nameUser, role, setIsAuthenticated, setNameUser, setRole } = useContext(AppContext)
+  const navigate = useNavigate()
+  const handleSideBarFunc = () => {
+    handleSidebar(!isShowSidebar)
   }
 
   const logoutMutation = useMutation({
@@ -27,6 +34,7 @@ export default function HeaderAdmin() {
         setIsAuthenticated(false)
         setNameUser(null)
         setRole(null)
+        navigate(path.Login)
         toast.success(response.data.message, {
           autoClose: 1000
         })
@@ -36,7 +44,7 @@ export default function HeaderAdmin() {
 
   return (
     <header className="sticky top-0 left-0 z-10 bg-white flex items-center justify-between p-3 border-b border-gray-200 ">
-      <Menu size={28} onClick={handleSideBar} />
+      <Menu size={28} onClick={handleSideBarFunc} />
       <div>
         <Popover
           renderPopover={

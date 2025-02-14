@@ -27,11 +27,12 @@ const RejectRouter = () => {
   if (!isAuthenticated) {
     return <Outlet />
   }
-  const navigate = role === RoleType.ADMIN ? path.Admin : searchParams.get("redirect_url") || path.Home
+  const navigate = role === RoleType.ADMIN ? path.AdminDashboard : searchParams.get("redirect_url") || path.Home
   return <Navigate to={navigate} />
 }
 
 export default function useRouterClient() {
+  const { role } = useContext(AppContext)
   const routerElement = useRoutes([
     {
       path: "",
@@ -39,7 +40,6 @@ export default function useRouterClient() {
       children: [
         {
           path: "",
-          index: true,
           element: (
             <Suspense>
               <Home />
@@ -66,7 +66,7 @@ export default function useRouterClient() {
           path: path.NotFound,
           element: (
             <Suspense>
-              <NotFound />
+              <NotFound role={role} />
             </Suspense>
           )
         }
