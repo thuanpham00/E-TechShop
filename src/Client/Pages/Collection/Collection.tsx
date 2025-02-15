@@ -3,7 +3,7 @@ import { Eye, Star } from "lucide-react"
 import { Helmet } from "react-helmet-async"
 import { useNavigate, useParams } from "react-router-dom"
 import { Fragment } from "react/jsx-runtime"
-import { collectionAPI } from "src/Client/Apis/collections.api"
+import { collectionAPI } from "src/Apis/collections.api"
 import Breadcrumb from "src/Client/Components/Breadcrumb/Breadcrumb"
 import { CategoryBanner } from "src/Client/Constants/categories"
 import { HttpStatusCode } from "src/Constants/httpStatus"
@@ -13,6 +13,7 @@ import { CollectionItemType } from "src/Types/collection.type"
 import { SuccessResponse } from "src/Types/utils.type"
 import image_default from "src/Assets/img/anh_default_url.jpg"
 import { useState } from "react"
+import Skeleton from "src/Components/Skeleton"
 
 export default function Collection() {
   const { slug } = useParams()
@@ -26,7 +27,7 @@ export default function Collection() {
       }, 10000)
 
       return collectionAPI
-        .getCollections(slug as string)
+        .getCollections(slug as string, controller.signal)
         .then((res) => res)
         .catch((err) => Promise.reject(err))
     },
@@ -59,24 +60,7 @@ export default function Collection() {
       </Helmet>
       <div className="container">
         <Breadcrumb slug={slug as string} />
-        {isLoading && (
-          <div role="status" className="mt-6 animate-pulse">
-            <div className="mb-4 h-4  rounded bg-gray-200" />
-            <div className="mb-2.5 h-10  rounded bg-gray-200" />
-            <div className="mb-2.5 h-10 rounded bg-gray-200" />
-            <div className="mb-2.5 h-10  rounded bg-gray-200" />
-            <div className="mb-2.5 h-10  rounded bg-gray-200" />
-            <div className="mb-2.5 h-10  rounded bg-gray-200" />
-            <div className="mb-2.5 h-10  rounded bg-gray-200" />
-            <div className="mb-2.5 h-10  rounded bg-gray-200" />
-            <div className="mb-2.5 h-10  rounded bg-gray-200" />
-            <div className="mb-2.5 h-10  rounded bg-gray-200" />
-            <div className="mb-2.5 h-10  rounded bg-gray-200" />
-            <div className="mb-2.5 h-10  rounded bg-gray-200" />
-            <div className="h-10  rounded bg-gray-200" />
-            <span className="sr-only">Loading...</span>
-          </div>
-        )}
+        {isLoading && <Skeleton />}
         {!isFetching && slug && (
           <div>
             <img

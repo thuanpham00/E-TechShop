@@ -1,5 +1,5 @@
 import axios, { AxiosInstance, InternalAxiosRequestConfig } from "axios"
-import { URL_Login, URL_Logout, URL_RefreshToken } from "src/Client/Apis/user.api"
+import { URL_Login, URL_Logout, URL_RefreshToken } from "src/Apis/user.api"
 import { clearLS, getAccessTokenFromLS, setAccessTokenToLS, setNameUserToLS, setRoleToLS } from "src/Helpers/auth"
 import { config } from "src/Constants/config"
 import { AuthResponse, MessageResponse, SuccessResponse } from "src/Types/utils.type"
@@ -27,6 +27,7 @@ class http {
       (config) => {
         if (config.headers && this.accessToken) {
           config.headers.Authorization = `Bearer ${this.accessToken}`
+          // config > headers > Authorization
           return config
         }
         return config
@@ -76,7 +77,7 @@ class http {
                   headers: { ...config.headers, Authorization: `Bearer ${accessToken}` } // gửi lại lên server accessToken mới
                 })
               }
-            }) // return để không bị clear nếu chạy trong if
+            })
           }
 
           // nếu refresh-token hết hạn thì nó clearLS

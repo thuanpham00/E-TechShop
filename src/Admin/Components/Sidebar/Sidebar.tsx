@@ -1,6 +1,10 @@
+import logo from "src/Assets/img/logo_techzone_black.png"
+import SidebarItem from "../SidebarItem/SidebarItem"
+import { useLocation } from "react-router-dom"
 import {
   Banknote,
   BookOpenCheck,
+  CircleDollarSign,
   ClipboardCopy,
   House,
   IdCard,
@@ -9,8 +13,6 @@ import {
   User,
   Users
 } from "lucide-react"
-import logo from "src/Assets/img/logo_techzone_black.png"
-import SidebarItem from "../SidebarItem/SidebarItem"
 import { path } from "src/Constants/path"
 
 const sideBarList = [
@@ -63,10 +65,15 @@ const sideBarList = [
     name: "Quản lý Vai trò",
     icon: <IdCard color="black" />,
     path: path.AdminRole
+  },
+  {
+    name: "Quản lý Doanh thu",
+    icon: <CircleDollarSign color="black" />,
+    path: path.AdminRole
   }
 ]
-
 export default function Sidebar() {
+  const location = useLocation()
   return (
     <div className="sticky top-0 left-0 p-4 bg-white h-screen border-r border-[#dedede]">
       <div>
@@ -75,7 +82,12 @@ export default function Sidebar() {
         <div className="mt-8 pl-2">
           {sideBarList.map((item, index) => (
             <div key={index}>
-              <SidebarItem icon={item.icon} nameSideBar={item.name} path={item.path} />
+              <SidebarItem
+                className={`${location.pathname === item.path ? "text-[14px] text-[#df0019] font-semibold" : "text-[14px] text-black font-medium hover:text-[#495057] duration-200 ease-in"}`}
+                icon={item.icon}
+                nameSideBar={item.name}
+                path={item.path}
+              />
             </div>
           ))}
         </div>

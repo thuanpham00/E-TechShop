@@ -8,7 +8,7 @@ import { path } from "src/Constants/path"
 import { AppContext } from "src/Context/authContext"
 import { toast } from "react-toastify"
 import { useMutation } from "@tanstack/react-query"
-import { userAPI } from "src/Client/Apis/user.api"
+import { userAPI } from "src/Apis/user.api"
 
 interface Props {
   handleSidebar: (boolean: boolean) => void

@@ -37,7 +37,6 @@ const ManageProducts = lazy(() => import("src/Admin/Pages/ManageProducts"))
 
 const ProtectedRoute = () => {
   const { isAuthenticated } = useContext(AppContext)
-  console.log(isAuthenticated)
   return isAuthenticated ? <Outlet /> : <Navigate to={path.Login} />
 } // bắt buộc đăng nhập
 

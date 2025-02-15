@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query"
-import { userAPI } from "src/Client/Apis/user.api"
+import { userAPI } from "src/Apis/user.api"
 
 export default function Profile() {
   const getMeQuery = useQuery({

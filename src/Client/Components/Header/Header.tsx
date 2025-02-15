@@ -6,7 +6,7 @@ import { path } from "src/Constants/path"
 import { useContext } from "react"
 import Popover from "src/Components/Popover"
 import { useMutation } from "@tanstack/react-query"
-import { userAPI } from "src/Client/Apis/user.api"
+import { userAPI } from "src/Apis/user.api"
 import { toast } from "react-toastify"
 import { AppContext } from "src/Context/authContext"
 
