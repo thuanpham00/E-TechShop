@@ -15,7 +15,8 @@ export const schemaAuth = yup
       .min(6, "Độ dài 6-50 kí tự!")
       .max(50, "Độ dài 6-50 kí tự!")
       .oneOf([yup.ref("password")], "Nhập lại mật khẩu không khớp!"),
-    name: yup.string().required("Tên bắt buộc!")
+    name: yup.string().required("Tên bắt buộc!"),
+    phone: yup.string().min(10, "Độ dài 10-11 kí tự!").max(11, "Độ dài 10-11 kí tự!")
   })
   .required()
 

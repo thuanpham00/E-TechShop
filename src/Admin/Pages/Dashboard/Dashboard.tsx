@@ -9,22 +9,22 @@ import { SuccessResponse } from "src/Types/utils.type"
 const statistical = [
   {
     name: "Số lượng Lượt bán",
-    icon: <Truck size={18} color="white" />,
+    icon: <Truck size={22} color="white" />,
     classNameCircle: "bg-primaryBlue"
   },
   {
     name: "Số lượng Khách hàng",
-    icon: <User size={18} color="white" />,
+    icon: <User size={22} color="white" />,
     classNameCircle: "bg-[#ffbe0b]"
   },
   {
     name: "Số lượng Nhân viên",
-    icon: <Users size={18} color="white" />,
+    icon: <Users size={22} color="white" />,
     classNameCircle: "bg-[#df0019]"
   },
   {
     name: "Số lượng Sản phẩm",
-    icon: <PackageSearch size={18} color="white" />,
+    icon: <PackageSearch size={22} color="white" />,
     classNameCircle: "bg-[#85cb33]"
   }
 ]

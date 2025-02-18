@@ -23,3 +23,21 @@ export function ConvertAverageRating(averageRating: number) {
   }
   return averageRating
 }
+
+export function convertDateTime(dateInput: string) {
+  // Tạo đối tượng Date từ chuỗi đầu vào
+  const date = new Date(dateInput)
+
+  // Lấy các thành phần ngày, tháng, năm, giờ, phút, giây
+  const day = String(date.getUTCDate()).padStart(2, "0")
+  const month = String(date.getUTCMonth() + 1).padStart(2, "0") // Tháng bắt đầu từ 0
+  const year = date.getUTCFullYear()
+  const hours = String(date.getUTCHours()).padStart(2, "0")
+  const minutes = String(date.getUTCMinutes()).padStart(2, "0")
+  const seconds = String(date.getUTCSeconds()).padStart(2, "0")
+
+  // Tạo chuỗi kết quả theo định dạng mong muốn
+  const formattedDate = `${day}-${month}-${year} ${hours}:${minutes}:${seconds}`
+
+  return formattedDate
+}
