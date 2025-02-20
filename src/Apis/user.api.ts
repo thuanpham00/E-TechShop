@@ -6,6 +6,7 @@ export const URL_Login = "/users/login"
 export const URL_Logout = "/users/logout"
 export const URL_GetMe = "/users/me"
 export const URL_RefreshToken = "/users/refresh-token"
+export const URL_VerifyEmail = "/users/verify-email"
 
 export const userAPI = {
   registerUser: (body: { email: string; password: string; confirm_password: string; name: string }) => {
@@ -19,5 +20,8 @@ export const userAPI = {
   },
   getMe: () => {
     return Http.get<AuthResponse>(URL_GetMe)
+  },
+  verifyEmail: (email_verify_token: string) => {
+    return Http.post(URL_VerifyEmail, { email_verify_token })
   }
 }

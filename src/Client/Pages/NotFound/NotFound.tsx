@@ -19,7 +19,7 @@ export default function NotFound({ role }: { role: string | null }) {
           Sorry, the page you are looking for could not be found.
         </p>
         <Link
-          to={`${role === "Admin" ? path.Admin : path.Home}`}
+          to={`${role === "Admin" ? path.AdminDashboard : path.Home}`}
           className="flex items-center space-x-2 bg-primaryBlue hover:bg-blue-700 text-gray-100 px-4 py-2 mt-6 rounded transition duration-150"
           title="Return Home"
         >

@@ -5,6 +5,7 @@ import { lazy, Suspense, useContext } from "react"
 import MainLayoutAuth from "../Layout/MainLayoutAuth"
 import { AppContext } from "src/Context/authContext"
 import { RoleType } from "src/Constants/enum"
+import VerifyEmail from "../Pages/VerifyEmail"
 
 const Home = lazy(() => import("../Pages/Home"))
 const Login = lazy(() => import("../Pages/Login"))
@@ -59,6 +60,14 @@ export default function useRouterClient() {
           element: (
             <Suspense>
               <Collection />
+            </Suspense>
+          )
+        },
+        {
+          path: path.VerifyEmail,
+          element: (
+            <Suspense>
+              <VerifyEmail />
             </Suspense>
           )
         },

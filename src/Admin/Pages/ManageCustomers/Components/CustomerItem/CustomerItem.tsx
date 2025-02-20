@@ -11,9 +11,12 @@ export default function CustomerItem({ item, handleEditItem }: { item: User; han
   }
 
   return (
-    <div className="bg-white grid grid-cols-12 items-center gap-2 py-3 cursor-pointer" key={item._id}>
+    <div
+      className="bg-white grid grid-cols-12 items-center gap-2 py-3 cursor-pointer border-t-0 border border-[#dedede] last:border-b-0 px-4 last:rounded-bl-md last:rounded-br-md"
+      key={item._id}
+    >
       <div className="col-span-2 flex items-center justify-between">
-        <div className="truncate w-[75%]">{item._id}</div>
+        <div className="truncate w-[75%] text-blue-500">{item._id}</div>
         <button onClick={() => handleCopyText(item._id)} className="p-1 border rounded mr-2">
           {copiedId === item._id ? <ClipboardCheck color="#8d99ae" size={12} /> : <Copy color="#8d99ae" size={12} />}
         </button>

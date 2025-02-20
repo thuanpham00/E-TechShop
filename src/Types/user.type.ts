@@ -4,6 +4,7 @@ export type User = {
   email: string
   role: string
   numberPhone: string
+  avatar: string
   sex: string
   date_of_birth: string
   verify: number

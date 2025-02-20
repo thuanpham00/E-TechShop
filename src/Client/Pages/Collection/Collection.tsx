@@ -9,11 +9,11 @@ import { CategoryBanner } from "src/Client/Constants/categories"
 import { HttpStatusCode } from "src/Constants/httpStatus"
 import { path } from "src/Constants/path"
 import { CalculateSalePrice, ConvertAverageRating, formatCurrency } from "src/Helpers/common"
-import { CollectionItemType } from "src/Types/collection.type"
 import { SuccessResponse } from "src/Types/utils.type"
 import image_default from "src/Assets/img/anh_default_url.jpg"
 import { useState } from "react"
 import Skeleton from "src/Components/Skeleton"
+import { CollectionItemType } from "src/Types/product.type"
 
 export default function Collection() {
   const { slug } = useParams()

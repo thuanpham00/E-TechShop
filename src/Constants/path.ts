@@ -7,6 +7,7 @@ export const path = {
   LoginGoogle: "/login/oauth",
   Profile: "/profile",
   Collection: "/collections/:slug",
+  VerifyEmail: "/verify-email",
   NotFound: "*",
   // admin
   AdminDashboard: "/admin/dashboard",
