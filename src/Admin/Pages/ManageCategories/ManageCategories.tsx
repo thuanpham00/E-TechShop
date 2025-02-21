@@ -18,8 +18,8 @@ import { useCallback, useState } from "react"
 import Pagination from "src/Components/Pagination"
 import CategoryItem from "./Components/CategoryItem"
 
-type FormData = Pick<SchemaAuthType, "email" | "name" | "phone">
-const formData = schemaAuth.pick(["email", "name", "phone"])
+type FormData = Pick<SchemaAuthType, "email" | "name" | "numberPhone">
+const formData = schemaAuth.pick(["email", "name", "numberPhone"])
 
 export default function ManageCategories() {
   const queryParams: queryParamConfig = useQueryParams()
