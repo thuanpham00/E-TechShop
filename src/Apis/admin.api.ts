@@ -20,14 +20,18 @@ export const adminAPI = {
     return Http.get(`/admin/customers/${id}`)
   },
 
+  updateProfileCustomer: (id: string, body: UpdateBodyReq) => {
+    return Http.patch(`/admin/customers/${id}`, body)
+  },
+
+  deleteProfileCustomer: (id: string) => {
+    return Http.delete(`/admin/customers/${id}`)
+  },
+
   getCategories: (params: queryParamConfig, signal: AbortSignal) => {
     return Http.get(`/admin/categories/`, {
       params,
       signal
     })
-  },
-
-  updateProfileCustomer: (id: string, body: UpdateBodyReq) => {
-    return Http.patch(`/users/customers/${id}`, body)
   }
 }

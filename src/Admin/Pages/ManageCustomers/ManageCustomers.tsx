@@ -1,5 +1,5 @@
 import { yupResolver } from "@hookform/resolvers/yup"
-import { keepPreviousData, useQuery } from "@tanstack/react-query"
+import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { FolderUp, Plus, Search, X } from "lucide-react"
 import { Helmet } from "react-helmet-async"
 import { useForm } from "react-hook-form"
@@ -19,11 +19,16 @@ import { useCallback, useEffect, useMemo, useState } from "react"
 import CustomerItem from "./Components/CustomerItem"
 import avatarDefault from "src/Assets/img/avatarDefault.png"
 import InputFileImage from "src/Components/InputFileImage"
+import { UpdateBodyReq } from "src/Types/product.type"
 
-type FormData = Pick<SchemaAuthType, "email" | "name" | "phone" | "avatar" | "date_of_birth" | "verify">
-const formData = schemaAuth.pick(["email", "name", "phone", "avatar", "date_of_birth", "verify"])
+import { toast } from "react-toastify"
+import { MediaAPI } from "src/Apis/media.api"
+
+type FormData = Pick<SchemaAuthType, "email" | "name" | "numberPhone" | "avatar" | "date_of_birth" | "verify">
+const formData = schemaAuth.pick(["email", "name", "numberPhone", "avatar", "date_of_birth", "verify"])
 
 export default function ManageCustomers() {
+  const queryClient = useQueryClient()
   // Phân trang
   const queryParams: queryParamConfig = useQueryParams()
   const queryConfig: queryParamConfig = {
@@ -64,6 +69,8 @@ export default function ManageCustomers() {
     queryFn: () => {
       return adminAPI.getCustomer(idCustomer as string)
     },
+    placeholderData: keepPreviousData,
+    staleTime: 5 * 60 * 1000, // dưới 5 phút nó không gọi lại api
     enabled: Boolean(idCustomer) // chỉ chạy khi idCustomer có giá trị
   })
   const infoUser = getInfoCustomer.data?.data as SuccessResponse<{ result: User }>
@@ -81,14 +88,14 @@ export default function ManageCustomers() {
     register,
     formState: { errors },
     setValue,
-    watch
-    // handleSubmit
+    watch,
+    handleSubmit
   } = useForm<FormData>({
     resolver: yupResolver(formData),
     defaultValues: {
       email: "",
       name: "",
-      phone: "",
+      numberPhone: "",
       avatar: "",
       date_of_birth: new Date(1990, 0, 1),
       verify: 0
@@ -105,7 +112,7 @@ export default function ManageCustomers() {
       }
       setValue("name", profile.name)
       setValue("email", profile.email)
-      setValue("phone", profile.numberPhone)
+      setValue("numberPhone", profile.numberPhone)
       setValue("verify", profile.verify)
     }
   }, [profile, setValue])
@@ -122,10 +129,57 @@ export default function ManageCustomers() {
 
   const avatarWatch = watch("avatar")
 
-  // const handleSubmitUpdate = handleSubmit(() => {
-  //   let avatarName = avatarWatch;
+  const updateProfileMutation = useMutation({
+    mutationFn: (body: { body: UpdateBodyReq; id: string }) => {
+      return adminAPI.updateProfileCustomer(body.id, body.body)
+    }
+  })
 
-  // })
+  const updateImageProfileMutation = useMutation({
+    mutationFn: (body: { file: File; userId: string }) => {
+      return MediaAPI.uploadImageProfile(body.file, body.userId)
+    }
+  })
+
+  const handleSubmitUpdate = handleSubmit(async (data) => {
+    try {
+      let avatarName = avatarWatch
+      const avatar = await updateImageProfileMutation.mutateAsync({ file: file as File, userId: idCustomer as string })
+      avatarName = avatar.data.result.url
+      const body = {
+        ...data,
+        avatar: avatarName
+      }
+      updateProfileMutation.mutate(
+        { body: body, id: idCustomer as string },
+        {
+          onSuccess: () => {
+            toast.success("Cập nhật thành công!", { autoClose: 1500 })
+            setIdCustomer(null)
+            queryClient.invalidateQueries({ queryKey: ["listCustomer", queryConfig] })
+          }
+        }
+      )
+      window.location.reload()
+    } catch (error) {
+      console.log("Lỗi submit: ", error)
+    }
+  })
+
+  const deleteCustomerMutation = useMutation({
+    mutationFn: (id: string) => {
+      return adminAPI.deleteProfileCustomer(id)
+    }
+  })
+
+  const handleDeleteCustomer = (id: string) => {
+    deleteCustomerMutation.mutate(id, {
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: ["listCustomer", queryConfig] })
+        toast.success("Xóa thành công!", { autoClose: 1500 })
+      }
+    })
+  }
 
   return (
     <div>
@@ -142,7 +196,7 @@ export default function ManageCustomers() {
           <div className="flex items-center gap-4">
             <Input
               name="email1"
-              register={register}
+              // register={register}
               placeholder="Nhập email"
               messageErrorInput={errors.email?.message}
               classNameInput="mt-1 p-2 w-full border border-[#dedede] bg-[#f2f2f2] focus:border-blue-500 focus:ring-2 outline-none rounded-md"
@@ -151,7 +205,7 @@ export default function ManageCustomers() {
             />
             <Input
               name="name1"
-              register={register}
+              // register={register}
               placeholder="Nhập họ tên"
               messageErrorInput={errors.name?.message}
               classNameInput="mt-1 p-2 w-full border border-[#dedede] bg-[#f2f2f2] focus:border-blue-500 focus:ring-2 outline-none rounded-md"
@@ -160,7 +214,7 @@ export default function ManageCustomers() {
             />
             <Input
               name="phone2"
-              register={register}
+              // register={register}
               placeholder="Nhập số điện thoại"
               messageErrorInput={errors.name?.message}
               classNameInput="mt-1 p-2 w-full border border-[#dedede] bg-[#f2f2f2] focus:border-blue-500 focus:ring-2 outline-none rounded-md"
@@ -211,9 +265,9 @@ export default function ManageCustomers() {
                 <div className="col-span-2 text-[14px] font-medium">Ngày cập nhật</div>
                 <div className="col-span-1 text-[14px] text-center font-medium">Hành động</div>
               </div>
-              {result.result.result.map((item) => (
+              {result?.result?.result?.map((item) => (
                 <Fragment key={item._id}>
-                  <CustomerItem handleEditItem={handleEditItem} item={item} />
+                  <CustomerItem onDelete={handleDeleteCustomer} handleEditItem={handleEditItem} item={item} />
                 </Fragment>
               ))}
             </div>
@@ -230,17 +284,18 @@ export default function ManageCustomers() {
                   <button onClick={handleExitsEditItem} className="absolute right-2 top-1">
                     <X color="gray" size={22} />
                   </button>
-                  <div className="p-4 bg-white rounded-md">
+                  <form onSubmit={handleSubmitUpdate} className="p-4 bg-white rounded-md">
                     <h3 className="text-[15px] font-medium">Thông tin khách hàng</h3>
                     <div className="mt-4 flex items-center gap-4">
                       <Input
                         name="email"
                         register={register}
                         placeholder="Nhập họ tên"
-                        messageErrorInput={errors.name?.message}
+                        messageErrorInput={errors.email?.message}
                         classNameInput="mt-1 p-2 w-full border border-[#dedede] bg-[#f2f2f2] focus:border-blue-500 focus:ring-2 outline-none rounded-md"
                         className="relative flex-1"
                         nameInput="Email"
+                        disabled
                       />
                     </div>
                     <div className="mt-2 flex items-center gap-4">
@@ -249,16 +304,16 @@ export default function ManageCustomers() {
                         register={register}
                         placeholder="Nhập họ tên"
                         messageErrorInput={errors.name?.message}
-                        classNameInput="mt-1 p-2 w-full border border-[#dedede] bg-[#f2f2f2] focus:border-blue-500 focus:ring-2 outline-none rounded-md"
+                        classNameInput="mt-1 p-2 w-full border border-[#dedede] bg-white focus:border-blue-500 focus:ring-2 outline-none rounded-md"
                         className="relative flex-1"
                         nameInput="Họ tên"
                       />
                       <Input
-                        name="phone"
+                        name="numberPhone"
                         register={register}
                         placeholder="Nhập số điện thoại"
-                        messageErrorInput={errors.name?.message}
-                        classNameInput="mt-1 p-2 w-full border border-[#dedede] bg-[#f2f2f2] focus:border-blue-500 focus:ring-2 outline-none rounded-md"
+                        messageErrorInput={errors.numberPhone?.message}
+                        classNameInput="mt-1 p-2 w-full border border-[#dedede] bg-white focus:border-blue-500 focus:ring-2 outline-none rounded-md"
                         className="relative flex-1"
                         nameInput="Số điện thoại"
                       />
@@ -268,27 +323,32 @@ export default function ManageCustomers() {
                         name="verify"
                         register={register}
                         placeholder="Nhập họ tên"
-                        messageErrorInput={errors.name?.message}
+                        messageErrorInput={errors.verify?.message}
                         classNameInput="mt-1 p-2 w-full border border-[#dedede] bg-[#f2f2f2] focus:border-blue-500 focus:ring-2 outline-none rounded-md"
                         className="relative flex-1"
                         nameInput="Trạng thái"
-                      />
-                      <Input
-                        name="verify"
-                        register={register}
-                        placeholder="Nhập số điện thoại"
-                        messageErrorInput={errors.name?.message}
-                        classNameInput="mt-1 p-2 w-full border border-[#dedede] bg-[#f2f2f2] focus:border-blue-500 focus:ring-2 outline-none rounded-md"
-                        className="relative flex-1"
-                        nameInput="Số điện thoại"
+                        disabled
+                        value={watch("verify") === 1 ? "Verified" : watch("verify") === 0 ? "Unverified" : "Banned"}
                       />
                     </div>
-                    <div>
+                    <div className="text-center">
                       <div className="mb-2">Avatar</div>
-                      <img src={previewImage || avatarWatch} className="h-28 w-28 rounded-full" alt="avatar default" />
+                      <img
+                        src={previewImage || avatarWatch}
+                        className="h-28 w-28 rounded-full mx-auto"
+                        alt="avatar default"
+                      />
                       <InputFileImage onChange={handleChangeImage} />
                     </div>
-                  </div>
+
+                    <div className="flex items-center justify-end">
+                      <Button
+                        type="submit"
+                        nameButton="Cập nhật"
+                        classNameButton="w-[120px] p-4 py-2 bg-blue-500 mt-2 w-full text-white font-semibold rounded-sm hover:bg-blue-500/80 duration-200"
+                      />
+                    </div>
+                  </form>
                 </div>
               </Fragment>
             ) : (

@@ -12,7 +12,7 @@ interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   nameInput: string
   name: string
   messageErrorInput?: string
-  register: UseFormRegister<any>
+  register?: UseFormRegister<any>
 }
 
 export default function Input({

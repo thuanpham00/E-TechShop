@@ -24,6 +24,6 @@ export type CategoryItemType = {
 
 export type UpdateBodyReq = {
   name?: string
-  date_of_birth?: string
+  date_of_birth?: Date
   numberPhone?: string
 }

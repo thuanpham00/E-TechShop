@@ -1,9 +1,28 @@
 import { ClipboardCheck, Copy, Pencil, Trash2 } from "lucide-react"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger
+} from "src/Components/ui/alert-dialog"
 import { convertDateTime } from "src/Helpers/common"
 import useCopyText from "src/Hook/useCopyText"
 import { User } from "src/Types/user.type"
 
-export default function CustomerItem({ item, handleEditItem }: { item: User; handleEditItem: (id: string) => void }) {
+export default function CustomerItem({
+  item,
+  handleEditItem,
+  onDelete
+}: {
+  item: User
+  handleEditItem: (id: string) => void
+  onDelete: (id: string) => void
+}) {
   const { copiedId, handleCopyText } = useCopyText()
 
   const handleEditCustomerItem = (id: string) => {
@@ -44,7 +63,25 @@ export default function CustomerItem({ item, handleEditItem }: { item: User; han
         <button onClick={() => handleEditCustomerItem(item._id)}>
           <Pencil color="orange" size={18} />
         </button>
-        <Trash2 color="red" size={18} />
+        <AlertDialog>
+          <AlertDialogTrigger>
+            <Trash2 color="red" size={18} />
+          </AlertDialogTrigger>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Bạn có chắc chắn muốn xóa?</AlertDialogTitle>
+              <AlertDialogDescription>
+                Không thể hoàn tác hành động này. Thao tác này sẽ xóa vĩnh viễn dữ liệu của bạn.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Hủy</AlertDialogCancel>
+              <AlertDialogAction onClick={() => onDelete(item._id)} className="bg-red-500">
+                Xóa
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </div>
     </div>
   )
