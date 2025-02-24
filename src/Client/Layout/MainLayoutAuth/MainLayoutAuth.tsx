@@ -16,18 +16,11 @@ function MainLayoutAuthInner() {
   }, [])
 
   return (
-    <div className="w-screen h-screen relative">
-      <div
-        className="absolute inset-0"
-        style={{
-          backgroundImage: `url('${bannerImg[indexBanner]}')`,
-          backgroundSize: "cover", // Để ảnh phủ kín
-          backgroundPosition: "center", // Căn giữa ảnh
-          backgroundRepeat: "no-repeat", // Không lặp lại
-          filter: "brightness(50%)" // Giảm độ sáng 50%
-        }}
-      ></div>
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+    <div className="flex items-center bg-white">
+      <div className="w-[70%]">
+        <img className="w-full object-cover h-screen" src={`${bannerImg[indexBanner]}`} alt="banner" />
+      </div>
+      <div className="w-[30%]">
         <Outlet />
       </div>
     </div>

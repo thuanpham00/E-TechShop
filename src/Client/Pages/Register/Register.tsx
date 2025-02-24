@@ -79,7 +79,7 @@ export default function Register() {
         <meta name="description" content="Đây là trang đăng ký người dùng của hệ thống" />
       </Helmet>
 
-      <div className="bg-white rounded-sm p-6 w-[400px] shadow-md">
+      <div className="p-6">
         <Link to={path.Home}>
           <img src={logo} alt="logo" className="mx-auto w-[50%] object-contain" />
         </Link>

@@ -12,11 +12,11 @@ export default function InputFileImage({ onChange }: { onChange?: (file?: File) 
   const onFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const fileFormLocal = event.target.files?.[0]
     if (fileFormLocal && (fileFormLocal?.size >= config.maxSizeUploadImage || !fileFormLocal?.type.includes("image"))) {
-      toast.error("file vượt quá kích thước và không đúng định dạng ", {
+      toast.error("File vượt quá kích thước và không đúng định dạng ", {
         autoClose: 1500
       })
     } else {
-      toast.success("file upload thành công", {
+      toast.success("File upload thành công", {
         autoClose: 1500
       })
     }

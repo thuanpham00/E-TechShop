@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { yupResolver } from "@hookform/resolvers/yup"
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import { FolderUp, Plus, Search, X } from "lucide-react"
+import { Filter, FolderUp, Plus, Search, X } from "lucide-react"
 import { Helmet } from "react-helmet-async"
 import { Controller, useForm } from "react-hook-form"
 import { adminAPI } from "src/Apis/admin.api"
@@ -26,20 +26,30 @@ import { MediaAPI } from "src/Apis/media.api"
 import DateSelect from "../../../Components/DateSelect"
 import { isError422 } from "src/Helpers/utils"
 import { createSearchParams, useNavigate } from "react-router-dom"
+import omitBy from "lodash/omitBy"
+import isUndefined from "lodash/isUndefined"
+import { omit } from "lodash"
 
-type FormData = Pick<SchemaAuthType, "email" | "name" | "numberPhone" | "avatar" | "date_of_birth" | "verify">
-const formData = schemaAuth.pick(["email", "name", "numberPhone", "avatar", "date_of_birth", "verify"])
+type FormDataUpdate = Pick<SchemaAuthType, "email" | "name" | "numberPhone" | "avatar" | "date_of_birth" | "verify">
+const formDataUpdate = schemaAuth.pick(["email", "name", "numberPhone", "avatar", "date_of_birth", "verify"])
 
 type FormDataSearch = Pick<SchemaAuthType, "email" | "name" | "numberPhone">
 
 export default function ManageCustomers() {
+  const navigate = useNavigate()
   const queryClient = useQueryClient()
   // Phân trang
   const queryParams: queryParamConfigCustomer = useQueryParams()
-  const queryConfig: queryParamConfigCustomer = {
-    page: queryParams.page || "1", // mặc định page = 1
-    limit: queryParams.limit || "5" // mặc định limit = 5
-  }
+  const queryConfig: queryParamConfigCustomer = omitBy(
+    {
+      page: queryParams.page || "1", // mặc định page = 1
+      limit: queryParams.limit || "5", // mặc định limit = 5
+      email: queryParams.email,
+      name: queryParams.name,
+      phone: queryParams.phone
+    },
+    isUndefined
+  )
 
   const { data, isFetching, isLoading } = useQuery({
     queryKey: ["listCustomer", queryConfig],
@@ -65,9 +75,14 @@ export default function ManageCustomers() {
   const page_size = Math.ceil(Number(result?.result.total) / Number(result?.result.limit))
 
   const [idCustomer, setIdCustomer] = useState<string | null>(null)
+
   const handleEditItem = useCallback((id: string) => {
     setIdCustomer(id)
   }, [])
+
+  const handleExitsEditItem = () => {
+    setIdCustomer(null)
+  }
 
   const getInfoCustomer = useQuery({
     queryKey: ["customer", idCustomer],
@@ -83,10 +98,6 @@ export default function ManageCustomers() {
   // lần 1 là component lần đầu mount (chạy console lần 1 + useQuery)
   // lần 2 là sau khi useQuery trả data về và re-render trang + chạy console lần 2
 
-  const handleExitsEditItem = () => {
-    setIdCustomer(null)
-  }
-
   const {
     register,
     formState: { errors },
@@ -95,8 +106,8 @@ export default function ManageCustomers() {
     control,
     handleSubmit,
     setError
-  } = useForm<FormData>({
-    resolver: yupResolver(formData),
+  } = useForm<FormDataUpdate>({
+    resolver: yupResolver(formDataUpdate),
     defaultValues: {
       email: "",
       name: "",
@@ -182,7 +193,7 @@ export default function ManageCustomers() {
             queryClient.invalidateQueries({ queryKey: ["listCustomer", queryConfig] })
           },
           onError: (error) => {
-            if (isError422<ErrorResponse<FormData>>(error)) {
+            if (isError422<ErrorResponse<FormDataUpdate>>(error)) {
               const formError = error.response?.data.errors
               if (formError?.name) {
                 setError("name", {
@@ -221,32 +232,42 @@ export default function ManageCustomers() {
   const {
     register: registerFormSearch,
     handleSubmit: handleSubmitFormSearch,
-    formState: { errors: formErrors }
+    formState: { errors: formErrors },
+    reset: resetFormSearch
   } = useForm<FormDataSearch>()
 
-  const navigate = useNavigate()
   const handleSubmitSearch = handleSubmitFormSearch((data) => {
     let bodySendSubmit = { ...queryConfig }
     if (data.email) {
       bodySendSubmit = {
+        ...queryConfig,
         email: data.email
-      }
-    }
-    if (data.numberPhone) {
-      bodySendSubmit = {
-        phone: data.numberPhone
       }
     }
     if (data.name) {
       bodySendSubmit = {
+        ...queryConfig,
         name: data.name
       }
     }
+    if (data.numberPhone) {
+      bodySendSubmit = {
+        ...queryConfig,
+        phone: data.numberPhone
+      }
+    }
+    console.log(bodySendSubmit)
     navigate({
       pathname: path.AdminCustomers,
       search: createSearchParams(bodySendSubmit).toString()
     })
   })
+
+  const handleResetFormSearch = () => {
+    const filteredSearch = omit(queryConfig, ["email", "name", "phone"])
+    resetFormSearch()
+    navigate({ pathname: path.AdminCustomers, search: createSearchParams(filteredSearch).toString() })
+  }
 
   return (
     <div>
@@ -297,6 +318,7 @@ export default function ManageCustomers() {
               classNameButton="p-2 bg-blue-500 w-full text-white font-medium rounded-md hover:bg-blue-500/80 duration-200 text-[13px] flex items-center gap-1"
             />
             <Button
+              onClick={handleResetFormSearch}
               type="button"
               icon={<X size={15} />}
               nameButton="Xóa"
@@ -310,6 +332,11 @@ export default function ManageCustomers() {
           <h2 className="text-[15px] font-medium">Danh mục thể loại sản phẩm</h2>
           <div className="flex items-center gap-2">
             <Button
+              icon={<Filter size={15} />}
+              nameButton="Bộ lọc"
+              classNameButton="p-2 bg-blue-500 w-full text-white font-medium rounded-md hover:bg-blue-500/80 duration-200 text-[13px] flex items-center gap-1"
+            />
+            <Button
               icon={<FolderUp size={15} />}
               nameButton="Export"
               classNameButton="p-2 bg-blue-500 w-full text-white font-medium rounded-md hover:bg-blue-500/80 duration-200 text-[13px] flex items-center gap-1"
@@ -322,7 +349,7 @@ export default function ManageCustomers() {
           </div>
         </div>
         {isLoading && <Skeleton />}
-        {!isFetching ? (
+        {!isFetching && result.result.result.length > 0 ? (
           <div>
             <div>
               <div className="bg-[#f2f2f2] grid grid-cols-12 items-center gap-2 py-3 border border-[#dedede] px-4">
@@ -443,7 +470,7 @@ export default function ManageCustomers() {
             )}
           </div>
         ) : (
-          ""
+          <div className="text-center mt-4">Không tìm thấy kết quả</div>
         )}
       </div>
     </div>

@@ -30,7 +30,7 @@ class http {
           // config > headers > Authorization
           return config
         }
-        return config
+        return config // nếu ko có AT thì không cần gửi lên server (tùy api)
       },
       (error) => {
         return Promise.reject(error)
