@@ -1,8 +1,9 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { yupResolver } from "@hookform/resolvers/yup"
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { FolderUp, Plus, Search, X } from "lucide-react"
 import { Helmet } from "react-helmet-async"
-import { useForm } from "react-hook-form"
+import { Controller, useForm } from "react-hook-form"
 import { adminAPI } from "src/Apis/admin.api"
 import { schemaAuth, SchemaAuthType } from "src/Client/Utils/rule"
 import Button from "src/Components/Button"
@@ -11,27 +12,31 @@ import Pagination from "src/Components/Pagination"
 import Skeleton from "src/Components/Skeleton"
 import { path } from "src/Constants/path"
 import useQueryParams from "src/Hook/useQueryParams"
-import { queryParamConfig } from "src/Types/queryParams.type"
+import { queryParamConfig, queryParamConfigCustomer } from "src/Types/queryParams.type"
 import { User } from "src/Types/user.type"
-import { SuccessResponse } from "src/Types/utils.type"
+import { ErrorResponse, SuccessResponse } from "src/Types/utils.type"
 import { Fragment } from "react/jsx-runtime"
 import { useCallback, useEffect, useMemo, useState } from "react"
 import CustomerItem from "./Components/CustomerItem"
 import avatarDefault from "src/Assets/img/avatarDefault.png"
 import InputFileImage from "src/Components/InputFileImage"
 import { UpdateBodyReq } from "src/Types/product.type"
-
 import { toast } from "react-toastify"
 import { MediaAPI } from "src/Apis/media.api"
+import DateSelect from "../../../Components/DateSelect"
+import { isError422 } from "src/Helpers/utils"
+import { createSearchParams, useNavigate } from "react-router-dom"
 
 type FormData = Pick<SchemaAuthType, "email" | "name" | "numberPhone" | "avatar" | "date_of_birth" | "verify">
 const formData = schemaAuth.pick(["email", "name", "numberPhone", "avatar", "date_of_birth", "verify"])
 
+type FormDataSearch = Pick<SchemaAuthType, "email" | "name" | "numberPhone">
+
 export default function ManageCustomers() {
   const queryClient = useQueryClient()
   // Phân trang
-  const queryParams: queryParamConfig = useQueryParams()
-  const queryConfig: queryParamConfig = {
+  const queryParams: queryParamConfigCustomer = useQueryParams()
+  const queryConfig: queryParamConfigCustomer = {
     page: queryParams.page || "1", // mặc định page = 1
     limit: queryParams.limit || "5" // mặc định limit = 5
   }
@@ -69,8 +74,6 @@ export default function ManageCustomers() {
     queryFn: () => {
       return adminAPI.getCustomer(idCustomer as string)
     },
-    placeholderData: keepPreviousData,
-    staleTime: 5 * 60 * 1000, // dưới 5 phút nó không gọi lại api
     enabled: Boolean(idCustomer) // chỉ chạy khi idCustomer có giá trị
   })
   const infoUser = getInfoCustomer.data?.data as SuccessResponse<{ result: User }>
@@ -89,7 +92,9 @@ export default function ManageCustomers() {
     formState: { errors },
     setValue,
     watch,
-    handleSubmit
+    control,
+    handleSubmit,
+    setError
   } = useForm<FormData>({
     resolver: yupResolver(formData),
     defaultValues: {
@@ -114,6 +119,7 @@ export default function ManageCustomers() {
       setValue("email", profile.email)
       setValue("numberPhone", profile.numberPhone)
       setValue("verify", profile.verify)
+      setValue("date_of_birth", new Date(profile.date_of_birth))
     }
   }, [profile, setValue])
 
@@ -128,6 +134,7 @@ export default function ManageCustomers() {
   }
 
   const avatarWatch = watch("avatar")
+  const date_of_birth = watch("date_of_birth")
 
   const updateProfileMutation = useMutation({
     mutationFn: (body: { body: UpdateBodyReq; id: string }) => {
@@ -144,23 +151,53 @@ export default function ManageCustomers() {
   const handleSubmitUpdate = handleSubmit(async (data) => {
     try {
       let avatarName = avatarWatch
-      const avatar = await updateImageProfileMutation.mutateAsync({ file: file as File, userId: idCustomer as string })
-      avatarName = avatar.data.result.url
-      const body = {
-        ...data,
-        avatar: avatarName
+      if (file) {
+        const avatar = await updateImageProfileMutation.mutateAsync({
+          file: file as File,
+          userId: idCustomer as string
+        })
+        avatarName = avatar.data.result.url
       }
+
+      // Chuẩn bị dữ liệu cập nhật
+      const updatedData: UpdateBodyReq = {
+        avatar: avatarName as string,
+        name: data.name,
+        date_of_birth: data.date_of_birth
+      }
+
+      // Gửi request cập nhật
       updateProfileMutation.mutate(
-        { body: body, id: idCustomer as string },
+        {
+          body: {
+            ...updatedData,
+            numberPhone: data.numberPhone !== undefined ? data.numberPhone : undefined
+          },
+          id: idCustomer as string
+        },
         {
           onSuccess: () => {
             toast.success("Cập nhật thành công!", { autoClose: 1500 })
             setIdCustomer(null)
             queryClient.invalidateQueries({ queryKey: ["listCustomer", queryConfig] })
+          },
+          onError: (error) => {
+            if (isError422<ErrorResponse<FormData>>(error)) {
+              const formError = error.response?.data.errors
+              if (formError?.name) {
+                setError("name", {
+                  message: (formError.name as any).msg
+                })
+              }
+              if (formError?.numberPhone) {
+                setError("numberPhone", {
+                  message: (formError.numberPhone as any).msg
+                })
+              }
+            }
           }
         }
       )
-      window.location.reload()
     } catch (error) {
       console.log("Lỗi submit: ", error)
     }
@@ -181,6 +218,36 @@ export default function ManageCustomers() {
     })
   }
 
+  const {
+    register: registerFormSearch,
+    handleSubmit: handleSubmitFormSearch,
+    formState: { errors: formErrors }
+  } = useForm<FormDataSearch>()
+
+  const navigate = useNavigate()
+  const handleSubmitSearch = handleSubmitFormSearch((data) => {
+    let bodySendSubmit = { ...queryConfig }
+    if (data.email) {
+      bodySendSubmit = {
+        email: data.email
+      }
+    }
+    if (data.numberPhone) {
+      bodySendSubmit = {
+        phone: data.numberPhone
+      }
+    }
+    if (data.name) {
+      bodySendSubmit = {
+        name: data.name
+      }
+    }
+    navigate({
+      pathname: path.AdminCustomers,
+      search: createSearchParams(bodySendSubmit).toString()
+    })
+  })
+
   return (
     <div>
       <Helmet>
@@ -192,31 +259,31 @@ export default function ManageCustomers() {
       </Helmet>
       <div className="p-4 bg-white mb-3 border border-[#dedede] rounded-md">
         <h1 className="text-[15px] font-medium">Tìm kiếm</h1>
-        <form className="mt-1">
+        <form onSubmit={handleSubmitSearch} className="mt-1">
           <div className="flex items-center gap-4">
             <Input
-              name="email1"
-              // register={register}
+              name="email"
+              register={registerFormSearch}
               placeholder="Nhập email"
-              messageErrorInput={errors.email?.message}
+              messageErrorInput={formErrors.email?.message}
               classNameInput="mt-1 p-2 w-full border border-[#dedede] bg-[#f2f2f2] focus:border-blue-500 focus:ring-2 outline-none rounded-md"
               className="relative flex-1"
               nameInput="Email"
             />
             <Input
-              name="name1"
-              // register={register}
+              name="name"
+              register={registerFormSearch}
               placeholder="Nhập họ tên"
-              messageErrorInput={errors.name?.message}
+              messageErrorInput={formErrors.name?.message}
               classNameInput="mt-1 p-2 w-full border border-[#dedede] bg-[#f2f2f2] focus:border-blue-500 focus:ring-2 outline-none rounded-md"
               className="relative flex-1"
               nameInput="Họ tên"
             />
             <Input
-              name="phone2"
-              // register={register}
+              name="numberPhone"
+              register={registerFormSearch}
               placeholder="Nhập số điện thoại"
-              messageErrorInput={errors.name?.message}
+              messageErrorInput={formErrors.numberPhone?.message}
               classNameInput="mt-1 p-2 w-full border border-[#dedede] bg-[#f2f2f2] focus:border-blue-500 focus:ring-2 outline-none rounded-md"
               className="relative flex-1"
               nameInput="Số điện thoại"
@@ -224,11 +291,13 @@ export default function ManageCustomers() {
           </div>
           <div className="flex items-center justify-end gap-2">
             <Button
+              type="submit"
               icon={<Search size={15} />}
               nameButton="Tìm kiếm"
               classNameButton="p-2 bg-blue-500 w-full text-white font-medium rounded-md hover:bg-blue-500/80 duration-200 text-[13px] flex items-center gap-1"
             />
             <Button
+              type="button"
               icon={<X size={15} />}
               nameButton="Xóa"
               classNameButton="p-2 bg-white border border-[#dedede] w-full text-black font-medium rounded-md hover:bg-[#dedede]/80 duration-200 text-[13px] flex items-center gap-1"
@@ -237,7 +306,7 @@ export default function ManageCustomers() {
         </form>
       </div>
       <div>
-        <div className="bg-white border border-b-0 border-[#dedede] p-4 pb-2 flex items-center justify-between rounded-tl-md rounded-tr-md">
+        <div className="bg-white border border-b-0 border-[#dedede] p-4 flex items-center justify-between rounded-tl-md rounded-tr-md">
           <h2 className="text-[15px] font-medium">Danh mục thể loại sản phẩm</h2>
           <div className="flex items-center gap-2">
             <Button
@@ -265,11 +334,13 @@ export default function ManageCustomers() {
                 <div className="col-span-2 text-[14px] font-medium">Ngày cập nhật</div>
                 <div className="col-span-1 text-[14px] text-center font-medium">Hành động</div>
               </div>
-              {result?.result?.result?.map((item) => (
-                <Fragment key={item._id}>
-                  <CustomerItem onDelete={handleDeleteCustomer} handleEditItem={handleEditItem} item={item} />
-                </Fragment>
-              ))}
+              <div>
+                {result?.result?.result?.map((item) => (
+                  <Fragment key={item._id}>
+                    <CustomerItem onDelete={handleDeleteCustomer} handleEditItem={handleEditItem} item={item} />
+                  </Fragment>
+                ))}
+              </div>
             </div>
             <Pagination
               data={result}
@@ -328,7 +399,23 @@ export default function ManageCustomers() {
                         className="relative flex-1"
                         nameInput="Trạng thái"
                         disabled
-                        value={watch("verify") === 1 ? "Verified" : watch("verify") === 0 ? "Unverified" : "Banned"}
+                        value={profile?.verify === 1 ? "Verified" : "Unverified"}
+                      />
+
+                      {/* dùng <Controller/> khi và chỉ khi component không hỗ trợ register (register giúp theo dõi giá trị trong form) */}
+                      <Controller
+                        name="date_of_birth"
+                        control={control}
+                        render={({ field }) => {
+                          // console.log("field value: ", field.value)
+                          return (
+                            <DateSelect
+                              value={date_of_birth}
+                              onChange={field.onChange}
+                              errorMessage={errors.date_of_birth?.message}
+                            />
+                          )
+                        }}
                       />
                     </div>
                     <div className="text-center">

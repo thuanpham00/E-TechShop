@@ -14,8 +14,8 @@ import { toast } from "react-toastify"
 import { isError422 } from "src/Helpers/utils"
 import { ErrorResponse } from "src/Types/utils.type"
 
-type FormData = Pick<SchemaAuthType, "email" | "password" | "confirm_password" | "name">
-const formData = schemaAuth.pick(["email", "password", "confirm_password", "name"])
+type FormData = Pick<SchemaAuthType, "email" | "password" | "confirm_password" | "name" | "phone">
+const formData = schemaAuth.pick(["email", "password", "confirm_password", "name", "phone"])
 
 export default function Register() {
   const navigate = useNavigate()
@@ -52,9 +52,14 @@ export default function Register() {
               message: (formError.name as any).msg
             })
           }
-          if (formError?.password) {
-            setError("password", {
-              message: (formError.password as any).msg
+          if (formError?.confirm_password) {
+            setError("confirm_password", {
+              message: (formError.confirm_password as any).msg
+            })
+          }
+          if (formError?.phone) {
+            setError("phone", {
+              message: (formError.phone as any).msg
             })
           }
           if (formError?.confirm_password) {
@@ -93,6 +98,13 @@ export default function Register() {
             placeholder="Nhập email"
             messageErrorInput={errors.email?.message}
             nameInput="Email"
+          />
+          <Input
+            name="phone"
+            register={register}
+            placeholder="Nhập số điện thoại"
+            messageErrorInput={errors.phone?.message}
+            nameInput="Số điện thoại"
           />
           <Input
             name="password"

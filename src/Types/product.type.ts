@@ -26,4 +26,5 @@ export type UpdateBodyReq = {
   name?: string
   date_of_birth?: Date
   numberPhone?: string
+  avatar?: string
 }

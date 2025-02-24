@@ -48,13 +48,9 @@ export default function CustomerItem({
           <div className=" text-[13px] font-medium py-1 px-2 border border-[#38b000] bg-[#38b000]/20 text-[#38b000] text-center rounded-full flex gap-1 justify-center items-center">
             Verified
           </div>
-        ) : item.verify === 0 ? (
-          <div className="text-[13px] font-medium py-1 px-2 border border-[#df0019] bg-[#df0019]/20 text-[#df0019] text-center rounded-full flex gap-1 justify-center items-center">
-            Unverified
-          </div>
         ) : (
           <div className="text-[13px] font-medium py-1 px-2 border border-[#df0019] bg-[#df0019]/20 text-[#df0019] text-center rounded-full flex gap-1 justify-center items-center">
-            Banned
+            Unverified
           </div>
         )}
       </div>
@@ -76,7 +72,7 @@ export default function CustomerItem({
             </AlertDialogHeader>
             <AlertDialogFooter>
               <AlertDialogCancel>Hủy</AlertDialogCancel>
-              <AlertDialogAction onClick={() => onDelete(item._id)} className="bg-red-500">
+              <AlertDialogAction onClick={() => onDelete(item._id)} className="bg-red-500 hover:bg-red-600">
                 Xóa
               </AlertDialogAction>
             </AlertDialogFooter>

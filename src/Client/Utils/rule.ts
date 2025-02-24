@@ -15,8 +15,12 @@ export const schemaAuth = yup
       .min(6, "Độ dài 6-50 kí tự!")
       .max(50, "Độ dài 6-50 kí tự!")
       .oneOf([yup.ref("password")], "Nhập lại mật khẩu không khớp!"),
-    name: yup.string().required("Tên bắt buộc!"),
-    numberPhone: yup.string().min(10, "Độ dài 10-11 kí tự!").max(11, "Độ dài 10-11 kí tự!"),
+    name: yup
+      .string()
+      .required("Tên bắt buộc!")
+      .matches(/^[^\d]+$/, "Tên không được chứa số!"),
+    phone: yup.string().required("Số điện thoại bắt buộc!"),
+    numberPhone: yup.string(),
     avatar: yup.string().max(1000, "Độ dài tối đa 1000 kí tự"),
     date_of_birth: yup.date().max(new Date(), "Hãy chọn một ngày trong quá khứ"),
     verify: yup.number()
