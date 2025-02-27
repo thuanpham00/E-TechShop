@@ -23,7 +23,11 @@ export const schemaAuth = yup
     numberPhone: yup.string(),
     avatar: yup.string().max(1000, "Độ dài tối đa 1000 kí tự"),
     date_of_birth: yup.date().max(new Date(), "Hãy chọn một ngày trong quá khứ"),
-    verify: yup.number()
+    verify: yup.number(),
+
+    id: yup.string(),
+    created_at: yup.string(),
+    updated_at: yup.string()
   })
   .required()
 

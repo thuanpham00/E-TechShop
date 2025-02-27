@@ -7,6 +7,7 @@ import { isAxiosExpiredTokenError, isError401, isError404 } from "./utils"
 import { toast } from "react-toastify"
 
 class http {
+  // khai báo các thuộc tính của class
   instance: AxiosInstance
   public accessToken: string
   private refreshTokenRequest: Promise<string> | null

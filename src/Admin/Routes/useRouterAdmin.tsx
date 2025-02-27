@@ -4,6 +4,7 @@ import MainLayoutAdmin from "../Layouts/MainLayoutAdmin"
 import { path } from "src/Constants/path"
 import { AppContext } from "src/Context/authContext"
 import MainLayoutAuth from "src/Client/Layout/MainLayoutAuth"
+import CategoryDetail from "../Pages/CategoryDetail"
 // import ManageProducts from "../Pages/ManageProducts"
 // import ManageOrders from "../Pages/ManageOrders"
 // import ManageReceipt from "../Pages/ManageReceipts"
@@ -88,6 +89,14 @@ export default function useRouterAdmin() {
               element: (
                 <Suspense>
                   <ManageCategories />
+                </Suspense>
+              )
+            },
+            {
+              path: path.AdminCategoryDetail,
+              element: (
+                <Suspense>
+                  <CategoryDetail />
                 </Suspense>
               )
             },

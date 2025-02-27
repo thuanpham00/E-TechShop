@@ -1,4 +1,4 @@
-import { User } from "./user.type"
+import { UserType } from "./user.type"
 
 export type SuccessResponse<Data> = {
   message: string
@@ -16,5 +16,5 @@ export type MessageResponse = {
 
 export type AuthResponse = SuccessResponse<{
   accessToken: string
-  userInfo: User
+  userInfo: UserType
 }>

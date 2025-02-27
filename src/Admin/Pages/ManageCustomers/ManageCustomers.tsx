@@ -13,7 +13,7 @@ import Skeleton from "src/Components/Skeleton"
 import { path } from "src/Constants/path"
 import useQueryParams from "src/Hook/useQueryParams"
 import { queryParamConfig, queryParamConfigCustomer } from "src/Types/queryParams.type"
-import { User } from "src/Types/user.type"
+import { UserType } from "src/Types/user.type"
 import { ErrorResponse, SuccessResponse } from "src/Types/utils.type"
 import { Fragment } from "react/jsx-runtime"
 import { useCallback, useEffect, useMemo, useState } from "react"
@@ -29,9 +29,23 @@ import { createSearchParams, useNavigate } from "react-router-dom"
 import omitBy from "lodash/omitBy"
 import isUndefined from "lodash/isUndefined"
 import { omit } from "lodash"
+import { convertDateTime } from "src/Helpers/common"
 
-type FormDataUpdate = Pick<SchemaAuthType, "email" | "name" | "numberPhone" | "avatar" | "date_of_birth" | "verify">
-const formDataUpdate = schemaAuth.pick(["email", "name", "numberPhone", "avatar", "date_of_birth", "verify"])
+type FormDataUpdate = Pick<
+  SchemaAuthType,
+  "id" | "email" | "name" | "numberPhone" | "avatar" | "date_of_birth" | "verify" | "created_at" | "updated_at"
+>
+const formDataUpdate = schemaAuth.pick([
+  "id",
+  "email",
+  "name",
+  "numberPhone",
+  "avatar",
+  "date_of_birth",
+  "verify",
+  "created_at",
+  "updated_at"
+])
 
 type FormDataSearch = Pick<SchemaAuthType, "email" | "name" | "numberPhone">
 
@@ -66,7 +80,7 @@ export default function ManageCustomers() {
   })
 
   const result = data?.data as SuccessResponse<{
-    result: User[]
+    result: UserType[]
     total: string
     page: string
     limit: string
@@ -87,11 +101,11 @@ export default function ManageCustomers() {
   const getInfoCustomer = useQuery({
     queryKey: ["customer", idCustomer],
     queryFn: () => {
-      return adminAPI.getCustomer(idCustomer as string)
+      return adminAPI.getCustomerDetail(idCustomer as string)
     },
     enabled: Boolean(idCustomer) // chỉ chạy khi idCustomer có giá trị
   })
-  const infoUser = getInfoCustomer.data?.data as SuccessResponse<{ result: User }>
+  const infoUser = getInfoCustomer.data?.data as SuccessResponse<{ result: UserType }>
   const profile = infoUser?.result?.result
   // console.log(idCustomer)
   // vì sao nó render 2 lần
@@ -126,11 +140,14 @@ export default function ManageCustomers() {
       } else {
         setValue("avatar", profile.avatar)
       }
+      setValue("id", profile._id)
       setValue("name", profile.name)
       setValue("email", profile.email)
       setValue("numberPhone", profile.numberPhone)
       setValue("verify", profile.verify)
       setValue("date_of_birth", new Date(profile.date_of_birth))
+      setValue("created_at", convertDateTime(profile.created_at))
+      setValue("updated_at", convertDateTime(profile.updated_at))
     }
   }, [profile, setValue])
 
@@ -256,7 +273,6 @@ export default function ManageCustomers() {
         phone: data.numberPhone
       }
     }
-    console.log(bodySendSubmit)
     navigate({
       pathname: path.AdminCustomers,
       search: createSearchParams(bodySendSubmit).toString()
@@ -386,6 +402,16 @@ export default function ManageCustomers() {
                     <h3 className="text-[15px] font-medium">Thông tin khách hàng</h3>
                     <div className="mt-4 flex items-center gap-4">
                       <Input
+                        name="id"
+                        register={register}
+                        placeholder="Nhập họ tên"
+                        messageErrorInput={errors.id?.message}
+                        classNameInput="mt-1 p-2 w-full border border-[#dedede] bg-[#f2f2f2] focus:border-blue-500 focus:ring-2 outline-none rounded-md"
+                        className="relative flex-1"
+                        nameInput="Id"
+                        disabled
+                      />
+                      <Input
                         name="email"
                         register={register}
                         placeholder="Nhập họ tên"
@@ -395,8 +421,6 @@ export default function ManageCustomers() {
                         nameInput="Email"
                         disabled
                       />
-                    </div>
-                    <div className="mt-2 flex items-center gap-4">
                       <Input
                         name="name"
                         register={register}
@@ -405,15 +429,6 @@ export default function ManageCustomers() {
                         classNameInput="mt-1 p-2 w-full border border-[#dedede] bg-white focus:border-blue-500 focus:ring-2 outline-none rounded-md"
                         className="relative flex-1"
                         nameInput="Họ tên"
-                      />
-                      <Input
-                        name="numberPhone"
-                        register={register}
-                        placeholder="Nhập số điện thoại"
-                        messageErrorInput={errors.numberPhone?.message}
-                        classNameInput="mt-1 p-2 w-full border border-[#dedede] bg-white focus:border-blue-500 focus:ring-2 outline-none rounded-md"
-                        className="relative flex-1"
-                        nameInput="Số điện thoại"
                       />
                     </div>
                     <div className="mt-2 flex items-center gap-4">
@@ -427,6 +442,16 @@ export default function ManageCustomers() {
                         nameInput="Trạng thái"
                         disabled
                         value={profile?.verify === 1 ? "Verified" : "Unverified"}
+                      />
+
+                      <Input
+                        name="numberPhone"
+                        register={register}
+                        placeholder="Nhập số điện thoại"
+                        messageErrorInput={errors.numberPhone?.message}
+                        classNameInput="mt-1 p-2 w-full border border-[#dedede] bg-white focus:border-blue-500 focus:ring-2 outline-none rounded-md"
+                        className="relative flex-1"
+                        nameInput="Số điện thoại"
                       />
 
                       {/* dùng <Controller/> khi và chỉ khi component không hỗ trợ register (register giúp theo dõi giá trị trong form) */}
@@ -445,6 +470,31 @@ export default function ManageCustomers() {
                         }}
                       />
                     </div>
+                    <div className="mt-2 flex items-center gap-4"></div>
+
+                    <div className="mt-2 flex items-center gap-4">
+                      <Input
+                        name="created_at"
+                        register={register}
+                        placeholder="Nhập ngày khởi tạo"
+                        messageErrorInput={errors.created_at?.message}
+                        classNameInput="mt-1 p-2 w-full border border-[#dedede] bg-[#f2f2f2] focus:border-blue-500 focus:ring-2 outline-none rounded-md"
+                        className="relative flex-1"
+                        nameInput="Ngày tạo"
+                        disabled
+                      />
+                      <Input
+                        name="updated_at"
+                        register={register}
+                        placeholder="Nhập ngày cập nhật"
+                        messageErrorInput={errors.updated_at?.message}
+                        classNameInput="mt-1 p-2 w-full border border-[#dedede] bg-[#f2f2f2] focus:border-blue-500 focus:ring-2 outline-none rounded-md"
+                        className="relative flex-1"
+                        nameInput="Ngày cập nhật"
+                        disabled
+                      />
+                    </div>
+
                     <div className="text-center">
                       <div className="mb-2">Avatar</div>
                       <img

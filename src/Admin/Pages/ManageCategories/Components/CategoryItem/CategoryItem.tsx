@@ -1,4 +1,6 @@
 import { ClipboardCheck, Copy, Expand, Pencil, Trash2 } from "lucide-react"
+import { Link } from "react-router-dom"
+import { path } from "src/Constants/path"
 import { convertDateTime } from "src/Helpers/common"
 import useCopyText from "src/Hook/useCopyText"
 import { CategoryItemType } from "src/Types/product.type"
@@ -31,7 +33,9 @@ export default function CategoryItem({
       <div className="col-span-2 break-words">{convertDateTime(item.created_at)}</div>
       <div className="col-span-2 break-words">{convertDateTime(item.updated_at)}</div>
       <div className="col-span-2 flex items-center justify-center gap-2">
-        <Expand color="blue" size={18} />
+        <Link to={`${path.AdminCategories}/${item._id}`}>
+          <Expand color="blue" size={18} />
+        </Link>
         <button onClick={() => handleEditCustomerItem(item._id)}>
           <Pencil color="orange" size={18} />
         </button>

@@ -8,3 +8,7 @@ export type queryParamConfigCustomer = queryParamConfig & {
   name?: string
   phone?: string
 }
+
+export type queryParamConfigCategory = queryParamConfig & {
+  name?: string
+}

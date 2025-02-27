@@ -1,5 +1,5 @@
 import Http from "src/Helpers/http"
-import { UpdateBodyReq } from "src/Types/product.type"
+import { UpdateBodyReq, UpdateCategoryBodyReq } from "src/Types/product.type"
 import { queryParamConfig } from "src/Types/queryParams.type"
 
 export const adminAPI = {
@@ -16,7 +16,7 @@ export const adminAPI = {
     })
   },
 
-  getCustomer: (id: string) => {
+  getCustomerDetail: (id: string) => {
     return Http.get(`/admin/customers/${id}`)
   },
 
@@ -33,5 +33,13 @@ export const adminAPI = {
       params,
       signal
     })
+  },
+
+  getCategoryDetail: (id: string) => {
+    return Http.get(`/admin/categories/${id}`)
+  },
+
+  updateCategoryDetail: (id: string, body: UpdateCategoryBodyReq) => {
+    return Http.patch(`/admin/categories/${id}`, body)
   }
 }

@@ -3,14 +3,15 @@ import classNames from "classnames"
 import { queryParamConfig } from "src/Types/queryParams.type"
 import { ChevronLeft, ChevronRight } from "lucide-react"
 import { SuccessResponse } from "src/Types/utils.type"
-import { User } from "src/Types/user.type"
+import { UserType } from "src/Types/user.type"
+import { CategoryItemType } from "src/Types/product.type"
 
 interface Props {
   queryConfig: queryParamConfig
   page_size: number
   pathNavigate: string
   data: SuccessResponse<{
-    result: User[]
+    result: UserType[] | CategoryItemType[]
     total: string
     page: string
     limit: string
@@ -51,7 +52,7 @@ export default function Pagination({ queryConfig, page_size, pathNavigate, scrol
       return null
     }
 
-    return Array(page_size)
+    return Array(page_size || 0)
       .fill(0)
       .map((_, index) => {
         const pageNumber = index + 1
@@ -95,8 +96,8 @@ export default function Pagination({ queryConfig, page_size, pathNavigate, scrol
     <div className="mt-4 flex gap-2 items-center justify-end">
       <div>
         {queryConfig.page !== "1" ? Number(queryConfig.limit) * (Number(queryConfig.page) - 1) + 1 : 1} -
-        {Number(data.result.limit) * (Number(data.result.page) - 1) + Number(data.result.totalOfPage)} trên{" "}
-        {data.result.total} dòng
+        {Number(data?.result?.limit) * (Number(data?.result?.page) - 1) + Number(data?.result?.totalOfPage)} trên{" "}
+        {data?.result?.total} dòng
       </div>
       <div className="flex items-center justify-center gap-2">
         {page === 1 ? (
