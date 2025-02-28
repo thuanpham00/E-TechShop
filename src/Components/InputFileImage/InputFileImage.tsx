@@ -41,7 +41,7 @@ export default function InputFileImage({ onChange }: { onChange?: (file?: File) 
         type="button"
         onClick={handleInputFile}
         nameButton="Chọn file"
-        classNameButton="w-24 p-4 py-2 bg-blue-500 mt-2 w-full text-white font-semibold rounded-sm hover:bg-blue-500/80 duration-200"
+        classNameButton="px-4 py-2 bg-blue-500 mt-2 text-white font-semibold rounded-sm hover:bg-blue-500/80 duration-200"
       />
       <span className="block mt-2">Maximum file size is 1 MB Format: .JPEG, .PNG</span>
     </div>

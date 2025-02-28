@@ -67,7 +67,7 @@ class http {
           // - token hết hạn*
 
           // nếu là lỗi accessToken hết hạn thì tạo mới accessToken
-          if (isAxiosExpiredTokenError<MessageResponse>(error) && url !== URL_RefreshToken) {
+          if (isAxiosExpiredTokenError<MessageResponse>(error, "AccessToken expired") && url !== URL_RefreshToken) {
             this.refreshTokenRequest = this.refreshTokenRequest ? this.refreshTokenRequest : this.handleRefreshToken()
 
             // nếu không return ở đây nó sẽ chạy xuống bên dưới
@@ -81,10 +81,12 @@ class http {
             })
           }
 
-          // nếu refresh-token hết hạn thì nó clearLS
-          this.accessToken = ""
-          clearLS()
-          toast.error("Phiên làm việc hết hạn", { autoClose: 1500 })
+          if (isAxiosExpiredTokenError<MessageResponse>(error, "RefreshToken expired")) {
+            // nếu refresh-token hết hạn thì nó clearLS
+            this.accessToken = ""
+            clearLS()
+            toast.error("Phiên làm việc hết hạn", { autoClose: 1500 })
+          }
         }
         return Promise.reject(error)
       }

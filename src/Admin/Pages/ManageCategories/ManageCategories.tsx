@@ -11,7 +11,7 @@ import Input from "src/Components/Input"
 import Skeleton from "src/Components/Skeleton"
 import useQueryParams from "src/Hook/useQueryParams"
 import { queryParamConfig, queryParamConfigCategory } from "src/Types/queryParams.type"
-import { SuccessResponse } from "src/Types/utils.type"
+import { ErrorResponse, MessageResponse, SuccessResponse } from "src/Types/utils.type"
 import { path } from "src/Constants/path"
 import { useCallback, useEffect, useState } from "react"
 import Pagination from "src/Components/Pagination"
@@ -20,6 +20,7 @@ import { BrandItemType, CategoryItemType, UpdateCategoryBodyReq } from "src/Type
 import { isUndefined, omitBy } from "lodash"
 import { convertDateTime } from "src/Helpers/common"
 import { toast } from "react-toastify"
+import { isError401 } from "src/Helpers/utils"
 
 type FormDataUpdate = Pick<SchemaAuthType, "name" | "id" | "created_at" | "updated_at">
 const formDataUpdate = schemaAuth.pick(["name", "id", "created_at", "updated_at"])
@@ -84,6 +85,7 @@ export default function ManageCategories() {
     register,
     formState: { errors },
     setValue,
+    setError,
     handleSubmit
   } = useForm<FormDataUpdate>({
     resolver: yupResolver(formDataUpdate),
@@ -118,6 +120,15 @@ export default function ManageCategories() {
           setIdCategory(null)
           toast.success("Cập nhật thành công", { autoClose: 1500 })
           queryClient.invalidateQueries({ queryKey: ["listCategories", queryConfig] })
+        },
+        onError: (error) => {
+          if (isError401<ErrorResponse<MessageResponse>>(error)) {
+            const msg = error.response?.data as ErrorResponse<{ message: string }>
+            const msg2 = msg.message
+            setError("name", {
+              message: msg2
+            })
+          }
         }
       }
     )
@@ -228,7 +239,7 @@ export default function ManageCategories() {
                         messageErrorInput={errors.name?.message}
                         classNameInput="mt-1 p-2 w-full border border-[#dedede] bg-white focus:border-blue-500 focus:ring-2 outline-none rounded-md"
                         className="relative flex-1"
-                        nameInput="Họ tên"
+                        nameInput="Tên thể loại"
                       />
                     </div>
                     <div className="mt-2 flex items-center gap-4">

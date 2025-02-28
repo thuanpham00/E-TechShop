@@ -400,99 +400,112 @@ export default function ManageCustomers() {
                   </button>
                   <form onSubmit={handleSubmitUpdate} className="p-4 bg-white rounded-md">
                     <h3 className="text-[15px] font-medium">Thông tin khách hàng</h3>
-                    <div className="mt-4 flex items-center gap-4">
-                      <Input
-                        name="id"
-                        register={register}
-                        placeholder="Nhập họ tên"
-                        messageErrorInput={errors.id?.message}
-                        classNameInput="mt-1 p-2 w-full border border-[#dedede] bg-[#f2f2f2] focus:border-blue-500 focus:ring-2 outline-none rounded-md"
-                        className="relative flex-1"
-                        nameInput="Id"
-                        disabled
-                      />
-                      <Input
-                        name="email"
-                        register={register}
-                        placeholder="Nhập họ tên"
-                        messageErrorInput={errors.email?.message}
-                        classNameInput="mt-1 p-2 w-full border border-[#dedede] bg-[#f2f2f2] focus:border-blue-500 focus:ring-2 outline-none rounded-md"
-                        className="relative flex-1"
-                        nameInput="Email"
-                        disabled
-                      />
-                      <Input
-                        name="name"
-                        register={register}
-                        placeholder="Nhập họ tên"
-                        messageErrorInput={errors.name?.message}
-                        classNameInput="mt-1 p-2 w-full border border-[#dedede] bg-white focus:border-blue-500 focus:ring-2 outline-none rounded-md"
-                        className="relative flex-1"
-                        nameInput="Họ tên"
-                      />
-                    </div>
-                    <div className="mt-2 flex items-center gap-4">
-                      <Input
-                        name="verify"
-                        register={register}
-                        placeholder="Nhập họ tên"
-                        messageErrorInput={errors.verify?.message}
-                        classNameInput="mt-1 p-2 w-full border border-[#dedede] bg-[#f2f2f2] focus:border-blue-500 focus:ring-2 outline-none rounded-md"
-                        className="relative flex-1"
-                        nameInput="Trạng thái"
-                        disabled
-                        value={profile?.verify === 1 ? "Verified" : "Unverified"}
-                      />
+                    <div className="mt-4 grid grid-cols-12 flex-wrap gap-4">
+                      <div className="col-span-4">
+                        <Input
+                          name="id"
+                          register={register}
+                          placeholder="Nhập họ tên"
+                          messageErrorInput={errors.id?.message}
+                          classNameInput="mt-1 p-2 w-full border border-[#dedede] bg-[#f2f2f2] focus:border-blue-500 focus:ring-2 outline-none rounded-md"
+                          className="relative flex-1"
+                          nameInput="Id"
+                          disabled
+                        />
+                      </div>
+                      <div className="col-span-4">
+                        <Input
+                          name="email"
+                          register={register}
+                          placeholder="Nhập họ tên"
+                          messageErrorInput={errors.email?.message}
+                          classNameInput="mt-1 p-2 w-full border border-[#dedede] bg-[#f2f2f2] focus:border-blue-500 focus:ring-2 outline-none rounded-md"
+                          className="relative flex-1"
+                          nameInput="Email"
+                          disabled
+                        />
+                      </div>
+                      <div className="col-span-4">
+                        <Input
+                          name="name"
+                          register={register}
+                          placeholder="Nhập họ tên"
+                          messageErrorInput={errors.name?.message}
+                          classNameInput="mt-1 p-2 w-full border border-[#dedede] bg-white focus:border-blue-500 focus:ring-2 outline-none rounded-md"
+                          className="relative flex-1"
+                          nameInput="Họ tên"
+                        />
+                      </div>
 
-                      <Input
-                        name="numberPhone"
-                        register={register}
-                        placeholder="Nhập số điện thoại"
-                        messageErrorInput={errors.numberPhone?.message}
-                        classNameInput="mt-1 p-2 w-full border border-[#dedede] bg-white focus:border-blue-500 focus:ring-2 outline-none rounded-md"
-                        className="relative flex-1"
-                        nameInput="Số điện thoại"
-                      />
+                      <div className="col-span-4">
+                        <Input
+                          name="verify"
+                          register={register}
+                          placeholder="Nhập họ tên"
+                          messageErrorInput={errors.verify?.message}
+                          classNameInput="mt-1 p-2 w-full border border-[#dedede] bg-[#f2f2f2] focus:border-blue-500 focus:ring-2 outline-none rounded-md"
+                          className="relative flex-1"
+                          nameInput="Trạng thái"
+                          disabled
+                          value={profile?.verify === 1 ? "Verified" : "Unverified"}
+                        />
+                      </div>
 
-                      {/* dùng <Controller/> khi và chỉ khi component không hỗ trợ register (register giúp theo dõi giá trị trong form) */}
-                      <Controller
-                        name="date_of_birth"
-                        control={control}
-                        render={({ field }) => {
-                          // console.log("field value: ", field.value)
-                          return (
-                            <DateSelect
-                              value={date_of_birth}
-                              onChange={field.onChange}
-                              errorMessage={errors.date_of_birth?.message}
-                            />
-                          )
-                        }}
-                      />
-                    </div>
-                    <div className="mt-2 flex items-center gap-4"></div>
+                      <div className="col-span-4">
+                        <Input
+                          name="numberPhone"
+                          register={register}
+                          placeholder="Nhập số điện thoại"
+                          messageErrorInput={errors.numberPhone?.message}
+                          classNameInput="mt-1 p-2 w-full border border-[#dedede] bg-white focus:border-blue-500 focus:ring-2 outline-none rounded-md"
+                          className="relative flex-1"
+                          nameInput="Số điện thoại"
+                        />
+                      </div>
 
-                    <div className="mt-2 flex items-center gap-4">
-                      <Input
-                        name="created_at"
-                        register={register}
-                        placeholder="Nhập ngày khởi tạo"
-                        messageErrorInput={errors.created_at?.message}
-                        classNameInput="mt-1 p-2 w-full border border-[#dedede] bg-[#f2f2f2] focus:border-blue-500 focus:ring-2 outline-none rounded-md"
-                        className="relative flex-1"
-                        nameInput="Ngày tạo"
-                        disabled
-                      />
-                      <Input
-                        name="updated_at"
-                        register={register}
-                        placeholder="Nhập ngày cập nhật"
-                        messageErrorInput={errors.updated_at?.message}
-                        classNameInput="mt-1 p-2 w-full border border-[#dedede] bg-[#f2f2f2] focus:border-blue-500 focus:ring-2 outline-none rounded-md"
-                        className="relative flex-1"
-                        nameInput="Ngày cập nhật"
-                        disabled
-                      />
+                      <div className="col-span-4">
+                        {/* dùng <Controller/> khi và chỉ khi component không hỗ trợ register (register giúp theo dõi giá trị trong form) */}
+                        <Controller
+                          name="date_of_birth"
+                          control={control}
+                          render={({ field }) => {
+                            // console.log("field value: ", field.value)
+                            return (
+                              <DateSelect
+                                value={date_of_birth}
+                                onChange={field.onChange}
+                                errorMessage={errors.date_of_birth?.message}
+                              />
+                            )
+                          }}
+                        />
+                      </div>
+
+                      <div className="col-span-4">
+                        <Input
+                          name="created_at"
+                          register={register}
+                          placeholder="Nhập ngày khởi tạo"
+                          messageErrorInput={errors.created_at?.message}
+                          classNameInput="mt-1 p-2 w-full border border-[#dedede] bg-[#f2f2f2] focus:border-blue-500 focus:ring-2 outline-none rounded-md"
+                          className="relative flex-1"
+                          nameInput="Ngày tạo"
+                          disabled
+                        />
+                      </div>
+
+                      <div className="col-span-4">
+                        <Input
+                          name="updated_at"
+                          register={register}
+                          placeholder="Nhập ngày cập nhật"
+                          messageErrorInput={errors.updated_at?.message}
+                          classNameInput="mt-1 p-2 w-full border border-[#dedede] bg-[#f2f2f2] focus:border-blue-500 focus:ring-2 outline-none rounded-md"
+                          className="relative flex-1"
+                          nameInput="Ngày cập nhật"
+                          disabled
+                        />
+                      </div>
                     </div>
 
                     <div className="text-center">
