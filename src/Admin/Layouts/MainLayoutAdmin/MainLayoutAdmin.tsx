@@ -17,7 +17,7 @@ function MainLayoutAdminInner() {
       </div>
       <div className={` ${isShowSidebar ? "w-full" : "w-[83%]"} `}>
         <HeaderAdmin handleSidebar={handleSidebar} isShowSidebar={isShowSidebar} />
-        <div className="p-4">
+        <div className="px-4 py-2">
           <Outlet />
         </div>
       </div>

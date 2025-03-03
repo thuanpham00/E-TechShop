@@ -12,3 +12,8 @@ export type queryParamConfigCustomer = queryParamConfig & {
 export type queryParamConfigCategory = queryParamConfig & {
   name?: string
 }
+
+export type queryParamConfigBrand = queryParamConfig & {
+  name?: string
+  id?: string
+}

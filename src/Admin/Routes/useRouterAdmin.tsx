@@ -155,6 +155,14 @@ export default function useRouterAdmin() {
                   <NotFound role={role} />
                 </Suspense>
               )
+            },
+            {
+              path: path.AdminNotFound,
+              element: (
+                <Suspense>
+                  <NotFound role={role} />
+                </Suspense>
+              )
             }
           ]
         }

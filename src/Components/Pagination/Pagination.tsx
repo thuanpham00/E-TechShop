@@ -4,14 +4,14 @@ import { queryParamConfig } from "src/Types/queryParams.type"
 import { ChevronLeft, ChevronRight } from "lucide-react"
 import { SuccessResponse } from "src/Types/utils.type"
 import { UserType } from "src/Types/user.type"
-import { CategoryItemType } from "src/Types/product.type"
+import { BrandItemType, CategoryItemType } from "src/Types/product.type"
 
 interface Props {
   queryConfig: queryParamConfig
   page_size: number
   pathNavigate: string
   data: SuccessResponse<{
-    result: UserType[] | CategoryItemType[]
+    result: UserType[] | CategoryItemType[] | BrandItemType[]
     total: string
     page: string
     limit: string
@@ -95,7 +95,7 @@ export default function Pagination({ queryConfig, page_size, pathNavigate, scrol
   return (
     <div className="mt-4 flex gap-2 items-center justify-end">
       <div>
-        {queryConfig.page !== "1" ? Number(queryConfig.limit) * (Number(queryConfig.page) - 1) + 1 : 1} -
+        {queryConfig.page !== "1" ? Number(queryConfig.limit) * (Number(queryConfig.page) - 1) + 1 : 1} -{" "}
         {Number(data?.result?.limit) * (Number(data?.result?.page) - 1) + Number(data?.result?.totalOfPage)} trên{" "}
         {data?.result?.total} dòng
       </div>

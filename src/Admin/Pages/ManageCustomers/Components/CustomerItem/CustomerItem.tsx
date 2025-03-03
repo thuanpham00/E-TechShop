@@ -12,14 +12,14 @@ import {
 } from "src/Components/ui/alert-dialog"
 import { convertDateTime } from "src/Helpers/common"
 import useCopyText from "src/Hook/useCopyText"
-import { User } from "src/Types/user.type"
+import { UserType } from "src/Types/user.type"
 
 export default function CustomerItem({
   item,
   handleEditItem,
   onDelete
 }: {
-  item: User
+  item: UserType
   handleEditItem: (id: string) => void
   onDelete: (id: string) => void
 }) {

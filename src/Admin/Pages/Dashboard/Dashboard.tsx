@@ -44,7 +44,7 @@ export default function Dashboard() {
       setTimeout(() => {
         controller.abort()
       }, 10000) // quá 10 giây api chưa trả res về thì timeout sẽ hủy gọi api và api signal nhận tín hiệu hủy
-      return adminAPI.getStatistical(controller.signal)
+      return adminAPI.statistical.getStatistical(controller.signal)
     },
     placeholderData: keepPreviousData,
     retry: 0, // số lần retry lại khi hủy request (dùng abort signal)

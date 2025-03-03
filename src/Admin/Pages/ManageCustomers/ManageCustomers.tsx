@@ -30,6 +30,7 @@ import omitBy from "lodash/omitBy"
 import isUndefined from "lodash/isUndefined"
 import { omit } from "lodash"
 import { convertDateTime } from "src/Helpers/common"
+import NavigateBack from "src/Admin/Components/NavigateBack"
 
 type FormDataUpdate = Pick<
   SchemaAuthType,
@@ -72,7 +73,7 @@ export default function ManageCustomers() {
       setTimeout(() => {
         controller.abort() // hủy request khi chờ quá lâu // 10 giây sau cho nó hủy // làm tự động
       }, 10000)
-      return adminAPI.getCustomers(queryConfig as queryParamConfig, controller.signal)
+      return adminAPI.customer.getCustomers(queryConfig as queryParamConfig, controller.signal)
     },
     retry: 0, // số lần retry lại khi hủy request (dùng abort signal)
     staleTime: 5 * 60 * 1000, // dưới 5 phút nó không gọi lại api
@@ -86,6 +87,7 @@ export default function ManageCustomers() {
     limit: string
     totalOfPage: string
   }>
+  const listCustomer = result?.result?.result
   const page_size = Math.ceil(Number(result?.result.total) / Number(result?.result.limit))
 
   const [idCustomer, setIdCustomer] = useState<string | null>(null)
@@ -101,7 +103,7 @@ export default function ManageCustomers() {
   const getInfoCustomer = useQuery({
     queryKey: ["customer", idCustomer],
     queryFn: () => {
-      return adminAPI.getCustomerDetail(idCustomer as string)
+      return adminAPI.customer.getCustomerDetail(idCustomer as string)
     },
     enabled: Boolean(idCustomer) // chỉ chạy khi idCustomer có giá trị
   })
@@ -166,7 +168,7 @@ export default function ManageCustomers() {
 
   const updateProfileMutation = useMutation({
     mutationFn: (body: { body: UpdateBodyReq; id: string }) => {
-      return adminAPI.updateProfileCustomer(body.id, body.body)
+      return adminAPI.customer.updateProfileCustomer(body.id, body.body)
     }
   })
 
@@ -233,7 +235,7 @@ export default function ManageCustomers() {
 
   const deleteCustomerMutation = useMutation({
     mutationFn: (id: string) => {
-      return adminAPI.deleteProfileCustomer(id)
+      return adminAPI.customer.deleteProfileCustomer(id)
     }
   })
 
@@ -294,6 +296,7 @@ export default function ManageCustomers() {
           content="Đây là trang TECHZONE | Laptop, PC, Màn hình, điện thoại, linh kiện Chính Hãng"
         />
       </Helmet>
+      <NavigateBack />
       <div className="p-4 bg-white mb-3 border border-[#dedede] rounded-md">
         <h1 className="text-[15px] font-medium">Tìm kiếm</h1>
         <form onSubmit={handleSubmitSearch} className="mt-1">
@@ -365,7 +368,7 @@ export default function ManageCustomers() {
           </div>
         </div>
         {isLoading && <Skeleton />}
-        {!isFetching && result.result.result.length > 0 ? (
+        {!isFetching && (
           <div>
             <div>
               <div className="bg-[#f2f2f2] grid grid-cols-12 items-center gap-2 py-3 border border-[#dedede] px-4">
@@ -378,19 +381,25 @@ export default function ManageCustomers() {
                 <div className="col-span-1 text-[14px] text-center font-medium">Hành động</div>
               </div>
               <div>
-                {result?.result?.result?.map((item) => (
-                  <Fragment key={item._id}>
-                    <CustomerItem onDelete={handleDeleteCustomer} handleEditItem={handleEditItem} item={item} />
-                  </Fragment>
-                ))}
+                {listCustomer.length > 0 ? (
+                  listCustomer?.map((item) => (
+                    <Fragment key={item._id}>
+                      <CustomerItem onDelete={handleDeleteCustomer} handleEditItem={handleEditItem} item={item} />
+                    </Fragment>
+                  ))
+                ) : (
+                  <div className="text-center mt-4">Không tìm thấy kết quả</div>
+                )}
               </div>
             </div>
-            <Pagination
-              data={result}
-              queryConfig={queryConfig}
-              page_size={page_size}
-              pathNavigate={path.AdminCustomers}
-            />
+            {listCustomer.length > 0 && (
+              <Pagination
+                data={result}
+                queryConfig={queryConfig}
+                page_size={page_size}
+                pathNavigate={path.AdminCustomers}
+              />
+            )}
             {idCustomer !== null ? (
               <Fragment>
                 <div className="fixed left-0 top-0 z-10 h-screen w-screen bg-black/60 "></div>
@@ -532,8 +541,6 @@ export default function ManageCustomers() {
               ""
             )}
           </div>
-        ) : (
-          <div className="text-center mt-4">Không tìm thấy kết quả</div>
         )}
       </div>
     </div>

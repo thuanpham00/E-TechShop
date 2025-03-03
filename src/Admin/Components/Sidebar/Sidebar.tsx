@@ -83,7 +83,7 @@ export default function Sidebar() {
           {sideBarList.map((item, index) => (
             <div key={index}>
               <SidebarItem
-                className={`${location.pathname === item.path ? "text-[14px] text-[#df0019] font-semibold" : "text-[14px] text-black font-medium hover:text-[#495057] duration-200 ease-in"}`}
+                className={`${location.pathname.startsWith(item.path) ? "text-[14px] text-[#df0019] font-semibold" : "text-[14px] text-black font-medium hover:text-[#495057] duration-200 ease-in"}`}
                 icon={item.icon}
                 nameSideBar={item.name}
                 path={item.path}
