@@ -54,6 +54,7 @@ export const adminAPI = {
       return Http.patch(`/admin/categories/${id}`, body)
     },
 
+    // xóa danh mục
     deleteCategory: (id: string) => {
       return Http.delete(`/admin/categories/${id}`)
     },
@@ -66,12 +67,29 @@ export const adminAPI = {
       })
     },
 
+    // lấy chi tiết thương hiệu
     getBrandDetail: (id: string) => {
       return Http.get(`/admin/brands/${id}`)
     },
 
+    // cập nhật thương hiệu
     updateBrandDetail: (id: string, body: UpdateCategoryBodyReq) => {
       return Http.patch(`/admin/brands/${id}`, body)
+    },
+
+    // xóa thương hiệu
+    deleteBrand: (id: string) => {
+      return Http.delete(`/admin/brands/${id}`)
+    }
+  },
+
+  product: {
+    // lấy danh sách sản phẩm
+    getProducts: (params: queryParamConfigCategory, signal: AbortSignal) => {
+      return Http.get(`/admin/products/`, {
+        params,
+        signal
+      })
     }
   }
 }
@@ -81,10 +99,9 @@ export const adminAPI = {
  * Get Tìm kiếm khách hàng
  * Get danh sách khách hàng + query
  * Get khách hàng
- * Update khách hàng
+ * Patch khách hàng
  * Delete khách hàng
- *
- * Thiếu: Post Tạo khách hàng
+ * Post Tạo khách hàng (chưa)
  */
 
 /**
@@ -92,9 +109,9 @@ export const adminAPI = {
  * Get tìm kiếm danh mục
  * Get danh sách danh mục + query
  * Get danh mục
- * Update danh mục
- *
- * Thiếu: Post Tạo danh mục; Delete Xóa danh mục
+ * Patch danh mục
+ * Delete danh mục
+ * Post Tạo danh mục (chưa)
  */
 
 /**
@@ -102,7 +119,17 @@ export const adminAPI = {
  * Get tìm kiếm thương hiệu
  * Get danh sách thương hiệu + query
  * Get danh mục
- * Update danh mục
- *
- * Thiếu: Post Tạo thương hiệu; Delete Xóa thương hiệu
+ * Patch thương hiệu
+ * Delete thương hiệu
+ * Post Tạo thương hiệu (chưa)
+ */
+
+/**
+ * Trang quản lý sản phẩm
+ * Get tìm kiếm sản phẩm (chưa)
+ * Get danh sách sản phẩm + query (chưa)
+ * Get sản phẩm (chưa)
+ * Patch sản phẩm (chưa)
+ * Delete sản phẩm (chưa)
+ * Post Tạo sản phẩm (chưa)
  */

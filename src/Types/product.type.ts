@@ -30,6 +30,21 @@ export type BrandItemType = {
   updated_at: string
 }
 
+export type ProductItemType = {
+  _id: string
+  name: string
+  brand: string
+  category: string
+  created_at: string
+  medias: {
+    url: string
+    type: number
+  }[]
+  price: number
+  stock: number
+  updated_at: string
+}
+
 export type UpdateBodyReq = {
   name?: string
   date_of_birth?: Date

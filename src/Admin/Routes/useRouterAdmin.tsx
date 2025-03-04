@@ -4,22 +4,6 @@ import MainLayoutAdmin from "../Layouts/MainLayoutAdmin"
 import { path } from "src/Constants/path"
 import { AppContext } from "src/Context/authContext"
 import MainLayoutAuth from "src/Client/Layout/MainLayoutAuth"
-import CategoryDetail from "../Pages/CategoryDetail"
-// import ManageProducts from "../Pages/ManageProducts"
-// import ManageOrders from "../Pages/ManageOrders"
-// import ManageReceipt from "../Pages/ManageReceipts"
-// import ManageSupplies from "../Pages/ManageSupplies"
-// import ManageSuppliers from "../Pages/ManageSuppliers"
-// import ManageRoles from "../Pages/ManageRoles"
-// import ManageCategories from "../Pages/ManageCategories"
-// import ManageCustomers from "../Pages/ManageCustomers"
-// import ManageEmployees from "../Pages/ManageEmployees"
-// import Dashboard from "../Pages/Dashboard/Dashboard"
-// import LoginGoogle from "src/Client/Pages/LoginGoogle"
-// import Register from "src/Client/Pages/Register"
-// import Login from "src/Client/Pages/Login"
-// import NotFound from "src/Client/Pages/NotFound"
-// import NotFound from "src/Client/Pages/NotFound"
 
 const Register = lazy(() => import("src/Client/Pages/Register"))
 const Login = lazy(() => import("src/Client/Pages/Login"))
@@ -32,9 +16,10 @@ const ManageCategories = lazy(() => import("src/Admin/Pages/ManageCategories"))
 const ManageRoles = lazy(() => import("src/Admin/Pages/ManageRoles"))
 const ManageSuppliers = lazy(() => import("src/Admin/Pages/ManageSuppliers"))
 const ManageSupplies = lazy(() => import("src/Admin/Pages/ManageSupplies"))
-const ManageReceipt = lazy(() => import("src/Admin/Pages/ManageReceipts"))
+const ManageReceipt = lazy(() => import("src/Admin/Pages/ManageReceipt"))
 const ManageOrders = lazy(() => import("src/Admin/Pages/ManageOrders"))
 const ManageProducts = lazy(() => import("src/Admin/Pages/ManageProducts"))
+const ManageBrand = lazy(() => import("src/Admin/Pages/ManageBrand"))
 
 const ProtectedRoute = () => {
   const { isAuthenticated } = useContext(AppContext)
@@ -96,7 +81,7 @@ export default function useRouterAdmin() {
               path: path.AdminCategoryDetail,
               element: (
                 <Suspense>
-                  <CategoryDetail />
+                  <ManageBrand />
                 </Suspense>
               )
             },

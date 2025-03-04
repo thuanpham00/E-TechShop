@@ -5,7 +5,6 @@ import { lazy, Suspense, useContext } from "react"
 import MainLayoutAuth from "../Layout/MainLayoutAuth"
 import { AppContext } from "src/Context/authContext"
 import { RoleType } from "src/Constants/enum"
-import VerifyEmail from "../Pages/VerifyEmail"
 
 const Home = lazy(() => import("../Pages/Home"))
 const Login = lazy(() => import("../Pages/Login"))
@@ -15,6 +14,7 @@ const Cart = lazy(() => import("../Pages/Cart"))
 const Profile = lazy(() => import("../Pages/Profile"))
 const Collection = lazy(() => import("../Pages/Collection"))
 const NotFound = lazy(() => import("../Pages/NotFound"))
+const VerifyEmail = lazy(() => import("../Pages/VerifyEmail"))
 
 const ProjectRouter = () => {
   const { isAuthenticated } = useContext(AppContext)
