@@ -14,6 +14,8 @@ import Input from "src/Components/Input"
 import Button from "src/Components/Button"
 import Skeleton from "src/Components/Skeleton"
 import Pagination from "src/Components/Pagination"
+import ProductItem from "./Components"
+import { useCallback, useState } from "react"
 
 export default function ManageProducts() {
   const queryParams: queryParamConfigCategory = useQueryParams()
@@ -47,9 +49,20 @@ export default function ManageProducts() {
     limit: string
     totalOfPage: string
   }>
-  const listCategory = result?.result?.result
+  const listProduct = result?.result?.result
 
   const page_size = Math.ceil(Number(result?.result.total) / Number(result?.result.limit))
+
+  const [idBrand, setIdBrand] = useState<string | null>(null)
+
+  const handleEditItem = useCallback((id: string) => {
+    setIdBrand(id)
+  }, [])
+
+  // const handleExitsEditItem = () => {
+  //   setIdBrand(null)
+  // }
+
   return (
     <div>
       <Helmet>
@@ -111,27 +124,26 @@ export default function ManageProducts() {
           <div>
             <div>
               <div className="bg-[#f2f2f2] grid grid-cols-12 items-center gap-2 py-3 border border-[#dedede] px-4">
-                <div className="col-span-1 text-[14px] font-medium">ID</div>
+                <div className="col-span-2 text-[14px] font-medium">ID</div>
                 <div className="col-span-2 text-[14px] font-medium">Hình ảnh</div>
-                <div className="col-span-2 text-[14px] font-medium">Tên sản phẩm</div>
+                <div className="col-span-1 text-[14px] font-medium">Tên sản phẩm</div>
                 <div className="col-span-1 text-[14px] font-medium">Thương hiệu</div>
                 <div className="col-span-1 text-[14px] font-medium">Thể loại</div>
-                <div className="col-span-1 text-[14px] text-center font-medium">Giá tiền</div>
-                <div className="col-span-1 text-[14px] text-center font-medium">Số lượng</div>
-                <div className="col-span-1 text-[14px] text-center font-medium">Ngày tạo</div>
-                <div className="col-span-1 text-[14px] text-center font-medium">Ngày cập nhật</div>
-                <div className="col-span-1 text-[14px] text-center font-medium">Hành động</div>
+                <div className="col-span-1 text-[14px] font-medium">Giá tiền</div>
+                <div className="col-span-1 text-[14px] font-medium">Số lượng</div>
+                <div className="col-span-1 text-[14px] font-medium">Ngày tạo</div>
+                <div className="col-span-1 text-[14px] font-medium">Ngày cập nhật</div>
+                <div className="col-span-1 text-[14px] font-medium">Hành động</div>
               </div>
               <div className="">
-                {listCategory.length > 0 ? (
-                  listCategory.map((item) => (
+                {listProduct.length > 0 ? (
+                  listProduct.map((item) => (
                     <Fragment key={item._id}>
-                      {/* <CategoryItem
-                        onDelete={handleDeleteCategory}
-                        listTotalBrand={listTotalBrand}
+                      <ProductItem
+                        // onDelete={handleDeleteCategory}
                         handleEditItem={handleEditItem}
                         item={item}
-                      /> */}
+                      />
                     </Fragment>
                   ))
                 ) : (

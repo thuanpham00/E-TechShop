@@ -4,14 +4,14 @@ import { queryParamConfig } from "src/Types/queryParams.type"
 import { ChevronLeft, ChevronRight } from "lucide-react"
 import { SuccessResponse } from "src/Types/utils.type"
 import { UserType } from "src/Types/user.type"
-import { BrandItemType, CategoryItemType } from "src/Types/product.type"
+import { BrandItemType, CategoryItemType, ProductItemType } from "src/Types/product.type"
 
 interface Props {
   queryConfig: queryParamConfig
   page_size: number
   pathNavigate: string
   data: SuccessResponse<{
-    result: UserType[] | CategoryItemType[] | BrandItemType[]
+    result: UserType[] | CategoryItemType[] | BrandItemType[] | ProductItemType[]
     total: string
     page: string
     limit: string

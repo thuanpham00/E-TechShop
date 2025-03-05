@@ -33,8 +33,12 @@ export type BrandItemType = {
 export type ProductItemType = {
   _id: string
   name: string
-  brand: string
-  category: string
+  brand: {
+    name: string
+  }[]
+  category: {
+    name: string
+  }[]
   created_at: string
   medias: {
     url: string
