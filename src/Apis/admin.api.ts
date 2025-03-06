@@ -78,8 +78,8 @@ export const adminAPI = {
     },
 
     // xóa thương hiệu
-    deleteBrand: (id: string) => {
-      return Http.delete(`/admin/brands/${id}`)
+    deleteBrand: (id: string, categoryId: string) => {
+      return Http.delete(`/admin/brands/${id}?categoryId=${categoryId}`)
     }
   },
 
@@ -133,3 +133,5 @@ export const adminAPI = {
  * Delete sản phẩm (chưa)
  * Post Tạo sản phẩm (chưa)
  */
+
+// đang có vấn đề SES và fix cái filter tìm kiếm

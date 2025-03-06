@@ -308,7 +308,7 @@ export default function ManageCustomers() {
       <div className="p-4 bg-white mb-3 border border-[#dedede] rounded-md">
         <h1 className="text-[15px] font-medium">Tìm kiếm</h1>
         <form onSubmit={handleSubmitSearch} className="mt-1">
-          <div className="flex items-center gap-4">
+          <div className="flex flex-wrap items-center gap-4">
             <Input
               name="email"
               register={registerFormSearch}
@@ -336,21 +336,21 @@ export default function ManageCustomers() {
               className="relative flex-1"
               classNameError="hidden"
             />
-          </div>
-          <div className="mt-2 flex items-center justify-end gap-2">
-            <Button
-              type="submit"
-              icon={<Search size={15} />}
-              nameButton="Tìm kiếm"
-              classNameButton="p-2 bg-blue-500 w-full text-white font-medium rounded-md hover:bg-blue-500/80 duration-200 text-[13px] flex items-center gap-1 h-[35px]"
-            />
-            <Button
-              onClick={handleResetFormSearch}
-              type="button"
-              icon={<X size={15} />}
-              nameButton="Xóa"
-              classNameButton="p-2 bg-white border border-[#dedede] w-full text-black font-medium rounded-md hover:bg-[#dedede]/80 duration-200 text-[13px] flex items-center gap-1 h-[35px]"
-            />
+            <div className="flex items-center gap-2">
+              <Button
+                type="submit"
+                icon={<Search size={15} />}
+                nameButton="Tìm kiếm"
+                classNameButton="p-2 bg-blue-500 w-full text-white font-medium rounded-md hover:bg-blue-500/80 duration-200 text-[13px] flex items-center gap-1 h-[35px]"
+              />
+              <Button
+                onClick={handleResetFormSearch}
+                type="button"
+                icon={<X size={15} />}
+                nameButton="Xóa"
+                classNameButton="p-2 bg-white border border-[#dedede] w-full text-black font-medium rounded-md hover:bg-[#dedede]/80 duration-200 text-[13px] flex items-center gap-1 h-[35px]"
+              />
+            </div>
           </div>
         </form>
       </div>

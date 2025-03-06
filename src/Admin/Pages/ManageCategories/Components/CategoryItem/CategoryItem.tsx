@@ -19,16 +19,11 @@ import {
 export default function CategoryItem({
   item,
   handleEditItem,
-  listTotalBrand,
   onDelete
 }: {
   item: CategoryItemType
   onDelete: (id: string) => void
   handleEditItem: (id: string) => void
-  listTotalBrand: {
-    category_id: string
-    total: string
-  }[]
 }) {
   const navigate = useNavigate()
   const { copiedId, handleCopyText } = useCopyText()
@@ -82,19 +77,13 @@ export default function CategoryItem({
         </AlertDialog>
       </div>
       <div className="col-span-2 break-words">
-        {listTotalBrand.map((itemTotal) => {
-          if (itemTotal.category_id === item._id) {
-            return (
-              <div key={itemTotal.category_id} className="flex justify-center items-center gap-2">
-                <span className="font-semibold text-[#3b82f6]">{itemTotal.total}</span>
-                <span>|</span>
-                <button onClick={() => handleNavigateCategoryDetail(item._id, item.name)}>
-                  <SquareMousePointer color="blue" size={18} />
-                </button>
-              </div>
-            )
-          }
-        })}
+        <div className="flex justify-center items-center gap-2">
+          <span className="font-semibold text-[#3b82f6]">{item.brand_ids.length}</span>
+          <span>|</span>
+          <button onClick={() => handleNavigateCategoryDetail(item._id, item.name)}>
+            <SquareMousePointer color="blue" size={18} />
+          </button>
+        </div>
       </div>
     </div>
   )

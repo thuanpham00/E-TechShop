@@ -20,6 +20,7 @@ export type CategoryItemType = {
   name: string
   created_at: string
   updated_at: string
+  brand_ids: string[]
 }
 
 export type BrandItemType = {
@@ -28,6 +29,7 @@ export type BrandItemType = {
   category_id: string
   created_at: string
   updated_at: string
+  category_ids: string[]
 }
 
 export type ProductItemType = {

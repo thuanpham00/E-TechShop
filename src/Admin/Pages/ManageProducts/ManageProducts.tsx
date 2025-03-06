@@ -76,11 +76,27 @@ export default function ManageProducts() {
       <div className="p-4 bg-white mb-3 border border-[#dedede] rounded-md">
         <h1 className="text-[15px] font-medium">Tìm kiếm</h1>
         <form className="mt-1">
-          <div className="flex items-center gap-4">
+          <div className="flex flex-wrap items-center gap-4">
             <Input
               name="name"
               // register={registerFormSearch}
               placeholder="Nhập tên sản phẩm"
+              classNameInput="p-2 w-full border border-[#dedede] bg-[#f2f2f2] focus:border-blue-500 focus:ring-2 outline-none rounded-md h-[35px]"
+              className="relative flex-1"
+              classNameError="hidden"
+            />
+            <Input
+              name="name"
+              // register={registerFormSearch}
+              placeholder="Nhập thương hiệu"
+              classNameInput="p-2 w-full border border-[#dedede] bg-[#f2f2f2] focus:border-blue-500 focus:ring-2 outline-none rounded-md h-[35px]"
+              className="relative flex-1"
+              classNameError="hidden"
+            />
+            <Input
+              name="numberPhone"
+              // register={registerFormSearch}
+              placeholder="Nhập thể loại"
               classNameInput="p-2 w-full border border-[#dedede] bg-[#f2f2f2] focus:border-blue-500 focus:ring-2 outline-none rounded-md h-[35px]"
               className="relative flex-1"
               classNameError="hidden"

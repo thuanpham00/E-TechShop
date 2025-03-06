@@ -146,25 +146,28 @@ export default function ManageBrand() {
   })
 
   const deleteBrandMutation = useMutation({
-    mutationFn: (id: string) => {
-      return adminAPI.category.deleteBrand(id)
+    mutationFn: (body: { id: string; categoryId: string }) => {
+      return adminAPI.category.deleteBrand(body.id, body.categoryId)
     }
   })
 
-  const handleDeleteBrand = (id: string) => {
-    deleteBrandMutation.mutate(id, {
-      onSuccess: () => {
-        queryClient.invalidateQueries({ queryKey: ["listBrand", queryConfig] })
-        toast.success("Xóa thành công!", { autoClose: 1500 })
-      },
-      onError: (error) => {
-        if (isError400<ErrorResponse<MessageResponse>>(error)) {
-          toast.error(error.response?.data.message, {
-            autoClose: 1500
-          })
+  const handleDeleteBrand = (brandId: string) => {
+    deleteBrandMutation.mutate(
+      { id: brandId, categoryId: id as string },
+      {
+        onSuccess: () => {
+          queryClient.invalidateQueries({ queryKey: ["listBrand", queryConfig] })
+          toast.success("Xóa thành công!", { autoClose: 1500 })
+        },
+        onError: (error) => {
+          if (isError400<ErrorResponse<MessageResponse>>(error)) {
+            toast.error(error.response?.data.message, {
+              autoClose: 1500
+            })
+          }
         }
       }
-    })
+    )
   }
 
   const {

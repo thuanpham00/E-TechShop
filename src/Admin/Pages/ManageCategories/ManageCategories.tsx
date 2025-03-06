@@ -62,13 +62,8 @@ export default function ManageCategories() {
     page: string
     limit: string
     totalOfPage: string
-    listTotalBrand: {
-      category_id: string
-      total: string
-    }[]
   }>
   const listCategory = result?.result?.result
-  const listTotalBrand = result?.result?.listTotalBrand
 
   const page_size = Math.ceil(Number(result?.result.total) / Number(result?.result.limit))
 
@@ -273,12 +268,7 @@ export default function ManageCategories() {
                 {listCategory.length > 0 ? (
                   listCategory.map((item) => (
                     <Fragment key={item._id}>
-                      <CategoryItem
-                        onDelete={handleDeleteCategory}
-                        listTotalBrand={listTotalBrand}
-                        handleEditItem={handleEditItem}
-                        item={item}
-                      />
+                      <CategoryItem onDelete={handleDeleteCategory} handleEditItem={handleEditItem} item={item} />
                     </Fragment>
                   ))
                 ) : (
