@@ -15,20 +15,20 @@ import {
 } from "src/Components/ui/alert-dialog"
 
 export default function ProductItem({
-  item,
-  handleEditItem
+  item
+  // handleEditItem
   // onDelete
 }: {
   item: ProductItemType
   onDelete?: (id: string) => void
-  handleEditItem: (id: string) => void
+  handleEditItem?: (id: string) => void
 }) {
   // const navigate = useNavigate()
   const { copiedId, handleCopyText } = useCopyText()
 
-  const handleEditCustomerItem = (id: string) => {
-    handleEditItem(id)
-  }
+  // const handleEditCustomerItem = (id: string) => {
+  //   handleEditItem(id)
+  // }
 
   // const handleNavigateCategoryDetail = (id: string, nameCategory: string) => {
   //   navigate(`${path.AdminProducts}/${id}`, {
@@ -48,9 +48,9 @@ export default function ProductItem({
         </button>
       </div>
       <div className="col-span-2">
-        <img src={item.medias[0].url} alt={item._id} className="h-auto w-full object-cover" />
+        <img src={item.banner.url} alt={item._id} className="h-auto w-full object-cover" />
       </div>
-      <div className="col-span-1">{item.name}</div>
+      <div className="col-span-1 font-semibold">{item.name}</div>
       <div className="col-span-1">{item.brand[0].name}</div>
       <div className="col-span-1">{item.category[0].name}</div>
       <div className="col-span-1">{item.price}</div>
@@ -58,7 +58,7 @@ export default function ProductItem({
       <div className="col-span-1 break-words">{convertDateTime(item.created_at)}</div>
       <div className="col-span-1 break-words">{convertDateTime(item.updated_at)}</div>
       <div className="col-span-1 flex items-center justify-center gap-2">
-        <button onClick={() => handleEditCustomerItem(item._id)}>
+        <button>
           <Pencil color="orange" size={18} />
         </button>
         <AlertDialog>

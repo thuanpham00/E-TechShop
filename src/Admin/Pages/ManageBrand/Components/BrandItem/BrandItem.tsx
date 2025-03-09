@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { ClipboardCheck, Copy, Pencil, SquareMousePointer, Trash2 } from "lucide-react"
 import { useNavigate } from "react-router-dom"
 import { path } from "src/Constants/path"
@@ -18,11 +19,13 @@ import {
 
 export default function BrandItem({
   item,
+  nameCategory,
   handleEditItem,
   listTotalProduct,
   onDelete
 }: {
   item: BrandItemType
+  nameCategory: any
   onDelete: (id: string) => void
   handleEditItem: (id: string) => void
   listTotalProduct: {
@@ -37,11 +40,10 @@ export default function BrandItem({
     handleEditItem(id)
   }
 
-  const handleNavigateCategoryDetail = (id: string, nameCategory: string) => {
-    navigate(`${path.AdminCategories}/${id}`, {
-      state: nameCategory
-    })
+  const handleNavigateProductList = (nameBrand: string, nameCategory: string) => {
+    navigate(`${path.AdminProducts}?brand_product=${nameBrand}&category_product=${nameCategory}`)
   }
+
   return (
     <div>
       <div
@@ -90,7 +92,7 @@ export default function BrandItem({
                 <div key={itemTotal.brand} className="flex justify-center items-center gap-2">
                   <span className="font-semibold text-[#3b82f6]">{itemTotal.total}</span>
                   <span>|</span>
-                  <button onClick={() => handleNavigateCategoryDetail(item._id, item.name)}>
+                  <button onClick={() => handleNavigateProductList(item.name, nameCategory)}>
                     <SquareMousePointer color="blue" size={18} />
                   </button>
                 </div>

@@ -1,6 +1,11 @@
 import Http from "src/Helpers/http"
 import { UpdateBodyReq, UpdateCategoryBodyReq } from "src/Types/product.type"
-import { queryParamConfigBrand, queryParamConfigCategory, queryParamConfigCustomer } from "src/Types/queryParams.type"
+import {
+  queryParamConfigBrand,
+  queryParamConfigCategory,
+  queryParamConfigCustomer,
+  queryParamConfigProduct
+} from "src/Types/queryParams.type"
 
 export const adminAPI = {
   statistical: {
@@ -85,7 +90,7 @@ export const adminAPI = {
 
   product: {
     // lấy danh sách sản phẩm
-    getProducts: (params: queryParamConfigCategory, signal: AbortSignal) => {
+    getProducts: (params: queryParamConfigProduct, signal: AbortSignal) => {
       return Http.get(`/admin/products/`, {
         params,
         signal
@@ -126,12 +131,13 @@ export const adminAPI = {
 
 /**
  * Trang quản lý sản phẩm
- * Get tìm kiếm sản phẩm (chưa)
- * Get danh sách sản phẩm + query (chưa)
+ * Get tìm kiếm sản phẩm
+ * Get danh sách sản phẩm + query
  * Get sản phẩm (chưa)
  * Patch sản phẩm (chưa)
  * Delete sản phẩm (chưa)
  * Post Tạo sản phẩm (chưa)
  */
 
-// đang có vấn đề SES và fix cái filter tìm kiếm
+// đang có vấn đề SES
+// làm tiếp thêm brand vào 1 category (tạo liên kết brand & category)

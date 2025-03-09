@@ -1,5 +1,5 @@
 import { keepPreviousData, useQuery } from "@tanstack/react-query"
-import { isUndefined, omitBy } from "lodash"
+import { isUndefined, omit, omitBy } from "lodash"
 import { FolderUp, Plus, Search, X } from "lucide-react"
 import { Helmet } from "react-helmet-async"
 import { Fragment } from "react/jsx-runtime"
@@ -7,7 +7,7 @@ import { adminAPI } from "src/Apis/admin.api"
 import { path } from "src/Constants/path"
 import useQueryParams from "src/Hook/useQueryParams"
 import { ProductItemType } from "src/Types/product.type"
-import { queryParamConfigCategory } from "src/Types/queryParams.type"
+import { queryParamConfigCategory, queryParamConfigProduct } from "src/Types/queryParams.type"
 import { SuccessResponse } from "src/Types/utils.type"
 import NavigateBack from "src/Admin/Components/NavigateBack"
 import Input from "src/Components/Input"
@@ -15,20 +15,29 @@ import Button from "src/Components/Button"
 import Skeleton from "src/Components/Skeleton"
 import Pagination from "src/Components/Pagination"
 import ProductItem from "./Components"
-import { useCallback, useState } from "react"
+import { useForm } from "react-hook-form"
+import { createSearchParams, useNavigate } from "react-router-dom"
+import { SchemaAuthType } from "src/Client/Utils/rule"
+import { cleanObject } from "src/Helpers/common"
+import { HttpStatusCode } from "src/Constants/httpStatus"
+
+type FormDataSearch = Pick<SchemaAuthType, "name_product" | "category_product" | "brand_product">
 
 export default function ManageProducts() {
-  const queryParams: queryParamConfigCategory = useQueryParams()
-  const queryConfig: queryParamConfigCategory = omitBy(
+  const navigate = useNavigate()
+  const queryParams: queryParamConfigProduct = useQueryParams()
+  const queryConfig: queryParamConfigProduct = omitBy(
     {
       page: queryParams.page || "1", // mặc định page = 1
       limit: queryParams.limit || "5", // mặc định limit =
-      name: queryParams.name
+      name_product: queryParams.name_product,
+      brand_product: queryParams.brand_product,
+      category_product: queryParams.category_product
     },
     isUndefined
   )
 
-  const { data, isFetching, isLoading } = useQuery({
+  const { data, isFetching, isLoading, error, isError } = useQuery({
     queryKey: ["listProduct", queryConfig],
     queryFn: () => {
       const controller = new AbortController()
@@ -53,15 +62,47 @@ export default function ManageProducts() {
 
   const page_size = Math.ceil(Number(result?.result.total) / Number(result?.result.limit))
 
-  const [idBrand, setIdBrand] = useState<string | null>(null)
+  // const [idBrand, setIdBrand] = useState<string | null>(null)
 
-  const handleEditItem = useCallback((id: string) => {
-    setIdBrand(id)
-  }, [])
+  // const handleEditItem = useCallback((id: string) => {
+  //   setIdBrand(id)
+  // }, [])
 
   // const handleExitsEditItem = () => {
   //   setIdBrand(null)
   // }
+
+  const {
+    register: registerFormSearch,
+    handleSubmit: handleSubmitFormSearch,
+    reset: resetFormSearch
+  } = useForm<FormDataSearch>()
+
+  const handleSubmitSearch = handleSubmitFormSearch((data) => {
+    const params = cleanObject({
+      ...queryConfig,
+      name_product: data.name_product,
+      category_product: data.category_product,
+      brand_product: data.brand_product
+    })
+    navigate({
+      pathname: path.AdminProducts,
+      search: createSearchParams(params).toString()
+    })
+  }) // nó điều hướng với query params truyền vào và nó render lại component || tren URL lấy queryConfig xuống và fetch lại api ra danh sách cần thiết
+
+  const handleResetFormSearch = () => {
+    const filteredSearch = omit(queryConfig, ["name_product", "category_product", "brand_product"])
+    resetFormSearch()
+    navigate({ pathname: `${path.AdminProducts}`, search: createSearchParams(filteredSearch).toString() })
+  }
+
+  if (isError) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    if ((error as any)?.response?.status === HttpStatusCode.NotFound) {
+      navigate(path.AdminNotFound, { replace: true })
+    }
+  }
 
   return (
     <div>
@@ -75,27 +116,27 @@ export default function ManageProducts() {
       <NavigateBack />
       <div className="p-4 bg-white mb-3 border border-[#dedede] rounded-md">
         <h1 className="text-[15px] font-medium">Tìm kiếm</h1>
-        <form className="mt-1">
+        <form onSubmit={handleSubmitSearch} className="mt-1">
           <div className="flex flex-wrap items-center gap-4">
             <Input
-              name="name"
-              // register={registerFormSearch}
+              name="name_product"
+              register={registerFormSearch}
               placeholder="Nhập tên sản phẩm"
               classNameInput="p-2 w-full border border-[#dedede] bg-[#f2f2f2] focus:border-blue-500 focus:ring-2 outline-none rounded-md h-[35px]"
               className="relative flex-1"
               classNameError="hidden"
             />
             <Input
-              name="name"
-              // register={registerFormSearch}
+              name="brand_product"
+              register={registerFormSearch}
               placeholder="Nhập thương hiệu"
               classNameInput="p-2 w-full border border-[#dedede] bg-[#f2f2f2] focus:border-blue-500 focus:ring-2 outline-none rounded-md h-[35px]"
               className="relative flex-1"
               classNameError="hidden"
             />
             <Input
-              name="numberPhone"
-              // register={registerFormSearch}
+              name="category_product"
+              register={registerFormSearch}
               placeholder="Nhập thể loại"
               classNameInput="p-2 w-full border border-[#dedede] bg-[#f2f2f2] focus:border-blue-500 focus:ring-2 outline-none rounded-md h-[35px]"
               className="relative flex-1"
@@ -110,7 +151,7 @@ export default function ManageProducts() {
               />
               <Button
                 type="button"
-                // onClick={handleResetFormSearch}
+                onClick={handleResetFormSearch}
                 icon={<X size={15} />}
                 nameButton="Xóa"
                 classNameButton="p-2 bg-white border border-[#dedede] w-full text-black font-medium rounded-md hover:bg-[#dedede]/80 duration-200 text-[13px] flex items-center gap-1 h-[35px]"
@@ -157,7 +198,7 @@ export default function ManageProducts() {
                     <Fragment key={item._id}>
                       <ProductItem
                         // onDelete={handleDeleteCategory}
-                        handleEditItem={handleEditItem}
+                        // handleEditItem={handleEditItem}
                         item={item}
                       />
                     </Fragment>

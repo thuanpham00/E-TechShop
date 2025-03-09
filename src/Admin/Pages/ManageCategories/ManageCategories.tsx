@@ -13,7 +13,7 @@ import { path } from "src/Constants/path"
 import { useCallback, useEffect, useState } from "react"
 import { BrandItemType, CategoryItemType, UpdateCategoryBodyReq } from "src/Types/product.type"
 import { isUndefined, omit, omitBy } from "lodash"
-import { convertDateTime } from "src/Helpers/common"
+import { cleanObject, convertDateTime } from "src/Helpers/common"
 import { toast } from "react-toastify"
 import { isError400 } from "src/Helpers/utils"
 import { createSearchParams, useNavigate } from "react-router-dom"
@@ -36,7 +36,7 @@ export default function ManageCategories() {
   const queryConfig: queryParamConfigCategory = omitBy(
     {
       page: queryParams.page || "1", // mặc định page = 1
-      limit: queryParams.limit || "5", // mặc định limit =
+      limit: queryParams.limit || "10", // mặc định limit =
       name: queryParams.name
     },
     isUndefined
@@ -170,16 +170,10 @@ export default function ManageCategories() {
   } = useForm<FormDataSearch>()
 
   const handleSubmitSearch = handleSubmitFormSearch((data) => {
-    let bodySendSubmit = { ...queryConfig }
-    if (data.name) {
-      bodySendSubmit = {
-        ...queryConfig,
-        name: data.name
-      }
-    }
+    const params = cleanObject({ ...queryConfig, name: data.name })
     navigate({
       pathname: path.AdminCategories,
-      search: createSearchParams(bodySendSubmit).toString()
+      search: createSearchParams(params).toString()
     })
   })
 

@@ -5,6 +5,7 @@ import { ToastContainer } from "react-toastify"
 import { useContext, useEffect } from "react"
 import { LocalStorageEventTarget } from "./Helpers/auth"
 import { AppContext } from "./Context/authContext"
+import ThemeProvider from "./Admin/Components/Theme-provider"
 
 function App() {
   const routerClient = useRouterClient()
@@ -26,7 +27,13 @@ function App() {
 
   return (
     <HelmetProvider>
-      {role === "Admin" ? routerAdmin : routerClient}
+      {role === "Admin" ? (
+        <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
+          {routerAdmin}
+        </ThemeProvider>
+      ) : (
+        routerClient
+      )}
       <ToastContainer />
     </HelmetProvider>
   )

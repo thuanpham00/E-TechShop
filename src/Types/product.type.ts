@@ -9,6 +9,10 @@ export type CollectionItemType = {
     url: string
     type: number
   }[]
+  banner: {
+    url: string
+    type: number
+  }
   sold: number
   specifications: never[]
   viewCount: number
@@ -46,6 +50,10 @@ export type ProductItemType = {
     url: string
     type: number
   }[]
+  banner: {
+    url: string
+    type: number
+  }
   price: number
   stock: number
   updated_at: string

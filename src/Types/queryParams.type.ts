@@ -17,3 +17,9 @@ export type queryParamConfigBrand = queryParamConfig & {
   name?: string
   id?: string
 }
+
+export type queryParamConfigProduct = queryParamConfig & {
+  name_product?: string
+  category_product?: string
+  brand_product?: string
+}

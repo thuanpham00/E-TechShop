@@ -14,7 +14,7 @@ import { queryParamConfigBrand } from "src/Types/queryParams.type"
 import { path } from "src/Constants/path"
 import { useCallback, useEffect, useState } from "react"
 import { yupResolver } from "@hookform/resolvers/yup"
-import { convertDateTime } from "src/Helpers/common"
+import { cleanObject, convertDateTime } from "src/Helpers/common"
 import { toast } from "react-toastify"
 import { isError400 } from "src/Helpers/utils"
 import { HttpStatusCode } from "src/Constants/httpStatus"
@@ -33,19 +33,19 @@ type FormDataSearch = Pick<SchemaAuthType, "name">
 export default function ManageBrand() {
   const navigate = useNavigate()
   const { id } = useParams()
+  const { state } = useLocation()
   const queryClient = useQueryClient()
   const queryParams: queryParamConfigBrand = useQueryParams()
   const queryConfig: queryParamConfigBrand = omitBy(
     {
       page: queryParams.page || "1", // mặc định page = 1
-      limit: queryParams.limit || "5", // mặc định limit =
+      limit: queryParams.limit || "10", // mặc định limit =
       name: queryParams.name,
       id: id
     },
     isUndefined
   )
 
-  const { state } = useLocation()
   const { data, isFetching, isLoading, error, isError } = useQuery({
     queryKey: ["listBrand", queryConfig],
     queryFn: () => {
@@ -177,17 +177,11 @@ export default function ManageBrand() {
   } = useForm<FormDataSearch>()
 
   const handleSubmitSearch = handleSubmitFormSearch((data) => {
-    let bodySendSubmit = { ...queryConfig }
-    if (data.name) {
-      bodySendSubmit = {
-        ...queryConfig,
-        name: data.name
-      }
-    }
+    const params = cleanObject({ ...queryConfig, name: data.name })
     navigate(
       {
         pathname: `${path.AdminCategories}/${id}`,
-        search: createSearchParams(bodySendSubmit).toString()
+        search: createSearchParams(params).toString()
       },
       {
         state: state
@@ -290,6 +284,7 @@ export default function ManageBrand() {
                         listTotalProduct={listTotalProduct}
                         handleEditItem={handleEditItem}
                         item={item}
+                        nameCategory={state}
                       />
                     </Fragment>
                   ))

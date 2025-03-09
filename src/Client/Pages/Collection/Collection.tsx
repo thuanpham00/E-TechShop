@@ -71,12 +71,12 @@ export default function Collection() {
             <div className="bg-white rounded-[4px] mb-4 mt-4 grid grid-cols-5 gap-2 p-4">
               {result?.result.map((item) => {
                 const hasMedias = item.medias.length > 0
-                const imageDefault = hasMedias ? item.medias[0].url : image_default
+                const imageDefault = hasMedias ? item.banner.url : image_default
                 const imageHover =
                   imageChange !== "" && item.medias.length > 1
-                    ? item.medias[1].url
+                    ? item.medias[1 || 2 || 3].url
                     : item.medias.length > 0
-                      ? item.medias[0].url
+                      ? item.banner.url
                       : image_default // Nếu không có ảnh, dùng `image_default`
                 return (
                   <div

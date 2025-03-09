@@ -7,11 +7,15 @@ module.exports = {
   corePlugins: {
     container: false // tắt class container mặc định
   },
+  darkMode: ["class"],
   theme: {
     extend: {
       colors: {
         primaryBlue: "#3a86ff",
         secondBlue: "#0466c8",
+        darkPrimary: "#282828",
+        darkSecond: "#121212",
+        darkBorder: "#575757",
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
         card: {
@@ -60,7 +64,6 @@ module.exports = {
       }
     }
   },
-  darkMode: ["class", "class"],
   plugins: [
     plugin(function ({ addComponents }) {
       addComponents({

@@ -27,7 +27,11 @@ export const schemaAuth = yup
 
     id: yup.string(),
     created_at: yup.string(),
-    updated_at: yup.string()
+    updated_at: yup.string(),
+
+    name_product: yup.string(),
+    category_product: yup.string(),
+    brand_product: yup.string()
   })
   .required()
 

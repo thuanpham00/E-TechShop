@@ -22,7 +22,7 @@ import { createSearchParams, useNavigate } from "react-router-dom"
 import omitBy from "lodash/omitBy"
 import isUndefined from "lodash/isUndefined"
 import { omit } from "lodash"
-import { convertDateTime } from "src/Helpers/common"
+import { cleanObject, convertDateTime } from "src/Helpers/common"
 import { HttpStatusCode } from "src/Constants/httpStatus"
 import NavigateBack from "src/Admin/Components/NavigateBack"
 import CustomerItem from "./Components/CustomerItem"
@@ -257,28 +257,15 @@ export default function ManageCustomers() {
   } = useForm<FormDataSearch>()
 
   const handleSubmitSearch = handleSubmitFormSearch((data) => {
-    let bodySendSubmit = { ...queryConfig }
-    if (data.email) {
-      bodySendSubmit = {
-        ...queryConfig,
-        email: data.email
-      }
-    }
-    if (data.name) {
-      bodySendSubmit = {
-        ...queryConfig,
-        name: data.name
-      }
-    }
-    if (data.numberPhone) {
-      bodySendSubmit = {
-        ...queryConfig,
-        phone: data.numberPhone
-      }
-    }
+    const params = cleanObject({
+      ...queryConfig,
+      email: data.email,
+      name: data.name,
+      phone: data.numberPhone
+    })
     navigate({
       pathname: path.AdminCustomers,
-      search: createSearchParams(bodySendSubmit).toString()
+      search: createSearchParams(params).toString()
     })
   })
 
@@ -305,7 +292,7 @@ export default function ManageCustomers() {
         />
       </Helmet>
       <NavigateBack />
-      <div className="p-4 bg-white mb-3 border border-[#dedede] rounded-md">
+      <div className="p-4 bg-white dark:bg-darkPrimary mb-3 border border-[#dedede] dark:border-darkBorder rounded-md">
         <h1 className="text-[15px] font-medium">Tìm kiếm</h1>
         <form onSubmit={handleSubmitSearch} className="mt-1">
           <div className="flex flex-wrap items-center gap-4">
@@ -355,7 +342,7 @@ export default function ManageCustomers() {
         </form>
       </div>
       <div>
-        <div className="bg-white border border-b-0 border-[#dedede] p-4 flex items-center justify-between rounded-tl-md rounded-tr-md">
+        <div className="bg-white dark:bg-darkPrimary border border-b-0 border-[#dedede] dark:border-darkBorder p-4 flex items-center justify-between rounded-tl-md rounded-tr-md">
           <h2 className="text-[15px] font-medium">Danh mục thể loại sản phẩm</h2>
           <div className="flex items-center gap-2">
             <Button
@@ -379,7 +366,7 @@ export default function ManageCustomers() {
         {!isFetching && (
           <div>
             <div>
-              <div className="bg-[#f2f2f2] grid grid-cols-12 items-center gap-2 py-3 border border-[#dedede] px-4">
+              <div className="bg-[#f2f2f2] dark:bg-darkPrimary grid grid-cols-12 items-center gap-2 py-3 border border-[#dedede] dark:border-darkBorder px-4">
                 <div className="col-span-2 text-[14px] font-medium">ID</div>
                 <div className="col-span-2 text-[14px] font-medium">Họ Tên</div>
                 <div className="col-span-2 text-[14px] font-medium">Email</div>

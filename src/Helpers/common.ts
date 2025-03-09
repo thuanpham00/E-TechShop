@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 export const getNameParams = (name: string) => {
   return name
     .split("-")
@@ -40,4 +41,14 @@ export function convertDateTime(dateInput: string) {
   const formattedDate = `${day}-${month}-${year} ${hours}:${minutes}:${seconds}`
 
   return formattedDate
+}
+
+export const cleanObject = (obj: Record<string, any>) => {
+  const result: Record<string, any> = {}
+  for (const key in obj) {
+    if (obj[key] !== "") {
+      result[key] = obj[key]
+    }
+  }
+  return result
 }

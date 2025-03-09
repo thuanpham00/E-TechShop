@@ -9,6 +9,7 @@ import { toast } from "react-toastify"
 import { useMutation } from "@tanstack/react-query"
 import { userAPI } from "src/Apis/user.api"
 import Popover from "src/Components/Popover"
+import ModeToggle from "../Mode-Toggle"
 
 interface Props {
   handleSidebar: (boolean: boolean) => void
@@ -43,9 +44,10 @@ export default function HeaderAdmin({ handleSidebar, isShowSidebar }: Props) {
   }
 
   return (
-    <header className="sticky top-0 left-0 z-10 bg-white flex items-center justify-between p-3 border-b border-gray-200 ">
-      <Menu size={28} onClick={handleSideBarFunc} />
-      <div>
+    <header className="sticky top-0 left-0 z-10 bg-white dark:bg-darkPrimary flex items-center justify-between p-3 border-b border-gray-200 dark:border-darkBorder">
+      <Menu color="black" size={28} onClick={handleSideBarFunc} />
+      <div className="flex items-center gap-2">
+        <ModeToggle />
         <Popover
           renderPopover={
             <div className="bg-white shadow-md rounded-sm border border-gray-200">
