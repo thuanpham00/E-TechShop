@@ -27,13 +27,7 @@ function App() {
 
   return (
     <HelmetProvider>
-      {role === "Admin" ? (
-        <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
-          {routerAdmin}
-        </ThemeProvider>
-      ) : (
-        routerClient
-      )}
+      {role === "Admin" ? <ThemeProvider>{routerAdmin}</ThemeProvider> : routerClient}
       <ToastContainer />
     </HelmetProvider>
   )

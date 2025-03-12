@@ -13,9 +13,9 @@ module.exports = {
       colors: {
         primaryBlue: "#3a86ff",
         secondBlue: "#0466c8",
-        darkPrimary: "#282828",
-        darkSecond: "#121212",
-        darkBorder: "#575757",
+        darkPrimary: "#1F2026FF",
+        darkSecond: "#0a0a0a",
+        darkBorder: "#2c2b35",
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
         card: {

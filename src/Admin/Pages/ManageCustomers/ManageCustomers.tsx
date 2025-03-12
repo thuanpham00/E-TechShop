@@ -37,6 +37,7 @@ type FormDataUpdate = Pick<
   SchemaAuthType,
   "id" | "email" | "name" | "numberPhone" | "avatar" | "date_of_birth" | "verify" | "created_at" | "updated_at"
 >
+
 const formDataUpdate = schemaAuth.pick([
   "id",
   "email",
@@ -77,8 +78,8 @@ export default function ManageCustomers() {
       return adminAPI.customer.getCustomers(queryConfig as queryParamConfig, controller.signal)
     },
     retry: 0, // số lần retry lại khi hủy request (dùng abort signal)
-    staleTime: 1 * 60 * 1000, // dưới 5 phút nó không gọi lại api
-    placeholderData: keepPreviousData
+    staleTime: 1 * 60 * 1000, // dưới 1 phút nó không gọi lại api
+    placeholderData: keepPreviousData // giữ data cũ trong 1p
   })
 
   const result = data?.data as SuccessResponse<{
@@ -101,14 +102,14 @@ export default function ManageCustomers() {
     setIdCustomer(null)
   }
 
-  const getInfoCustomer = useQuery({
+  const getCustomerDetail = useQuery({
     queryKey: ["customer", idCustomer],
     queryFn: () => {
       return adminAPI.customer.getCustomerDetail(idCustomer as string)
     },
     enabled: Boolean(idCustomer) // chỉ chạy khi idCustomer có giá trị
   })
-  const infoUser = getInfoCustomer.data?.data as SuccessResponse<{ result: UserType }>
+  const infoUser = getCustomerDetail.data?.data as SuccessResponse<{ result: UserType }>
   const profile = infoUser?.result?.result
   // console.log(idCustomer)
   // vì sao nó render 2 lần
@@ -126,6 +127,7 @@ export default function ManageCustomers() {
   } = useForm<FormDataUpdate>({
     resolver: yupResolver(formDataUpdate),
     defaultValues: {
+      id: "",
       email: "",
       name: "",
       numberPhone: "",
@@ -400,7 +402,7 @@ export default function ManageCustomers() {
                   <button onClick={handleExitsEditItem} className="absolute right-2 top-1">
                     <X color="gray" size={22} />
                   </button>
-                  <form onSubmit={handleSubmitUpdate} className="p-4 bg-white rounded-md">
+                  <form onSubmit={handleSubmitUpdate} className="p-4 bg-white dark:bg-darkPrimary rounded-md">
                     <h3 className="text-[15px] font-medium">Thông tin khách hàng</h3>
                     <div className="mt-4 grid grid-cols-12 flex-wrap gap-4">
                       <div className="col-span-4">
@@ -409,7 +411,7 @@ export default function ManageCustomers() {
                           register={register}
                           placeholder="Nhập họ tên"
                           messageErrorInput={errors.id?.message}
-                          classNameInput="mt-1 p-2 w-full border border-[#dedede] bg-[#f2f2f2] focus:border-blue-500 focus:ring-2 outline-none rounded-md"
+                          classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-darkSecond focus:border-blue-500 focus:ring-2 outline-none rounded-md"
                           className="relative flex-1"
                           nameInput="Id"
                           disabled
@@ -421,7 +423,7 @@ export default function ManageCustomers() {
                           register={register}
                           placeholder="Nhập họ tên"
                           messageErrorInput={errors.email?.message}
-                          classNameInput="mt-1 p-2 w-full border border-[#dedede] bg-[#f2f2f2] focus:border-blue-500 focus:ring-2 outline-none rounded-md"
+                          classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-darkSecond focus:border-blue-500 focus:ring-2 outline-none rounded-md"
                           className="relative flex-1"
                           nameInput="Email"
                           disabled
@@ -433,7 +435,7 @@ export default function ManageCustomers() {
                           register={register}
                           placeholder="Nhập họ tên"
                           messageErrorInput={errors.name?.message}
-                          classNameInput="mt-1 p-2 w-full border border-[#dedede] bg-white focus:border-blue-500 focus:ring-2 outline-none rounded-md"
+                          classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-white dark:bg-darkPrimary focus:border-blue-500 focus:ring-2 outline-none rounded-md"
                           className="relative flex-1"
                           nameInput="Họ tên"
                         />
@@ -443,9 +445,8 @@ export default function ManageCustomers() {
                         <Input
                           name="verify"
                           register={register}
-                          placeholder="Nhập họ tên"
                           messageErrorInput={errors.verify?.message}
-                          classNameInput="mt-1 p-2 w-full border border-[#dedede] bg-[#f2f2f2] focus:border-blue-500 focus:ring-2 outline-none rounded-md"
+                          classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-darkSecond focus:border-blue-500 focus:ring-2 outline-none rounded-md"
                           className="relative flex-1"
                           nameInput="Trạng thái"
                           disabled
@@ -459,7 +460,7 @@ export default function ManageCustomers() {
                           register={register}
                           placeholder="Nhập số điện thoại"
                           messageErrorInput={errors.numberPhone?.message}
-                          classNameInput="mt-1 p-2 w-full border border-[#dedede] bg-white focus:border-blue-500 focus:ring-2 outline-none rounded-md"
+                          classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-white dark:bg-darkPrimary focus:border-blue-500 focus:ring-2 outline-none rounded-md"
                           className="relative flex-1"
                           nameInput="Số điện thoại"
                         />
@@ -489,7 +490,7 @@ export default function ManageCustomers() {
                           register={register}
                           placeholder="Nhập ngày khởi tạo"
                           messageErrorInput={errors.created_at?.message}
-                          classNameInput="mt-1 p-2 w-full border border-[#dedede] bg-[#f2f2f2] focus:border-blue-500 focus:ring-2 outline-none rounded-md"
+                          classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-darkSecond focus:border-blue-500 focus:ring-2 outline-none rounded-md"
                           className="relative flex-1"
                           nameInput="Ngày tạo"
                           disabled
@@ -502,7 +503,7 @@ export default function ManageCustomers() {
                           register={register}
                           placeholder="Nhập ngày cập nhật"
                           messageErrorInput={errors.updated_at?.message}
-                          classNameInput="mt-1 p-2 w-full border border-[#dedede] bg-[#f2f2f2] focus:border-blue-500 focus:ring-2 outline-none rounded-md"
+                          classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-darkSecond focus:border-blue-500 focus:ring-2 outline-none rounded-md"
                           className="relative flex-1"
                           nameInput="Ngày cập nhật"
                           disabled

@@ -217,7 +217,7 @@ export default function ManageBrand() {
         />
       </Helmet>
       <NavigateBack />
-      <div className="p-4 bg-white mb-3 border border-[#dedede] rounded-md">
+      <div className="p-4 bg-white dark:bg-darkPrimary mb-3 border border-[#dedede] dark:border-darkBorder rounded-md">
         <h1 className="text-[15px] font-medium">Tìm kiếm</h1>
         <form onSubmit={handleSubmitSearch} className="mt-1">
           <div className="flex items-center gap-4">
@@ -248,7 +248,7 @@ export default function ManageBrand() {
         </form>
       </div>
       <div>
-        <div className="bg-white border border-b-0 border-[#dedede] p-4 pb-2 flex items-center justify-between rounded-tl-md rounded-tr-md">
+        <div className="bg-white dark:bg-darkPrimary border border-b-0 border-[#dedede] dark:border-darkBorder p-4 pb-2 flex items-center justify-between rounded-tl-md rounded-tr-md">
           <h2 className="text-[15px] font-medium">Các Thương hiệu của {state}</h2>
           <div className="flex items-center gap-2">
             <Button
@@ -267,7 +267,7 @@ export default function ManageBrand() {
         {!isFetching && (
           <div>
             <div>
-              <div className="bg-[#f2f2f2] grid grid-cols-12 items-center gap-2 py-3 border border-[#dedede] px-4">
+              <div className="bg-[#f2f2f2] dark:bg-darkPrimary grid grid-cols-12 items-center gap-2 py-3 border border-[#dedede] dark:border-darkBorder px-4">
                 <div className="col-span-2 text-[14px] font-medium">ID</div>
                 <div className="col-span-2 text-[14px] font-medium">Tên thương hiệu</div>
                 <div className="col-span-2 text-[14px] font-medium">Ngày tạo</div>
@@ -306,7 +306,7 @@ export default function ManageBrand() {
                   <button onClick={handleExitsEditItem} className="absolute right-2 top-1">
                     <X color="gray" size={22} />
                   </button>
-                  <form onSubmit={handleSubmitUpdate} className="p-4 bg-white rounded-md">
+                  <form onSubmit={handleSubmitUpdate} className="p-4 bg-white dark:bg-darkPrimary rounded-md">
                     <h3 className="text-[15px] font-medium">Thông tin thể loại</h3>
                     <div className="mt-4 flex items-center gap-4">
                       <Input
@@ -314,7 +314,7 @@ export default function ManageBrand() {
                         register={register}
                         placeholder="Nhập họ tên"
                         messageErrorInput={errors.id?.message}
-                        classNameInput="mt-1 p-2 w-full border border-[#dedede] bg-[#f2f2f2] focus:border-blue-500 focus:ring-2 outline-none rounded-md"
+                        classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-darkSecond focus:border-blue-500 focus:ring-2 outline-none rounded-md"
                         className="relative flex-1"
                         nameInput="Id"
                         disabled
@@ -324,7 +324,7 @@ export default function ManageBrand() {
                         register={register}
                         placeholder="Nhập họ tên"
                         messageErrorInput={errors.name?.message}
-                        classNameInput="mt-1 p-2 w-full border border-[#dedede] bg-white focus:border-blue-500 focus:ring-2 outline-none rounded-md"
+                        classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-white dark:bg-darkPrimary focus:border-blue-500 focus:ring-2 outline-none rounded-md"
                         className="relative flex-1"
                         nameInput="Tên thể loại"
                       />
@@ -335,7 +335,7 @@ export default function ManageBrand() {
                         register={register}
                         placeholder="Nhập ngày tạo"
                         messageErrorInput={errors.created_at?.message}
-                        classNameInput="mt-1 p-2 w-full border border-[#dedede] bg-[#f2f2f2] focus:border-blue-500 focus:ring-2 outline-none rounded-md"
+                        classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-darkSecond focus:border-blue-500 focus:ring-2 outline-none rounded-md"
                         className="relative flex-1"
                         nameInput="Ngày tạo"
                         disabled
@@ -345,7 +345,7 @@ export default function ManageBrand() {
                         register={register}
                         placeholder="Nhập ngày tạo cập nhật"
                         messageErrorInput={errors.updated_at?.message}
-                        classNameInput="mt-1 p-2 w-full border border-[#dedede] bg-[#f2f2f2] focus:border-blue-500 focus:ring-2 outline-none rounded-md"
+                        classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-darkSecond  focus:border-blue-500 focus:ring-2 outline-none rounded-md"
                         className="relative flex-1"
                         nameInput="Ngày cập nhật"
                         disabled

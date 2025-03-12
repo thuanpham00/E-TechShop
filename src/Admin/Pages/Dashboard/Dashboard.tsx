@@ -5,6 +5,7 @@ import { adminAPI } from "src/Apis/admin.api"
 import { SuccessResponse } from "src/Types/utils.type"
 import Statistical from "./Components/Statistical"
 import Skeleton from "src/Components/Skeleton"
+import NavigateBack from "src/Admin/Components/NavigateBack"
 
 const statistical = [
   {
@@ -74,7 +75,7 @@ export default function Dashboard() {
           content="Đây là trang TECHZONE | Laptop, PC, Màn hình, điện thoại, linh kiện Chính Hãng"
         />
       </Helmet>
-
+      <NavigateBack />
       <div>
         {isLoading && <Skeleton />}
         {!isFetching ? (

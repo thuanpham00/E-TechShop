@@ -1,5 +1,4 @@
 import logo from "src/Assets/img/logo_techzone_black.png"
-// import logoDark from "src/Assets/img/logo_techzone.png"
 import { useLocation } from "react-router-dom"
 import {
   Banknote,
@@ -20,7 +19,7 @@ import { useTheme } from "../Theme-provider/Theme-provider"
 export default function Sidebar() {
   const location = useLocation()
   const { theme } = useTheme() // Lấy theme hiện tại
-  const iconColor = theme === "dark" ? "gray" : "black" // Xác định màu icon
+  const iconColor = theme === "dark" || theme === "system" ? "gray" : "black" // Xác định màu icon
 
   const sideBarList = [
     { name: "Thống kê", icon: <LayoutDashboard color={iconColor} />, path: path.AdminDashboard },

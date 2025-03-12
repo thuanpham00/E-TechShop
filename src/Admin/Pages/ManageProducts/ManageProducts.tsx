@@ -114,7 +114,7 @@ export default function ManageProducts() {
         />
       </Helmet>
       <NavigateBack />
-      <div className="p-4 bg-white mb-3 border border-[#dedede] rounded-md">
+      <div className="p-4 bg-white dark:bg-darkPrimary mb-3 border border-[#dedede] dark:border-darkBorder rounded-md">
         <h1 className="text-[15px] font-medium">Tìm kiếm</h1>
         <form onSubmit={handleSubmitSearch} className="mt-1">
           <div className="flex flex-wrap items-center gap-4">
@@ -161,7 +161,7 @@ export default function ManageProducts() {
         </form>
       </div>
       <div>
-        <div className="bg-white border border-b-0 border-[#dedede] p-4 pb-2 flex items-center justify-between rounded-tl-md rounded-tr-md">
+        <div className="bg-white dark:bg-darkPrimary border border-b-0 border-[#dedede] dark:border-darkBorder p-4 pb-2 flex items-center justify-between rounded-tl-md rounded-tr-md">
           <h2 className="text-[15px] font-medium">Danh mục thể loại sản phẩm</h2>
           <div className="flex items-center gap-2">
             <Button
@@ -180,7 +180,7 @@ export default function ManageProducts() {
         {!isFetching && (
           <div>
             <div>
-              <div className="bg-[#f2f2f2] grid grid-cols-12 items-center gap-2 py-3 border border-[#dedede] px-4">
+              <div className="bg-[#f2f2f2] dark:bg-darkPrimary grid grid-cols-12 items-center gap-2 py-3 border border-[#dedede] dark:border-darkBorder px-4">
                 <div className="col-span-2 text-[14px] font-medium">ID</div>
                 <div className="col-span-2 text-[14px] font-medium">Hình ảnh</div>
                 <div className="col-span-1 text-[14px] font-medium">Tên sản phẩm</div>
