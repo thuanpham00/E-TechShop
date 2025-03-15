@@ -1,7 +1,6 @@
 import axios, { AxiosInstance, InternalAxiosRequestConfig } from "axios"
-import { URL_Login, URL_Logout, URL_RefreshToken } from "src/Apis/user.api"
 import { clearLS, getAccessTokenFromLS, setAccessTokenToLS, setNameUserToLS, setRoleToLS } from "src/Helpers/auth"
-import { config } from "src/Constants/config"
+import { apiPath, config } from "src/Constants/config"
 import { AuthResponse, MessageResponse, SuccessResponse } from "src/Types/utils.type"
 import { isAxiosExpiredTokenError, isError401, isError404 } from "./utils"
 import { toast } from "react-toastify"
@@ -39,7 +38,7 @@ class http {
     )
     this.instance.interceptors.response.use(
       (response) => {
-        if (response.config.url === URL_Login) {
+        if (response.config.url === apiPath.URL_Login) {
           const data = response.data as AuthResponse
           this.accessToken = data.result.accessToken
           setAccessTokenToLS(this.accessToken)
@@ -47,7 +46,7 @@ class http {
           setRoleToLS(data.result.userInfo.role)
           // ở server sẽ tự động lưu RT vào cookie ở trình duyệt
         }
-        if (response.config.url === URL_Logout) {
+        if (response.config.url === apiPath.URL_Logout) {
           clearLS()
           this.accessToken = ""
           // ở server sẽ tự động xóa cookie đã lưu trên trình duyệt
@@ -67,7 +66,10 @@ class http {
           // - token hết hạn*
 
           // nếu là lỗi accessToken hết hạn thì tạo mới accessToken
-          if (isAxiosExpiredTokenError<MessageResponse>(error, "AccessToken expired") && url !== URL_RefreshToken) {
+          if (
+            isAxiosExpiredTokenError<MessageResponse>(error, "AccessToken expired") &&
+            url !== apiPath.URL_RefreshToken
+          ) {
             this.refreshTokenRequest = this.refreshTokenRequest ? this.refreshTokenRequest : this.handleRefreshToken()
 
             // nếu không return ở đây nó sẽ chạy xuống bên dưới
@@ -96,7 +98,7 @@ class http {
   private handleRefreshToken() {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return this.instance
-      .post<SuccessResponse<{ accessToken: string }>>(URL_RefreshToken)
+      .post<SuccessResponse<{ accessToken: string }>>(apiPath.URL_RefreshToken)
       .then((res) => {
         const { accessToken } = res.data.result
         this.accessToken = accessToken

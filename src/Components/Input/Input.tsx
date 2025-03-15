@@ -2,6 +2,8 @@
 import { Eye, EyeOff } from "lucide-react"
 import { InputHTMLAttributes, useState } from "react"
 import { UseFormRegister } from "react-hook-form"
+import { Link, useLocation } from "react-router-dom"
+import { path } from "src/Constants/path"
 
 interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   // kế thừa những thuộc tính có sẵn từ thẻ Input
@@ -26,6 +28,7 @@ export default function Input({
   register,
   ...rest
 }: InputProps) {
+  const { pathname } = useLocation()
   const registerInput = name && register ? { ...register(name) } : {}
   const [openEye, setOpenEye] = useState(false)
 
@@ -58,7 +61,19 @@ export default function Input({
       ) : (
         ""
       )}
-      <span className={classNameError}>{messageErrorInput}</span>
+      {rest.type === "password" && pathname === "/login" ? (
+        <div className="flex justify-between">
+          <span className={classNameError}>{messageErrorInput}</span>
+          <Link
+            to={path.ForgotPassword}
+            className="cursor-pointer underline hover:text-blue-500 text-right block duration-200 font-medium text-[14px]"
+          >
+            Quên mật khẩu?
+          </Link>
+        </div>
+      ) : (
+        <span className={classNameError}>{messageErrorInput}</span>
+      )}
     </div>
   )
 }

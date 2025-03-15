@@ -1,27 +1,40 @@
+import { apiPath } from "src/Constants/config"
 import Http from "src/Helpers/http"
 import { AuthResponse, MessageResponse } from "src/Types/utils.type"
 
-export const URL_Register = "/users/register"
-export const URL_Login = "/users/login"
-export const URL_Logout = "/users/logout"
-export const URL_GetMe = "/users/me"
-export const URL_RefreshToken = "/users/refresh-token"
-export const URL_VerifyEmail = "/users/verify-email"
-
 export const userAPI = {
   registerUser: (body: { email: string; password: string; confirm_password: string; name: string }) => {
-    return Http.post<AuthResponse>(URL_Register, body)
+    return Http.post<AuthResponse>(apiPath.URL_Register, body)
   },
   loginUser: (body: { email: string; password: string }) => {
-    return Http.post<AuthResponse>(URL_Login, body)
+    return Http.post<AuthResponse>(apiPath.URL_Login, body)
   },
   logoutUser: () => {
-    return Http.post<MessageResponse>(URL_Logout)
+    return Http.post<MessageResponse>(apiPath.URL_Logout)
   },
   getMe: () => {
-    return Http.get<AuthResponse>(URL_GetMe)
+    return Http.get<AuthResponse>(apiPath.URL_GetMe)
   },
   verifyEmail: (email_verify_token: string) => {
-    return Http.post(URL_VerifyEmail, { email_verify_token })
+    return Http.post(apiPath.URL_VerifyEmail, { email_verify_token })
+  },
+  forgotPassword: (email: string) => {
+    return Http.post(apiPath.URL_ForgotPassword, { email })
+  },
+  verifyForgotPasswordToken: (forgot_password_token: string) => {
+    return Http.post(apiPath.URL_VerifyForgotPasswordToken, { forgot_password_token })
+  },
+  resetPassword: (forgot_password_token: string, password: string, confirm_password: string) => {
+    return Http.post(apiPath.URL_ResetPassword, {
+      forgot_password_token,
+      password,
+      confirm_password
+    })
   }
+
+  // 1 cái loginOauth (có rồi)
+  // 1 cái changePassword
+  // 1 cái resend-email-token
+  // 1 cái updateUser
+  // 1 cái refreshToken (có rồi)
 }
