@@ -55,6 +55,7 @@ type FormDataSearch = Pick<SchemaAuthType, "email" | "name" | "numberPhone">
 export default function ManageCustomers() {
   const navigate = useNavigate()
   const queryClient = useQueryClient()
+
   // Phân trang
   const queryParams: queryParamConfigCustomer = useQueryParams()
   const queryConfig: queryParamConfigCustomer = omitBy(
@@ -133,11 +134,14 @@ export default function ManageCustomers() {
       numberPhone: "",
       avatar: "",
       date_of_birth: new Date(1990, 0, 1),
-      verify: 0
+      verify: 0,
+      created_at: "",
+      updated_at: ""
     } // giá trị khởi tạo
   })
 
   // sau khi query idCustomer thì chạy useEffect
+  // set value vào form
   useEffect(() => {
     if (profile) {
       if (profile.avatar === "") {

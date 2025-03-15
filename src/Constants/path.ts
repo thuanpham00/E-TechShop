@@ -8,6 +8,8 @@ export const path = {
   Profile: "/profile",
   Collection: "/collections/:slug",
   VerifyEmail: "/verify-email",
+  ForgotPassword: "/forgot-password",
+  ResetPassword: "/reset-password",
   NotFound: "*",
   // admin
   AdminDashboard: "/admin/dashboard",

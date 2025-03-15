@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { ClipboardCheck, Copy, Pencil, SquareMousePointer, Trash2 } from "lucide-react"
+import { ClipboardCheck, Copy, Eye, Pencil, Trash2 } from "lucide-react"
 import { useNavigate } from "react-router-dom"
 import { path } from "src/Constants/path"
 import { convertDateTime } from "src/Helpers/common"
@@ -92,7 +92,7 @@ export default function BrandItem({
                 <span className="font-semibold text-[#3b82f6]">{itemTotal.total}</span>
                 <span>|</span>
                 <button onClick={() => handleNavigateProductList(item.name, nameCategory)}>
-                  <SquareMousePointer color="#3b82f6" size={18} />
+                  <Eye color="#3b82f6" size={18} />
                 </button>
               </div>
             )

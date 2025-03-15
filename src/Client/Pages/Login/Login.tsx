@@ -133,7 +133,12 @@ export default function Login() {
             classNameError="text-red-500 text-[13px] font-semibold min-h-[2.25rem] block"
             classNameEye="absolute right-2 top-[40%] -translate-y-1/2"
           />
-          <Button nameButton="Đăng nhập" type="submit" disabled={loginMutation.isPending} />
+          <Button
+            classNameButton="p-4 bg-blue-500 w-full text-white font-semibold rounded-sm hover:bg-blue-500/80 duration-200"
+            nameButton="Đăng nhập"
+            type="submit"
+            disabled={loginMutation.isPending}
+          />
         </form>
         <div className="bg-gray-500 w-full h-[1px] mt-4"></div>
         <div className="mt-2 flex items-center justify-center gap-1 ">

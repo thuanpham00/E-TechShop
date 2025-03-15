@@ -45,11 +45,11 @@ export default function CustomerItem({
       <div className="col-span-1 text-center">{item.numberPhone}</div>
       <div className="col-span-2 flex justify-center">
         {item.verify === 1 ? (
-          <div className=" text-[13px] font-medium py-1 px-2 border border-[#38b000] bg-[#38b000]/20 text-[#38b000] text-center rounded-full flex gap-1 justify-center items-center">
+          <div className=" text-[13px] font-medium py-1 px-2 border border-[#b2ffb4] bg-[#b2ffb4] text-[#04710c] text-center rounded-full flex gap-1 justify-center items-center">
             Verified
           </div>
         ) : (
-          <div className="text-[13px] font-medium py-1 px-2 border border-[#df0019] bg-[#df0019]/20 text-[#df0019] text-center rounded-full flex gap-1 justify-center items-center">
+          <div className="text-[13px] font-medium py-1 px-2 border border-[#ffdcdc] bg-[#ffdcdc] text-[#f00] text-center rounded-full flex gap-1 justify-center items-center">
             Unverified
           </div>
         )}

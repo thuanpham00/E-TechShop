@@ -8,6 +8,8 @@ import MainLayoutAuth from "src/Client/Layout/MainLayoutAuth"
 const Register = lazy(() => import("src/Client/Pages/Register"))
 const Login = lazy(() => import("src/Client/Pages/Login"))
 const LoginGoogle = lazy(() => import("src/Client/Pages/LoginGoogle"))
+const ForgotPassword = lazy(() => import("src/Client/Pages/ForgotPassword"))
+const ResetPassword = lazy(() => import("src/Client/Pages/ResetPassword"))
 const NotFound = lazy(() => import("src/Client/Pages/NotFound"))
 const Dashboard = lazy(() => import("src/Admin/Pages/Dashboard"))
 const ManageCustomers = lazy(() => import("src/Admin/Pages/ManageCustomers"))
@@ -182,6 +184,22 @@ export default function useRouterAdmin() {
               element: (
                 <Suspense>
                   <LoginGoogle />
+                </Suspense>
+              )
+            },
+            {
+              path: path.ForgotPassword,
+              element: (
+                <Suspense>
+                  <ForgotPassword />
+                </Suspense>
+              )
+            },
+            {
+              path: path.ResetPassword,
+              element: (
+                <Suspense>
+                  <ResetPassword />
                 </Suspense>
               )
             }
