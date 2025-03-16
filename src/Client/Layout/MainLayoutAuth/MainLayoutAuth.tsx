@@ -16,7 +16,7 @@ function MainLayoutAuthInner() {
   }, [])
 
   return (
-    <div className="flex items-center bg-white">
+    <div className="flex items-center dark:bg-darkPrimary bg-white">
       <div className="w-[70%]">
         <img className="w-full object-cover h-screen" src={`${bannerImg[indexBanner]}`} alt="banner" />
       </div>

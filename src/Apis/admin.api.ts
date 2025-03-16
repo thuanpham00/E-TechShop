@@ -41,6 +41,11 @@ export const adminAPI = {
     }
   },
   category: {
+    // tạo danh mục
+    createCategory: (body: { name: string }) => {
+      return Http.post("/admin/categories", body)
+    },
+
     // lấy danh sách danh mục
     getCategories: (params: queryParamConfigCategory, signal: AbortSignal) => {
       return Http.get(`/admin/categories/`, {

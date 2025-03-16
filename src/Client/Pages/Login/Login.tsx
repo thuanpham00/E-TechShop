@@ -12,7 +12,6 @@ import { schemaAuth, SchemaAuthType } from "src/Client/Utils/rule"
 import { isError422 } from "src/Helpers/utils"
 import { ErrorResponse } from "src/Types/utils.type"
 import { AppContext } from "src/Context/authContext"
-import logo from "src/Assets/img/logo_techzone_white.png"
 import Button from "src/Components/Button"
 import Input from "src/Components/Input"
 
@@ -92,13 +91,15 @@ export default function Login() {
         <meta name="description" content="Đây là trang đăng nhập người dùng của hệ thống" />
       </Helmet>
       <div className="p-6">
-        <Link to={path.Home}>
-          <img src={logo} alt="logo" className="mx-auto w-[50%] object-contain" />
+        <Link to={path.Home} className="text-center block">
+          <span className="text-darkPrimary dark:text-white text-2xl font-semibold text-center pb-[1px] border-b-[3px] border-darkPrimary dark:border-white">
+            TechZone
+          </span>
         </Link>
-        <h1 className="text-xl font-semibold text-center mt-2">Đăng nhập</h1>
+        <h1 className="text-lg font-semibold text-center mt-2 text-[#000] dark:text-[#fff]">Đăng nhập</h1>
         <Link
           to={googleAuth}
-          className="mt-4 border border-black/80 rounded-full w-[80%] mx-auto p-2 flex items-center justify-center gap-2"
+          className="mt-4 border border-black/80 dark:border-white rounded-full w-[80%] mx-auto p-2 flex items-center justify-center gap-2"
         >
           <div
             className="w-5 h-5"
@@ -134,7 +135,7 @@ export default function Login() {
             classNameEye="absolute right-2 top-[40%] -translate-y-1/2"
           />
           <Button
-            classNameButton="p-4 bg-blue-500 w-full text-white font-semibold rounded-sm hover:bg-blue-500/80 duration-200"
+            classNameButton="mt-1 p-4 bg-blue-500 w-full text-white font-semibold rounded-sm hover:bg-blue-500/80 duration-200"
             nameButton="Đăng nhập"
             type="submit"
             disabled={loginMutation.isPending}

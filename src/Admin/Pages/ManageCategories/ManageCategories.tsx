@@ -190,6 +190,8 @@ export default function ManageCategories() {
     }
   }
 
+  const [addItem, setAddItem] = useState(false)
+
   return (
     <div>
       <Helmet>
@@ -240,6 +242,7 @@ export default function ManageCategories() {
               classNameButton="p-2 bg-blue-500 w-full text-white font-medium rounded-md hover:bg-blue-500/80 duration-200 text-[13px] flex items-center gap-1"
             />
             <Button
+              onClick={() => setAddItem(true)}
               icon={<Plus size={15} />}
               nameButton="Thêm mới"
               classNameButton="p-2 bg-blue-500 w-full text-white font-medium rounded-md hover:bg-blue-500/80 duration-200 text-[13px] flex items-center gap-1"
@@ -333,6 +336,39 @@ export default function ManageCategories() {
                       <Button
                         type="submit"
                         nameButton="Cập nhật"
+                        classNameButton="w-[120px] p-4 py-2 bg-blue-500 mt-2 w-full text-white font-semibold rounded-sm hover:bg-blue-500/80 duration-200"
+                      />
+                    </div>
+                  </form>
+                </div>
+              </Fragment>
+            ) : (
+              ""
+            )}
+            {addItem ? (
+              <Fragment>
+                <div className="fixed left-0 top-0 z-10 h-screen w-screen bg-black/60"></div>
+                <div className="z-20 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+                  <button onClick={() => setAddItem(false)} className="absolute right-2 top-1">
+                    <X color="gray" size={22} />
+                  </button>
+                  <form onSubmit={handleSubmitUpdate} className="p-4 bg-white dark:bg-darkPrimary rounded-md">
+                    <h3 className="text-[15px] font-medium">Thông tin thể loại</h3>
+                    <div className="mt-4 flex items-center gap-4">
+                      <Input
+                        name="name"
+                        register={register}
+                        placeholder="Nhập tên thể loại"
+                        messageErrorInput={errors.name?.message}
+                        classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-white dark:bg-darkPrimary focus:border-blue-500 focus:ring-2 outline-none rounded-md"
+                        className="relative flex-1"
+                        nameInput="Tên thể loại"
+                      />
+                    </div>
+                    <div className="flex items-center justify-end">
+                      <Button
+                        type="submit"
+                        nameButton="Thêm"
                         classNameButton="w-[120px] p-4 py-2 bg-blue-500 mt-2 w-full text-white font-semibold rounded-sm hover:bg-blue-500/80 duration-200"
                       />
                     </div>

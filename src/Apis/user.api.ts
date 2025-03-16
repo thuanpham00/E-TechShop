@@ -1,31 +1,37 @@
-import { apiPath } from "src/Constants/config"
 import Http from "src/Helpers/http"
 import { AuthResponse, MessageResponse } from "src/Types/utils.type"
 
 export const userAPI = {
-  registerUser: (body: { email: string; password: string; confirm_password: string; name: string }) => {
-    return Http.post<AuthResponse>(apiPath.URL_Register, body)
+  registerUser: (body: { email: string; password: string; confirm_password: string; name: string; phone: string }) => {
+    return Http.post<AuthResponse>("/users/register", body)
   },
+
   loginUser: (body: { email: string; password: string }) => {
-    return Http.post<AuthResponse>(apiPath.URL_Login, body)
+    return Http.post<AuthResponse>("users/login", body)
   },
+
   logoutUser: () => {
-    return Http.post<MessageResponse>(apiPath.URL_Logout)
+    return Http.post<MessageResponse>("users/logout")
   },
+
   getMe: () => {
-    return Http.get<AuthResponse>(apiPath.URL_GetMe)
+    return Http.get<AuthResponse>("users/me")
   },
+
   verifyEmail: (email_verify_token: string) => {
-    return Http.post(apiPath.URL_VerifyEmail, { email_verify_token })
+    return Http.post("/users/verify-email", { email_verify_token })
   },
+
   forgotPassword: (email: string) => {
-    return Http.post(apiPath.URL_ForgotPassword, { email })
+    return Http.post("/users/forgot-password", { email })
   },
+
   verifyForgotPasswordToken: (forgot_password_token: string) => {
-    return Http.post(apiPath.URL_VerifyForgotPasswordToken, { forgot_password_token })
+    return Http.post("/users/verify-forgot-password", { forgot_password_token })
   },
+
   resetPassword: (forgot_password_token: string, password: string, confirm_password: string) => {
-    return Http.post(apiPath.URL_ResetPassword, {
+    return Http.post("/users/reset-password", {
       forgot_password_token,
       password,
       confirm_password

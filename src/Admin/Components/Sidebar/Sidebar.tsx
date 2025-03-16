@@ -1,4 +1,3 @@
-import logo from "src/Assets/img/logo_techzone_black.png"
 import { useLocation } from "react-router-dom"
 import {
   Banknote,
@@ -38,8 +37,12 @@ export default function Sidebar() {
   return (
     <div className="sticky top-0 left-0 p-4 bg-white dark:bg-darkPrimary h-screen border-r border-[#dedede] dark:border-darkBorder">
       <div>
-        <img src={theme === "dark" ? logo : logo} alt="logo" className="w-[70%] mx-auto" />
-        <div className="mt-8">
+        <div className="text-center">
+          <span className="text-darkPrimary dark:text-white text-2xl font-semibold text-center border-b-[3px] border-darkPrimary dark:border-white">
+            TechZone
+          </span>
+        </div>
+        <div className="mt-4">
           {sideBarList.map((item, index) => (
             <div key={index}>
               <SidebarItem

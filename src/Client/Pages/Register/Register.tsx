@@ -5,7 +5,6 @@ import { useForm } from "react-hook-form"
 import { Link, useNavigate } from "react-router-dom"
 import { schemaAuth, SchemaAuthType } from "src/Client/Utils/rule"
 import { path } from "src/Constants/path"
-import logo from "src/Assets/img/logo_techzone_white.png"
 import { useMutation } from "@tanstack/react-query"
 import { userAPI } from "src/Apis/user.api"
 import { toast } from "react-toastify"
@@ -80,10 +79,12 @@ export default function Register() {
       </Helmet>
 
       <div className="p-6">
-        <Link to={path.Home}>
-          <img src={logo} alt="logo" className="mx-auto w-[50%] object-contain" />
+        <Link to={path.Home} className="text-center block">
+          <span className="text-darkPrimary dark:text-white text-2xl font-semibold text-center pb-[1px] border-b-[3px] border-darkPrimary dark:border-white">
+            TechZone
+          </span>
         </Link>
-        <h1 className="text-xl font-semibold text-center mt-2">Đăng ký</h1>
+        <h1 className="text-lg font-semibold text-center mt-2">Đăng ký</h1>
         <form onSubmit={handleSubmitForm} className="mt-2">
           <Input
             name="name"
