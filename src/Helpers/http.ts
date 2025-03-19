@@ -1,5 +1,12 @@
 import axios, { AxiosInstance, InternalAxiosRequestConfig } from "axios"
-import { clearLS, getAccessTokenFromLS, setAccessTokenToLS, setNameUserToLS, setRoleToLS } from "src/Helpers/auth"
+import {
+  clearLS,
+  getAccessTokenFromLS,
+  setAccessTokenToLS,
+  setAvatarImageToLS,
+  setNameUserToLS,
+  setRoleToLS
+} from "src/Helpers/auth"
 import { config } from "src/Constants/config"
 import { AuthResponse, MessageResponse, SuccessResponse } from "src/Types/utils.type"
 import { isAxiosExpiredTokenError, isError401, isError404 } from "./utils"
@@ -38,14 +45,13 @@ class http {
     )
     this.instance.interceptors.response.use(
       (response) => {
-        console.log(response)
         if (response.config.url === "users/login") {
-          console.log(response)
           const data = response.data as AuthResponse
           this.accessToken = data.result.accessToken
           setAccessTokenToLS(this.accessToken)
           setNameUserToLS(data.result.userInfo.name)
           setRoleToLS(data.result.userInfo.role)
+          setAvatarImageToLS(data.result.userInfo.avatar)
           // ở server sẽ tự động lưu RT vào cookie ở trình duyệt
         }
         if (response.config.url === "users/logout") {

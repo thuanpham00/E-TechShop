@@ -67,16 +67,18 @@ export default function BrandItem({
             <AlertDialogTrigger>
               <Trash2 color="red" size={18} />
             </AlertDialogTrigger>
-            <AlertDialogContent>
+            <AlertDialogContent className="w-[350px]">
               <AlertDialogHeader>
-                <AlertDialogTitle>Bạn có chắc chắn muốn xóa?</AlertDialogTitle>
-                <AlertDialogDescription>
-                  Không thể hoàn tác hành động này. Thao tác này sẽ xóa vĩnh viễn dữ liệu của bạn.
-                </AlertDialogDescription>
+                <AlertDialogHeader>
+                  <AlertDialogTitle className="text-base">Bạn có chắc chắn muốn xóa?</AlertDialogTitle>
+                  <AlertDialogDescription className="text-sm">
+                    Không thể hoàn tác hành động này. Thao tác này sẽ xóa vĩnh viễn dữ liệu của bạn.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
               </AlertDialogHeader>
               <AlertDialogFooter>
-                <AlertDialogCancel>Hủy</AlertDialogCancel>
-                <AlertDialogAction onClick={() => onDelete(item._id)} className="bg-red-500 hover:bg-red-600">
+                <AlertDialogCancel className="text-sm">Hủy</AlertDialogCancel>
+                <AlertDialogAction onClick={() => onDelete(item._id)} className="bg-red-500 hover:bg-red-600 text-sm">
                   Xóa
                 </AlertDialogAction>
               </AlertDialogFooter>

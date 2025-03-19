@@ -69,6 +69,11 @@ export const adminAPI = {
       return Http.delete(`/admin/categories/${id}`)
     },
 
+    // tạo danh mục
+    createBrand: (body: { name: string; categoryId: string }) => {
+      return Http.post("/admin/brands", body)
+    },
+
     // lấy danh sách thương hiệu thuộc về 1 danh mục
     getBrands: (params: queryParamConfigBrand, signal: AbortSignal) => {
       return Http.get("/admin/brands", {

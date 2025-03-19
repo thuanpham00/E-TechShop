@@ -46,8 +46,8 @@ export default function Sidebar() {
           {sideBarList.map((item, index) => (
             <div key={index}>
               <SidebarItem
-                className={`${location.pathname.startsWith(item.path) ? "text-[14px] text-[#df0019] font-semibold" : "text-[14px] text-black dark:text-white/80 font-medium hover:text-[#495057] duration-200 ease-in"}`}
-                classNameWrapper={`${location.pathname.startsWith(item.path) ? "flex items-center gap-2 cursor-pointer mb-2 rounded-sm p-2 bg-red-100" : "flex items-center gap-2 cursor-pointer mb-2 rounded-sm p-2"}`}
+                className={`${location.pathname.startsWith(item.path) ? "text-[14px] text-black font-semibold" : "text-[14px] text-black dark:text-white/80 font-medium hover:text-[#495057] duration-200 ease-in"}`}
+                classNameWrapper={`${location.pathname.startsWith(item.path) ? "flex items-center gap-2 cursor-pointer mb-2 rounded-sm p-2 bg-[#d9d9d9]" : "flex items-center gap-2 cursor-pointer mb-2 rounded-sm p-2"}`}
                 icon={item.icon}
                 nameSideBar={item.name}
                 path={item.path}

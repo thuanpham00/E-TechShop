@@ -1,5 +1,5 @@
 import { createContext, useState } from "react"
-import { getAccessTokenFromLS, getNameUserFromLS, getRoleFromLS } from "src/Helpers/auth"
+import { getAccessTokenFromLS, getAvatarImageFromLS, getNameUserFromLS, getRoleFromLS } from "src/Helpers/auth"
 
 type Props = {
   children: React.ReactNode
@@ -15,6 +15,8 @@ type TypeInitialState = {
   reset: () => void
   role: string | null
   setRole: React.Dispatch<React.SetStateAction<string | null>>
+  avatar: string | null
+  setAvatar: React.Dispatch<React.SetStateAction<string | null>>
 }
 
 // giá trị khởi tạo cho state global
@@ -27,7 +29,9 @@ const initialStateContext: TypeInitialState = {
   setIsShowCategory: () => null,
   reset: () => null,
   role: getRoleFromLS(),
-  setRole: () => null
+  setRole: () => null,
+  avatar: getAvatarImageFromLS(),
+  setAvatar: () => null
 }
 
 export const AppContext = createContext<TypeInitialState>(initialStateContext)
@@ -37,6 +41,7 @@ export default function AppClientProvider({ children }: Props) {
   const [nameUser, setNameUser] = useState<string | null>(initialStateContext.nameUser)
   const [isShowCategory, setIsShowCategory] = useState<boolean>(initialStateContext.isShowCategory)
   const [role, setRole] = useState<string | null>(initialStateContext.role)
+  const [avatar, setAvatar] = useState<string | null>(initialStateContext.avatar)
   /**
    * Các biến trong context (như isAuthenticated, nameUser, isShowCategory, ...) phải khớp với các biến state trong AppClientProvider để đảm bảo rằng chúng phản ánh đúng dữ liệu toàn cục được quản lý bởi context.
    * Việc các biến trong context đặt tên giống state là giúp quản lý trạng thái dữ liệu toàn cục và khi các biến trong context thay đổi đồng thời state thay đổi dẫn đến các component con sử dụng context đó sẽ re-render lại do state
@@ -59,7 +64,9 @@ export default function AppClientProvider({ children }: Props) {
         setIsShowCategory,
         reset,
         role,
-        setRole
+        setRole,
+        avatar,
+        setAvatar
       }}
     >
       {children}

@@ -12,7 +12,7 @@ import Popover from "src/Components/Popover"
 
 export default function Header() {
   const navigate = useNavigate()
-  const { isAuthenticated, nameUser, setIsAuthenticated, setNameUser, setRole, setIsShowCategory } =
+  const { isAuthenticated, nameUser, avatar, setIsAuthenticated, setNameUser, setRole, setIsShowCategory, setAvatar } =
     useContext(AppContext)
 
   const logoutMutation = useMutation({
@@ -27,6 +27,8 @@ export default function Header() {
         setIsAuthenticated(false)
         setNameUser(null)
         setRole(null)
+        setAvatar(null)
+
         toast.success(response.data.message, {
           autoClose: 1000
         })
@@ -160,7 +162,7 @@ export default function Header() {
                   >
                     {
                       <div className="flex items-center gap-1 py-1 px-2 rounded-[4px] bg-secondBlue text-white font-semibold hover:bg-secondBlue/50 duration-200 transition ease-linear cursor-pointer">
-                        <img src={avatarDefault} className="h-8 w-8" alt="avatar default" />
+                        <img src={avatar || avatarDefault} className="h-8 w-8 rounded-full" alt="avatar default" />
                         <div>
                           <span className="text-xs">Xin chào</span>
                           <span className="block text-[13px] truncate w-32">{nameUser}</span>

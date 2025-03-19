@@ -1,6 +1,6 @@
 import { keepPreviousData, useQuery } from "@tanstack/react-query"
 import { isUndefined, omit, omitBy } from "lodash"
-import { FolderUp, Plus, Search, X } from "lucide-react"
+import { Filter, FolderUp, Plus, Search, X } from "lucide-react"
 import { Helmet } from "react-helmet-async"
 import { Fragment } from "react/jsx-runtime"
 import { adminAPI } from "src/Apis/admin.api"
@@ -47,7 +47,7 @@ export default function ManageProducts() {
       return adminAPI.product.getProducts(queryConfig as queryParamConfigCategory, controller.signal)
     },
     retry: 0, // số lần retry lại khi hủy request (dùng abort signal)
-    staleTime: 1 * 60 * 1000, // dưới 5 phút nó không gọi lại api
+    staleTime: 3 * 60 * 1000, // dưới 5 phút nó không gọi lại api
     placeholderData: keepPreviousData
   })
 
@@ -114,60 +114,59 @@ export default function ManageProducts() {
         />
       </Helmet>
       <NavigateBack />
+      <div className="text-lg font-semibold py-2">Sản phẩm</div>
       <div className="p-4 bg-white dark:bg-darkPrimary mb-3 border border-[#dedede] dark:border-darkBorder rounded-md">
         <h1 className="text-[15px] font-medium">Tìm kiếm</h1>
-        <form onSubmit={handleSubmitSearch} className="mt-1">
-          <div className="flex flex-wrap items-center gap-4">
+        <div>
+          <form onSubmit={handleSubmitSearch} className="mt-1 flex items-center gap-4">
             <Input
               name="name_product"
               register={registerFormSearch}
               placeholder="Nhập tên sản phẩm"
-              classNameInput="p-2 w-full border border-[#dedede] bg-[#f2f2f2] focus:border-blue-500 focus:ring-2 outline-none rounded-md h-[35px]"
-              className="relative flex-1"
+              classNameInput="p-2 w-full border border-[#dedede] bg-[#f2f2f2] focus:border-blue-500 focus:ring-1 outline-none rounded-md h-[35px]"
+              className="relative flex-1 basis-2/3"
               classNameError="hidden"
             />
             <Input
               name="brand_product"
               register={registerFormSearch}
               placeholder="Nhập thương hiệu"
-              classNameInput="p-2 w-full border border-[#dedede] bg-[#f2f2f2] focus:border-blue-500 focus:ring-2 outline-none rounded-md h-[35px]"
-              className="relative flex-1"
+              classNameInput="p-2 w-full border border-[#dedede] bg-[#f2f2f2] focus:border-blue-500 focus:ring-1 outline-none rounded-md h-[35px]"
+              className="relative flex-1 basis-1/3"
               classNameError="hidden"
             />
             <Input
               name="category_product"
               register={registerFormSearch}
               placeholder="Nhập thể loại"
-              classNameInput="p-2 w-full border border-[#dedede] bg-[#f2f2f2] focus:border-blue-500 focus:ring-2 outline-none rounded-md h-[35px]"
-              className="relative flex-1"
+              classNameInput="p-2 w-full border border-[#dedede] bg-[#f2f2f2] focus:border-blue-500 focus:ring-1 outline-none rounded-md h-[35px]"
+              className="relative flex-1 basis-1/3"
               classNameError="hidden"
             />
-            <div className="flex items-center gap-2">
+            <div className="flex gap-2">
+              <Button
+                onClick={handleResetFormSearch}
+                type="button"
+                icon={<X size={15} />}
+                classNameButton="p-2 bg-[#f2f2f2] border border-[#dedede] w-full text-black font-medium hover:bg-[#dedede]/80 rounded-md duration-200 text-[13px] flex items-center gap-1 h-[35px]"
+              />
               <Button
                 type="submit"
                 icon={<Search size={15} />}
-                nameButton="Tìm kiếm"
-                classNameButton="p-2 bg-blue-500 w-full text-white font-medium rounded-md hover:bg-blue-500/80 duration-200 text-[13px] flex items-center gap-1 h-[35px]"
-              />
-              <Button
-                type="button"
-                onClick={handleResetFormSearch}
-                icon={<X size={15} />}
-                nameButton="Xóa"
-                classNameButton="p-2 bg-white border border-[#dedede] w-full text-black font-medium rounded-md hover:bg-[#dedede]/80 duration-200 text-[13px] flex items-center gap-1 h-[35px]"
+                classNameButton="py-2 px-3 bg-blue-500 w-full text-white font-medium hover:bg-blue-500/80 rounded-md duration-200 text-[13px] flex items-center gap-1 h-[35px]"
               />
             </div>
-          </div>
-        </form>
-      </div>
-      <div>
-        <div className="bg-white dark:bg-darkPrimary border border-b-0 border-[#dedede] dark:border-darkBorder p-4 pb-2 flex items-center justify-between rounded-tl-md rounded-tr-md">
-          <h2 className="text-[15px] font-medium">Danh mục thể loại sản phẩm</h2>
-          <div className="flex items-center gap-2">
+          </form>
+          <div className="mt-4 flex items-center justify-end gap-2">
+            <Button
+              icon={<Filter size={15} />}
+              nameButton="Bộ lọc"
+              classNameButton="p-2 border border-[#E2E7FF] bg-[#E2E7FF] w-full text-[#3A5BFF] font-medium rounded-md hover:bg-blue-500/40 duration-200 text-[13px] flex items-center gap-1"
+            />
             <Button
               icon={<FolderUp size={15} />}
               nameButton="Export"
-              classNameButton="p-2 bg-blue-500 w-full text-white font-medium rounded-md hover:bg-blue-500/80 duration-200 text-[13px] flex items-center gap-1"
+              classNameButton="p-2 border border-[#E2E7FF] bg-[#E2E7FF] w-full text-[#3A5BFF] font-medium rounded-md hover:bg-blue-500/40 duration-200 text-[13px] flex items-center gap-1"
             />
             <Button
               icon={<Plus size={15} />}
@@ -176,45 +175,46 @@ export default function ManageProducts() {
             />
           </div>
         </div>
-        {isLoading && <Skeleton />}
-        {!isFetching && (
-          <div>
+        <div>
+          {isLoading && <Skeleton />}
+          {!isFetching && (
             <div>
-              <div className="bg-[#f2f2f2] dark:bg-darkPrimary grid grid-cols-12 items-center gap-2 py-3 border border-[#dedede] dark:border-darkBorder px-4">
-                <div className="col-span-2 text-[14px] font-medium">ID</div>
-                <div className="col-span-2 text-[14px] font-medium">Hình ảnh</div>
-                <div className="col-span-1 text-[14px] font-medium">Tên sản phẩm</div>
-                <div className="col-span-1 text-[14px] font-medium">Thương hiệu</div>
-                <div className="col-span-1 text-[14px] font-medium">Thể loại</div>
-                <div className="col-span-1 text-[14px] font-medium">Giá tiền</div>
-                <div className="col-span-1 text-[14px] font-medium">Số lượng</div>
-                <div className="col-span-1 text-[14px] font-medium">Ngày tạo</div>
-                <div className="col-span-1 text-[14px] font-medium">Ngày cập nhật</div>
-                <div className="col-span-1 text-[14px] font-medium">Hành động</div>
+              <div className="mt-4">
+                <div className="bg-[#f2f2f2] dark:bg-darkPrimary grid grid-cols-12 items-center gap-2 py-3 border border-[#dedede] dark:border-darkBorder px-4 rounded-tl-md rounded-tr-md">
+                  <div className="col-span-2 text-[14px] font-medium">ID</div>
+                  <div className="col-span-1 text-[14px] font-medium">Hình ảnh</div>
+                  <div className="col-span-2 text-[14px] font-medium">Tên sản phẩm</div>
+                  <div className="col-span-1 text-[14px] font-medium">Thương hiệu</div>
+                  <div className="col-span-1 text-[14px] font-medium">Thể loại</div>
+                  <div className="col-span-1 text-[14px] font-medium">Giá tiền</div>
+                  <div className="col-span-1 text-[14px] font-medium">Số lượng</div>
+                  <div className="col-span-1 text-[14px] font-medium">Ngày tạo</div>
+                  <div className="col-span-1 text-[14px] font-medium">Ngày cập nhật</div>
+                  <div className="col-span-1 text-[14px] font-medium">Hành động</div>
+                </div>
+                <div className="">
+                  {listProduct.length > 0 ? (
+                    listProduct.map((item) => (
+                      <Fragment key={item._id}>
+                        <ProductItem
+                          // onDelete={handleDeleteCategory}
+                          // handleEditItem={handleEditItem}
+                          item={item}
+                        />
+                      </Fragment>
+                    ))
+                  ) : (
+                    <div className="text-center mt-4">Không tìm thấy kết quả</div>
+                  )}
+                </div>
               </div>
-              <div className="">
-                {listProduct.length > 0 ? (
-                  listProduct.map((item) => (
-                    <Fragment key={item._id}>
-                      <ProductItem
-                        // onDelete={handleDeleteCategory}
-                        // handleEditItem={handleEditItem}
-                        item={item}
-                      />
-                    </Fragment>
-                  ))
-                ) : (
-                  <div className="text-center mt-4">Không tìm thấy kết quả</div>
-                )}
-              </div>
-            </div>
-            <Pagination
-              data={result}
-              queryConfig={queryConfig}
-              page_size={page_size}
-              pathNavigate={path.AdminProducts}
-            />
-            {/* {idCategory !== null ? (
+              <Pagination
+                data={result}
+                queryConfig={queryConfig}
+                page_size={page_size}
+                pathNavigate={path.AdminProducts}
+              />
+              {/* {idCategory !== null ? (
               <Fragment>
                 <div className="fixed left-0 top-0 z-10 h-screen w-screen bg-black/60 "></div>
                 <div className="z-20 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
@@ -280,8 +280,9 @@ export default function ManageProducts() {
             ) : (
               ""
             )} */}
-          </div>
-        )}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   )

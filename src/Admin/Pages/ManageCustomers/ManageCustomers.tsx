@@ -79,7 +79,7 @@ export default function ManageCustomers() {
       return adminAPI.customer.getCustomers(queryConfig as queryParamConfig, controller.signal)
     },
     retry: 0, // số lần retry lại khi hủy request (dùng abort signal)
-    staleTime: 1 * 60 * 1000, // dưới 1 phút nó không gọi lại api
+    staleTime: 3 * 60 * 1000, // dưới 1 phút nó không gọi lại api
     placeholderData: keepPreviousData // giữ data cũ trong 1p
   })
 
@@ -249,7 +249,29 @@ export default function ManageCustomers() {
   const handleDeleteCustomer = (id: string) => {
     deleteCustomerMutation.mutate(id, {
       onSuccess: () => {
-        queryClient.invalidateQueries({ queryKey: ["listCustomer", queryConfig] })
+        // lấy ra query của trang hiện tại (có queryConfig)
+        const data = queryClient.getQueryData(["listBrand", queryConfig])
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const data_2 = (data as any).data as SuccessResponse<{
+          result: UserType[]
+          total: string
+          page: string
+          limit: string
+          totalOfPage: string
+          listTotalProduct: { brand: string; total: string }[]
+        }>
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        if (data && data_2.result.result.length === 1 && Number(queryConfig.page) > 1) {
+          navigate({
+            pathname: path.AdminCustomers,
+            search: createSearchParams({
+              ...queryConfig,
+              page: (Number(queryConfig.page) - 1).toString()
+            }).toString()
+          })
+        }
+
+        queryClient.invalidateQueries({ queryKey: ["listCustomer"] })
         toast.success("Xóa thành công!", { autoClose: 1500 })
       }
     })
@@ -298,17 +320,18 @@ export default function ManageCustomers() {
         />
       </Helmet>
       <NavigateBack />
+      <div className="text-lg font-semibold py-2">Khách hàng</div>
       <div className="p-4 bg-white dark:bg-darkPrimary mb-3 border border-[#dedede] dark:border-darkBorder rounded-md">
         <h1 className="text-[15px] font-medium">Tìm kiếm</h1>
-        <form onSubmit={handleSubmitSearch} className="mt-1">
-          <div className="flex flex-wrap items-center gap-4">
+        <div>
+          <form onSubmit={handleSubmitSearch} className="mt-1 flex items-center gap-4">
             <Input
               name="email"
               register={registerFormSearch}
               placeholder="Nhập email"
               messageErrorInput={formErrors.email?.message}
-              classNameInput="p-2 w-full border border-[#dedede] bg-[#f2f2f2] focus:border-blue-500 focus:ring-2 outline-none rounded-md h-[35px]"
-              className="relative flex-1"
+              classNameInput="p-2 w-full border border-[#dedede] bg-[#f2f2f2] focus:border-blue-500 focus:ring-1 outline-none rounded-md h-[35px]"
+              className="relative flex-1 basis-2/3"
               classNameError="hidden"
             />
             <Input
@@ -316,8 +339,8 @@ export default function ManageCustomers() {
               register={registerFormSearch}
               placeholder="Nhập họ tên"
               messageErrorInput={formErrors.name?.message}
-              classNameInput="p-2 w-full border border-[#dedede] bg-[#f2f2f2] focus:border-blue-500 focus:ring-2 outline-none rounded-md h-[35px]"
-              className="relative flex-1"
+              classNameInput="p-2 w-full border border-[#dedede] bg-[#f2f2f2] focus:border-blue-500 focus:ring-1 outline-none rounded-md h-[35px]"
+              className="relative flex-1 basis-1/3"
               classNameError="hidden"
             />
             <Input
@@ -325,41 +348,34 @@ export default function ManageCustomers() {
               register={registerFormSearch}
               placeholder="Nhập số điện thoại"
               messageErrorInput={formErrors.numberPhone?.message}
-              classNameInput="p-2 w-full border border-[#dedede] bg-[#f2f2f2] focus:border-blue-500 focus:ring-2 outline-none rounded-md h-[35px]"
-              className="relative flex-1"
+              classNameInput="p-2 w-full border border-[#dedede] bg-[#f2f2f2] focus:border-blue-500 focus:ring-1 outline-none rounded-md h-[35px]"
+              className="relative flex-1 basis-1/3"
               classNameError="hidden"
             />
-            <div className="flex items-center gap-2">
-              <Button
-                type="submit"
-                icon={<Search size={15} />}
-                nameButton="Tìm kiếm"
-                classNameButton="p-2 bg-blue-500 w-full text-white font-medium rounded-md hover:bg-blue-500/80 duration-200 text-[13px] flex items-center gap-1 h-[35px]"
-              />
+            <div className="flex gap-2">
               <Button
                 onClick={handleResetFormSearch}
                 type="button"
                 icon={<X size={15} />}
-                nameButton="Xóa"
-                classNameButton="p-2 bg-white border border-[#dedede] w-full text-black font-medium rounded-md hover:bg-[#dedede]/80 duration-200 text-[13px] flex items-center gap-1 h-[35px]"
+                classNameButton="p-2 bg-[#f2f2f2] border border-[#dedede] w-full text-black font-medium hover:bg-[#dedede]/80 rounded-md duration-200 text-[13px] flex items-center gap-1 h-[35px]"
+              />
+              <Button
+                type="submit"
+                icon={<Search size={15} />}
+                classNameButton="py-2 px-3 bg-blue-500 w-full text-white font-medium hover:bg-blue-500/80 rounded-md duration-200 text-[13px] flex items-center gap-1 h-[35px]"
               />
             </div>
-          </div>
-        </form>
-      </div>
-      <div>
-        <div className="bg-white dark:bg-darkPrimary border border-b-0 border-[#dedede] dark:border-darkBorder p-4 flex items-center justify-between rounded-tl-md rounded-tr-md">
-          <h2 className="text-[15px] font-medium">Danh mục thể loại sản phẩm</h2>
-          <div className="flex items-center gap-2">
+          </form>
+          <div className="mt-4 flex items-center justify-end gap-2">
             <Button
               icon={<Filter size={15} />}
               nameButton="Bộ lọc"
-              classNameButton="p-2 bg-blue-500 w-full text-white font-medium rounded-md hover:bg-blue-500/80 duration-200 text-[13px] flex items-center gap-1"
+              classNameButton="p-2 border border-[#E2E7FF] bg-[#E2E7FF] w-full text-[#3A5BFF] font-medium rounded-md hover:bg-blue-500/40 duration-200 text-[13px] flex items-center gap-1"
             />
             <Button
               icon={<FolderUp size={15} />}
               nameButton="Export"
-              classNameButton="p-2 bg-blue-500 w-full text-white font-medium rounded-md hover:bg-blue-500/80 duration-200 text-[13px] flex items-center gap-1"
+              classNameButton="p-2 border border-[#E2E7FF] bg-[#E2E7FF] w-full text-[#3A5BFF] font-medium rounded-md hover:bg-blue-500/40 duration-200 text-[13px] flex items-center gap-1"
             />
             <Button
               icon={<Plus size={15} />}
@@ -368,178 +384,180 @@ export default function ManageCustomers() {
             />
           </div>
         </div>
-        {isLoading && <Skeleton />}
-        {!isFetching && (
-          <div>
+        <div>
+          {isLoading && <Skeleton />}
+          {!isFetching && (
             <div>
-              <div className="bg-[#f2f2f2] dark:bg-darkPrimary grid grid-cols-12 items-center gap-2 py-3 border border-[#dedede] dark:border-darkBorder px-4">
-                <div className="col-span-2 text-[14px] font-medium">ID</div>
-                <div className="col-span-2 text-[14px] font-medium">Họ Tên</div>
-                <div className="col-span-2 text-[14px] font-medium">Email</div>
-                <div className="col-span-1 text-[14px] text-center font-medium">Số điện thoại</div>
-                <div className="col-span-2 text-[14px] text-center font-medium">Trạng thái</div>
-                <div className="col-span-2 text-[14px] font-medium">Ngày cập nhật</div>
-                <div className="col-span-1 text-[14px] text-center font-medium">Hành động</div>
-              </div>
-              <div>
-                {listCustomer.length > 0 ? (
-                  listCustomer?.map((item) => (
-                    <Fragment key={item._id}>
-                      <CustomerItem onDelete={handleDeleteCustomer} handleEditItem={handleEditItem} item={item} />
-                    </Fragment>
-                  ))
-                ) : (
-                  <div className="text-center mt-4">Không tìm thấy kết quả</div>
-                )}
-              </div>
-            </div>
-            <Pagination
-              data={result}
-              queryConfig={queryConfig}
-              page_size={page_size}
-              pathNavigate={path.AdminCustomers}
-            />
-            {idCustomer !== null ? (
-              <Fragment>
-                <div className="fixed left-0 top-0 z-10 h-screen w-screen bg-black/60 "></div>
-                <div className="z-20 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
-                  <button onClick={handleExitsEditItem} className="absolute right-2 top-1">
-                    <X color="gray" size={22} />
-                  </button>
-                  <form onSubmit={handleSubmitUpdate} className="p-4 bg-white dark:bg-darkPrimary rounded-md">
-                    <h3 className="text-[15px] font-medium">Thông tin khách hàng</h3>
-                    <div className="mt-4 grid grid-cols-12 flex-wrap gap-4">
-                      <div className="col-span-4">
-                        <Input
-                          name="id"
-                          register={register}
-                          placeholder="Nhập họ tên"
-                          messageErrorInput={errors.id?.message}
-                          classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-darkSecond focus:border-blue-500 focus:ring-2 outline-none rounded-md"
-                          className="relative flex-1"
-                          nameInput="Id"
-                          disabled
-                        />
-                      </div>
-                      <div className="col-span-4">
-                        <Input
-                          name="email"
-                          register={register}
-                          placeholder="Nhập họ tên"
-                          messageErrorInput={errors.email?.message}
-                          classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-darkSecond focus:border-blue-500 focus:ring-2 outline-none rounded-md"
-                          className="relative flex-1"
-                          nameInput="Email"
-                          disabled
-                        />
-                      </div>
-                      <div className="col-span-4">
-                        <Input
-                          name="name"
-                          register={register}
-                          placeholder="Nhập họ tên"
-                          messageErrorInput={errors.name?.message}
-                          classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-white dark:bg-darkPrimary focus:border-blue-500 focus:ring-2 outline-none rounded-md"
-                          className="relative flex-1"
-                          nameInput="Họ tên"
-                        />
-                      </div>
-
-                      <div className="col-span-4">
-                        <Input
-                          name="verify"
-                          register={register}
-                          messageErrorInput={errors.verify?.message}
-                          classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-darkSecond focus:border-blue-500 focus:ring-2 outline-none rounded-md"
-                          className="relative flex-1"
-                          nameInput="Trạng thái"
-                          disabled
-                          value={profile?.verify === 1 ? "Verified" : "Unverified"}
-                        />
-                      </div>
-
-                      <div className="col-span-4">
-                        <Input
-                          name="numberPhone"
-                          register={register}
-                          placeholder="Nhập số điện thoại"
-                          messageErrorInput={errors.numberPhone?.message}
-                          classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-white dark:bg-darkPrimary focus:border-blue-500 focus:ring-2 outline-none rounded-md"
-                          className="relative flex-1"
-                          nameInput="Số điện thoại"
-                        />
-                      </div>
-
-                      <div className="col-span-4">
-                        {/* dùng <Controller/> khi và chỉ khi component không hỗ trợ register (register giúp theo dõi giá trị trong form) */}
-                        <Controller
-                          name="date_of_birth"
-                          control={control}
-                          render={({ field }) => {
-                            // console.log("field value: ", field.value)
-                            return (
-                              <DateSelect
-                                value={date_of_birth}
-                                onChange={field.onChange}
-                                errorMessage={errors.date_of_birth?.message}
-                              />
-                            )
-                          }}
-                        />
-                      </div>
-
-                      <div className="col-span-4">
-                        <Input
-                          name="created_at"
-                          register={register}
-                          placeholder="Nhập ngày khởi tạo"
-                          messageErrorInput={errors.created_at?.message}
-                          classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-darkSecond focus:border-blue-500 focus:ring-2 outline-none rounded-md"
-                          className="relative flex-1"
-                          nameInput="Ngày tạo"
-                          disabled
-                        />
-                      </div>
-
-                      <div className="col-span-4">
-                        <Input
-                          name="updated_at"
-                          register={register}
-                          placeholder="Nhập ngày cập nhật"
-                          messageErrorInput={errors.updated_at?.message}
-                          classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-darkSecond focus:border-blue-500 focus:ring-2 outline-none rounded-md"
-                          className="relative flex-1"
-                          nameInput="Ngày cập nhật"
-                          disabled
-                        />
-                      </div>
-                    </div>
-
-                    <div className="text-center">
-                      <div className="mb-2">Avatar</div>
-                      <img
-                        src={previewImage || avatarWatch}
-                        className="h-28 w-28 rounded-full mx-auto"
-                        alt="avatar default"
-                      />
-                      <InputFileImage onChange={handleChangeImage} />
-                    </div>
-
-                    <div className="flex items-center justify-end">
-                      <Button
-                        type="submit"
-                        nameButton="Cập nhật"
-                        classNameButton="w-[120px] p-4 py-2 bg-blue-500 mt-2 w-full text-white font-semibold rounded-sm hover:bg-blue-500/80 duration-200"
-                      />
-                    </div>
-                  </form>
+              <div className="mt-4">
+                <div className="bg-[#f2f2f2] dark:bg-darkPrimary grid grid-cols-12 items-center gap-2 py-3 border border-[#dedede] dark:border-darkBorder px-4 rounded-tl-md rounded-tr-md">
+                  <div className="col-span-2 text-[14px] font-medium">ID</div>
+                  <div className="col-span-2 text-[14px] font-medium">Họ Tên</div>
+                  <div className="col-span-2 text-[14px] font-medium">Email</div>
+                  <div className="col-span-1 text-[14px] text-center font-medium">Số điện thoại</div>
+                  <div className="col-span-2 text-[14px] text-center font-medium">Trạng thái</div>
+                  <div className="col-span-2 text-[14px] font-medium">Ngày cập nhật</div>
+                  <div className="col-span-1 text-[14px] text-center font-medium">Hành động</div>
                 </div>
-              </Fragment>
-            ) : (
-              ""
-            )}
-          </div>
-        )}
+                <div>
+                  {listCustomer.length > 0 ? (
+                    listCustomer?.map((item) => (
+                      <Fragment key={item._id}>
+                        <CustomerItem onDelete={handleDeleteCustomer} handleEditItem={handleEditItem} item={item} />
+                      </Fragment>
+                    ))
+                  ) : (
+                    <div className="text-center mt-4">Không tìm thấy kết quả</div>
+                  )}
+                </div>
+              </div>
+              <Pagination
+                data={result}
+                queryConfig={queryConfig}
+                page_size={page_size}
+                pathNavigate={path.AdminCustomers}
+              />
+              {idCustomer !== null ? (
+                <Fragment>
+                  <div className="fixed left-0 top-0 z-10 h-screen w-screen bg-black/60 "></div>
+                  <div className="z-20 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+                    <button onClick={handleExitsEditItem} className="absolute right-2 top-1">
+                      <X color="gray" size={22} />
+                    </button>
+                    <form onSubmit={handleSubmitUpdate} className="p-4 bg-white dark:bg-darkPrimary rounded-md">
+                      <h3 className="text-[15px] font-medium">Thông tin khách hàng</h3>
+                      <div className="mt-4 grid grid-cols-12 flex-wrap gap-4">
+                        <div className="col-span-4">
+                          <Input
+                            name="id"
+                            register={register}
+                            placeholder="Nhập họ tên"
+                            messageErrorInput={errors.id?.message}
+                            classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-darkSecond focus:border-blue-500 focus:ring-2 outline-none rounded-md"
+                            className="relative flex-1"
+                            nameInput="Id"
+                            disabled
+                          />
+                        </div>
+                        <div className="col-span-4">
+                          <Input
+                            name="email"
+                            register={register}
+                            placeholder="Nhập họ tên"
+                            messageErrorInput={errors.email?.message}
+                            classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-darkSecond focus:border-blue-500 focus:ring-2 outline-none rounded-md"
+                            className="relative flex-1"
+                            nameInput="Email"
+                            disabled
+                          />
+                        </div>
+                        <div className="col-span-4">
+                          <Input
+                            name="name"
+                            register={register}
+                            placeholder="Nhập họ tên"
+                            messageErrorInput={errors.name?.message}
+                            classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-white dark:bg-darkPrimary focus:border-blue-500 focus:ring-2 outline-none rounded-md"
+                            className="relative flex-1"
+                            nameInput="Họ tên"
+                          />
+                        </div>
+
+                        <div className="col-span-4">
+                          <Input
+                            name="verify"
+                            register={register}
+                            messageErrorInput={errors.verify?.message}
+                            classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-darkSecond focus:border-blue-500 focus:ring-2 outline-none rounded-md"
+                            className="relative flex-1"
+                            nameInput="Trạng thái"
+                            disabled
+                            value={profile?.verify === 1 ? "Verified" : "Unverified"}
+                          />
+                        </div>
+
+                        <div className="col-span-4">
+                          <Input
+                            name="numberPhone"
+                            register={register}
+                            placeholder="Nhập số điện thoại"
+                            messageErrorInput={errors.numberPhone?.message}
+                            classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-white dark:bg-darkPrimary focus:border-blue-500 focus:ring-2 outline-none rounded-md"
+                            className="relative flex-1"
+                            nameInput="Số điện thoại"
+                          />
+                        </div>
+
+                        <div className="col-span-4">
+                          {/* dùng <Controller/> khi và chỉ khi component không hỗ trợ register (register giúp theo dõi giá trị trong form) */}
+                          <Controller
+                            name="date_of_birth"
+                            control={control}
+                            render={({ field }) => {
+                              // console.log("field value: ", field.value)
+                              return (
+                                <DateSelect
+                                  value={date_of_birth}
+                                  onChange={field.onChange}
+                                  errorMessage={errors.date_of_birth?.message}
+                                />
+                              )
+                            }}
+                          />
+                        </div>
+
+                        <div className="col-span-4">
+                          <Input
+                            name="created_at"
+                            register={register}
+                            placeholder="Nhập ngày khởi tạo"
+                            messageErrorInput={errors.created_at?.message}
+                            classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-darkSecond focus:border-blue-500 focus:ring-2 outline-none rounded-md"
+                            className="relative flex-1"
+                            nameInput="Ngày tạo"
+                            disabled
+                          />
+                        </div>
+
+                        <div className="col-span-4">
+                          <Input
+                            name="updated_at"
+                            register={register}
+                            placeholder="Nhập ngày cập nhật"
+                            messageErrorInput={errors.updated_at?.message}
+                            classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-darkSecond focus:border-blue-500 focus:ring-2 outline-none rounded-md"
+                            className="relative flex-1"
+                            nameInput="Ngày cập nhật"
+                            disabled
+                          />
+                        </div>
+                      </div>
+
+                      <div className="text-center">
+                        <div className="mb-2">Avatar</div>
+                        <img
+                          src={previewImage || avatarWatch}
+                          className="h-28 w-28 rounded-full mx-auto"
+                          alt="avatar default"
+                        />
+                        <InputFileImage onChange={handleChangeImage} />
+                      </div>
+
+                      <div className="flex items-center justify-end">
+                        <Button
+                          type="submit"
+                          nameButton="Cập nhật"
+                          classNameButton="w-[120px] p-4 py-2 bg-blue-500 mt-2 w-full text-white font-semibold rounded-sm hover:bg-blue-500/80 duration-200"
+                        />
+                      </div>
+                    </form>
+                  </div>
+                </Fragment>
+              ) : (
+                ""
+              )}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   )

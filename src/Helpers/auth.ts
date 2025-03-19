@@ -22,12 +22,21 @@ export const getRoleFromLS = () => {
   return localStorage.getItem("role") || ""
 }
 
+export const setAvatarImageToLS = (avatar: string) => {
+  return localStorage.setItem("avatar", avatar)
+}
+
+export const getAvatarImageFromLS = () => {
+  return localStorage.getItem("avatar") || ""
+}
+
 export const LocalStorageEventTarget = new EventTarget() // tạo ra 1 event target để lắng nghe sự kiện thay đổi LocalStorage
 
 export const clearLS = () => {
   localStorage.removeItem("access_token")
   localStorage.removeItem("name_user")
   localStorage.removeItem("role")
+  localStorage.removeItem("avatar")
   const ClearLSEvent = new Event("ClearLS")
   LocalStorageEventTarget.dispatchEvent(ClearLSEvent) // phát sự kiện
 }

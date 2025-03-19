@@ -20,7 +20,7 @@ interface Props {
 export default function HeaderAdmin({ handleSidebar, isShowSidebar }: Props) {
   const { theme } = useTheme() // Lấy theme hiện tại
   const iconColor = theme === "dark" || theme === "system" ? "white" : "black" // Xác định màu icon
-  const { nameUser, role, setIsAuthenticated, setNameUser, setRole } = useContext(AppContext)
+  const { avatar, nameUser, role, setIsAuthenticated, setNameUser, setRole, setAvatar } = useContext(AppContext)
   const navigate = useNavigate()
   const handleSideBarFunc = () => {
     handleSidebar(!isShowSidebar)
@@ -38,6 +38,8 @@ export default function HeaderAdmin({ handleSidebar, isShowSidebar }: Props) {
         setIsAuthenticated(false)
         setNameUser(null)
         setRole(null)
+        setAvatar(null)
+
         navigate(path.Login)
         toast.success(response.data.message, {
           autoClose: 1000
@@ -75,7 +77,7 @@ export default function HeaderAdmin({ handleSidebar, isShowSidebar }: Props) {
         >
           {
             <div className="flex items-center gap-1 text-black font-semibold duration-200 transition ease-linear cursor-pointer">
-              <img src={avatarDefault} className="h-8 w-8" alt="avatar default" />
+              <img src={avatar || avatarDefault} className="h-8 w-8" alt="avatar default" />
               <div>
                 <span className="text-xs dark:text-white">{role}</span>
                 <span className="block text-[13px] truncate w-32 dark:text-white">{nameUser}</span>

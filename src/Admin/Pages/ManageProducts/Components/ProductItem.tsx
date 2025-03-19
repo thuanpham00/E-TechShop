@@ -47,10 +47,10 @@ export default function ProductItem({
           {copiedId === item._id ? <ClipboardCheck color="#8d99ae" size={12} /> : <Copy color="#8d99ae" size={12} />}
         </button>
       </div>
-      <div className="col-span-2">
+      <div className="col-span-1">
         <img src={item.banner.url} alt={item._id} className="h-auto w-full object-cover" />
       </div>
-      <div className="col-span-1 font-semibold">{item.name}</div>
+      <div className="col-span-2 font-semibold">{item.name}</div>
       <div className="col-span-1">{item.brand[0].name}</div>
       <div className="col-span-1">{item.category[0].name}</div>
       <div className="col-span-1">{item.price}</div>

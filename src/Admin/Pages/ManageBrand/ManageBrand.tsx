@@ -1,4 +1,5 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { FolderUp, Plus, Search, X } from "lucide-react"
 import { Helmet } from "react-helmet-async"
 import { createSearchParams, useLocation, useNavigate, useParams } from "react-router-dom"
@@ -24,6 +25,7 @@ import Input from "src/Components/Input"
 import Button from "src/Components/Button"
 import Skeleton from "src/Components/Skeleton"
 import Pagination from "src/Components/Pagination"
+import AddBrand from "./Components/AddBrand"
 
 type FormDataUpdate = Pick<SchemaAuthType, "name" | "id" | "created_at" | "updated_at">
 const formDataUpdate = schemaAuth.pick(["name", "id", "created_at", "updated_at"])
@@ -39,7 +41,7 @@ export default function ManageBrand() {
   const queryConfig: queryParamConfigBrand = omitBy(
     {
       page: queryParams.page || "1", // mặc định page = 1
-      limit: queryParams.limit || "10", // mặc định limit =
+      limit: queryParams.limit || "2", // mặc định limit =
       name: queryParams.name,
       id: id
     },
@@ -55,7 +57,10 @@ export default function ManageBrand() {
       }, 10000)
       return adminAPI.category.getBrands(queryConfig, controller.signal)
     },
-    enabled: Boolean(id)
+    enabled: Boolean(id),
+    retry: 0, // số lần retry lại khi hủy request (dùng abort signal)
+    staleTime: 3 * 60 * 1000, // dưới 5 phút nó không gọi lại api
+    placeholderData: keepPreviousData
     // chỉ chạy khi id có giá trị
   })
 
@@ -156,7 +161,29 @@ export default function ManageBrand() {
       { id: brandId, categoryId: id as string },
       {
         onSuccess: () => {
-          queryClient.invalidateQueries({ queryKey: ["listBrand", queryConfig] })
+          // lấy ra query của trang hiện tại (có queryConfig)
+          const data = queryClient.getQueryData(["listBrand", queryConfig])
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          const data_2 = (data as any).data as SuccessResponse<{
+            result: BrandItemType[]
+            total: string
+            page: string
+            limit: string
+            totalOfPage: string
+            listTotalProduct: { brand: string; total: string }[]
+          }>
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          if (data && data_2.result.result.length === 1 && Number(queryConfig.page) > 1) {
+            navigate({
+              pathname: `${path.AdminCategories}/${id}`,
+              search: createSearchParams({
+                ...queryConfig,
+                page: (Number(queryConfig.page) - 1).toString()
+              }).toString()
+            })
+          }
+
+          queryClient.invalidateQueries({ queryKey: ["listBrand"] })
           toast.success("Xóa thành công!", { autoClose: 1500 })
         },
         onError: (error) => {
@@ -207,6 +234,8 @@ export default function ManageBrand() {
     }
   }
 
+  const [addItem, setAddItem] = useState(false)
+
   return (
     <div>
       <Helmet>
@@ -217,46 +246,41 @@ export default function ManageBrand() {
         />
       </Helmet>
       <NavigateBack />
+      <div className="text-lg font-semibold py-2">Thương hiệu</div>
       <div className="p-4 bg-white dark:bg-darkPrimary mb-3 border border-[#dedede] dark:border-darkBorder rounded-md">
         <h1 className="text-[15px] font-medium">Tìm kiếm</h1>
-        <form onSubmit={handleSubmitSearch} className="mt-1">
-          <div className="flex items-center gap-4">
+        <div className="flex items-center w-full mt-1">
+          <form onSubmit={handleSubmitSearch} className="w-[50%] relative flex items-center">
             <Input
               name="name"
               register={registerFormSearch}
-              placeholder="Nhập tên thể loại"
-              classNameInput="p-2 w-full border border-[#dedede] bg-[#f2f2f2] focus:border-blue-500 focus:ring-2 outline-none rounded-md h-[35px]"
-              className="relative flex-1"
+              placeholder="Nhập tên thương hiệu"
+              classNameInput="p-2 w-full border border-[#dedede] bg-[#f2f2f2] focus:border-blue-500 focus:ring-1 outline-none rounded-tl-md rounded-bl-md h-[35px]"
+              className="relative flex-grow"
               classNameError="hidden"
             />
-            <div className="flex items-center gap-2">
-              <Button
-                type="submit"
-                icon={<Search size={15} />}
-                nameButton="Tìm kiếm"
-                classNameButton="p-2 bg-blue-500 w-full text-white font-medium rounded-md hover:bg-blue-500/80 duration-200 text-[13px] flex items-center gap-1 h-[35px]"
-              />
-              <Button
-                type="button"
-                onClick={handleResetFormSearch}
-                icon={<X size={15} />}
-                nameButton="Xóa"
-                classNameButton="p-2 bg-white border border-[#dedede] w-full text-black font-medium rounded-md hover:bg-[#dedede]/80 duration-200 text-[13px] flex items-center gap-1 h-[35px]"
-              />
-            </div>
-          </div>
-        </form>
-      </div>
-      <div>
-        <div className="bg-white dark:bg-darkPrimary border border-b-0 border-[#dedede] dark:border-darkBorder p-4 pb-2 flex items-center justify-between rounded-tl-md rounded-tr-md">
-          <h2 className="text-[15px] font-medium">Các Thương hiệu của {state}</h2>
-          <div className="flex items-center gap-2">
+            <Button
+              type="button"
+              onClick={handleResetFormSearch}
+              icon={<X size={15} color="#adb5bd" />}
+              classNameButton="p-2 w-full text-black font-medium flex items-center gap-1 h-[35px] "
+              className="absolute right-10 top-0"
+            />
+            <Button
+              type="submit"
+              icon={<Search size={15} />}
+              classNameButton="p-2 px-3 bg-blue-500 w-full text-white font-medium rounded-tr-md rounded-br-md hover:bg-blue-500/80 duration-200 text-[13px] flex items-center gap-1 h-[35px]"
+              className="flex-shrink-0"
+            />
+          </form>
+          <div className="flex items-center justify-end gap-2 w-[50%]">
             <Button
               icon={<FolderUp size={15} />}
               nameButton="Export"
-              classNameButton="p-2 bg-blue-500 w-full text-white font-medium rounded-md hover:bg-blue-500/80 duration-200 text-[13px] flex items-center gap-1"
+              classNameButton="p-2 border border-[#E2E7FF] bg-[#E2E7FF] w-full text-[#3A5BFF] font-medium rounded-md hover:bg-blue-500/40 duration-200 text-[13px] flex items-center gap-1"
             />
             <Button
+              onClick={() => setAddItem(true)}
               icon={<Plus size={15} />}
               nameButton="Thêm mới"
               classNameButton="p-2 bg-blue-500 w-full text-white font-medium rounded-md hover:bg-blue-500/80 duration-200 text-[13px] flex items-center gap-1"
@@ -266,8 +290,8 @@ export default function ManageBrand() {
         {isLoading && <Skeleton />}
         {!isFetching && (
           <div>
-            <div>
-              <div className="bg-[#f2f2f2] dark:bg-darkPrimary grid grid-cols-12 items-center gap-2 py-3 border border-[#dedede] dark:border-darkBorder px-4">
+            <div className="mt-4">
+              <div className="bg-[#f2f2f2] dark:bg-darkPrimary grid grid-cols-12 items-center gap-2 py-3 border border-[#dedede] dark:border-darkBorder px-4 rounded-tl-md rounded-tr-md">
                 <div className="col-span-2 text-[14px] font-medium">ID</div>
                 <div className="col-span-2 text-[14px] font-medium">Tên thương hiệu</div>
                 <div className="col-span-2 text-[14px] font-medium">Ngày tạo</div>
@@ -365,6 +389,8 @@ export default function ManageBrand() {
             ) : (
               ""
             )}
+
+            {addItem ? <AddBrand setAddItem={setAddItem} categoryId={id} /> : ""}
           </div>
         )}
       </div>
