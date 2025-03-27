@@ -14,6 +14,7 @@ import { ErrorResponse } from "src/Types/utils.type"
 import { AppContext } from "src/Context/authContext"
 import Button from "src/Components/Button"
 import Input from "src/Components/Input"
+import { Cpu } from "lucide-react"
 
 const getGoogleAuthUrl = () => {
   const { VITE_GOOGLE_CLIENT_ID, VITE_GOOGLE_AUTHORIZED_REDIRECT_URI } = import.meta.env
@@ -91,8 +92,9 @@ export default function Login() {
         <meta name="description" content="Đây là trang đăng nhập người dùng của hệ thống" />
       </Helmet>
       <div className="p-6">
-        <Link to={path.Home} className="text-center block">
-          <span className="text-darkPrimary dark:text-white text-2xl font-semibold text-center pb-[1px] border-b-[3px] border-darkPrimary dark:border-white">
+        <Link to={path.Home} className="flex items-center justify-center">
+          <Cpu />
+          <span className="text-darkPrimary dark:text-white text-2xl font-bold text-center pb-[1px] border-b-[3px] border-darkPrimary dark:border-white">
             TechZone
           </span>
         </Link>

@@ -11,6 +11,7 @@ import { userAPI } from "src/Apis/user.api"
 import { useEffect } from "react"
 import { isError404 } from "src/Helpers/utils"
 import { ErrorResponse } from "src/Types/utils.type"
+import { Cpu } from "lucide-react"
 
 const formData = schemaAuth.pick(["email"])
 type FormData = Pick<SchemaAuthType, "email">
@@ -70,8 +71,9 @@ export default function ForgotPassword() {
         <meta name="description" content="Đây là trang quên mật khẩu người dùng của hệ thống" />
       </Helmet>
       <div className="p-6">
-        <Link to={path.Home} className="text-center block">
-          <span className="text-darkPrimary dark:text-white text-2xl font-semibold text-center pb-[1px] border-b-[3px] border-darkPrimary dark:border-white">
+        <Link to={path.Home} className="flex items-center justify-center">
+          <Cpu />
+          <span className="text-darkPrimary dark:text-white text-2xl font-bold text-center pb-[1px] border-b-[3px] border-darkPrimary dark:border-white">
             TechZone
           </span>
         </Link>
@@ -86,7 +88,7 @@ export default function ForgotPassword() {
             nameInput="Email"
           />
           <Button
-            classNameButton="p-4 bg-blue-500 w-full text-white font-semibold rounded-sm hover:bg-blue-500/80 duration-200"
+            classNameButton="mt-2 p-4 bg-blue-500 w-full text-white font-semibold rounded-sm hover:bg-blue-500/80 duration-200"
             nameButton="Đặt mật khẩu mới"
             type="submit"
             // disabled={loginMutation.isPending}

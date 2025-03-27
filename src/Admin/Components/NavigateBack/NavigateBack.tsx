@@ -1,20 +1,11 @@
 import { ChevronLeft } from "lucide-react"
 import { useNavigate } from "react-router-dom"
-import { useQueryClient } from "@tanstack/react-query"
 
-interface NavigateBackProps {
-  queryKey?: string[] // Prop truyền vào để xác định query cần invalidate
-}
-
-export default function NavigateBack({ queryKey }: NavigateBackProps) {
+export default function NavigateBack() {
   const navigate = useNavigate()
-  const queryClient = useQueryClient()
 
   const handleGoBack = () => {
     navigate(-1)
-    if (queryKey) {
-      queryClient.invalidateQueries({ queryKey: queryKey }) // Làm mới query nếu có truyền vào
-    }
   }
 
   return (

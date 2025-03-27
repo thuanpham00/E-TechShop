@@ -11,6 +11,7 @@ import { userAPI } from "src/Apis/user.api"
 import { isError401, isError404 } from "src/Helpers/utils"
 import { ErrorResponse } from "src/Types/utils.type"
 import { toast } from "react-toastify"
+import { Cpu } from "lucide-react"
 
 const formData = schemaAuth.pick(["password", "confirm_password"])
 type FormData = Pick<SchemaAuthType, "password" | "confirm_password">
@@ -69,8 +70,9 @@ export default function ResetPassword() {
         <meta name="description" content="Đây là trang quên mật khẩu người dùng của hệ thống" />
       </Helmet>
       <div className="p-6">
-        <Link to={path.Home} className="text-center block">
-          <span className="text-darkPrimary dark:text-white text-2xl font-semibold text-center pb-[1px] border-b-[3px] border-darkPrimary dark:border-white">
+        <Link to={path.Home} className="flex items-center justify-center">
+          <Cpu />
+          <span className="text-darkPrimary dark:text-white text-2xl font-bold text-center pb-[1px] border-b-[3px] border-darkPrimary dark:border-white">
             TechZone
           </span>
         </Link>

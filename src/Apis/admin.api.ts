@@ -126,7 +126,7 @@ export const adminAPI = {
  * Get danh mục
  * Patch danh mục
  * Delete danh mục
- * Post Tạo danh mục (chưa)
+ * Post Tạo danh mục
  */
 
 /**
@@ -136,7 +136,7 @@ export const adminAPI = {
  * Get danh mục
  * Patch thương hiệu
  * Delete thương hiệu
- * Post Tạo thương hiệu (chưa)
+ * Post Tạo thương hiệu
  */
 
 /**
@@ -148,6 +148,3 @@ export const adminAPI = {
  * Delete sản phẩm (chưa)
  * Post Tạo sản phẩm (chưa)
  */
-
-// đang có vấn đề SES
-// làm tiếp thêm brand vào 1 category (tạo liên kết brand & category)

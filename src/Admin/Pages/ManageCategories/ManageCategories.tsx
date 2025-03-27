@@ -153,7 +153,6 @@ export default function ManageCategories() {
     deleteCategoryMutation.mutate(id, {
       onSuccess: () => {
         const data = queryClient.getQueryData(["listCategory", queryConfig])
-        console.log(data)
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const data_2 = (data as any).data as SuccessResponse<{
           result: CategoryItemType[]
@@ -171,6 +170,7 @@ export default function ManageCategories() {
             }).toString()
           })
         }
+        queryClient.invalidateQueries({ queryKey: ["listCategory"] })
         toast.success("Xóa thành công!", { autoClose: 1500 })
       },
       onError: (error) => {
@@ -222,7 +222,7 @@ export default function ManageCategories() {
         />
       </Helmet>
       <NavigateBack />
-      <div className="text-lg font-semibold py-2">Danh mục</div>
+      <div className="text-lg font-bold py-2 text-[#3A5BFF]">Danh mục</div>
       <div className="p-4 bg-white dark:bg-darkPrimary mb-3 border border-[#dedede] dark:border-darkBorder rounded-md">
         <h1 className="text-[15px] font-medium">Tìm kiếm</h1>
         <div className="flex items-center w-full mt-1">

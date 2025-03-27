@@ -12,6 +12,7 @@ import { isError422 } from "src/Helpers/utils"
 import { ErrorResponse } from "src/Types/utils.type"
 import Input from "src/Components/Input"
 import Button from "src/Components/Button"
+import { Cpu } from "lucide-react"
 
 type FormData = Pick<SchemaAuthType, "email" | "password" | "confirm_password" | "name" | "phone">
 const formData = schemaAuth.pick(["email", "password", "confirm_password", "name", "phone"])
@@ -79,8 +80,9 @@ export default function Register() {
       </Helmet>
 
       <div className="p-6">
-        <Link to={path.Home} className="text-center block">
-          <span className="text-darkPrimary dark:text-white text-2xl font-semibold text-center pb-[1px] border-b-[3px] border-darkPrimary dark:border-white">
+        <Link to={path.Home} className="flex items-center justify-center">
+          <Cpu />
+          <span className="text-darkPrimary dark:text-white text-2xl font-bold text-center pb-[1px] border-b-[3px] border-darkPrimary dark:border-white">
             TechZone
           </span>
         </Link>

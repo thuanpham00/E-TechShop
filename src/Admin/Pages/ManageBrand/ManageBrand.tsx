@@ -41,7 +41,7 @@ export default function ManageBrand() {
   const queryConfig: queryParamConfigBrand = omitBy(
     {
       page: queryParams.page || "1", // mặc định page = 1
-      limit: queryParams.limit || "2", // mặc định limit =
+      limit: queryParams.limit || "10", // mặc định limit =
       name: queryParams.name,
       id: id
     },
@@ -246,7 +246,7 @@ export default function ManageBrand() {
         />
       </Helmet>
       <NavigateBack />
-      <div className="text-lg font-semibold py-2">Thương hiệu</div>
+      <div className="text-lg font-bold py-2 text-[#3A5BFF]">Thương hiệu</div>
       <div className="p-4 bg-white dark:bg-darkPrimary mb-3 border border-[#dedede] dark:border-darkBorder rounded-md">
         <h1 className="text-[15px] font-medium">Tìm kiếm</h1>
         <div className="flex items-center w-full mt-1">

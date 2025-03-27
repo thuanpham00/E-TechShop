@@ -4,6 +4,7 @@ import {
   BookOpenCheck,
   CircleDollarSign,
   ClipboardCopy,
+  Cpu,
   House,
   IdCard,
   LayoutDashboard,
@@ -37,8 +38,9 @@ export default function Sidebar() {
   return (
     <div className="sticky top-0 left-0 p-4 bg-white dark:bg-darkPrimary h-screen border-r border-[#dedede] dark:border-darkBorder">
       <div>
-        <div className="text-center">
-          <span className="text-darkPrimary dark:text-white text-2xl font-semibold text-center border-b-[3px] border-darkPrimary dark:border-white">
+        <div className="ml-2 flex items-center">
+          <Cpu />
+          <span className="text-darkPrimary dark:text-white text-2xl font-bold text-center border-b-[3px] border-darkPrimary dark:border-white">
             TechZone
           </span>
         </div>
