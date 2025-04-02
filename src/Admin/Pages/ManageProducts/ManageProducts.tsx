@@ -1,6 +1,5 @@
 import { keepPreviousData, useQuery } from "@tanstack/react-query"
-import { isUndefined, omit, omitBy } from "lodash"
-import { Filter, FolderUp, Plus, Search, X } from "lucide-react"
+import { isUndefined, omitBy } from "lodash"
 import { Helmet } from "react-helmet-async"
 import { Fragment } from "react/jsx-runtime"
 import { adminAPI } from "src/Apis/admin.api"
@@ -10,18 +9,12 @@ import { ProductItemType } from "src/Types/product.type"
 import { queryParamConfigCategory, queryParamConfigProduct } from "src/Types/queryParams.type"
 import { SuccessResponse } from "src/Types/utils.type"
 import NavigateBack from "src/Admin/Components/NavigateBack"
-import Input from "src/Components/Input"
-import Button from "src/Components/Button"
 import Skeleton from "src/Components/Skeleton"
 import Pagination from "src/Components/Pagination"
-import ProductItem from "./Components"
-import { useForm } from "react-hook-form"
-import { createSearchParams, useNavigate } from "react-router-dom"
-import { SchemaAuthType } from "src/Client/Utils/rule"
-import { cleanObject } from "src/Helpers/common"
+import ProductItem from "./Components/ProductItem"
+import { useNavigate } from "react-router-dom"
 import { HttpStatusCode } from "src/Constants/httpStatus"
-
-type FormDataSearch = Pick<SchemaAuthType, "name_product" | "category_product" | "brand_product">
+import FilterProduct from "./Components/FilterProduct"
 
 export default function ManageProducts() {
   const navigate = useNavigate()
@@ -30,9 +23,15 @@ export default function ManageProducts() {
     {
       page: queryParams.page || "1", // mặc định page = 1
       limit: queryParams.limit || "5", // mặc định limit =
-      name_product: queryParams.name_product,
-      brand_product: queryParams.brand_product,
-      category_product: queryParams.category_product
+      name: queryParams.name,
+      brand: queryParams.brand,
+      category: queryParams.category,
+      price_min: queryParams.price_min,
+      price_max: queryParams.price_max,
+      created_at_start: queryParams.created_at_start,
+      created_at_end: queryParams.created_at_end,
+      updated_at_start: queryParams.updated_at_start,
+      updated_at_end: queryParams.updated_at_end
     },
     isUndefined
   )
@@ -72,31 +71,6 @@ export default function ManageProducts() {
   //   setIdBrand(null)
   // }
 
-  const {
-    register: registerFormSearch,
-    handleSubmit: handleSubmitFormSearch,
-    reset: resetFormSearch
-  } = useForm<FormDataSearch>()
-
-  const handleSubmitSearch = handleSubmitFormSearch((data) => {
-    const params = cleanObject({
-      ...queryConfig,
-      name_product: data.name_product,
-      category_product: data.category_product,
-      brand_product: data.brand_product
-    })
-    navigate({
-      pathname: path.AdminProducts,
-      search: createSearchParams(params).toString()
-    })
-  }) // nó điều hướng với query params truyền vào và nó render lại component || tren URL lấy queryConfig xuống và fetch lại api ra danh sách cần thiết
-
-  const handleResetFormSearch = () => {
-    const filteredSearch = omit(queryConfig, ["name_product", "category_product", "brand_product"])
-    resetFormSearch()
-    navigate({ pathname: `${path.AdminProducts}`, search: createSearchParams(filteredSearch).toString() })
-  }
-
   if (isError) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     if ((error as any)?.response?.status === HttpStatusCode.NotFound) {
@@ -117,64 +91,7 @@ export default function ManageProducts() {
       <div className="text-lg font-bold py-2 text-[#3A5BFF]">Sản phẩm</div>
       <div className="p-4 bg-white dark:bg-darkPrimary mb-3 border border-[#dedede] dark:border-darkBorder rounded-md">
         <h1 className="text-[15px] font-medium">Tìm kiếm</h1>
-        <div>
-          <form onSubmit={handleSubmitSearch} className="mt-1 flex items-center gap-4">
-            <Input
-              name="name_product"
-              register={registerFormSearch}
-              placeholder="Nhập tên sản phẩm"
-              classNameInput="p-2 w-full border border-[#dedede] bg-[#f2f2f2] focus:border-blue-500 focus:ring-1 outline-none rounded-md h-[35px]"
-              className="relative flex-1 basis-2/3"
-              classNameError="hidden"
-            />
-            <Input
-              name="brand_product"
-              register={registerFormSearch}
-              placeholder="Nhập thương hiệu"
-              classNameInput="p-2 w-full border border-[#dedede] bg-[#f2f2f2] focus:border-blue-500 focus:ring-1 outline-none rounded-md h-[35px]"
-              className="relative flex-1 basis-1/3"
-              classNameError="hidden"
-            />
-            <Input
-              name="category_product"
-              register={registerFormSearch}
-              placeholder="Nhập thể loại"
-              classNameInput="p-2 w-full border border-[#dedede] bg-[#f2f2f2] focus:border-blue-500 focus:ring-1 outline-none rounded-md h-[35px]"
-              className="relative flex-1 basis-1/3"
-              classNameError="hidden"
-            />
-            <div className="flex gap-2">
-              <Button
-                onClick={handleResetFormSearch}
-                type="button"
-                icon={<X size={15} />}
-                classNameButton="p-2 bg-[#f2f2f2] border border-[#dedede] w-full text-black font-medium hover:bg-[#dedede]/80 rounded-md duration-200 text-[13px] flex items-center gap-1 h-[35px]"
-              />
-              <Button
-                type="submit"
-                icon={<Search size={15} />}
-                classNameButton="py-2 px-3 bg-blue-500 w-full text-white font-medium hover:bg-blue-500/80 rounded-md duration-200 text-[13px] flex items-center gap-1 h-[35px]"
-              />
-            </div>
-          </form>
-          <div className="mt-4 flex items-center justify-end gap-2">
-            <Button
-              icon={<Filter size={15} />}
-              nameButton="Bộ lọc"
-              classNameButton="p-2 border border-[#E2E7FF] bg-[#E2E7FF] w-full text-[#3A5BFF] font-medium rounded-md hover:bg-blue-500/40 duration-200 text-[13px] flex items-center gap-1"
-            />
-            <Button
-              icon={<FolderUp size={15} />}
-              nameButton="Export"
-              classNameButton="p-2 border border-[#E2E7FF] bg-[#E2E7FF] w-full text-[#3A5BFF] font-medium rounded-md hover:bg-blue-500/40 duration-200 text-[13px] flex items-center gap-1"
-            />
-            <Button
-              icon={<Plus size={15} />}
-              nameButton="Thêm mới"
-              classNameButton="p-2 bg-blue-500 w-full text-white font-medium rounded-md hover:bg-blue-500/80 duration-200 text-[13px] flex items-center gap-1"
-            />
-          </div>
-        </div>
+        <FilterProduct queryConfig={queryConfig} />
         <div>
           {isLoading && <Skeleton />}
           {!isFetching && (

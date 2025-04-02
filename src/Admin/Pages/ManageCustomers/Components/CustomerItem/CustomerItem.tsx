@@ -54,7 +54,8 @@ export default function CustomerItem({
           </div>
         )}
       </div>
-      <div className="col-span-2">{convertDateTime(item.updated_at)}</div>
+      <div className="col-span-1">{convertDateTime(item.created_at)}</div>
+      <div className="col-span-1">{convertDateTime(item.updated_at)}</div>
       <div className="col-span-1 flex items-center justify-center gap-2">
         <button onClick={() => handleEditCustomerItem(item._id)}>
           <Pencil color="orange" size={18} />

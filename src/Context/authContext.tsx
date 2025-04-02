@@ -51,6 +51,7 @@ export default function AppClientProvider({ children }: Props) {
     setIsAuthenticated(false)
     setNameUser(null)
     setRole(null)
+    setAvatar(null)
   }
 
   return (

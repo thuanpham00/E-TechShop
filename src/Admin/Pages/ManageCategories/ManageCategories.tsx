@@ -1,8 +1,8 @@
 import { yupResolver } from "@hookform/resolvers/yup"
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import { FolderUp, Plus, Search, X } from "lucide-react"
+import { FolderUp, Plus, RotateCcw, Search, X } from "lucide-react"
 import { Helmet } from "react-helmet-async"
-import { useForm } from "react-hook-form"
+import { Controller, useForm } from "react-hook-form"
 import { Fragment } from "react/jsx-runtime"
 import { adminAPI } from "src/Apis/admin.api"
 import { schemaAuth, SchemaAuthType } from "src/Client/Utils/rule"
@@ -25,11 +25,15 @@ import Button from "src/Components/Button"
 import Skeleton from "src/Components/Skeleton"
 import Pagination from "src/Components/Pagination"
 import AddCategory from "./Components/AddCategory"
+import DatePicker from "src/Admin/Components/DatePickerRange"
 
 type FormDataUpdate = Pick<SchemaAuthType, "name" | "id" | "created_at" | "updated_at">
 const formDataUpdate = schemaAuth.pick(["name", "id", "created_at", "updated_at"])
 
-type FormDataSearch = Pick<SchemaAuthType, "name">
+type FormDataSearch = Pick<
+  SchemaAuthType,
+  "name" | "created_at_start" | "created_at_end" | "updated_at_start" | "updated_at_end"
+>
 export default function ManageCategories() {
   const navigate = useNavigate()
   const queryClient = useQueryClient()
@@ -38,7 +42,11 @@ export default function ManageCategories() {
     {
       page: queryParams.page || "1", // mặc định page = 1
       limit: queryParams.limit || "10", // mặc định limit =
-      name: queryParams.name
+      name: queryParams.name,
+      created_at_start: queryParams.created_at_start,
+      created_at_end: queryParams.created_at_end,
+      updated_at_start: queryParams.updated_at_start,
+      updated_at_end: queryParams.updated_at_end
     },
     isUndefined
   )
@@ -186,11 +194,19 @@ export default function ManageCategories() {
   const {
     register: registerFormSearch,
     handleSubmit: handleSubmitFormSearch,
-    reset: resetFormSearch
+    reset: resetFormSearch,
+    control: controlFormSearch
   } = useForm<FormDataSearch>()
 
   const handleSubmitSearch = handleSubmitFormSearch((data) => {
-    const params = cleanObject({ ...queryConfig, name: data.name })
+    const params = cleanObject({
+      ...queryConfig,
+      name: data.name,
+      created_at_start: data.created_at_start?.toISOString(),
+      created_at_end: data.created_at_end?.toISOString(),
+      updated_at_start: data.updated_at_start?.toISOString(),
+      updated_at_end: data.updated_at_end?.toISOString()
+    })
     navigate({
       pathname: path.AdminCategories,
       search: createSearchParams(params).toString()
@@ -198,7 +214,13 @@ export default function ManageCategories() {
   })
 
   const handleResetFormSearch = () => {
-    const filteredSearch = omit(queryConfig, ["name"])
+    const filteredSearch = omit(queryConfig, [
+      "name",
+      "created_at_start",
+      "created_at_end",
+      "updated_at_start",
+      "updated_at_end"
+    ])
     resetFormSearch()
     navigate({ pathname: path.AdminCategories, search: createSearchParams(filteredSearch).toString() })
   }
@@ -225,43 +247,104 @@ export default function ManageCategories() {
       <div className="text-lg font-bold py-2 text-[#3A5BFF]">Danh mục</div>
       <div className="p-4 bg-white dark:bg-darkPrimary mb-3 border border-[#dedede] dark:border-darkBorder rounded-md">
         <h1 className="text-[15px] font-medium">Tìm kiếm</h1>
-        <div className="flex items-center w-full mt-1">
-          <form onSubmit={handleSubmitSearch} className="w-[50%] relative flex items-center">
-            <Input
-              name="name"
-              register={registerFormSearch}
-              placeholder="Nhập tên thể loại"
-              classNameInput="p-2 w-full border border-[#dedede] bg-[#f2f2f2] focus:border-blue-500 focus:ring-1 outline-none rounded-tl-md rounded-bl-md h-[35px]"
-              className="relative flex-grow"
-              classNameError="hidden"
-            />
-            <Button
-              type="button"
-              onClick={handleResetFormSearch}
-              icon={<X size={15} color="#adb5bd" />}
-              classNameButton="p-2 w-full text-black font-medium flex items-center gap-1 h-[35px] "
-              className="absolute right-10 top-0"
-            />
-            <Button
-              type="submit"
-              icon={<Search size={15} />}
-              classNameButton="p-2 px-3 bg-blue-500 w-full text-white font-medium rounded-tr-md rounded-br-md hover:bg-blue-500/80 duration-200 text-[13px] flex items-center gap-1 h-[35px]"
-              className="flex-shrink-0"
-            />
+        <div>
+          <form onSubmit={handleSubmitSearch}>
+            <div className="mt-1 grid grid-cols-2">
+              <div className="col-span-1 flex items-center h-14 px-2 bg-[#ececec] dark:bg-darkBorder border border-[#dadada] rounded-tl-md">
+                <span className="w-1/3">Ngày đăng</span>
+                <div className="w-2/3 relative h-full">
+                  <div className="mt-2 w-full flex items-center gap-2">
+                    <Controller
+                      name="created_at_start"
+                      control={controlFormSearch}
+                      render={({ field }) => {
+                        return <DatePicker value={field.value as Date} onChange={field.onChange} />
+                      }}
+                    />
+                    <span>-</span>
+                    <Controller
+                      name="created_at_end"
+                      control={controlFormSearch}
+                      render={({ field }) => {
+                        return <DatePicker value={field.value as Date} onChange={field.onChange} />
+                      }}
+                    />
+                  </div>
+                  <span className="absolute inset-y-0 left-[-5%] w-[1px] bg-[#dadada] h-full"></span>
+                </div>
+              </div>
+              <div className="col-span-1 flex items-center h-14 px-2 bg-[#ececec] dark:bg-darkBorder  border border-[#dadada] rounded-tr-md">
+                <span className="w-1/3">Ngày cập nhật</span>
+                <div className="w-2/3 relative h-full">
+                  <div className="mt-2 w-full flex items-center gap-2">
+                    <Controller
+                      name="updated_at_start"
+                      control={controlFormSearch}
+                      render={({ field }) => {
+                        return <DatePicker value={field.value as Date} onChange={field.onChange} />
+                      }}
+                    />
+                    <span>-</span>
+                    <Controller
+                      name="updated_at_end"
+                      control={controlFormSearch}
+                      render={({ field }) => {
+                        return <DatePicker value={field.value as Date} onChange={field.onChange} />
+                      }}
+                    />
+                  </div>
+                  <span className="absolute inset-y-0 left-[-5%] w-[1px] bg-[#dadada] h-full"></span>
+                </div>
+              </div>
+              <div className="col-span-1 flex items-center h-14 px-2 bg-[#fff] dark:bg-darkBorder border border-[#dadada] border-t-0 rounded-bl-md">
+                <span className="w-1/3">Tên thể loại</span>
+                <div className="w-2/3 relative h-full">
+                  <div className="mt-2 w-full flex items-center gap-2">
+                    <Input
+                      name="name"
+                      register={registerFormSearch}
+                      placeholder="Nhập tên thể loại"
+                      classNameInput="p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-black focus:border-blue-500 focus:ring-1 outline-none rounded-md h-[35px]"
+                      className="relative flex-grow"
+                      classNameError="hidden"
+                    />
+                  </div>
+                  <span className="absolute inset-y-0 left-[-5%] w-[1px] bg-[#dadada] h-full"></span>
+                </div>
+              </div>
+            </div>
+            <div className="flex justify-between mt-4">
+              <div className="flex items-center gap-2">
+                <Button
+                  onClick={() => setAddItem(true)}
+                  icon={<Plus size={15} />}
+                  nameButton="Thêm mới"
+                  classNameButton="p-2 bg-blue-500 w-full text-white font-medium rounded-md hover:bg-blue-500/80 duration-200 text-[13px] flex items-center gap-1"
+                />
+                <Button
+                  icon={<FolderUp size={15} />}
+                  nameButton="Export"
+                  classNameButton="p-2 border border-[#E2E7FF] bg-[#E2E7FF] w-full text-[#3A5BFF] font-medium rounded-md hover:bg-blue-500/40 duration-200 text-[13px] flex items-center gap-1"
+                />
+              </div>
+              <div className="flex items-center gap-2">
+                <Button
+                  onClick={handleResetFormSearch}
+                  type="button"
+                  icon={<RotateCcw size={15} />}
+                  nameButton="Xóa bộ lọc tìm kiếm"
+                  classNameButton="p-2 bg-[#f2f2f2] border border-[#dedede] w-full text-black font-medium hover:bg-[#dedede]/80 rounded-md duration-200 text-[13px] flex items-center gap-1 h-[35px]"
+                />
+                <Button
+                  type="submit"
+                  icon={<Search size={15} />}
+                  nameButton="Tìm kiếm"
+                  classNameButton="p-2 px-3 bg-blue-500 w-full text-white font-medium rounded-tr-md rounded-br-md hover:bg-blue-500/80 duration-200 text-[13px] flex items-center gap-1 h-[35px]"
+                  className="flex-shrink-0"
+                />
+              </div>
+            </div>
           </form>
-          <div className="flex items-center justify-end gap-2 w-[50%]">
-            <Button
-              icon={<FolderUp size={15} />}
-              nameButton="Export"
-              classNameButton="p-2 border border-[#E2E7FF] bg-[#E2E7FF] w-full text-[#3A5BFF] font-medium rounded-md hover:bg-blue-500/40 duration-200 text-[13px] flex items-center gap-1"
-            />
-            <Button
-              onClick={() => setAddItem(true)}
-              icon={<Plus size={15} />}
-              nameButton="Thêm mới"
-              classNameButton="p-2 bg-blue-500 w-full text-white font-medium rounded-md hover:bg-blue-500/80 duration-200 text-[13px] flex items-center gap-1"
-            />
-          </div>
         </div>
         {isLoading && <Skeleton />}
         {!isFetching && (
@@ -296,7 +379,7 @@ export default function ManageCategories() {
             {idCategory !== null ? (
               <Fragment>
                 <div className="fixed left-0 top-0 z-10 h-screen w-screen bg-black/60"></div>
-                <div className="z-20 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+                <div className="z-20 fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
                   <button onClick={handleExitsEditItem} className="absolute right-2 top-1">
                     <X color="gray" size={22} />
                   </button>

@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { yupResolver } from "@hookform/resolvers/yup"
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import { Filter, FolderUp, Plus, Search, X } from "lucide-react"
+import { FolderUp, Plus, RotateCcw, Search, X } from "lucide-react"
 import { Helmet } from "react-helmet-async"
 import { Controller, useForm } from "react-hook-form"
 import { adminAPI } from "src/Apis/admin.api"
@@ -32,6 +32,7 @@ import Skeleton from "src/Components/Skeleton"
 import Pagination from "src/Components/Pagination"
 import DateSelect from "src/Components/DateSelect"
 import InputFileImage from "src/Components/InputFileImage"
+import DatePicker from "../../Components/DatePickerRange"
 
 type FormDataUpdate = Pick<
   SchemaAuthType,
@@ -50,7 +51,17 @@ const formDataUpdate = schemaAuth.pick([
   "updated_at"
 ])
 
-type FormDataSearch = Pick<SchemaAuthType, "email" | "name" | "numberPhone">
+type FormDataSearch = Pick<
+  SchemaAuthType,
+  | "email"
+  | "name"
+  | "numberPhone"
+  | "verify"
+  | "created_at_start"
+  | "created_at_end"
+  | "updated_at_start"
+  | "updated_at_end"
+>
 
 export default function ManageCustomers() {
   const navigate = useNavigate()
@@ -64,7 +75,12 @@ export default function ManageCustomers() {
       limit: queryParams.limit || "5", // mặc định limit = 5
       email: queryParams.email,
       name: queryParams.name,
-      phone: queryParams.phone
+      phone: queryParams.phone,
+      verify: queryParams.verify,
+      created_at_start: queryParams.created_at_start,
+      created_at_end: queryParams.created_at_end,
+      updated_at_start: queryParams.updated_at_start,
+      updated_at_end: queryParams.updated_at_end
     },
     isUndefined
   )
@@ -281,7 +297,8 @@ export default function ManageCustomers() {
     register: registerFormSearch,
     handleSubmit: handleSubmitFormSearch,
     formState: { errors: formErrors },
-    reset: resetFormSearch
+    reset: resetFormSearch,
+    control: controlFormSearch
   } = useForm<FormDataSearch>()
 
   const handleSubmitSearch = handleSubmitFormSearch((data) => {
@@ -289,7 +306,12 @@ export default function ManageCustomers() {
       ...queryConfig,
       email: data.email,
       name: data.name,
-      phone: data.numberPhone
+      phone: data.numberPhone,
+      verify: data.verify,
+      created_at_start: data.created_at_start?.toISOString(),
+      created_at_end: data.created_at_end?.toISOString(),
+      updated_at_start: data.updated_at_start?.toISOString(),
+      updated_at_end: data.updated_at_end?.toISOString()
     })
     navigate({
       pathname: path.AdminCustomers,
@@ -298,8 +320,26 @@ export default function ManageCustomers() {
   })
 
   const handleResetFormSearch = () => {
-    const filteredSearch = omit(queryConfig, ["email", "name", "phone"])
-    resetFormSearch()
+    const filteredSearch = omit(queryConfig, [
+      "email",
+      "name",
+      "phone",
+      "verify",
+      "created_at_start",
+      "created_at_end",
+      "updated_at_start",
+      "updated_at_end"
+    ])
+    resetFormSearch({
+      verify: undefined,
+      email: "",
+      name: "",
+      numberPhone: "",
+      created_at_start: undefined,
+      created_at_end: undefined,
+      updated_at_start: undefined,
+      updated_at_end: undefined
+    })
     navigate({ pathname: path.AdminCustomers, search: createSearchParams(filteredSearch).toString() })
   }
 
@@ -324,65 +364,156 @@ export default function ManageCustomers() {
       <div className="p-4 bg-white dark:bg-darkPrimary mb-3 border border-[#dedede] dark:border-darkBorder rounded-md">
         <h1 className="text-[15px] font-medium">Tìm kiếm</h1>
         <div>
-          <form onSubmit={handleSubmitSearch} className="mt-1 flex items-center gap-4">
-            <Input
-              name="email"
-              register={registerFormSearch}
-              placeholder="Nhập email"
-              messageErrorInput={formErrors.email?.message}
-              classNameInput="p-2 w-full border border-[#dedede] bg-[#f2f2f2] focus:border-blue-500 focus:ring-1 outline-none rounded-md h-[35px]"
-              className="relative flex-1 basis-2/3"
-              classNameError="hidden"
-            />
-            <Input
-              name="name"
-              register={registerFormSearch}
-              placeholder="Nhập họ tên"
-              messageErrorInput={formErrors.name?.message}
-              classNameInput="p-2 w-full border border-[#dedede] bg-[#f2f2f2] focus:border-blue-500 focus:ring-1 outline-none rounded-md h-[35px]"
-              className="relative flex-1 basis-1/3"
-              classNameError="hidden"
-            />
-            <Input
-              name="numberPhone"
-              register={registerFormSearch}
-              placeholder="Nhập số điện thoại"
-              messageErrorInput={formErrors.numberPhone?.message}
-              classNameInput="p-2 w-full border border-[#dedede] bg-[#f2f2f2] focus:border-blue-500 focus:ring-1 outline-none rounded-md h-[35px]"
-              className="relative flex-1 basis-1/3"
-              classNameError="hidden"
-            />
-            <div className="flex gap-2">
-              <Button
-                onClick={handleResetFormSearch}
-                type="button"
-                icon={<X size={15} />}
-                classNameButton="p-2 bg-[#f2f2f2] border border-[#dedede] w-full text-black font-medium hover:bg-[#dedede]/80 rounded-md duration-200 text-[13px] flex items-center gap-1 h-[35px]"
-              />
-              <Button
-                type="submit"
-                icon={<Search size={15} />}
-                classNameButton="py-2 px-3 bg-blue-500 w-full text-white font-medium hover:bg-blue-500/80 rounded-md duration-200 text-[13px] flex items-center gap-1 h-[35px]"
-              />
+          <form onSubmit={handleSubmitSearch}>
+            <div className="mt-1 grid grid-cols-2">
+              <div className="col-span-1 flex items-center h-14 px-2 bg-[#ececec] dark:bg-darkBorder border border-[#dadada] rounded-tl-md">
+                <span className="w-1/3 dark:text-white">Email</span>
+                <div className="w-2/3 relative h-full">
+                  <Input
+                    name="email"
+                    register={registerFormSearch}
+                    placeholder="Nhập email"
+                    messageErrorInput={formErrors.email?.message}
+                    classNameInput="p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#fff] dark:bg-black focus:border-blue-500 focus:ring-1 outline-none rounded-md"
+                    className="relative mt-2"
+                    classNameError="hidden"
+                  />
+                  <span className="absolute inset-y-0 left-[-5%] w-[1px] bg-[#dadada] h-full"></span>
+                </div>
+              </div>
+              <div className="col-span-1 flex items-center h-14 px-2 bg-[#ececec] dark:bg-darkBorder  border border-[#dadada] rounded-tr-md">
+                <span className="w-1/3">Họ tên</span>
+                <div className="w-2/3 relative h-full">
+                  <Input
+                    name="name"
+                    register={registerFormSearch}
+                    placeholder="Nhập họ tên"
+                    messageErrorInput={formErrors.name?.message}
+                    classNameInput="p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#fff] dark:bg-black focus:border-blue-500 focus:ring-1 outline-none rounded-md h-[35px]"
+                    className="relative mt-2"
+                    classNameError="hidden"
+                  />
+                  <span className="absolute inset-y-0 left-[-5%] w-[1px] bg-[#dadada] h-full"></span>
+                </div>
+              </div>
+              <div className="col-span-1 flex items-center h-14 px-2 bg-[#fff] dark:bg-darkBorder border border-[#dadada] border-t-0">
+                <span className="w-1/3">Số điện thoại</span>
+                <div className="w-2/3 relative h-full">
+                  <Input
+                    name="numberPhone"
+                    register={registerFormSearch}
+                    placeholder="Nhập số điện thoại"
+                    messageErrorInput={formErrors.numberPhone?.message}
+                    classNameInput="p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-black focus:border-blue-500 focus:ring-1 outline-none rounded-md h-[35px]"
+                    className="relative mt-2"
+                    classNameError="hidden"
+                  />
+                  <span className="absolute inset-y-0 left-[-5%] w-[1px] bg-[#dadada] h-full"></span>
+                </div>
+              </div>
+              <div className="col-span-1 flex items-center h-14 px-2 bg-[#fff] dark:bg-darkBorder border border-[#dadada] border-t-0">
+                <span className="w-1/3">Trạng thái</span>
+                <div className="w-2/3 relative h-full">
+                  <Controller
+                    name="verify"
+                    control={controlFormSearch}
+                    render={({ field }) => {
+                      return (
+                        <select
+                          // {...field}
+                          value={field.value ?? ""} // ✅ Giá trị từ form
+                          onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : undefined)} // ✅ Cập nhật vào form
+                          className="p-2 border border-gray-300 dark:border-darkBorder bg-[#f2f2f2] dark:bg-black w-full mt-2 rounded-md"
+                        >
+                          <option value="" disabled selected>
+                            -- Chọn trạng thái --
+                          </option>
+                          <option value="1">Verify</option>
+                          <option value="0">Unverified</option>
+                        </select>
+                      )
+                    }}
+                  />
+                  <span className="absolute inset-y-0 left-[-5%] w-[1px] bg-[#dadada] h-full"></span>
+                </div>
+              </div>
+              <div className="col-span-1 flex items-center h-14 px-2 bg-[#ececec] dark:bg-darkBorder  border border-[#dadada] rounded-bl-md">
+                <span className="w-1/3">Ngày đăng</span>
+                <div className="w-2/3 relative h-full">
+                  <div className="mt-2 w-full flex items-center gap-2">
+                    <Controller
+                      name="created_at_start"
+                      control={controlFormSearch}
+                      render={({ field }) => {
+                        return <DatePicker value={field.value as Date} onChange={field.onChange} />
+                      }}
+                    />
+                    <span>-</span>
+                    <Controller
+                      name="created_at_end"
+                      control={controlFormSearch}
+                      render={({ field }) => {
+                        return <DatePicker value={field.value as Date} onChange={field.onChange} />
+                      }}
+                    />
+                  </div>
+                  <span className="absolute inset-y-0 left-[-5%] w-[1px] bg-[#dadada] h-full"></span>
+                </div>
+              </div>
+              <div className="col-span-1 flex items-center h-14 px-2 bg-[#ececec] dark:bg-darkBorder  border border-[#dadada] border-t-0 rounded-br-md">
+                <span className="w-1/3">Ngày cập nhật</span>
+                <div className="w-2/3 relative h-full">
+                  <div className="mt-2 w-full flex items-center gap-2">
+                    <Controller
+                      name="updated_at_start"
+                      control={controlFormSearch}
+                      render={({ field }) => {
+                        return <DatePicker value={field.value as Date} onChange={field.onChange} />
+                      }}
+                    />
+                    <span>-</span>
+                    <Controller
+                      name="updated_at_end"
+                      control={controlFormSearch}
+                      render={({ field }) => {
+                        return <DatePicker value={field.value as Date} onChange={field.onChange} />
+                      }}
+                    />
+                  </div>
+                  <span className="absolute inset-y-0 left-[-5%] w-[1px] bg-[#dadada] h-full"></span>
+                </div>
+              </div>
+            </div>
+            <div className="flex justify-between mt-4">
+              <div className="flex items-center gap-2">
+                <Button
+                  icon={<Plus size={15} />}
+                  nameButton="Thêm mới"
+                  classNameButton="p-2 bg-blue-500 w-full text-white font-medium rounded-md hover:bg-blue-500/80 duration-200 text-[13px] flex items-center gap-1"
+                />
+                <Button
+                  icon={<FolderUp size={15} />}
+                  nameButton="Export"
+                  classNameButton="p-2 border border-[#E2E7FF] bg-[#E2E7FF] w-full text-[#3A5BFF] font-medium rounded-md hover:bg-blue-500/40 duration-200 text-[13px] flex items-center gap-1"
+                />
+              </div>
+              <div className="flex gap-2">
+                <Button
+                  onClick={handleResetFormSearch}
+                  type="button"
+                  icon={<RotateCcw size={15} />}
+                  nameButton="Xóa bộ lọc tìm kiếm"
+                  classNameButton="p-2 bg-[#f2f2f2] border border-[#dedede] w-full text-black font-medium hover:bg-[#dedede]/80 rounded-md duration-200 text-[13px] flex items-center gap-1 h-[35px]"
+                />
+                <Button
+                  type="submit"
+                  icon={<Search size={15} />}
+                  nameButton="Tìm kiếm"
+                  classNameButton="py-2 px-3 bg-blue-500 w-full text-white font-medium hover:bg-blue-500/80 rounded-md duration-200 text-[13px] flex items-center gap-1 h-[35px]"
+                />
+              </div>
             </div>
           </form>
-          <div className="mt-4 flex items-center justify-end gap-2">
-            <Button
-              icon={<Filter size={15} />}
-              nameButton="Bộ lọc"
-              classNameButton="p-2 border border-[#E2E7FF] bg-[#E2E7FF] w-full text-[#3A5BFF] font-medium rounded-md hover:bg-blue-500/40 duration-200 text-[13px] flex items-center gap-1"
-            />
-            <Button
-              icon={<FolderUp size={15} />}
-              nameButton="Export"
-              classNameButton="p-2 border border-[#E2E7FF] bg-[#E2E7FF] w-full text-[#3A5BFF] font-medium rounded-md hover:bg-blue-500/40 duration-200 text-[13px] flex items-center gap-1"
-            />
-            <Button
-              icon={<Plus size={15} />}
-              nameButton="Thêm mới"
-              classNameButton="p-2 bg-blue-500 w-full text-white font-medium rounded-md hover:bg-blue-500/80 duration-200 text-[13px] flex items-center gap-1"
-            />
-          </div>
         </div>
         <div>
           {isLoading && <Skeleton />}
@@ -395,7 +526,8 @@ export default function ManageCustomers() {
                   <div className="col-span-2 text-[14px] font-medium">Email</div>
                   <div className="col-span-1 text-[14px] text-center font-medium">Số điện thoại</div>
                   <div className="col-span-2 text-[14px] text-center font-medium">Trạng thái</div>
-                  <div className="col-span-2 text-[14px] font-medium">Ngày cập nhật</div>
+                  <div className="col-span-1 text-[14px] font-medium">Ngày tạo</div>
+                  <div className="col-span-1 text-[14px] font-medium">Ngày cập nhật</div>
                   <div className="col-span-1 text-[14px] text-center font-medium">Hành động</div>
                 </div>
                 <div>
@@ -418,8 +550,8 @@ export default function ManageCustomers() {
               />
               {idCustomer !== null ? (
                 <Fragment>
-                  <div className="fixed left-0 top-0 z-10 h-screen w-screen bg-black/60 "></div>
-                  <div className="z-20 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+                  <div className="fixed left-0 top-0 z-10 h-screen w-screen bg-black/60"></div>
+                  <div className="z-20 fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
                     <button onClick={handleExitsEditItem} className="absolute right-2 top-1">
                       <X color="gray" size={22} />
                     </button>
@@ -489,6 +621,7 @@ export default function ManageCustomers() {
 
                         <div className="col-span-4">
                           {/* dùng <Controller/> khi và chỉ khi component không hỗ trợ register (register giúp theo dõi giá trị trong form) */}
+                          {/* control giúp theo dõi giá trị, validate và đồng bộ dữ liệu giữa form và component tùy chỉnh  */}
                           <Controller
                             name="date_of_birth"
                             control={control}

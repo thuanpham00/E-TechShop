@@ -29,10 +29,43 @@ export const schemaAuth = yup
     created_at: yup.string(),
     updated_at: yup.string(),
 
-    name_product: yup.string(),
-    category_product: yup.string(),
-    brand_product: yup.string()
+    created_at_start: yup.date(),
+    created_at_end: yup.date(),
+    updated_at_start: yup.date(),
+    updated_at_end: yup.date()
   })
   .required()
 
+export const schemaProduct = yup.object({
+  name: yup.string(),
+  category: yup.string(),
+  brand: yup.string(),
+  price_min: yup.string().test({
+    name: "price-not-allowed",
+    message: "Giá không phù hợp",
+    test: function (value) {
+      const price_min = value
+      const { price_max } = this.parent
+      if (price_max !== "" && price_min !== "") {
+        return Number(price_max) >= Number(price_min)
+      }
+      return price_max !== "" || price_min !== ""
+    }
+  }),
+
+  price_max: yup.string().test({
+    name: "price-not-allowed",
+    message: "Giá không phù hợp",
+    test: function (value) {
+      const price_max = value
+      const { price_min } = this.parent
+      if (price_max !== "" && price_min !== "") {
+        return Number(price_max) >= Number(price_min)
+      }
+      return price_max !== "" || price_min !== ""
+    }
+  })
+})
+
 export type SchemaAuthType = yup.InferType<typeof schemaAuth>
+export type SchemaProductType = SchemaAuthType & yup.InferType<typeof schemaProduct>
