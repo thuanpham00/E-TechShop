@@ -54,6 +54,10 @@ export const adminAPI = {
       })
     },
 
+    getNameCategory: () => {
+      return Http.get("/admin/name-categories")
+    },
+
     // lấy chi tiết danh mục
     getCategoryDetail: (id: string) => {
       return Http.get(`/admin/categories/${id}`)
@@ -85,6 +89,10 @@ export const adminAPI = {
     // lấy chi tiết thương hiệu
     getBrandDetail: (id: string) => {
       return Http.get(`/admin/brands/${id}`)
+    },
+
+    getNameBrand: () => {
+      return Http.get("/admin/name-brands")
     },
 
     // cập nhật thương hiệu

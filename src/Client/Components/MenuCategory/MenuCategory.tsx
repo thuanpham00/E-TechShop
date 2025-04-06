@@ -28,7 +28,7 @@ export default function MenuCategory() {
       {isShowCategory && (
         <button
           onClick={handleExitLayout}
-          className="fixed left-0 top-[74px] z-30 w-screen h-screen bg-black/60"
+          className="fixed left-0 top-[67px] z-30 w-screen h-screen bg-black/60"
         ></button>
       )}
       {isShowCategory && (

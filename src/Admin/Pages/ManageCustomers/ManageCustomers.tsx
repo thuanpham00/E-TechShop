@@ -5,7 +5,7 @@ import { FolderUp, Plus, RotateCcw, Search, X } from "lucide-react"
 import { Helmet } from "react-helmet-async"
 import { Controller, useForm } from "react-hook-form"
 import { adminAPI } from "src/Apis/admin.api"
-import { schemaAuth, SchemaAuthType } from "src/Client/Utils/rule"
+import { schemaAuth, SchemaAuthType, schemaCustomer, SchemaCustomerType } from "src/Client/Utils/rule"
 import { path } from "src/Constants/path"
 import useQueryParams from "src/Hook/useQueryParams"
 import { queryParamConfig, queryParamConfigCustomer } from "src/Types/queryParams.type"
@@ -51,8 +51,19 @@ const formDataUpdate = schemaAuth.pick([
   "updated_at"
 ])
 
+const formDataSearch = schemaCustomer.pick([
+  "email",
+  "name",
+  "numberPhone",
+  "verify",
+  "created_at_start",
+  "created_at_end",
+  "updated_at_start",
+  "updated_at_end"
+])
+
 type FormDataSearch = Pick<
-  SchemaAuthType,
+  SchemaCustomerType,
   | "email"
   | "name"
   | "numberPhone"
@@ -298,26 +309,39 @@ export default function ManageCustomers() {
     handleSubmit: handleSubmitFormSearch,
     formState: { errors: formErrors },
     reset: resetFormSearch,
-    control: controlFormSearch
-  } = useForm<FormDataSearch>()
-
-  const handleSubmitSearch = handleSubmitFormSearch((data) => {
-    const params = cleanObject({
-      ...queryConfig,
-      email: data.email,
-      name: data.name,
-      phone: data.numberPhone,
-      verify: data.verify,
-      created_at_start: data.created_at_start?.toISOString(),
-      created_at_end: data.created_at_end?.toISOString(),
-      updated_at_start: data.updated_at_start?.toISOString(),
-      updated_at_end: data.updated_at_end?.toISOString()
-    })
-    navigate({
-      pathname: path.AdminCustomers,
-      search: createSearchParams(params).toString()
-    })
+    control: controlFormSearch,
+    trigger
+  } = useForm<FormDataSearch>({
+    resolver: yupResolver(formDataSearch)
   })
+
+  const handleSubmitSearch = handleSubmitFormSearch(
+    (data) => {
+      const params = cleanObject({
+        ...queryConfig,
+        email: data.email,
+        name: data.name,
+        phone: data.numberPhone,
+        verify: data.verify,
+        created_at_start: data.created_at_start?.toISOString(),
+        created_at_end: data.created_at_end?.toISOString(),
+        updated_at_start: data.updated_at_start?.toISOString(),
+        updated_at_end: data.updated_at_end?.toISOString()
+      })
+      navigate({
+        pathname: path.AdminCustomers,
+        search: createSearchParams(params).toString()
+      })
+    },
+    (error) => {
+      if (error.created_at_end) {
+        toast.error(error.created_at_end?.message, { autoClose: 1500 })
+      }
+      if (error.updated_at_end) {
+        toast.error(error.updated_at_end?.message, { autoClose: 1500 })
+      }
+    }
+  )
 
   const handleResetFormSearch = () => {
     const filteredSearch = omit(queryConfig, [
@@ -445,7 +469,15 @@ export default function ManageCustomers() {
                       name="created_at_start"
                       control={controlFormSearch}
                       render={({ field }) => {
-                        return <DatePicker value={field.value as Date} onChange={field.onChange} />
+                        return (
+                          <DatePicker
+                            value={field.value as Date}
+                            onChange={(event) => {
+                              field.onChange(event)
+                              trigger("created_at_end")
+                            }}
+                          />
+                        )
                       }}
                     />
                     <span>-</span>
@@ -453,7 +485,15 @@ export default function ManageCustomers() {
                       name="created_at_end"
                       control={controlFormSearch}
                       render={({ field }) => {
-                        return <DatePicker value={field.value as Date} onChange={field.onChange} />
+                        return (
+                          <DatePicker
+                            value={field.value as Date}
+                            onChange={(event) => {
+                              field.onChange(event)
+                              trigger("created_at_start")
+                            }}
+                          />
+                        )
                       }}
                     />
                   </div>
@@ -468,7 +508,15 @@ export default function ManageCustomers() {
                       name="updated_at_start"
                       control={controlFormSearch}
                       render={({ field }) => {
-                        return <DatePicker value={field.value as Date} onChange={field.onChange} />
+                        return (
+                          <DatePicker
+                            value={field.value as Date}
+                            onChange={(event) => {
+                              field.onChange(event)
+                              trigger("updated_at_end")
+                            }}
+                          />
+                        )
                       }}
                     />
                     <span>-</span>
@@ -476,7 +524,15 @@ export default function ManageCustomers() {
                       name="updated_at_end"
                       control={controlFormSearch}
                       render={({ field }) => {
-                        return <DatePicker value={field.value as Date} onChange={field.onChange} />
+                        return (
+                          <DatePicker
+                            value={field.value as Date}
+                            onChange={(event) => {
+                              field.onChange(event)
+                              trigger("updated_at_start")
+                            }}
+                          />
+                        )
                       }}
                     />
                   </div>

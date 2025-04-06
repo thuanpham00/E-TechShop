@@ -29,43 +29,97 @@ export const schemaAuth = yup
     created_at: yup.string(),
     updated_at: yup.string(),
 
-    created_at_start: yup.date(),
-    created_at_end: yup.date(),
-    updated_at_start: yup.date(),
-    updated_at_end: yup.date()
+    created_at_start: yup.date().test({
+      name: "Invalid Date",
+      message: "Ngày không phù hợp",
+      test: function (value) {
+        if (!value) {
+          return true
+        }
+        const created_at_start = value
+        const { created_at_end } = this.parent
+        return new Date(created_at_end) > new Date(created_at_start)
+      }
+    }),
+    created_at_end: yup.date().test({
+      name: "Invalid Date",
+      message: "Ngày không phù hợp",
+      test: function (value) {
+        if (!value) {
+          return true
+        }
+        const created_at_end = value
+        const { created_at_start } = this.parent
+        return new Date(created_at_end) > new Date(created_at_start)
+      }
+    }),
+    updated_at_start: yup.date().test({
+      name: "Invalid Date",
+      message: "Ngày không phù hợp",
+      test: function (value) {
+        if (!value) {
+          return true // nếu true thì ko xét nữa
+        }
+        const updated_at_start = value
+        const { updated_at_end } = this.parent
+        return new Date(updated_at_end) > new Date(updated_at_start)
+      }
+    }),
+    updated_at_end: yup.date().test({
+      name: "Invalid Date",
+      message: "Ngày không phù hợp",
+      test: function (value) {
+        if (!value) {
+          return true // nếu true thì ko xét nữa
+        }
+        const updated_at_end = value
+        const { updated_at_start } = this.parent
+        return new Date(updated_at_end) > new Date(updated_at_start)
+      }
+    })
   })
   .required()
 
-export const schemaProduct = yup.object({
-  name: yup.string(),
-  category: yup.string(),
-  brand: yup.string(),
-  price_min: yup.string().test({
-    name: "price-not-allowed",
-    message: "Giá không phù hợp",
-    test: function (value) {
-      const price_min = value
-      const { price_max } = this.parent
-      if (price_max !== "" && price_min !== "") {
-        return Number(price_max) >= Number(price_min)
+// dùng .shape() để mở rộng schema schemaAuth mà không làm mất các trường đã có:
+export const schemaProduct = schemaAuth
+  .pick(["created_at_start", "created_at_end", "updated_at_start", "updated_at_end"])
+  .shape({
+    name: yup.string().default(""),
+    category: yup.string(),
+    brand: yup.string(),
+    price_min: yup.string().test({
+      name: "price-not-allowed",
+      message: "Giá không phù hợp",
+      test: function (value) {
+        if (!value) return true // Không nhập thì bỏ qua
+        const price_min = Number(value)
+        const price_max = this.parent?.price_max ? Number(this.parent.price_max) : null
+        return price_max === null || price_max >= price_min
       }
-      return price_max !== "" || price_min !== ""
-    }
-  }),
+    }),
 
-  price_max: yup.string().test({
-    name: "price-not-allowed",
-    message: "Giá không phù hợp",
-    test: function (value) {
-      const price_max = value
-      const { price_min } = this.parent
-      if (price_max !== "" && price_min !== "") {
-        return Number(price_max) >= Number(price_min)
+    price_max: yup.string().test({
+      name: "price-not-allowed",
+      message: "Giá không phù hợp",
+      test: function (value) {
+        if (!value) return true
+        const price_max = Number(value)
+        const price_min = this.parent?.price_min ? Number(this.parent.price_min) : null
+        return price_min === null || price_max >= price_min
       }
-      return price_max !== "" || price_min !== ""
-    }
+    })
   })
-})
+
+export const schemaCustomer = schemaAuth
+  .pick(["created_at_start", "created_at_end", "updated_at_start", "updated_at_end"])
+  .shape({
+    name: yup.string(),
+    email: yup.string(),
+    numberPhone: yup.string(),
+    verify: yup.number()
+  })
 
 export type SchemaAuthType = yup.InferType<typeof schemaAuth>
 export type SchemaProductType = SchemaAuthType & yup.InferType<typeof schemaProduct>
+
+export type SchemaCustomerType = yup.InferType<typeof schemaCustomer>

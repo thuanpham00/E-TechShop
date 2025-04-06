@@ -1,5 +1,5 @@
 import { ClipboardCheck, Copy, Pencil, Trash2 } from "lucide-react"
-import { convertDateTime } from "src/Helpers/common"
+import { convertDateTime, formatCurrency } from "src/Helpers/common"
 import useCopyText from "src/Hook/useCopyText"
 import { ProductItemType } from "src/Types/product.type"
 import {
@@ -53,7 +53,7 @@ export default function ProductItem({
       <div className="col-span-2 font-semibold">{item.name}</div>
       <div className="col-span-1">{item.brand[0].name}</div>
       <div className="col-span-1">{item.category[0].name}</div>
-      <div className="col-span-1">{item.price}</div>
+      <div className="col-span-1">{formatCurrency(item.price)}</div>
       <div className="col-span-1">{item.stock}</div>
       <div className="col-span-1 break-words">{convertDateTime(item.created_at)}</div>
       <div className="col-span-1 break-words">{convertDateTime(item.updated_at)}</div>

@@ -1,6 +1,5 @@
-import logo from "src/Assets/img/logo_small.png"
 import avatarDefault from "src/Assets/img/avatarDefault.png"
-import { Heart, Info, LogOut, PackageSearch, ShoppingCart } from "lucide-react"
+import { Cpu, Heart, Info, LogOut, PackageSearch, ShoppingCart } from "lucide-react"
 import { Link, useNavigate } from "react-router-dom"
 import { path } from "src/Constants/path"
 import { useContext } from "react"
@@ -47,11 +46,10 @@ export default function Header() {
           <div className="col-span-3">
             <div className="flex items-center gap-2">
               <button className="w-[55%] flex items-center gap-2" onClick={() => navigate(path.Home)}>
-                <img src={logo} alt="logo TECHZONE" className="object-contain h-[35px]" />
-                <div className="relative">
-                  <span className="text-white text-xl font-semibold ">TechZone</span>
-                  <span className="absolute -bottom-[2px] left-0 w-[94px] h-[2px] bg-white"></span>
-                </div>
+                <Cpu color="white" />
+                <span className="text-white text-2xl font-bold text-center border-b-[3px] border-white dark:border-white">
+                  TechZone
+                </span>
               </button>
               <button
                 onClick={handleShowCategory}

@@ -31,6 +31,14 @@ import DatePicker from "src/Admin/Components/DatePickerRange"
 type FormDataUpdate = Pick<SchemaAuthType, "name" | "id" | "created_at" | "updated_at">
 const formDataUpdate = schemaAuth.pick(["name", "id", "created_at", "updated_at"])
 
+const formDataSearch = schemaAuth.pick([
+  "name",
+  "created_at_start",
+  "created_at_end",
+  "updated_at_start",
+  "updated_at_end"
+])
+
 type FormDataSearch = Pick<
   SchemaAuthType,
   "name" | "created_at_start" | "created_at_end" | "updated_at_start" | "updated_at_end"
@@ -209,29 +217,42 @@ export default function ManageBrand() {
     register: registerFormSearch,
     handleSubmit: handleSubmitFormSearch,
     reset: resetFormSearch,
-    control: controlFormSearch
-  } = useForm<FormDataSearch>()
-
-  const handleSubmitSearch = handleSubmitFormSearch((data) => {
-    const params = cleanObject({
-      ...queryConfig,
-      name: data.name,
-      created_at_start: data.created_at_start?.toISOString(),
-      created_at_end: data.created_at_end?.toISOString(),
-      updated_at_start: data.updated_at_start?.toISOString(),
-      updated_at_end: data.updated_at_end?.toISOString()
-    })
-    console.log(data)
-    navigate(
-      {
-        pathname: `${path.AdminCategories}/${id}`,
-        search: createSearchParams(params).toString()
-      },
-      {
-        state: state
-      }
-    )
+    control: controlFormSearch,
+    trigger
+  } = useForm<FormDataSearch>({
+    resolver: yupResolver(formDataSearch)
   })
+
+  const handleSubmitSearch = handleSubmitFormSearch(
+    (data) => {
+      const params = cleanObject({
+        ...queryConfig,
+        name: data.name,
+        created_at_start: data.created_at_start?.toISOString(),
+        created_at_end: data.created_at_end?.toISOString(),
+        updated_at_start: data.updated_at_start?.toISOString(),
+        updated_at_end: data.updated_at_end?.toISOString()
+      })
+      console.log(data)
+      navigate(
+        {
+          pathname: `${path.AdminCategories}/${id}`,
+          search: createSearchParams(params).toString()
+        },
+        {
+          state: state
+        }
+      )
+    },
+    (error) => {
+      if (error.created_at_end) {
+        toast.error(error.created_at_end?.message, { autoClose: 1500 })
+      }
+      if (error.updated_at_end) {
+        toast.error(error.updated_at_end?.message, { autoClose: 1500 })
+      }
+    }
+  )
 
   const handleResetFormSearch = () => {
     const filteredSearch = omit(queryConfig, [
@@ -283,7 +304,15 @@ export default function ManageBrand() {
                       name="created_at_start"
                       control={controlFormSearch}
                       render={({ field }) => {
-                        return <DatePicker value={field.value as Date} onChange={field.onChange} />
+                        return (
+                          <DatePicker
+                            value={field.value as Date}
+                            onChange={(event) => {
+                              field.onChange(event)
+                              trigger("created_at_end")
+                            }}
+                          />
+                        )
                       }}
                     />
                     <span>-</span>
@@ -291,7 +320,15 @@ export default function ManageBrand() {
                       name="created_at_end"
                       control={controlFormSearch}
                       render={({ field }) => {
-                        return <DatePicker value={field.value as Date} onChange={field.onChange} />
+                        return (
+                          <DatePicker
+                            value={field.value as Date}
+                            onChange={(event) => {
+                              field.onChange(event)
+                              trigger("created_at_start")
+                            }}
+                          />
+                        )
                       }}
                     />
                   </div>
@@ -306,7 +343,15 @@ export default function ManageBrand() {
                       name="updated_at_start"
                       control={controlFormSearch}
                       render={({ field }) => {
-                        return <DatePicker value={field.value as Date} onChange={field.onChange} />
+                        return (
+                          <DatePicker
+                            value={field.value as Date}
+                            onChange={(event) => {
+                              field.onChange(event)
+                              trigger("updated_at_end")
+                            }}
+                          />
+                        )
                       }}
                     />
                     <span>-</span>
@@ -314,7 +359,15 @@ export default function ManageBrand() {
                       name="updated_at_end"
                       control={controlFormSearch}
                       render={({ field }) => {
-                        return <DatePicker value={field.value as Date} onChange={field.onChange} />
+                        return (
+                          <DatePicker
+                            value={field.value as Date}
+                            onChange={(event) => {
+                              field.onChange(event)
+                              trigger("updated_at_start")
+                            }}
+                          />
+                        )
                       }}
                     />
                   </div>
