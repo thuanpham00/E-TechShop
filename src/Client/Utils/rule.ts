@@ -107,7 +107,8 @@ export const schemaProduct = schemaAuth
         const price_min = this.parent?.price_min ? Number(this.parent.price_min) : null
         return price_min === null || price_max >= price_min
       }
-    })
+    }),
+    status: yup.string()
   })
 
 export const schemaCustomer = schemaAuth

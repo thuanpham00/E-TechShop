@@ -31,7 +31,8 @@ export default function ManageProducts() {
       created_at_start: queryParams.created_at_start,
       created_at_end: queryParams.created_at_end,
       updated_at_start: queryParams.updated_at_start,
-      updated_at_end: queryParams.updated_at_end
+      updated_at_end: queryParams.updated_at_end,
+      status: queryParams.status
     },
     isUndefined
   )
@@ -98,16 +99,16 @@ export default function ManageProducts() {
             <div>
               <div className="mt-4">
                 <div className="bg-[#f2f2f2] dark:bg-darkPrimary grid grid-cols-12 items-center gap-2 py-3 border border-[#dedede] dark:border-darkBorder px-4 rounded-tl-md rounded-tr-md">
-                  <div className="col-span-2 text-[14px] font-medium">ID</div>
-                  <div className="col-span-1 text-[14px] font-medium">Hình ảnh</div>
-                  <div className="col-span-2 text-[14px] font-medium">Tên sản phẩm</div>
-                  <div className="col-span-1 text-[14px] font-medium">Thương hiệu</div>
-                  <div className="col-span-1 text-[14px] font-medium">Thể loại</div>
-                  <div className="col-span-1 text-[14px] font-medium">Giá tiền</div>
-                  <div className="col-span-1 text-[14px] font-medium">Số lượng</div>
-                  <div className="col-span-1 text-[14px] font-medium">Ngày tạo</div>
-                  <div className="col-span-1 text-[14px] font-medium">Ngày cập nhật</div>
-                  <div className="col-span-1 text-[14px] font-medium">Hành động</div>
+                  <div className="col-span-2 text-[14px] font-semibold">ID</div>
+                  <div className="col-span-1 text-[14px] font-semibold">Hình ảnh</div>
+                  <div className="col-span-2 text-[14px] font-semibold">Tên sản phẩm</div>
+                  <div className="col-span-1 text-[14px] font-semibold">Thương hiệu</div>
+                  <div className="col-span-1 text-[14px] font-semibold">Thể loại</div>
+                  <div className="col-span-1 text-[14px] font-semibold">Giá gốc</div>
+                  <div className="col-span-1 text-[14px] text-center font-semibold">Trạng thái</div>
+                  <div className="col-span-1 text-[14px] text-center font-semibold">Ngày tạo</div>
+                  <div className="col-span-1 text-[14px] text-center font-semibold">Ngày cập nhật</div>
+                  <div className="col-span-1 text-[14px] text-center font-semibold">Hành động</div>
                 </div>
                 <div className="">
                   {listProduct.length > 0 ? (

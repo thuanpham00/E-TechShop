@@ -45,8 +45,8 @@ export default function Header() {
         <div className="grid grid-cols-12 items-center gap-4 py-3">
           <div className="col-span-3">
             <div className="flex items-center gap-2">
-              <button className="w-[55%] flex items-center gap-2" onClick={() => navigate(path.Home)}>
-                <Cpu color="white" />
+              <button className="w-[55%] flex items-center gap-1" onClick={() => navigate(path.Home)}>
+                <Cpu color="white" className="mt-1" />
                 <span className="text-white text-2xl font-bold text-center border-b-[3px] border-white dark:border-white">
                   TechZone
                 </span>

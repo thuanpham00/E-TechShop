@@ -10,6 +10,7 @@ import { CollectionItemType } from "src/Types/product.type"
 import Skeleton from "src/Components/Skeleton"
 import Breadcrumb from "src/Client/Components/Breadcrumb"
 import ProductItem from "./Components/ProductItem"
+import { getNameParams } from "src/Helpers/common"
 
 export default function Collection() {
   const { slug } = useParams()
@@ -43,14 +44,14 @@ export default function Collection() {
   return (
     <div>
       <Helmet>
-        <title>TECHZONE | Laptop, PC, Màn hình, điện thoại, linh kiện Chính Hãng</title>
+        <title>{getNameParams(slug as string)}</title>
         <meta
           name="description"
           content="Đây là trang TECHZONE | Laptop, PC, Màn hình, điện thoại, linh kiện Chính Hãng"
         />
       </Helmet>
       <div className="container">
-        <Breadcrumb slug={slug as string} />
+        <Breadcrumb slug_1={slug as string} />
         {isLoading && <Skeleton />}
         {!isFetching && slug && (
           <div>

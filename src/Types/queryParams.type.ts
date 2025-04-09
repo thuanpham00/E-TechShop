@@ -29,4 +29,5 @@ export type queryParamConfigProduct = queryParamConfig & {
   brand?: string
   price_min?: string
   price_max?: string
+  status?: string
 }

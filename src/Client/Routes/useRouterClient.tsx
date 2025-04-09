@@ -17,6 +17,7 @@ const NotFound = lazy(() => import("../Pages/NotFound"))
 const VerifyEmail = lazy(() => import("../Pages/VerifyEmail"))
 const ForgotPassword = lazy(() => import("../Pages/ForgotPassword"))
 const ResetPassword = lazy(() => import("../Pages/ResetPassword"))
+const ProductDetail = lazy(() => import("../Pages/ProductDetail"))
 
 const ProjectRouter = () => {
   const { isAuthenticated } = useContext(AppContext)
@@ -54,6 +55,14 @@ export default function useRouterClient() {
           element: (
             <Suspense>
               <Home />
+            </Suspense>
+          )
+        },
+        {
+          path: path.ProductDetail,
+          element: (
+            <Suspense>
+              <ProductDetail />
             </Suspense>
           )
         },

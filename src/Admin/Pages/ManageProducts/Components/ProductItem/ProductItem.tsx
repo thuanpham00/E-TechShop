@@ -54,9 +54,25 @@ export default function ProductItem({
       <div className="col-span-1">{item.brand[0].name}</div>
       <div className="col-span-1">{item.category[0].name}</div>
       <div className="col-span-1">{formatCurrency(item.price)}</div>
-      <div className="col-span-1">{item.stock}</div>
-      <div className="col-span-1 break-words">{convertDateTime(item.created_at)}</div>
-      <div className="col-span-1 break-words">{convertDateTime(item.updated_at)}</div>
+      <div className="col-span-1">
+        {item.status === "out_of_stock" && (
+          <div className=" text-[13px] font-medium py-1 px-2 border border-[#ffdcdc] bg-[#ffdcdc] text-[#f00] text-center rounded-full flex gap-1 justify-center items-center">
+            Hết hàng
+          </div>
+        )}
+        {item.status === "available" && (
+          <div className="text-[13px] font-medium py-1 px-2 border border-[#b2ffb4] bg-[#b2ffb4] text-[#04710c] text-center rounded-full flex gap-1 justify-center items-center">
+            Còn hàng
+          </div>
+        )}
+        {item.status === "discontinued" && (
+          <div className="text-[13px] font-medium py-1 px-2 border border-[#ffdcdc] bg-[#ffdcdc] text-[#04710c] text-center rounded-full flex gap-1 justify-center items-center">
+            Ngừng kinh doanh
+          </div>
+        )}
+      </div>
+      <div className="col-span-1 break-words ml-4">{convertDateTime(item.created_at)}</div>
+      <div className="col-span-1 break-words ml-4">{convertDateTime(item.updated_at)}</div>
       <div className="col-span-1 flex items-center justify-center gap-2">
         <button>
           <Pencil color="orange" size={18} />

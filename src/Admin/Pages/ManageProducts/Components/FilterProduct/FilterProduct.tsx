@@ -27,6 +27,7 @@ type FormDataSearch = Pick<
   | "created_at_end"
   | "updated_at_start"
   | "updated_at_end"
+  | "status"
 >
 
 const formDataSearch = schemaProduct.pick([
@@ -38,7 +39,8 @@ const formDataSearch = schemaProduct.pick([
   "created_at_start",
   "created_at_end",
   "updated_at_start",
-  "updated_at_end"
+  "updated_at_end",
+  "status"
 ])
 interface Props {
   queryConfig: queryParamConfigProduct
@@ -101,7 +103,8 @@ export default function FilterProduct({ queryConfig }: Props) {
         updated_at_start: data.updated_at_start?.toISOString(),
         updated_at_end: data.updated_at_end?.toISOString(),
         price_min: data.price_min,
-        price_max: data.price_max
+        price_max: data.price_max,
+        status: data.status
       })
 
       navigate({
@@ -132,7 +135,8 @@ export default function FilterProduct({ queryConfig }: Props) {
       "updated_at_start",
       "updated_at_end",
       "price_min",
-      "price_max"
+      "price_max",
+      "status"
     ])
     resetFormSearch()
     navigate({ pathname: `${path.AdminProducts}`, search: createSearchParams(filteredSearch).toString() })
@@ -218,7 +222,6 @@ export default function FilterProduct({ queryConfig }: Props) {
               <span className="absolute inset-y-0 left-[-5%] w-[1px] bg-[#dadada] h-full"></span>
             </div>
           </div>
-
           <div className="col-span-1 flex items-center h-14 px-2 bg-[#fff] dark:bg-darkBorder border border-[#dadada] border-t-0 rounded-tr-md">
             <span className="w-1/3">Lọc theo giá</span>
             <div className="w-2/3 relative h-full">
@@ -355,6 +358,33 @@ export default function FilterProduct({ queryConfig }: Props) {
                   }}
                 />
               </div>
+              <span className="absolute inset-y-0 left-[-5%] w-[1px] bg-[#dadada] h-full"></span>
+            </div>
+          </div>
+          <div className="col-span-1 flex items-center h-14 px-2 bg-[#fff] dark:bg-darkBorder border border-[#dadada] border-t-0">
+            <span className="w-1/3">Trạng thái</span>
+            <div className="w-2/3 relative h-full">
+              <Controller
+                name="status"
+                control={controlFormSearch}
+                render={({ field }) => {
+                  return (
+                    <select
+                      // {...field}
+                      value={field.value ?? ""} // ✅ Giá trị từ form
+                      onChange={(e) => field.onChange(e.target.value ? e.target.value : undefined)} // ✅ Cập nhật vào form
+                      className="p-2 border border-gray-300 dark:border-darkBorder bg-[#f2f2f2] dark:bg-black w-full mt-2 rounded-md"
+                    >
+                      <option value="" disabled selected>
+                        -- Chọn trạng thái --
+                      </option>
+                      <option value="available">Còn hàng</option>
+                      <option value="out_of_stock">Hết hàng</option>
+                      <option value="discontinued">Ngừng kinh doanh</option>
+                    </select>
+                  )
+                }}
+              />
               <span className="absolute inset-y-0 left-[-5%] w-[1px] bg-[#dadada] h-full"></span>
             </div>
           </div>

@@ -7,6 +7,7 @@ export const path = {
   LoginGoogle: "/login/oauth",
   Profile: "/profile",
   Collection: "/collections/:slug",
+  ProductDetail: "/products/:name",
   VerifyEmail: "/verify-email",
   ForgotPassword: "/forgot-password",
   ResetPassword: "/reset-password",

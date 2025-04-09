@@ -5,5 +5,15 @@ export const collectionAPI = {
     return Http.get(`/collections/${slug}`, {
       signal
     })
+  },
+
+  getProductDetail: (id: string) => {
+    return Http.get(`/products/${id}`)
+  },
+
+  getProductRelated: (params: { brand: string; category: string; idProduct: string }) => {
+    return Http.get(`/products/related`, {
+      params
+    })
   }
 }

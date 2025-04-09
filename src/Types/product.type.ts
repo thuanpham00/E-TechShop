@@ -1,3 +1,9 @@
+export enum StatusProduct {
+  "out_of_stock" = "out_of_stock",
+  "discontinued" = "discontinued",
+  "available" = "available"
+}
+
 export type CollectionItemType = {
   _id: string
   name: string
@@ -17,6 +23,8 @@ export type CollectionItemType = {
   specifications: never[]
   viewCount: number
   reviews: string[]
+  category: string[]
+  brand: string[]
 }
 
 export type CategoryItemType = {
@@ -55,7 +63,7 @@ export type ProductItemType = {
     type: number
   }
   price: number
-  stock: number
+  status: StatusProduct
   updated_at: string
 }
 
@@ -68,4 +76,36 @@ export type UpdateBodyReq = {
 
 export type UpdateCategoryBodyReq = {
   name?: string
+}
+
+export type ProductDetailType = {
+  _id: string
+  name: string
+  averageRating: number
+  brand: string
+  category: string
+  created_at: string
+  description: string
+  discount: number
+  gifts: string[] // Dữ liệu cụ thể có thể được định nghĩa thêm nếu cần
+  isFeatured: string
+  medias: {
+    url: string
+    type: number
+  }[]
+  price: number
+  reviews: string[] // Dữ liệu có thể thay đổi tùy thuộc vào yêu cầu
+  sold: number
+  specifications: {
+    name: string
+    value: string
+  }[]
+  stock: number
+  updated_at: string
+  viewCount: number
+  banner: {
+    type: number
+    url: string
+  }
+  status: StatusProduct
 }

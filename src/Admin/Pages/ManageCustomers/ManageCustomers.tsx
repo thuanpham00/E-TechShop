@@ -34,11 +34,6 @@ import DateSelect from "src/Components/DateSelect"
 import InputFileImage from "src/Components/InputFileImage"
 import DatePicker from "../../Components/DatePickerRange"
 
-type FormDataUpdate = Pick<
-  SchemaAuthType,
-  "id" | "email" | "name" | "numberPhone" | "avatar" | "date_of_birth" | "verify" | "created_at" | "updated_at"
->
-
 const formDataUpdate = schemaAuth.pick([
   "id",
   "email",
@@ -50,6 +45,11 @@ const formDataUpdate = schemaAuth.pick([
   "created_at",
   "updated_at"
 ])
+
+type FormDataUpdate = Pick<
+  SchemaAuthType,
+  "id" | "email" | "name" | "numberPhone" | "avatar" | "date_of_birth" | "verify" | "created_at" | "updated_at"
+>
 
 const formDataSearch = schemaCustomer.pick([
   "email",
@@ -577,14 +577,14 @@ export default function ManageCustomers() {
             <div>
               <div className="mt-4">
                 <div className="bg-[#f2f2f2] dark:bg-darkPrimary grid grid-cols-12 items-center gap-2 py-3 border border-[#dedede] dark:border-darkBorder px-4 rounded-tl-md rounded-tr-md">
-                  <div className="col-span-2 text-[14px] font-medium">ID</div>
-                  <div className="col-span-2 text-[14px] font-medium">Họ Tên</div>
-                  <div className="col-span-2 text-[14px] font-medium">Email</div>
-                  <div className="col-span-1 text-[14px] text-center font-medium">Số điện thoại</div>
-                  <div className="col-span-2 text-[14px] text-center font-medium">Trạng thái</div>
-                  <div className="col-span-1 text-[14px] font-medium">Ngày tạo</div>
-                  <div className="col-span-1 text-[14px] font-medium">Ngày cập nhật</div>
-                  <div className="col-span-1 text-[14px] text-center font-medium">Hành động</div>
+                  <div className="col-span-2 text-[14px] font-semibold">ID</div>
+                  <div className="col-span-2 text-[14px] font-semibold">Họ Tên</div>
+                  <div className="col-span-2 text-[14px] font-semibold">Email</div>
+                  <div className="col-span-1 text-[14px] text-center font-semibold">Số điện thoại</div>
+                  <div className="col-span-2 text-[14px] text-center font-semibold">Trạng thái</div>
+                  <div className="col-span-1 text-[14px] font-semibold">Ngày tạo</div>
+                  <div className="col-span-1 text-[14px] font-semibold">Ngày cập nhật</div>
+                  <div className="col-span-1 text-[14px] text-center font-semibold">Hành động</div>
                 </div>
                 <div>
                   {listCustomer.length > 0 ? (
