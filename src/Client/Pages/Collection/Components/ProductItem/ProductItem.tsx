@@ -13,8 +13,7 @@ export default function ProductItem({ item }: { item: CollectionItemType }) {
     setImageChange(id)
   }
 
-  const hasMedias = item.medias.length > 0
-  const imageDefault = hasMedias ? item.banner.url : image_default
+  const imageDefault = item.banner.url !== "" ? item.banner.url : image_default
   const randomImage = useMemo(() => {
     if (item.medias.length > 1) {
       return item.medias[Math.floor(Math.random() * item.medias.length)].url
@@ -28,7 +27,7 @@ export default function ProductItem({ item }: { item: CollectionItemType }) {
         pathname: `/products/${item._id}`
       }}
       state={item.category[0]}
-      className="col-span-1 border border-[#dedede] rounded-[4px] p-4 pt-[6px] bg-white transition-all duration-200 ease-in cursor-pointer"
+      className="col-span-1 block border border-[#dedede] rounded-[4px] p-4 pt-[6px] bg-white transition-all duration-200 ease-in cursor-pointer"
       onMouseEnter={() => handleHoverProduct(item._id)}
       onMouseLeave={() => handleHoverProduct("")}
     >

@@ -109,3 +109,17 @@ export type ProductDetailType = {
   }
   status: StatusProduct
 }
+
+export type CreateProductBodyReq = {
+  name: string
+  category: string
+  brand: string
+  price: number
+  discount: number
+  stock: number
+  isFeatured: string
+  description: string
+  banner: File
+  medias: File[]
+  specifications: { name: string; value: string }[]
+}

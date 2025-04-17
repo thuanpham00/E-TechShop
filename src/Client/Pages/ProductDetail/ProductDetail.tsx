@@ -12,13 +12,18 @@ import { SuccessResponse } from "src/Types/utils.type"
 import star from "src/Assets/img/star.png"
 import { Check } from "lucide-react"
 import ProductItem from "../Collection/Components/ProductItem"
-import { useRef } from "react"
+import { useEffect, useRef, useState } from "react"
 
 export default function ProductDetail() {
   const { state: nameCategory } = useLocation()
   const { name } = useParams()
   const imgRef = useRef<HTMLImageElement>(null)
+
   const navigate = useNavigate()
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" }) // scroll mượt
+  }, [])
 
   const { data, isError, isFetching, isLoading, error } = useQuery({
     queryKey: ["productDetail", name],
@@ -93,6 +98,18 @@ export default function ProductDetail() {
     }
   }
 
+  const [imageCurrent, setImageCurrent] = useState<string>()
+
+  useEffect(() => {
+    if (productDetail) {
+      setImageCurrent(productDetail.medias[0].url)
+    }
+  }, [productDetail])
+
+  const chooseImage = (img: string) => {
+    setImageCurrent(img)
+  }
+
   return (
     <div className="container">
       {isLoading && <Skeleton />}
@@ -108,7 +125,7 @@ export default function ProductDetail() {
           <Breadcrumb slug_1={nameCategory} slug_2={productDetail.name} />
           <div>
             <div className="bg-white rounded-[4px] my-4 grid grid-cols-6 gap-6 p-6 pt-4">
-              <div className="col-span-2 border-r border-r-[#dedede]">
+              <div className="col-span-2 pr-2 border-r border-r-[#dedede]">
                 <div
                   className="relative pt-[100%] cursor-zoom-in overflow-hidden"
                   onMouseMove={handleZoom}
@@ -117,21 +134,24 @@ export default function ProductDetail() {
                   <img
                     ref={imgRef}
                     loading="lazy"
-                    src={productDetail.banner.url}
+                    src={imageCurrent}
                     alt={productDetail.name}
                     className="absolute top-0 left-0 object-cover w-full h-auto pointer-events-none"
                   />
                 </div>
-                <div className="flex items-center gap-1 w-full overflow-y-auto">
+                <div className="grid grid-cols-4 gap-2">
                   {productDetail.medias.map((item) => {
+                    const isActive = item.url === imageCurrent
                     return (
-                      <img
-                        key={item.url}
-                        loading="lazy"
-                        src={item.url}
-                        alt={item.url}
-                        className="object-cover w-[90px] rounded-[4px] p-1 border border-[#dedede] cursor-pointer"
-                      />
+                      <button key={item.url} onClick={() => chooseImage(item.url)} className="relative">
+                        <img
+                          loading="lazy"
+                          src={item.url}
+                          alt={item.url}
+                          className="object-cover col-span-1 rounded-[4px] p-1 border border-[#dedede] cursor-pointer"
+                        />
+                        {isActive && <div className="absolute inset-0 border-2 border-red-500"></div>}
+                      </button>
                     )
                   })}
                 </div>

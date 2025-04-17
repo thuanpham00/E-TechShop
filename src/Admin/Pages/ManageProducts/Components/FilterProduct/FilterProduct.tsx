@@ -3,7 +3,7 @@ import { keepPreviousData, useQuery } from "@tanstack/react-query"
 import { omit } from "lodash"
 import { FolderUp, Plus, RotateCcw, Search } from "lucide-react"
 import { Controller, useForm } from "react-hook-form"
-import { createSearchParams, useNavigate } from "react-router-dom"
+import { createSearchParams, Link, useNavigate } from "react-router-dom"
 import { toast } from "react-toastify"
 import DatePicker from "src/Admin/Components/DatePickerRange"
 import { adminAPI } from "src/Apis/admin.api"
@@ -392,11 +392,13 @@ export default function FilterProduct({ queryConfig }: Props) {
         <div className="flex justify-between mt-4">
           <div className="flex gap-2">
             <div className="flex items-center justify-end gap-2">
-              <Button
-                icon={<Plus size={15} />}
-                nameButton="Thêm mới"
-                classNameButton="p-2 bg-blue-500 w-full text-white font-medium rounded-md hover:bg-blue-500/80 duration-200 text-[13px] flex items-center gap-1"
-              />
+              <Link
+                to={path.AddProduct}
+                className="p-2 bg-blue-500 w-full text-white font-medium rounded-md hover:bg-blue-500/80 duration-200 text-[13px] flex items-center gap-1"
+              >
+                <Plus size={15} />
+                <span>Thêm mới</span>
+              </Link>
               <Button
                 icon={<FolderUp size={15} />}
                 nameButton="Export"

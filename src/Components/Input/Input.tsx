@@ -11,6 +11,7 @@ interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   classNameInput?: string
   classNameError?: string
   classNameEye?: string
+  classNameLabel?: string
   nameInput?: string
   name: string
   messageErrorInput?: string
@@ -22,6 +23,7 @@ export default function Input({
   classNameInput = "p-2 w-full border border-black/60 rounded-sm focus:border-blue-500 focus:ring-2 outline-none text-black dark:text-black",
   classNameError = "text-red-500 text-[13px] font-semibold min-h-[1.25rem] block",
   classNameEye = "absolute right-2 top-1/2 -translate-y-1/2",
+  classNameLabel,
   nameInput,
   messageErrorInput,
   name,
@@ -45,7 +47,7 @@ export default function Input({
 
   return (
     <div className={className}>
-      <span>{nameInput}</span>
+      <span className={classNameLabel}>{nameInput}</span>
       <input className={classNameInput} {...registerInput} {...rest} type={handleType()} />
       {rest.type === "password" && !openEye ? (
         <button onClick={toggle} className={classNameEye}>

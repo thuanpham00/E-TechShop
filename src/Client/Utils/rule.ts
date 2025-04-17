@@ -21,8 +21,8 @@ export const schemaAuth = yup
       .matches(/^[^\d]+$/, "Tên không được chứa số!"),
     phone: yup.string().required("Số điện thoại bắt buộc!"),
     numberPhone: yup.string(),
-    avatar: yup.string().max(1000, "Độ dài tối đa 1000 kí tự"),
-    date_of_birth: yup.date().max(new Date(), "Hãy chọn một ngày trong quá khứ"),
+    avatar: yup.string().max(1000, "Độ dài tối đa 1000 kí tự!"),
+    date_of_birth: yup.date().max(new Date(), "Hãy chọn một ngày trong quá khứ!"),
     verify: yup.number(),
 
     id: yup.string(),
@@ -31,7 +31,7 @@ export const schemaAuth = yup
 
     created_at_start: yup.date().test({
       name: "Invalid Date",
-      message: "Ngày không phù hợp",
+      message: "Ngày không phù hợp!",
       test: function (value) {
         if (!value) {
           return true
@@ -43,7 +43,7 @@ export const schemaAuth = yup
     }),
     created_at_end: yup.date().test({
       name: "Invalid Date",
-      message: "Ngày không phù hợp",
+      message: "Ngày không phù hợp!",
       test: function (value) {
         if (!value) {
           return true
@@ -55,7 +55,7 @@ export const schemaAuth = yup
     }),
     updated_at_start: yup.date().test({
       name: "Invalid Date",
-      message: "Ngày không phù hợp",
+      message: "Ngày không phù hợp!",
       test: function (value) {
         if (!value) {
           return true // nếu true thì ko xét nữa
@@ -67,7 +67,7 @@ export const schemaAuth = yup
     }),
     updated_at_end: yup.date().test({
       name: "Invalid Date",
-      message: "Ngày không phù hợp",
+      message: "Ngày không phù hợp!",
       test: function (value) {
         if (!value) {
           return true // nếu true thì ko xét nữa
@@ -89,7 +89,7 @@ export const schemaProduct = schemaAuth
     brand: yup.string(),
     price_min: yup.string().test({
       name: "price-not-allowed",
-      message: "Giá không phù hợp",
+      message: "Giá không phù hợp!",
       test: function (value) {
         if (!value) return true // Không nhập thì bỏ qua
         const price_min = Number(value)
@@ -100,7 +100,7 @@ export const schemaProduct = schemaAuth
 
     price_max: yup.string().test({
       name: "price-not-allowed",
-      message: "Giá không phù hợp",
+      message: "Giá không phù hợp!",
       test: function (value) {
         if (!value) return true
         const price_max = Number(value)
@@ -120,7 +120,37 @@ export const schemaCustomer = schemaAuth
     verify: yup.number()
   })
 
+export const schemaAddProduct = yup.object({
+  name: yup.string().required("Tên sản phẩm bắt buộc!"),
+  category: yup.string().required("Danh mục bắt buộc!"),
+  brand: yup.string().required("Thương hiệu bắt buộc!"),
+  price: yup
+    .number()
+    .transform((value, originalValue) => (originalValue === "" ? undefined : value))
+    .typeError("Giá phải là số!")
+    .min(0, "Giá không được nhỏ hơn 0!")
+    .required("Giá bắt buộc!"),
+  discount: yup
+    .number()
+    .transform((value, originalValue) => (originalValue === "" ? undefined : value))
+    .typeError("% giảm giá phải là số!")
+    .min(0, "% giảm giá không được nhỏ hơn 0!")
+    .required("% giảm giá bắt buộc!"),
+  stock: yup
+    .number()
+    .typeError("Số lượng phải là số!")
+    .required("Số lượng bắt buộc!")
+    .min(-1, "% giảm giá không được nhỏ hơn 0!"),
+  isFeatured: yup.string(),
+  description: yup.string().required("Mô tả sản phẩm bắt buộc!"),
+  banner: yup.string().max(1000, "Độ dài tối đa 1000 kí tự!").required("Ảnh đại diện sản phẩm bắt buộc!"),
+  medias: yup.array().required("Danh mục ảnh bắt buộc!").min(1, "Danh mục ảnh bắt buộc!"),
+  specifications: yup.array().required("Thông số kỹ thuật bắt buộc!").min(1, "Thông số kỹ thuật bắt buộc!")
+})
+
 export type SchemaAuthType = yup.InferType<typeof schemaAuth>
 export type SchemaProductType = SchemaAuthType & yup.InferType<typeof schemaProduct>
 
 export type SchemaCustomerType = yup.InferType<typeof schemaCustomer>
+
+export type SchemaAddProductType = yup.InferType<typeof schemaAddProduct>
