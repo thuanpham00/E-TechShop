@@ -48,7 +48,7 @@ export const adminAPI = {
 
     // lấy danh sách danh mục
     getCategories: (params: queryParamConfigCategory, signal: AbortSignal) => {
-      return Http.get(`/admin/categories/`, {
+      return Http.get(`/admin/categories`, {
         params,
         signal
       })
@@ -118,8 +118,7 @@ export const adminAPI = {
     addProduct: (body: CreateProductBodyReq) => {
       const formData = new FormData()
 
-      // formData: Cho phép gửi dữ liệu hỗn hợp: text + file
-      // nó chỉ hỗ trợ string, file
+      // formData: dùng để vừa gửi dữ liệu dạng text + file xuống server
       formData.append("name", body.name)
       formData.append("category", body.category)
       formData.append("brand", body.brand)
@@ -146,6 +145,21 @@ export const adminAPI = {
           "Content-Type": "multipart/form-data"
         }
       })
+    }
+  },
+
+  supplier: {
+    // lấy danh sách nhà cung cấp
+    getSuppliers: (params: queryParamConfigCategory, signal: AbortSignal) => {
+      return Http.get(`/admin/suppliers`, {
+        params,
+        signal
+      })
+    },
+
+    // lấy chi tiết nhà cung cấp
+    getSupplierDetail: (id: string) => {
+      return Http.get(`/admin/suppliers/${id}`)
     }
   }
 }

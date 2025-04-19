@@ -23,6 +23,13 @@ export type queryParamConfigBrand = queryParamConfig & {
   id?: string
 }
 
+export type queryParamConfigSupplier = queryParamConfig & {
+  name?: string
+  email?: string
+  phone?: string
+  contactName?: string
+}
+
 export type queryParamConfigProduct = queryParamConfig & {
   name?: string
   category?: string

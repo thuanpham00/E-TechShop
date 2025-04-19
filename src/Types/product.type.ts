@@ -44,6 +44,20 @@ export type BrandItemType = {
   category_ids: string[]
 }
 
+export type SupplierItemType = {
+  _id: string
+  name: string
+  phone: string
+  email: string
+  contactName: string
+
+  address?: string
+  taxCode?: string
+  description?: string
+  created_at: string
+  updated_at: string
+}
+
 export type ProductItemType = {
   _id: string
   name: string
@@ -76,6 +90,15 @@ export type UpdateBodyReq = {
 
 export type UpdateCategoryBodyReq = {
   name?: string
+}
+
+export type UpdateSupplierBodyReq = {
+  name?: string
+  contactName?: string
+  email?: string
+  phone?: string
+  description?: string
+  address?: string
 }
 
 export type ProductDetailType = {

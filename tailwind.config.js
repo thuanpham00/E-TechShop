@@ -1,7 +1,9 @@
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const plugin = require("tailwindcss/plugin")
+import typography from "@tailwindcss/typography"
 
 /** @type {import('tailwindcss').Config} */
+
 module.exports = {
   content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
   corePlugins: {
@@ -68,8 +70,7 @@ module.exports = {
     plugin(function ({ addComponents }) {
       addComponents({
         ".container": {
-          // set up class container mới
-          maxWidth: "80rem", // 1280px
+          maxWidth: "80rem",
           width: "100%",
           marginLeft: "auto",
           marginRight: "auto",
@@ -77,7 +78,7 @@ module.exports = {
           paddingRight: "10px"
         }
       })
-    })
-    // require("tailwindcss-animate")
+    }),
+    typography
   ]
 }

@@ -22,7 +22,7 @@ export default function ManageProducts() {
   const queryConfig: queryParamConfigProduct = omitBy(
     {
       page: queryParams.page || "1", // mặc định page = 1
-      limit: queryParams.limit || "5", // mặc định limit =
+      limit: queryParams.limit || "5", // mặc định limit = 10
       name: queryParams.name,
       brand: queryParams.brand,
       category: queryParams.category,

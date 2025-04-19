@@ -33,11 +33,11 @@ export const schemaAuth = yup
       name: "Invalid Date",
       message: "Ngày không phù hợp!",
       test: function (value) {
-        if (!value) {
+        const { created_at_end } = this.parent
+        if (!value || !created_at_end) {
           return true
         }
         const created_at_start = value
-        const { created_at_end } = this.parent
         return new Date(created_at_end) > new Date(created_at_start)
       }
     }),
@@ -45,11 +45,11 @@ export const schemaAuth = yup
       name: "Invalid Date",
       message: "Ngày không phù hợp!",
       test: function (value) {
-        if (!value) {
+        const { created_at_start } = this.parent
+        if (!value || !created_at_start) {
           return true
         }
         const created_at_end = value
-        const { created_at_start } = this.parent
         return new Date(created_at_end) > new Date(created_at_start)
       }
     }),
@@ -57,11 +57,11 @@ export const schemaAuth = yup
       name: "Invalid Date",
       message: "Ngày không phù hợp!",
       test: function (value) {
-        if (!value) {
+        const { updated_at_end } = this.parent
+        if (!value || !updated_at_end) {
           return true // nếu true thì ko xét nữa
         }
         const updated_at_start = value
-        const { updated_at_end } = this.parent
         return new Date(updated_at_end) > new Date(updated_at_start)
       }
     }),
@@ -69,11 +69,11 @@ export const schemaAuth = yup
       name: "Invalid Date",
       message: "Ngày không phù hợp!",
       test: function (value) {
-        if (!value) {
+        const { updated_at_start } = this.parent
+        if (!value || !updated_at_start) {
           return true // nếu true thì ko xét nữa
         }
         const updated_at_end = value
-        const { updated_at_start } = this.parent
         return new Date(updated_at_end) > new Date(updated_at_start)
       }
     })
@@ -148,9 +148,39 @@ export const schemaAddProduct = yup.object({
   specifications: yup.array().required("Thông số kỹ thuật bắt buộc!").min(1, "Thông số kỹ thuật bắt buộc!")
 })
 
+export const schemaSupplier = schemaAuth
+  .pick(["created_at_start", "created_at_end", "updated_at_start", "updated_at_end"])
+  .shape({
+    name: yup.string(),
+    contactName: yup.string(),
+    email: yup.string(),
+    phone: yup.string()
+  })
+
+export const schemaSupplierUpdate = schemaAuth
+  .pick(["created_at_start", "created_at_end", "updated_at_start", "updated_at_end", "created_at", "updated_at", "id"])
+  .shape({
+    name: yup.string().required("Tên nhà cung cấp bắt buộc!"),
+    contactName: yup.string().required("Tên người đại diện bắt buộc!"),
+    email: yup.string().required("Email bắt buộc!").email("Email không đúng định dạng!"),
+    phone: yup
+      .string()
+      .required("Số điện thoại bắt buộc!")
+      .min(10, "Độ dài 10-11 kí tự")
+      .max(11, "Độ dài 10-11 kí tự")
+      .matches(/^\d+$/, "Số điện thoại chỉ được chứa ký tự số"),
+    description: yup.string().required("Mô tả bắt buộc!"),
+    address: yup.string().required("Địa chỉ bắt buộc!"),
+    taxCode: yup.string()
+  })
+
 export type SchemaAuthType = yup.InferType<typeof schemaAuth>
 export type SchemaProductType = SchemaAuthType & yup.InferType<typeof schemaProduct>
 
 export type SchemaCustomerType = yup.InferType<typeof schemaCustomer>
 
 export type SchemaAddProductType = yup.InferType<typeof schemaAddProduct>
+
+export type SchemaSupplierType = yup.InferType<typeof schemaSupplier>
+
+export type SchemaSupplierUpdateType = yup.InferType<typeof schemaSupplierUpdate>

@@ -147,8 +147,8 @@ export default function FilterProduct({ queryConfig }: Props) {
       <form onSubmit={handleSubmitSearch}>
         <div className="mt-1 grid grid-cols-2">
           <div className="col-span-1 flex items-center h-14 px-2 bg-[#ececec] dark:bg-darkBorder border border-[#dadada] rounded-tl-md">
-            <span className="w-1/3">Tên sản phẩm</span>
-            <div className="w-2/3 relative h-full">
+            <span className="w-[30%]">Tên sản phẩm</span>
+            <div className="w-[70%] relative h-full">
               <Input
                 name="name"
                 register={registerFormSearch}
@@ -161,8 +161,8 @@ export default function FilterProduct({ queryConfig }: Props) {
             </div>
           </div>
           <div className="col-span-1 flex items-center h-14 px-2 bg-[#ececec] dark:bg-darkBorder border border-[#dadada] rounded-tr-md">
-            <span className="w-1/3">Thương hiệu</span>
-            <div className="w-2/3 relative h-full">
+            <span className="w-[30%]">Thương hiệu</span>
+            <div className="w-[70%] relative h-full">
               <Controller
                 name="brand"
                 control={controlFormSearch}
@@ -192,8 +192,8 @@ export default function FilterProduct({ queryConfig }: Props) {
             </div>
           </div>
           <div className="col-span-1 flex items-center h-14 px-2 bg-[#fff] dark:bg-darkBorder border border-[#dadada]">
-            <span className="w-1/3">Thể loại</span>
-            <div className="w-2/3 relative h-full">
+            <span className="w-[30%]">Thể loại</span>
+            <div className="w-[70%] relative h-full">
               <Controller
                 name="category"
                 control={controlFormSearch}
@@ -223,8 +223,8 @@ export default function FilterProduct({ queryConfig }: Props) {
             </div>
           </div>
           <div className="col-span-1 flex items-center h-14 px-2 bg-[#fff] dark:bg-darkBorder border border-[#dadada] border-t-0 rounded-tr-md">
-            <span className="w-1/3">Lọc theo giá</span>
-            <div className="w-2/3 relative h-full">
+            <span className="w-[30%]">Lọc theo giá</span>
+            <div className="w-[70%] relative h-full">
               <div className="flex items-center justify-between gap-2">
                 <Controller
                   name="price_min"
@@ -284,8 +284,8 @@ export default function FilterProduct({ queryConfig }: Props) {
             </div>
           </div>
           <div className="col-span-1 flex items-center h-14 px-2 bg-[#ececec] dark:bg-darkBorder border border-[#dadada] rounded-bl-md border-t-0">
-            <span className="w-1/3">Ngày đăng</span>
-            <div className="w-2/3 relative h-full">
+            <span className="w-[30%]">Ngày tạo</span>
+            <div className="w-[70%] relative h-full">
               <div className="mt-2 w-full flex items-center gap-2">
                 <Controller
                   name="created_at_start"
@@ -362,8 +362,8 @@ export default function FilterProduct({ queryConfig }: Props) {
             </div>
           </div>
           <div className="col-span-1 flex items-center h-14 px-2 bg-[#fff] dark:bg-darkBorder border border-[#dadada] border-t-0">
-            <span className="w-1/3">Trạng thái</span>
-            <div className="w-2/3 relative h-full">
+            <span className="w-[30%]">Trạng thái</span>
+            <div className="w-[70%] relative h-full">
               <Controller
                 name="status"
                 control={controlFormSearch}

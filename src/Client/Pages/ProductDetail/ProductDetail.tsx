@@ -241,6 +241,8 @@ export default function ProductDetail() {
                   <div className="text-center font-base">Hiện tại sản phẩm chưa có thông số kĩ thuật</div>
                 )}
               </div>
+
+              <div className="mt-4 prose max-w-none" dangerouslySetInnerHTML={{ __html: productDetail.description }} />
             </div>
           </div>
         </div>

@@ -273,8 +273,8 @@ export default function ManageCategories() {
           <form onSubmit={handleSubmitSearch}>
             <div className="mt-1 grid grid-cols-2">
               <div className="col-span-1 flex items-center h-14 px-2 bg-[#ececec] dark:bg-darkBorder border border-[#dadada] rounded-tl-md">
-                <span className="w-1/3">Ngày đăng</span>
-                <div className="w-2/3 relative h-full">
+                <span className="w-[30%]">Ngày tạo</span>
+                <div className="w-[70%] relative h-full">
                   <div className="mt-2 w-full flex items-center gap-2">
                     <Controller
                       name="created_at_start"
@@ -312,8 +312,8 @@ export default function ManageCategories() {
                 </div>
               </div>
               <div className="col-span-1 flex items-center h-14 px-2 bg-[#ececec] dark:bg-darkBorder  border border-[#dadada] rounded-tr-md">
-                <span className="w-1/3">Ngày cập nhật</span>
-                <div className="w-2/3 relative h-full">
+                <span className="w-[30%]">Ngày cập nhật</span>
+                <div className="w-[70%] relative h-full">
                   <div className="mt-2 w-full flex items-center gap-2">
                     <Controller
                       name="updated_at_start"
@@ -351,8 +351,8 @@ export default function ManageCategories() {
                 </div>
               </div>
               <div className="col-span-1 flex items-center h-14 px-2 bg-[#fff] dark:bg-darkBorder border border-[#dadada] border-t-0 rounded-bl-md">
-                <span className="w-1/3">Tên thể loại</span>
-                <div className="w-2/3 relative h-full">
+                <span className="w-[30%]">Tên thể loại</span>
+                <div className="w-[70%] relative h-full">
                   <div className="mt-2 w-full flex items-center gap-2">
                     <Input
                       name="name"
@@ -393,7 +393,7 @@ export default function ManageCategories() {
                   type="submit"
                   icon={<Search size={15} />}
                   nameButton="Tìm kiếm"
-                  classNameButton="p-2 px-3 bg-blue-500 w-full text-white font-medium rounded-tr-md rounded-br-md hover:bg-blue-500/80 duration-200 text-[13px] flex items-center gap-1 h-[35px]"
+                  classNameButton="p-2 px-3 bg-blue-500 w-full text-white font-medium rounded-md hover:bg-blue-500/80 duration-200 text-[13px] flex items-center gap-1 h-[35px]"
                   className="flex-shrink-0"
                 />
               </div>

@@ -41,13 +41,13 @@ export default function ProductItem({
       className="bg-white dark:bg-darkPrimary grid grid-cols-12 items-center gap-4 py-3 cursor-pointer border-t-0 border border-[#dedede] dark:border-darkBorder last:border-b-0 px-4 last:rounded-bl-md last:rounded-br-md"
       key={item._id}
     >
-      <div className="col-span-2 flex items-center justify-between">
+      <div className="col-span-1 flex items-center justify-between">
         <div className="truncate w-[75%] text-blue-500">{item._id}</div>
         <button onClick={() => handleCopyText(item._id)} className="p-1 border rounded mr-2">
           {copiedId === item._id ? <ClipboardCheck color="#8d99ae" size={12} /> : <Copy color="#8d99ae" size={12} />}
         </button>
       </div>
-      <div className="col-span-1">
+      <div className="col-span-2">
         <img src={item.banner.url} alt={item._id} className="h-auto w-full object-cover" />
       </div>
       <div className="col-span-2 font-semibold">{item.name}</div>

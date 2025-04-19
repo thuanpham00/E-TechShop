@@ -319,6 +319,7 @@ export default function ManageCustomers() {
     (data) => {
       const params = cleanObject({
         ...queryConfig,
+        page: 1,
         email: data.email,
         name: data.name,
         phone: data.numberPhone,
@@ -391,8 +392,8 @@ export default function ManageCustomers() {
           <form onSubmit={handleSubmitSearch}>
             <div className="mt-1 grid grid-cols-2">
               <div className="col-span-1 flex items-center h-14 px-2 bg-[#ececec] dark:bg-darkBorder border border-[#dadada] rounded-tl-md">
-                <span className="w-1/3 dark:text-white">Email</span>
-                <div className="w-2/3 relative h-full">
+                <span className="w-[30%] dark:text-white">Email</span>
+                <div className="w-[70%] relative h-full">
                   <Input
                     name="email"
                     register={registerFormSearch}
@@ -406,8 +407,8 @@ export default function ManageCustomers() {
                 </div>
               </div>
               <div className="col-span-1 flex items-center h-14 px-2 bg-[#ececec] dark:bg-darkBorder  border border-[#dadada] rounded-tr-md">
-                <span className="w-1/3">Họ tên</span>
-                <div className="w-2/3 relative h-full">
+                <span className="w-[30%]">Họ tên</span>
+                <div className="w-[70%] relative h-full">
                   <Input
                     name="name"
                     register={registerFormSearch}
@@ -421,8 +422,8 @@ export default function ManageCustomers() {
                 </div>
               </div>
               <div className="col-span-1 flex items-center h-14 px-2 bg-[#fff] dark:bg-darkBorder border border-[#dadada] border-t-0">
-                <span className="w-1/3">Số điện thoại</span>
-                <div className="w-2/3 relative h-full">
+                <span className="w-[30%]">Số điện thoại</span>
+                <div className="w-[70%] relative h-full">
                   <Input
                     name="numberPhone"
                     register={registerFormSearch}
@@ -436,8 +437,8 @@ export default function ManageCustomers() {
                 </div>
               </div>
               <div className="col-span-1 flex items-center h-14 px-2 bg-[#fff] dark:bg-darkBorder border border-[#dadada] border-t-0">
-                <span className="w-1/3">Trạng thái</span>
-                <div className="w-2/3 relative h-full">
+                <span className="w-[30%]">Trạng thái</span>
+                <div className="w-[70%] relative h-full">
                   <Controller
                     name="verify"
                     control={controlFormSearch}
@@ -449,7 +450,7 @@ export default function ManageCustomers() {
                           onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : undefined)} // ✅ Cập nhật vào form
                           className="p-2 border border-gray-300 dark:border-darkBorder bg-[#f2f2f2] dark:bg-black w-full mt-2 rounded-md"
                         >
-                          <option value="" disabled selected>
+                          <option value="" disabled>
                             -- Chọn trạng thái --
                           </option>
                           <option value="1">Verify</option>
@@ -462,8 +463,8 @@ export default function ManageCustomers() {
                 </div>
               </div>
               <div className="col-span-1 flex items-center h-14 px-2 bg-[#ececec] dark:bg-darkBorder  border border-[#dadada] rounded-bl-md">
-                <span className="w-1/3">Ngày đăng</span>
-                <div className="w-2/3 relative h-full">
+                <span className="w-[30%]">Ngày tạo</span>
+                <div className="w-[70%] relative h-full">
                   <div className="mt-2 w-full flex items-center gap-2">
                     <Controller
                       name="created_at_start"
@@ -501,8 +502,8 @@ export default function ManageCustomers() {
                 </div>
               </div>
               <div className="col-span-1 flex items-center h-14 px-2 bg-[#ececec] dark:bg-darkBorder  border border-[#dadada] border-t-0 rounded-br-md">
-                <span className="w-1/3">Ngày cập nhật</span>
-                <div className="w-2/3 relative h-full">
+                <span className="w-[30%]">Ngày cập nhật</span>
+                <div className="w-[70%] relative h-full">
                   <div className="mt-2 w-full flex items-center gap-2">
                     <Controller
                       name="updated_at_start"
