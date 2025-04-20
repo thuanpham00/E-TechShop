@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { keepPreviousData, useMutation, useQuery } from "@tanstack/react-query"
 import { isUndefined, omit, omitBy } from "lodash"
 import { Helmet } from "react-helmet-async"
@@ -10,7 +11,7 @@ import { queryParamConfigSupplier } from "src/Types/queryParams.type"
 import Pagination from "src/Components/Pagination"
 import { path } from "src/Constants/path"
 import SupplierItem from "./Components/SupplierItem"
-import { SuccessResponse } from "src/Types/utils.type"
+import { ErrorResponse, SuccessResponse } from "src/Types/utils.type"
 import { adminAPI } from "src/Apis/admin.api"
 import { SupplierItemType, UpdateSupplierBodyReq } from "src/Types/product.type"
 import { HttpStatusCode } from "src/Constants/httpStatus"
@@ -30,6 +31,9 @@ import {
   SchemaSupplierUpdateType
 } from "src/Client/Utils/rule"
 import { queryClient } from "src/main"
+import { isError422 } from "src/Helpers/utils"
+import AddSupplier from "./Components/AddSupplier"
+import useDownloadExcel from "src/Hook/useDowloadExcel"
 
 type FormDataUpdate = Pick<
   SchemaSupplierUpdateType,
@@ -83,12 +87,13 @@ const formDataSearch = schemaSupplier.pick([
 
 export default function ManageSuppliers() {
   const navigate = useNavigate()
+  const { downloadExcel } = useDownloadExcel()
   // const queryClient = useQueryClient()
   const queryParams: queryParamConfigSupplier = useQueryParams()
   const queryConfig: queryParamConfigSupplier = omitBy(
     {
       page: queryParams.page || "1", // mặc định page = 1
-      limit: queryParams.limit || "10", // mặc định limit =
+      limit: queryParams.limit || "5", // mặc định limit =
       name: queryParams.name,
       email: queryParams.email,
       phone: queryParams.phone,
@@ -127,27 +132,26 @@ export default function ManageSuppliers() {
 
   const page_size = Math.ceil(Number(result?.result.total) / Number(result?.result.limit))
 
-  const [idCategory, setIdCategory] = useState<string | null>(null)
+  const [idSupplier, setIdSupplier] = useState<string | null>(null)
 
   const handleEditItem = useCallback((id: string) => {
-    setIdCategory(id)
+    setIdSupplier(id)
   }, [])
 
   const handleExitsEditItem = () => {
-    setIdCategory(null)
+    setIdSupplier(null)
   }
 
   const getInfoSupplier = useQuery({
-    queryKey: ["supplier", idCategory],
+    queryKey: ["supplier", idSupplier],
     queryFn: () => {
-      return adminAPI.supplier.getSupplierDetail(idCategory as string)
+      return adminAPI.supplier.getSupplierDetail(idSupplier as string)
     },
-    enabled: Boolean(idCategory) // chỉ chạy khi idCustomer có giá trị
+    enabled: Boolean(idSupplier) // chỉ chạy khi idCustomer có giá trị
   })
 
   const infoCategory = getInfoSupplier.data?.data as SuccessResponse<{ result: SupplierItemType }>
 
-  console.log(infoCategory)
   const profile = infoCategory?.result?.result
 
   const {
@@ -189,32 +193,72 @@ export default function ManageSuppliers() {
 
   const updateCategoryMutation = useMutation({
     mutationFn: (body: { id: string; body: UpdateSupplierBodyReq }) => {
-      return adminAPI.category.updateCategoryDetail(body.id, body.body)
+      return adminAPI.supplier.updateSupplierDetail(body.id, body.body)
     }
   })
 
   const handleSubmitUpdate = handleSubmit((data) => {
-    console.log(data)
-    // updateCategoryMutation.mutate(
-    //   { id: idCategory as string, body: data },
-    //   {
-    //     onSuccess: () => {
-    //       setIdCategory(null)
-    //       toast.success("Cập nhật thành công", { autoClose: 1500 })
-    //       queryClient.invalidateQueries({ queryKey: ["listSupplier", queryConfig] })
-    //     },
-    //     onError: (error) => {
-    //       if (isError400<ErrorResponse<MessageResponse>>(error)) {
-    //         const msg = error.response?.data as ErrorResponse<{ message: string }>
-    //         const msg2 = msg.message
-    //         setError("name", {
-    //           message: msg2
-    //         })
-    //       }
-    //     }
-    //   }
-    // )
+    updateCategoryMutation.mutate(
+      { id: idSupplier as string, body: data },
+      {
+        onSuccess: () => {
+          setIdSupplier(null)
+          toast.success("Cập nhật thành công", { autoClose: 1500 })
+          queryClient.invalidateQueries({ queryKey: ["listSupplier", queryConfig] })
+        },
+        onError: (error) => {
+          // lỗi từ server trả về
+          if (isError422<ErrorResponse<FormDataUpdate>>(error)) {
+            const formError = error.response?.data.errors
+            if (formError?.email)
+              setError("email", {
+                message: (formError.email as any).msg // lỗi 422 từ server trả về
+              })
+          }
+        }
+      }
+    )
   })
+
+  const deleteSupplierMutation = useMutation({
+    mutationFn: (id: string) => {
+      return adminAPI.supplier.deleteSupplierDetail(id)
+    }
+  })
+
+  const handleDeleteCategory = (id: string) => {
+    deleteSupplierMutation.mutate(id, {
+      onSuccess: () => {
+        const data = queryClient.getQueryData(["listSupplier", queryConfig])
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const data_2 = (data as any).data as SuccessResponse<{
+          result: SupplierItemType[]
+          total: string
+          page: string
+          limit: string
+          totalOfPage: string
+        }>
+        if (data && data_2.result.result.length === 1 && Number(queryConfig.page) > 1) {
+          navigate({
+            pathname: path.AdminSuppliers,
+            search: createSearchParams({
+              ...queryConfig,
+              page: (Number(queryConfig.page) - 1).toString()
+            }).toString()
+          })
+        }
+        queryClient.invalidateQueries({ queryKey: ["listSupplier"] })
+        toast.success("Xóa thành công!", { autoClose: 1500 })
+      }
+      // onError: (error) => {
+      //   if (isError400<ErrorResponse<MessageResponse>>(error)) {
+      //     toast.error(error.response?.data.message, {
+      //       autoClose: 1500
+      //     })
+      //   }
+      // }
+    })
+  }
 
   const {
     register: registerFormSearch,
@@ -275,6 +319,8 @@ export default function ManageSuppliers() {
       navigate(path.AdminNotFound, { replace: true })
     }
   }
+
+  const [addItem, setAddItem] = useState(false)
 
   return (
     <div>
@@ -438,12 +484,13 @@ export default function ManageSuppliers() {
             <div className="flex justify-between mt-4">
               <div className="flex items-center gap-2">
                 <Button
-                  // onClick={() => setAddItem(true)}
+                  onClick={() => setAddItem(true)}
                   icon={<Plus size={15} />}
                   nameButton="Thêm mới"
                   classNameButton="p-2 bg-blue-500 w-full text-white font-medium rounded-md hover:bg-blue-500/80 duration-200 text-[13px] flex items-center gap-1"
                 />
                 <Button
+                  onClick={() => downloadExcel(listSupplier)}
                   icon={<FolderUp size={15} />}
                   nameButton="Export"
                   classNameButton="p-2 border border-[#E2E7FF] bg-[#E2E7FF] w-full text-[#3A5BFF] font-medium rounded-md hover:bg-blue-500/40 duration-200 text-[13px] flex items-center gap-1"
@@ -486,7 +533,7 @@ export default function ManageSuppliers() {
                 {listSupplier.length > 0 ? (
                   listSupplier.map((item) => (
                     <Fragment key={item._id}>
-                      <SupplierItem handleEditItem={handleEditItem} item={item} />
+                      <SupplierItem onDelete={handleDeleteCategory} handleEditItem={handleEditItem} item={item} />
                     </Fragment>
                   ))
                 ) : (
@@ -498,128 +545,132 @@ export default function ManageSuppliers() {
               data={result}
               queryConfig={queryConfig}
               page_size={page_size}
-              pathNavigate={path.AdminCategories}
+              pathNavigate={path.AdminSuppliers}
             />
-            {idCategory !== null ? (
+            {idSupplier !== null ? (
               <Fragment>
                 <div className="fixed left-0 top-0 z-10 h-screen w-screen bg-black/60"></div>
                 <div className="z-20 fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
                   <button onClick={handleExitsEditItem} className="absolute right-2 top-1">
                     <X color="gray" size={22} />
                   </button>
-                  <form className="p-4 bg-white dark:bg-darkPrimary rounded-md w-[900px]">
-                    <h3 className="text-[15px] font-medium">Thông tin nhà cung cấp</h3>
-                    <div className="mt-4 flex items-center gap-4">
-                      <Input
-                        name="id"
-                        register={register}
-                        placeholder="Nhập id"
-                        messageErrorInput={errors.id?.message}
-                        classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-darkSecond focus:border-blue-500 focus:ring-2 outline-none rounded-md"
-                        className="relative flex-1"
-                        nameInput="Id"
-                        disabled
-                      />
-                      <Input
-                        name="name"
-                        register={register}
-                        placeholder="Nhập tên nhà cung cấp"
-                        messageErrorInput={errors.name?.message}
-                        classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-white dark:bg-darkPrimary focus:border-blue-500 focus:ring-2 outline-none rounded-md"
-                        className="relative flex-1"
-                        nameInput="Tên nhà cung cấp"
-                      />
-                    </div>
-                    <div className="mt-4 flex items-center gap-4">
-                      <Input
-                        name="contactName"
-                        register={register}
-                        placeholder="Nhập họ tên"
-                        messageErrorInput={errors.contactName?.message}
-                        classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#fff] dark:bg-darkSecond focus:border-blue-500 focus:ring-2 outline-none rounded-md"
-                        className="relative flex-1"
-                        nameInput="Tên người đại diện"
-                      />
-                      <Input
-                        name="address"
-                        register={register}
-                        placeholder="Nhập địa chỉ"
-                        messageErrorInput={errors.address?.message}
-                        classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-white dark:bg-darkPrimary focus:border-blue-500 focus:ring-2 outline-none rounded-md"
-                        className="relative flex-1"
-                        nameInput="Địa chỉ"
-                      />
-                    </div>
-                    <div className="mt-4 flex items-center gap-4">
-                      <Input
-                        name="email"
-                        register={register}
-                        placeholder="Nhập email"
-                        messageErrorInput={errors.email?.message}
-                        classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#fff] dark:bg-darkSecond focus:border-blue-500 focus:ring-2 outline-none rounded-md"
-                        className="relative flex-1"
-                        nameInput="Email"
-                      />
-                      <Input
-                        name="phone"
-                        register={register}
-                        placeholder="Nhập số điện thoại"
-                        messageErrorInput={errors.phone?.message}
-                        classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-white dark:bg-darkPrimary focus:border-blue-500 focus:ring-2 outline-none rounded-md"
-                        className="relative flex-1"
-                        nameInput="Số điện thoại"
-                      />
-                    </div>
-                    <div className="mt-4 flex items-center gap-4">
-                      <Input
-                        name="taxCode"
-                        register={register}
-                        placeholder="Nhập tax-code"
-                        messageErrorInput={errors.taxCode?.message}
-                        classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-darkSecond focus:border-blue-500 focus:ring-2 outline-none rounded-md"
-                        className="relative flex-1"
-                        nameInput="Tax-Code"
-                        disabled
-                      />
-                      <Input
-                        name="description"
-                        register={register}
-                        placeholder="Nhập mô tả"
-                        messageErrorInput={errors.name?.message}
-                        classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-white dark:bg-darkPrimary focus:border-blue-500 focus:ring-2 outline-none rounded-md"
-                        className="relative flex-1"
-                        nameInput="Mô tả"
-                      />
-                    </div>
-                    <div className="mt-2 flex items-center gap-4">
-                      <Input
-                        name="created_at"
-                        register={register}
-                        placeholder="Nhập ngày tạo"
-                        messageErrorInput={errors.created_at?.message}
-                        classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-darkSecond focus:border-blue-500 focus:ring-2 outline-none rounded-md"
-                        className="relative flex-1"
-                        nameInput="Ngày tạo"
-                        disabled
-                      />
-                      <Input
-                        name="updated_at"
-                        register={register}
-                        placeholder="Nhập ngày tạo cập nhật"
-                        messageErrorInput={errors.updated_at?.message}
-                        classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-darkSecond focus:border-blue-500 focus:ring-2 outline-none rounded-md"
-                        className="relative flex-1"
-                        nameInput="Ngày cập nhật"
-                        disabled
-                      />
-                    </div>
-
-                    <div className="flex items-center justify-end">
-                      <Button
-                        type="submit"
-                        nameButton="Cập nhật"
-                        classNameButton="w-[120px] p-4 py-2 bg-blue-500 mt-2 w-full text-white font-semibold rounded-sm hover:bg-blue-500/80 duration-200"
-                      />
+                  <form onSubmit={handleSubmitUpdate} className="bg-white dark:bg-darkPrimary rounded-md w-[900px]">
+                    <h3 className="py-2 px-4 text-[15px] font-medium bg-[#f2f2f2] rounded-md">
+                      Thông tin nhà cung cấp
+                    </h3>
+                    <div className="w-full h-[1px] bg-[#dadada]"></div>
+                    <div className="p-4 pt-0">
+                      <div className="mt-4 flex items-center gap-4">
+                        <Input
+                          name="id"
+                          register={register}
+                          placeholder="Nhập id"
+                          messageErrorInput={errors.id?.message}
+                          classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-darkSecond focus:border-blue-500 focus:ring-2 outline-none rounded-md"
+                          className="relative flex-1"
+                          nameInput="Id"
+                          disabled
+                        />
+                        <Input
+                          name="taxCode"
+                          register={register}
+                          placeholder="Nhập tax-code"
+                          messageErrorInput={errors.taxCode?.message}
+                          classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-darkSecond focus:border-blue-500 focus:ring-2 outline-none rounded-md"
+                          className="relative flex-1"
+                          nameInput="Mã số thuế"
+                          disabled
+                        />
+                      </div>
+                      <div className="mt-4 flex items-center gap-4">
+                        <Input
+                          name="name"
+                          register={register}
+                          placeholder="Nhập tên nhà cung cấp"
+                          messageErrorInput={errors.name?.message}
+                          classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-white dark:bg-darkPrimary focus:border-blue-500 focus:ring-2 outline-none rounded-md"
+                          className="relative flex-1"
+                          nameInput="Tên nhà cung cấp"
+                        />
+                        <Input
+                          name="contactName"
+                          register={register}
+                          placeholder="Nhập họ tên"
+                          messageErrorInput={errors.contactName?.message}
+                          classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#fff] dark:bg-darkPrimary focus:border-blue-500 focus:ring-2 outline-none rounded-md"
+                          className="relative flex-1"
+                          nameInput="Tên người đại diện"
+                        />
+                      </div>
+                      <div className="mt-4 flex items-center gap-4">
+                        <Input
+                          name="email"
+                          register={register}
+                          placeholder="Nhập email"
+                          messageErrorInput={errors.email?.message}
+                          classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#fff] dark:bg-darkPrimary focus:border-blue-500 focus:ring-2 outline-none rounded-md"
+                          className="relative flex-1"
+                          nameInput="Email"
+                        />
+                        <Input
+                          name="phone"
+                          register={register}
+                          placeholder="Nhập số điện thoại"
+                          messageErrorInput={errors.phone?.message}
+                          classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-white dark:bg-darkPrimary focus:border-blue-500 focus:ring-2 outline-none rounded-md"
+                          className="relative flex-1"
+                          nameInput="Số điện thoại"
+                        />
+                      </div>
+                      <div className="mt-4 flex items-center gap-4">
+                        <Input
+                          name="address"
+                          register={register}
+                          placeholder="Nhập địa chỉ"
+                          messageErrorInput={errors.address?.message}
+                          classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-white dark:bg-darkPrimary focus:border-blue-500 focus:ring-2 outline-none rounded-md"
+                          className="relative flex-1"
+                          nameInput="Địa chỉ"
+                        />
+                        <Input
+                          name="description"
+                          register={register}
+                          placeholder="Nhập mô tả"
+                          messageErrorInput={errors.description?.message}
+                          classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-white dark:bg-darkPrimary focus:border-blue-500 focus:ring-2 outline-none rounded-md"
+                          className="relative flex-1"
+                          nameInput="Mô tả"
+                        />
+                      </div>
+                      <div className="mt-2 flex items-center gap-4">
+                        <Input
+                          name="created_at"
+                          register={register}
+                          placeholder="Nhập ngày tạo"
+                          messageErrorInput={errors.created_at?.message}
+                          classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-darkSecond focus:border-blue-500 focus:ring-2 outline-none rounded-md"
+                          className="relative flex-1"
+                          nameInput="Ngày tạo"
+                          disabled
+                        />
+                        <Input
+                          name="updated_at"
+                          register={register}
+                          placeholder="Nhập ngày tạo cập nhật"
+                          messageErrorInput={errors.updated_at?.message}
+                          classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-darkSecond focus:border-blue-500 focus:ring-2 outline-none rounded-md"
+                          className="relative flex-1"
+                          nameInput="Ngày cập nhật"
+                          disabled
+                        />
+                      </div>
+                      <div className="flex items-center justify-end">
+                        <Button
+                          type="submit"
+                          nameButton="Cập nhật"
+                          classNameButton="w-[120px] p-4 py-2 bg-blue-500 mt-2 w-full text-white font-semibold rounded-sm hover:bg-blue-500/80 duration-200"
+                        />
+                      </div>
                     </div>
                   </form>
                 </div>
@@ -627,7 +678,7 @@ export default function ManageSuppliers() {
             ) : (
               ""
             )}
-            {/* {addItem ? <AddCategory setAddItem={setAddItem} /> : ""} */}
+            {addItem ? <AddSupplier setAddItem={setAddItem} /> : ""}
           </div>
         )}
       </div>

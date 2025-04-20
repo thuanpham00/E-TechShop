@@ -92,7 +92,7 @@ export default function ManageProducts() {
       <div className="text-lg font-bold py-2 text-[#3A5BFF]">Sản phẩm</div>
       <div className="p-4 bg-white dark:bg-darkPrimary mb-3 border border-[#dedede] dark:border-darkBorder rounded-md">
         <h1 className="text-[15px] font-medium">Tìm kiếm</h1>
-        <FilterProduct queryConfig={queryConfig} />
+        <FilterProduct queryConfig={queryConfig} listProduct={listProduct} />
         <div>
           {isLoading && <Skeleton />}
           {!isFetching && (

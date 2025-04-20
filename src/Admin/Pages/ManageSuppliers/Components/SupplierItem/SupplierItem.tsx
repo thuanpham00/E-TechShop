@@ -1,6 +1,7 @@
 import { ClipboardCheck, Copy, Pencil, Trash2 } from "lucide-react"
 import {
   AlertDialog,
+  AlertDialogAction,
   AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
@@ -15,11 +16,11 @@ import { SupplierItemType } from "src/Types/product.type"
 
 export default function CategoryItem({
   item,
-  // onDelete,
+  onDelete,
   handleEditItem
 }: {
   item: SupplierItemType
-  // onDelete: (id: string) => void
+  onDelete: (id: string) => void
   handleEditItem: (id: string) => void
 }) {
   // const navigate = useNavigate()
@@ -28,12 +29,6 @@ export default function CategoryItem({
   const handleEditSupplierItem = (id: string) => {
     handleEditItem(id)
   }
-
-  // const handleNavigateCategoryDetail = (id: string, nameCategory: string) => {
-  //   navigate(`${path.AdminSuppliers}/${id}`, {
-  //     state: nameCategory
-  //   })
-  // }
 
   return (
     <div
@@ -69,9 +64,9 @@ export default function CategoryItem({
             </AlertDialogHeader>
             <AlertDialogFooter>
               <AlertDialogCancel className="text-sm">Hủy</AlertDialogCancel>
-              {/* <AlertDialogAction onClick={() => onDelete(item._id)} className="bg-red-500 hover:bg-red-600 text-sm">
+              <AlertDialogAction onClick={() => onDelete(item._id)} className="bg-red-500 hover:bg-red-600 text-sm">
                 Xóa
-              </AlertDialogAction> */}
+              </AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>

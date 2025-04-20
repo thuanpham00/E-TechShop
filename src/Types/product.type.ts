@@ -50,7 +50,6 @@ export type SupplierItemType = {
   phone: string
   email: string
   contactName: string
-
   address?: string
   taxCode?: string
   description?: string

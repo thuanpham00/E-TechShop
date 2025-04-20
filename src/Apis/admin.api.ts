@@ -1,5 +1,10 @@
 import Http from "src/Helpers/http"
-import { CreateProductBodyReq, UpdateBodyReq, UpdateCategoryBodyReq } from "src/Types/product.type"
+import {
+  CreateProductBodyReq,
+  UpdateBodyReq,
+  UpdateCategoryBodyReq,
+  UpdateSupplierBodyReq
+} from "src/Types/product.type"
 import {
   queryParamConfigBrand,
   queryParamConfigCategory,
@@ -160,46 +165,28 @@ export const adminAPI = {
     // lấy chi tiết nhà cung cấp
     getSupplierDetail: (id: string) => {
       return Http.get(`/admin/suppliers/${id}`)
+    },
+
+    // thêm nhà cung cấp
+    createSupplier: (body: {
+      name: string
+      contactName: string
+      email: string
+      phone: string
+      description: string
+      address: string
+    }) => {
+      return Http.post("/admin/suppliers", body)
+    },
+
+    // cập nhật chi tiết nhà cung cấp
+    updateSupplierDetail: (id: string, body: UpdateSupplierBodyReq) => {
+      return Http.patch(`/admin/suppliers/${id}`, body)
+    },
+
+    // xóa nhà cung cấp
+    deleteSupplierDetail: (id: string) => {
+      return Http.delete(`/admin/suppliers/${id}`)
     }
   }
 }
-
-/**
- * Trang quản lý khách hàng
- * Get Tìm kiếm khách hàng
- * Get danh sách khách hàng + query
- * Get khách hàng
- * Patch khách hàng
- * Delete khách hàng
- * Post Tạo khách hàng (chưa)
- */
-
-/**
- * Trang quản lý danh mục
- * Get tìm kiếm danh mục
- * Get danh sách danh mục + query
- * Get danh mục
- * Patch danh mục
- * Delete danh mục
- * Post Tạo danh mục
- */
-
-/**
- * Trang quản lý thương hiệu
- * Get tìm kiếm thương hiệu
- * Get danh sách thương hiệu + query
- * Get danh mục
- * Patch thương hiệu
- * Delete thương hiệu
- * Post Tạo thương hiệu
- */
-
-/**
- * Trang quản lý sản phẩm
- * Get tìm kiếm sản phẩm
- * Get danh sách sản phẩm + query
- * Get sản phẩm (chưa)
- * Patch sản phẩm (chưa)
- * Delete sản phẩm (chưa)
- * Post Tạo sản phẩm (chưa)
- */

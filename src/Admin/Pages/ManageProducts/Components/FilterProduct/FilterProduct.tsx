@@ -13,6 +13,8 @@ import Input from "src/Components/Input"
 import InputNumber from "src/Components/InputNumber"
 import { path } from "src/Constants/path"
 import { cleanObject } from "src/Helpers/common"
+import useDownloadExcel from "src/Hook/useDowloadExcel"
+import { ProductItemType } from "src/Types/product.type"
 import { queryParamConfigProduct } from "src/Types/queryParams.type"
 import { SuccessResponse } from "src/Types/utils.type"
 
@@ -44,10 +46,12 @@ const formDataSearch = schemaProduct.pick([
 ])
 interface Props {
   queryConfig: queryParamConfigProduct
+  listProduct: ProductItemType[]
 }
 
-export default function FilterProduct({ queryConfig }: Props) {
+export default function FilterProduct({ queryConfig, listProduct }: Props) {
   const navigate = useNavigate()
+  const { downloadExcel } = useDownloadExcel()
 
   const getNameCategory = useQuery({
     queryKey: ["nameCategory"],
@@ -191,7 +195,7 @@ export default function FilterProduct({ queryConfig }: Props) {
               <span className="absolute inset-y-0 left-[-5%] w-[1px] bg-[#dadada] h-full"></span>
             </div>
           </div>
-          <div className="col-span-1 flex items-center h-14 px-2 bg-[#fff] dark:bg-darkBorder border border-[#dadada]">
+          <div className="col-span-1 flex items-center h-14 px-2 bg-[#fff] dark:bg-darkBorder border border-[#dadada] border-t-0">
             <span className="w-[30%]">Thể loại</span>
             <div className="w-[70%] relative h-full">
               <Controller
@@ -283,7 +287,7 @@ export default function FilterProduct({ queryConfig }: Props) {
               <span className="absolute inset-y-0 left-[-5%] w-[1px] bg-[#dadada] h-full"></span>
             </div>
           </div>
-          <div className="col-span-1 flex items-center h-14 px-2 bg-[#ececec] dark:bg-darkBorder border border-[#dadada] rounded-bl-md border-t-0">
+          <div className="col-span-1 flex items-center h-14 px-2 bg-[#ececec] dark:bg-darkBorder border border-[#dadada] border-t-0">
             <span className="w-[30%]">Ngày tạo</span>
             <div className="w-[70%] relative h-full">
               <div className="mt-2 w-full flex items-center gap-2">
@@ -323,8 +327,8 @@ export default function FilterProduct({ queryConfig }: Props) {
             </div>
           </div>
           <div className="col-span-1 flex items-center h-14 px-2 bg-[#ececec] dark:bg-darkBorder  border border-[#dadada] border-t-0 rounded-br-md">
-            <span className="w-1/3">Ngày cập nhật</span>
-            <div className="w-2/3 relative h-full">
+            <span className="w-[30%]">Ngày cập nhật</span>
+            <div className="w-[70%] relative h-full">
               <div className="mt-2 w-full flex items-center gap-2">
                 <Controller
                   name="updated_at_start"
@@ -361,7 +365,7 @@ export default function FilterProduct({ queryConfig }: Props) {
               <span className="absolute inset-y-0 left-[-5%] w-[1px] bg-[#dadada] h-full"></span>
             </div>
           </div>
-          <div className="col-span-1 flex items-center h-14 px-2 bg-[#fff] dark:bg-darkBorder border border-[#dadada] border-t-0">
+          <div className="col-span-1 flex items-center h-14 px-2 bg-[#fff] dark:bg-darkBorder border border-[#dadada] border-t-0 rounded-bl-md">
             <span className="w-[30%]">Trạng thái</span>
             <div className="w-[70%] relative h-full">
               <Controller
@@ -400,6 +404,7 @@ export default function FilterProduct({ queryConfig }: Props) {
                 <span>Thêm mới</span>
               </Link>
               <Button
+                onClick={() => downloadExcel(listProduct)}
                 icon={<FolderUp size={15} />}
                 nameButton="Export"
                 classNameButton="p-2 border border-[#E2E7FF] bg-[#E2E7FF] w-full text-[#3A5BFF] font-medium rounded-md hover:bg-blue-500/40 duration-200 text-[13px] flex items-center gap-1"

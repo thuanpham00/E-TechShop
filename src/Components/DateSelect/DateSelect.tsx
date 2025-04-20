@@ -7,6 +7,7 @@ interface Props {
   errorMessage?: string
 }
 
+// Schema xác định kiểu dữ liệu (ở đây là Date) → field.onChange mong chờ kiểu Date.
 export default function DateSelect({ onChange, errorMessage, value }: Props) {
   const [date, setDate] = useState({
     day: value?.getDate(),

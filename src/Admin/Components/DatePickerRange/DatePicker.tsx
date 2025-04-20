@@ -27,6 +27,7 @@ export function DatePicker({ value, onChange }: { value: Date; onChange: (value:
             }
           }}
           initialFocus
+          modifiersClassNames={{ today: "bg-blue-100 text-blue-600 font-semibold rounded-full" }}
         />
       </PopoverContent>
     </Popover>

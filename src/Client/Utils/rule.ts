@@ -157,22 +157,23 @@ export const schemaSupplier = schemaAuth
     phone: yup.string()
   })
 
-export const schemaSupplierUpdate = schemaAuth
-  .pick(["created_at_start", "created_at_end", "updated_at_start", "updated_at_end", "created_at", "updated_at", "id"])
-  .shape({
-    name: yup.string().required("Tên nhà cung cấp bắt buộc!"),
-    contactName: yup.string().required("Tên người đại diện bắt buộc!"),
-    email: yup.string().required("Email bắt buộc!").email("Email không đúng định dạng!"),
-    phone: yup
-      .string()
-      .required("Số điện thoại bắt buộc!")
-      .min(10, "Độ dài 10-11 kí tự")
-      .max(11, "Độ dài 10-11 kí tự")
-      .matches(/^\d+$/, "Số điện thoại chỉ được chứa ký tự số"),
-    description: yup.string().required("Mô tả bắt buộc!"),
-    address: yup.string().required("Địa chỉ bắt buộc!"),
-    taxCode: yup.string()
-  })
+export const schemaSupplierUpdate = schemaAuth.pick(["created_at", "updated_at", "id"]).shape({
+  name: yup.string().required("Tên nhà cung cấp bắt buộc!"),
+  contactName: yup
+    .string()
+    .required("Tên người đại diện bắt buộc!")
+    .matches(/^[^\d]+$/, "Tên nhà cung cấp không được chứa số"),
+  email: yup.string().required("Email bắt buộc!"),
+  phone: yup
+    .string()
+    .required("Số điện thoại bắt buộc!")
+    .min(10, "Độ dài 10-11 kí tự")
+    .max(11, "Độ dài 10-11 kí tự")
+    .matches(/^\d+$/, "Số điện thoại chỉ được chứa ký tự số"),
+  description: yup.string().required("Mô tả bắt buộc!"),
+  address: yup.string().required("Địa chỉ bắt buộc!"),
+  taxCode: yup.string()
+})
 
 export type SchemaAuthType = yup.InferType<typeof schemaAuth>
 export type SchemaProductType = SchemaAuthType & yup.InferType<typeof schemaProduct>

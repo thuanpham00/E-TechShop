@@ -59,25 +59,28 @@ export default function AddCategory({ setAddItem }: Props) {
         <button onClick={() => setAddItem(false)} className="absolute right-2 top-1">
           <X color="gray" size={22} />
         </button>
-        <form onSubmit={handleAddCategorySubmit} className="p-4 bg-white dark:bg-darkPrimary rounded-md">
-          <h3 className="text-[15px] font-medium">Thông tin thể loại</h3>
-          <div className="mt-4 flex items-center gap-4">
-            <Input
-              name="name"
-              register={register}
-              placeholder="Nhập tên thể loại"
-              messageErrorInput={errors.name?.message}
-              classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-white dark:bg-darkPrimary focus:border-blue-500 focus:ring-2 outline-none rounded-md"
-              className="relative flex-1"
-              nameInput="Tên thể loại"
-            />
-          </div>
-          <div className="flex items-center justify-end">
-            <Button
-              type="submit"
-              nameButton="Thêm"
-              classNameButton="w-[120px] p-4 py-2 bg-blue-500 mt-2 w-full text-white font-semibold rounded-sm hover:bg-blue-500/80 duration-200"
-            />
+        <form onSubmit={handleAddCategorySubmit} className="bg-white dark:bg-darkPrimary rounded-md">
+          <h3 className="py-2 px-4 text-[15px] font-medium bg-[#f2f2f2] rounded-md">Thông tin thể loại</h3>
+          <div className="w-full h-[1px] bg-[#dadada]"></div>
+          <div className="p-4 pt-0">
+            <div className="mt-4 flex items-center gap-4">
+              <Input
+                name="name"
+                register={register}
+                placeholder="Nhập tên thể loại"
+                messageErrorInput={errors.name?.message}
+                classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-white dark:bg-darkPrimary focus:border-blue-500 focus:ring-2 outline-none rounded-md"
+                className="relative flex-1"
+                nameInput="Tên thể loại"
+              />
+            </div>
+            <div className="flex items-center justify-end">
+              <Button
+                type="submit"
+                nameButton="Thêm"
+                classNameButton="w-[120px] p-4 py-2 bg-blue-500 mt-2 w-full text-white font-semibold rounded-sm hover:bg-blue-500/80 duration-200"
+              />
+            </div>
           </div>
         </form>
       </div>

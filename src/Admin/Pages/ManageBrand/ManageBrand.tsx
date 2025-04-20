@@ -27,6 +27,7 @@ import Skeleton from "src/Components/Skeleton"
 import Pagination from "src/Components/Pagination"
 import AddBrand from "./Components/AddBrand"
 import DatePicker from "src/Admin/Components/DatePickerRange"
+import useDownloadExcel from "src/Hook/useDowloadExcel"
 
 type FormDataUpdate = Pick<SchemaAuthType, "name" | "id" | "created_at" | "updated_at">
 const formDataUpdate = schemaAuth.pick(["name", "id", "created_at", "updated_at"])
@@ -46,6 +47,8 @@ type FormDataSearch = Pick<
 
 export default function ManageBrand() {
   const navigate = useNavigate()
+  const { downloadExcel } = useDownloadExcel()
+
   const { id } = useParams()
   const { state } = useLocation()
   const queryClient = useQueryClient()
@@ -400,6 +403,7 @@ export default function ManageBrand() {
                   classNameButton="p-2 bg-blue-500 w-full text-white font-medium rounded-md hover:bg-blue-500/80 duration-200 text-[13px] flex items-center gap-1"
                 />
                 <Button
+                  onClick={() => downloadExcel(listBrandOfCategory)}
                   icon={<FolderUp size={15} />}
                   nameButton="Export"
                   classNameButton="p-2 border border-[#E2E7FF] bg-[#E2E7FF] w-full text-[#3A5BFF] font-medium rounded-md hover:bg-blue-500/40 duration-200 text-[13px] flex items-center gap-1"
@@ -467,58 +471,60 @@ export default function ManageBrand() {
                   <button onClick={handleExitsEditItem} className="absolute right-2 top-1">
                     <X color="gray" size={22} />
                   </button>
-                  <form onSubmit={handleSubmitUpdate} className="p-4 bg-white dark:bg-darkPrimary rounded-md">
-                    <h3 className="text-[15px] font-medium">Thông tin thể loại</h3>
-                    <div className="mt-4 flex items-center gap-4">
-                      <Input
-                        name="id"
-                        register={register}
-                        placeholder="Nhập họ tên"
-                        messageErrorInput={errors.id?.message}
-                        classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-darkSecond focus:border-blue-500 focus:ring-2 outline-none rounded-md"
-                        className="relative flex-1"
-                        nameInput="Id"
-                        disabled
-                      />
-                      <Input
-                        name="name"
-                        register={register}
-                        placeholder="Nhập họ tên"
-                        messageErrorInput={errors.name?.message}
-                        classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-white dark:bg-darkPrimary focus:border-blue-500 focus:ring-2 outline-none rounded-md"
-                        className="relative flex-1"
-                        nameInput="Tên thể loại"
-                      />
-                    </div>
-                    <div className="mt-2 flex items-center gap-4">
-                      <Input
-                        name="created_at"
-                        register={register}
-                        placeholder="Nhập ngày tạo"
-                        messageErrorInput={errors.created_at?.message}
-                        classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-darkSecond focus:border-blue-500 focus:ring-2 outline-none rounded-md"
-                        className="relative flex-1"
-                        nameInput="Ngày tạo"
-                        disabled
-                      />
-                      <Input
-                        name="updated_at"
-                        register={register}
-                        placeholder="Nhập ngày tạo cập nhật"
-                        messageErrorInput={errors.updated_at?.message}
-                        classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-darkSecond  focus:border-blue-500 focus:ring-2 outline-none rounded-md"
-                        className="relative flex-1"
-                        nameInput="Ngày cập nhật"
-                        disabled
-                      />
-                    </div>
-
-                    <div className="flex items-center justify-end">
-                      <Button
-                        type="submit"
-                        nameButton="Cập nhật"
-                        classNameButton="w-[120px] p-4 py-2 bg-blue-500 mt-2 w-full text-white font-semibold rounded-sm hover:bg-blue-500/80 duration-200"
-                      />
+                  <form onSubmit={handleSubmitUpdate} className="bg-white dark:bg-darkPrimary rounded-md">
+                    <h3 className="py-2 px-4 text-[15px] font-medium bg-[#f2f2f2] rounded-md">Thông tin thể loại</h3>
+                    <div className="w-full h-[1px] bg-[#dadada]"></div>
+                    <div className="p-4 pt-0">
+                      <div className="mt-4 flex items-center gap-4">
+                        <Input
+                          name="id"
+                          register={register}
+                          placeholder="Nhập họ tên"
+                          messageErrorInput={errors.id?.message}
+                          classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-darkSecond focus:border-blue-500 focus:ring-2 outline-none rounded-md"
+                          className="relative flex-1"
+                          nameInput="Id"
+                          disabled
+                        />
+                        <Input
+                          name="name"
+                          register={register}
+                          placeholder="Nhập họ tên"
+                          messageErrorInput={errors.name?.message}
+                          classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-white dark:bg-darkPrimary focus:border-blue-500 focus:ring-2 outline-none rounded-md"
+                          className="relative flex-1"
+                          nameInput="Tên thể loại"
+                        />
+                      </div>
+                      <div className="mt-2 flex items-center gap-4">
+                        <Input
+                          name="created_at"
+                          register={register}
+                          placeholder="Nhập ngày tạo"
+                          messageErrorInput={errors.created_at?.message}
+                          classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-darkSecond focus:border-blue-500 focus:ring-2 outline-none rounded-md"
+                          className="relative flex-1"
+                          nameInput="Ngày tạo"
+                          disabled
+                        />
+                        <Input
+                          name="updated_at"
+                          register={register}
+                          placeholder="Nhập ngày tạo cập nhật"
+                          messageErrorInput={errors.updated_at?.message}
+                          classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-darkSecond  focus:border-blue-500 focus:ring-2 outline-none rounded-md"
+                          className="relative flex-1"
+                          nameInput="Ngày cập nhật"
+                          disabled
+                        />
+                      </div>
+                      <div className="flex items-center justify-end">
+                        <Button
+                          type="submit"
+                          nameButton="Cập nhật"
+                          classNameButton="w-[120px] p-4 py-2 bg-blue-500 mt-2 w-full text-white font-semibold rounded-sm hover:bg-blue-500/80 duration-200"
+                        />
+                      </div>
                     </div>
                   </form>
                 </div>
