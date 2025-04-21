@@ -39,17 +39,17 @@ const formDataUpdate = schemaAuth.pick([
   "id",
   "email",
   "name",
-  "numberPhone",
-  "avatar",
-  "date_of_birth",
   "verify",
+  "numberPhone",
+  "date_of_birth",
   "created_at",
-  "updated_at"
+  "updated_at",
+  "avatar"
 ])
 
 type FormDataUpdate = Pick<
   SchemaAuthType,
-  "id" | "email" | "name" | "numberPhone" | "avatar" | "date_of_birth" | "verify" | "created_at" | "updated_at"
+  "id" | "email" | "name" | "verify" | "numberPhone" | "date_of_birth" | "created_at" | "updated_at" | "avatar"
 >
 
 const formDataSearch = schemaCustomer.pick([
@@ -76,8 +76,8 @@ type FormDataSearch = Pick<
 >
 
 export default function ManageCustomers() {
-  const navigate = useNavigate()
   const { downloadExcel } = useDownloadExcel()
+  const navigate = useNavigate()
   const queryClient = useQueryClient()
 
   // Phân trang
@@ -358,9 +358,9 @@ export default function ManageCustomers() {
       "updated_at_end"
     ])
     resetFormSearch({
-      verify: undefined,
-      email: "",
       name: "",
+      email: "",
+      verify: undefined,
       numberPhone: "",
       created_at_start: undefined,
       created_at_end: undefined,
@@ -685,7 +685,6 @@ export default function ManageCustomers() {
                               name="date_of_birth"
                               control={control}
                               render={({ field }) => {
-                                // console.log("field value: ", field.value)
                                 return (
                                   <DateSelect
                                     value={date_of_birth}

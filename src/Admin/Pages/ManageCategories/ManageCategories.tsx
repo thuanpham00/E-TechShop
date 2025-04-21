@@ -416,7 +416,7 @@ export default function ManageCategories() {
                 <div className="col-span-2 text-[14px] text-center font-semibold">Hành động</div>
                 <div className="col-span-2 text-[14px] text-center font-semibold">Thương hiệu</div>
               </div>
-              <div className="">
+              <div>
                 {listCategory.length > 0 ? (
                   listCategory.map((item) => (
                     <Fragment key={item._id}>

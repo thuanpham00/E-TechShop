@@ -46,14 +46,14 @@ export default function AddSupplier({ setAddItem }: Props) {
       contactName: string
       email: string
       phone: string
-      description: string
       address: string
+      description: string
     }) => {
-      return adminAPI.supplier.createSupplier({ ...body })
+      return adminAPI.supplier.createSupplier(body)
     }
   })
 
-  const handleAddSupplierSubmit = handleSubmit((data) =>
+  const handleAddSupplierSubmit = handleSubmit((data) => {
     addCategoryMutation.mutate(data, {
       onSuccess: () => {
         toast.success("Thêm nhà cung cấp thành công", { autoClose: 1500 })
@@ -76,7 +76,7 @@ export default function AddSupplier({ setAddItem }: Props) {
         }
       }
     })
-  )
+  })
 
   return (
     <Fragment>
@@ -157,7 +157,7 @@ export default function AddSupplier({ setAddItem }: Props) {
                 messageErrorInput={errors.description?.message}
                 classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-white dark:bg-darkPrimary focus:border-blue-500 focus:ring-2 outline-none rounded-md"
                 className="relative flex-1"
-                nameInput="Mô tả"
+                nameInput="Ghi chú (Optional)"
               />
             </div>
             <div className="flex items-center justify-end">

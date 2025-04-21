@@ -11,7 +11,7 @@ import { queryParamConfigSupplier } from "src/Types/queryParams.type"
 import Pagination from "src/Components/Pagination"
 import { path } from "src/Constants/path"
 import SupplierItem from "./Components/SupplierItem"
-import { ErrorResponse, SuccessResponse } from "src/Types/utils.type"
+import { ErrorResponse, MessageResponse, SuccessResponse } from "src/Types/utils.type"
 import { adminAPI } from "src/Apis/admin.api"
 import { SupplierItemType, UpdateSupplierBodyReq } from "src/Types/product.type"
 import { HttpStatusCode } from "src/Constants/httpStatus"
@@ -31,7 +31,7 @@ import {
   SchemaSupplierUpdateType
 } from "src/Client/Utils/rule"
 import { queryClient } from "src/main"
-import { isError422 } from "src/Helpers/utils"
+import { isError400, isError422 } from "src/Helpers/utils"
 import AddSupplier from "./Components/AddSupplier"
 import useDownloadExcel from "src/Hook/useDowloadExcel"
 
@@ -226,7 +226,7 @@ export default function ManageSuppliers() {
     }
   })
 
-  const handleDeleteCategory = (id: string) => {
+  const handleDeleteSupplier = (id: string) => {
     deleteSupplierMutation.mutate(id, {
       onSuccess: () => {
         const data = queryClient.getQueryData(["listSupplier", queryConfig])
@@ -249,14 +249,14 @@ export default function ManageSuppliers() {
         }
         queryClient.invalidateQueries({ queryKey: ["listSupplier"] })
         toast.success("Xóa thành công!", { autoClose: 1500 })
+      },
+      onError: (error) => {
+        if (isError400<ErrorResponse<MessageResponse>>(error)) {
+          toast.error(error.response?.data.message, {
+            autoClose: 1500
+          })
+        }
       }
-      // onError: (error) => {
-      //   if (isError400<ErrorResponse<MessageResponse>>(error)) {
-      //     toast.error(error.response?.data.message, {
-      //       autoClose: 1500
-      //     })
-      //   }
-      // }
     })
   }
 
@@ -533,7 +533,7 @@ export default function ManageSuppliers() {
                 {listSupplier.length > 0 ? (
                   listSupplier.map((item) => (
                     <Fragment key={item._id}>
-                      <SupplierItem onDelete={handleDeleteCategory} handleEditItem={handleEditItem} item={item} />
+                      <SupplierItem onDelete={handleDeleteSupplier} handleEditItem={handleEditItem} item={item} />
                     </Fragment>
                   ))
                 ) : (

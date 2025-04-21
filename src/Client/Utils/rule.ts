@@ -170,9 +170,9 @@ export const schemaSupplierUpdate = schemaAuth.pick(["created_at", "updated_at",
     .min(10, "Độ dài 10-11 kí tự")
     .max(11, "Độ dài 10-11 kí tự")
     .matches(/^\d+$/, "Số điện thoại chỉ được chứa ký tự số"),
-  description: yup.string().required("Mô tả bắt buộc!"),
   address: yup.string().required("Địa chỉ bắt buộc!"),
-  taxCode: yup.string()
+  description: yup.string().default(""),
+  taxCode: yup.string().required("Mã số thuế bắt buộc!")
 })
 
 export type SchemaAuthType = yup.InferType<typeof schemaAuth>

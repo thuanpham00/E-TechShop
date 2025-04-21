@@ -23,7 +23,6 @@ export default function CategoryItem({
   onDelete: (id: string) => void
   handleEditItem: (id: string) => void
 }) {
-  // const navigate = useNavigate()
   const { copiedId, handleCopyText } = useCopyText()
 
   const handleEditSupplierItem = (id: string) => {
