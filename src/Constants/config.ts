@@ -1,4 +1,4 @@
-const { VITE_API_SERVER } = import.meta.env
+// const { VITE_API_SERVER } = import.meta.env
 
 export const config = {
   baseURLClient: "https://techzone-api-5gpz.onrender.com",
