@@ -214,6 +214,10 @@ export default function ManageSuppliers() {
               setError("email", {
                 message: (formError.email as any).msg // lỗi 422 từ server trả về
               })
+            if (formError?.name)
+              setError("name", {
+                message: (formError.name as any).msg // lỗi 422 từ server trả về
+              })
           }
         }
       }
@@ -378,7 +382,7 @@ export default function ManageSuppliers() {
                       name="email"
                       register={registerFormSearch}
                       placeholder="Nhập email"
-                      classNameInput="p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-black focus:border-blue-500 focus:ring-1 outline-none rounded-md h-[35px]"
+                      classNameInput="p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#fff] dark:bg-black focus:border-blue-500 focus:ring-1 outline-none rounded-md h-[35px]"
                       className="relative flex-grow"
                       classNameError="hidden"
                     />
@@ -394,7 +398,7 @@ export default function ManageSuppliers() {
                       name="phone"
                       register={registerFormSearch}
                       placeholder="Nhập số điện thoại"
-                      classNameInput="p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-black focus:border-blue-500 focus:ring-1 outline-none rounded-md h-[35px]"
+                      classNameInput="p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#fff] dark:bg-black focus:border-blue-500 focus:ring-1 outline-none rounded-md h-[35px]"
                       className="relative flex-grow"
                       classNameError="hidden"
                     />

@@ -178,7 +178,7 @@ export default function FilterProduct({ queryConfig, listProduct }: Props) {
                       onChange={(e) => field.onChange(e.target.value ? e.target.value : undefined)} // ✅ Cập nhật vào form
                       className="p-2 border border-gray-300 dark:border-darkBorder bg-[#fff] dark:bg-black w-full mt-2 rounded-md "
                     >
-                      <option value="" disabled selected>
+                      <option value="" disabled>
                         -- Chọn thương hiệu --
                       </option>
                       {listNameBrandResult?.map((item, index) => {
@@ -209,7 +209,7 @@ export default function FilterProduct({ queryConfig, listProduct }: Props) {
                       onChange={(e) => field.onChange(e.target.value ? e.target.value : undefined)} // ✅ Cập nhật vào form
                       className="p-2 border border-gray-300 dark:border-darkBorder bg-[#f2f2f2] dark:bg-black w-full mt-2 rounded-md"
                     >
-                      <option value="" disabled selected>
+                      <option value="" disabled>
                         -- Chọn thể loại --
                       </option>
                       {listNameCategoryResult?.map((item, index) => {
@@ -379,7 +379,7 @@ export default function FilterProduct({ queryConfig, listProduct }: Props) {
                       onChange={(e) => field.onChange(e.target.value ? e.target.value : undefined)} // ✅ Cập nhật vào form
                       className="p-2 border border-gray-300 dark:border-darkBorder bg-[#f2f2f2] dark:bg-black w-full mt-2 rounded-md"
                     >
-                      <option value="" disabled selected>
+                      <option value="" disabled>
                         -- Chọn trạng thái --
                       </option>
                       <option value="available">Còn hàng</option>

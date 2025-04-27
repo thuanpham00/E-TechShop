@@ -30,6 +30,11 @@ export type queryParamConfigSupplier = queryParamConfig & {
   contactName?: string
 }
 
+export type queryParamConfigSupply = queryParamConfig & {
+  name_product?: string
+  name_supplier?: string
+}
+
 export type queryParamConfigProduct = queryParamConfig & {
   name?: string
   category?: string

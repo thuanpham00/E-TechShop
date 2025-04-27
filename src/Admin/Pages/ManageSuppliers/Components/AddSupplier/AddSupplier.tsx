@@ -40,7 +40,7 @@ export default function AddSupplier({ setAddItem }: Props) {
     formState: { errors }
   } = useForm<FormData>({ resolver: yupResolver(formData) })
 
-  const addCategoryMutation = useMutation({
+  const addSupplierMutation = useMutation({
     mutationFn: (body: {
       name: string
       contactName: string
@@ -54,7 +54,7 @@ export default function AddSupplier({ setAddItem }: Props) {
   })
 
   const handleAddSupplierSubmit = handleSubmit((data) => {
-    addCategoryMutation.mutate(data, {
+    addSupplierMutation.mutate(data, {
       onSuccess: () => {
         toast.success("Thêm nhà cung cấp thành công", { autoClose: 1500 })
         setAddItem(false)
@@ -68,6 +68,11 @@ export default function AddSupplier({ setAddItem }: Props) {
             setError("email", {
               message: (formError.email as any).msg // lỗi 422 từ server trả về
             })
+          if (formError?.name) {
+            setError("name", {
+              message: (formError.name as any).msg // lỗi 422 từ server trả về
+            })
+          }
           if (formError?.taxCode) {
             setError("taxCode", {
               message: (formError.taxCode as any).msg // lỗi 422 từ server trả về

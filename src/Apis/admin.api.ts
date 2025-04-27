@@ -9,7 +9,8 @@ import {
   queryParamConfigBrand,
   queryParamConfigCategory,
   queryParamConfigCustomer,
-  queryParamConfigProduct
+  queryParamConfigProduct,
+  queryParamConfigSupplier
 } from "src/Types/queryParams.type"
 
 export const adminAPI = {
@@ -120,6 +121,11 @@ export const adminAPI = {
       })
     },
 
+    // lấy danh sách tên sản phẩm de lọc
+    getNameProducts: () => {
+      return Http.get(`/admin/name-products`)
+    },
+
     addProduct: (body: CreateProductBodyReq) => {
       const formData = new FormData()
 
@@ -155,7 +161,7 @@ export const adminAPI = {
 
   supplier: {
     // lấy danh sách nhà cung cấp
-    getSuppliers: (params: queryParamConfigCategory, signal: AbortSignal) => {
+    getSuppliers: (params: queryParamConfigSupplier, signal: AbortSignal) => {
       return Http.get(`/admin/suppliers`, {
         params,
         signal
@@ -165,6 +171,11 @@ export const adminAPI = {
     // lấy chi tiết nhà cung cấp
     getSupplierDetail: (id: string) => {
       return Http.get(`/admin/suppliers/${id}`)
+    },
+
+    // lấy danh sách tên nhà cung cấp de lọc
+    getNameSuppliers: () => {
+      return Http.get(`/admin/name-suppliers`)
     },
 
     // thêm nhà cung cấp
@@ -187,6 +198,26 @@ export const adminAPI = {
     // xóa nhà cung cấp
     deleteSupplierDetail: (id: string) => {
       return Http.delete(`/admin/suppliers/${id}`)
+    }
+  },
+  supply: {
+    // lấy danh sách cung ứng
+    getSupplies: (params: queryParamConfigSupplier, signal: AbortSignal) => {
+      return Http.get(`/admin/supplies`, {
+        params,
+        signal
+      })
+    },
+
+    createSupply: (body: {
+      productId: string
+      supplierId: string
+      importPrice: number
+      warrantyMonths: number
+      leadTimeDays: number
+      description: string
+    }) => {
+      return Http.post(`/admin/supplies`, body)
     }
   }
 }

@@ -175,7 +175,25 @@ export const schemaSupplierUpdate = schemaAuth.pick(["created_at", "updated_at",
   taxCode: yup.string().required("Mã số thuế bắt buộc!")
 })
 
+export const schemaSupply = schemaAuth
+  .pick(["created_at_start", "created_at_end", "updated_at_start", "updated_at_end"])
+  .shape({
+    name_product: yup.string(),
+    name_supplier: yup.string(),
+    importPrice: yup.string()
+  })
+
+export const schemaSupplyCreate = yup.object({
+  productId: yup.string().required("Tên sản phẩm bắt buộc!"),
+  supplierId: yup.string().required("Nhà cung cấp bắt buộc!"),
+  importPrice: yup.number().required("Giá nhập bắt buộc!"),
+  warrantyMonths: yup.number().required("Thời gian bảo hành bắt buộc!"),
+  leadTimeDays: yup.number().required("Thời gian cung ứng bắt buộc!"),
+  description: yup.string().default("")
+})
+
 export type SchemaAuthType = yup.InferType<typeof schemaAuth>
+
 export type SchemaProductType = SchemaAuthType & yup.InferType<typeof schemaProduct>
 
 export type SchemaCustomerType = yup.InferType<typeof schemaCustomer>
@@ -185,3 +203,7 @@ export type SchemaAddProductType = yup.InferType<typeof schemaAddProduct>
 export type SchemaSupplierType = yup.InferType<typeof schemaSupplier>
 
 export type SchemaSupplierUpdateType = yup.InferType<typeof schemaSupplierUpdate>
+
+export type SchemaSupplyType = yup.InferType<typeof schemaSupply>
+
+export type SchemaSupplyCreateType = yup.InferType<typeof schemaSupplyCreate>

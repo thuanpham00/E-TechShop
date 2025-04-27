@@ -37,8 +37,8 @@ import useDownloadExcel from "src/Hook/useDowloadExcel"
 
 const formDataUpdate = schemaAuth.pick([
   "id",
-  "email",
   "name",
+  "email",
   "verify",
   "numberPhone",
   "date_of_birth",
@@ -49,7 +49,7 @@ const formDataUpdate = schemaAuth.pick([
 
 type FormDataUpdate = Pick<
   SchemaAuthType,
-  "id" | "email" | "name" | "verify" | "numberPhone" | "date_of_birth" | "created_at" | "updated_at" | "avatar"
+  "id" | "name" | "email" | "verify" | "numberPhone" | "date_of_birth" | "created_at" | "updated_at" | "avatar"
 >
 
 const formDataSearch = schemaCustomer.pick([
@@ -80,7 +80,7 @@ export default function ManageCustomers() {
   const navigate = useNavigate()
   const queryClient = useQueryClient()
 
-  // Phân trang
+  // Gọi api danh sách và xử lý phân trang
   const queryParams: queryParamConfigCustomer = useQueryParams()
   const queryConfig: queryParamConfigCustomer = omitBy(
     {
@@ -122,12 +122,11 @@ export default function ManageCustomers() {
   const listCustomer = result?.result?.result
   const page_size = Math.ceil(Number(result?.result.total) / Number(result?.result.limit))
 
+  // xử lý gọi api chi tiết
   const [idCustomer, setIdCustomer] = useState<string | null>(null)
-
   const handleEditItem = useCallback((id: string) => {
     setIdCustomer(id)
   }, [])
-
   const handleExitsEditItem = () => {
     setIdCustomer(null)
   }
@@ -158,8 +157,8 @@ export default function ManageCustomers() {
     resolver: yupResolver(formDataUpdate),
     defaultValues: {
       id: "",
-      email: "",
       name: "",
+      email: "",
       numberPhone: "",
       avatar: "",
       date_of_birth: new Date(1990, 0, 1),
@@ -613,122 +612,125 @@ export default function ManageCustomers() {
                     <button onClick={handleExitsEditItem} className="absolute right-2 top-1">
                       <X color="gray" size={22} />
                     </button>
-                    <form onSubmit={handleSubmitUpdate} className="bg-white dark:bg-darkPrimary rounded-md">
+                    <form onSubmit={handleSubmitUpdate} className="bg-white dark:bg-darkPrimary rounded-md w-[900px]">
                       <h3 className="py-2 px-4 text-[15px] font-medium bg-[#f2f2f2] rounded-md">
                         Thông tin khách hàng
                       </h3>
                       <div className="w-full h-[1px] bg-[#dadada]"></div>
                       <div className="p-4 pt-0">
-                        <div className="mt-4 grid grid-cols-12 flex-wrap gap-4">
-                          <div className="col-span-4">
-                            <Input
-                              name="id"
-                              register={register}
-                              placeholder="Nhập họ tên"
-                              messageErrorInput={errors.id?.message}
-                              classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-darkSecond focus:border-blue-500 focus:ring-2 outline-none rounded-md"
-                              className="relative flex-1"
-                              nameInput="Id"
-                              disabled
-                            />
-                          </div>
-                          <div className="col-span-4">
-                            <Input
-                              name="email"
-                              register={register}
-                              placeholder="Nhập họ tên"
-                              messageErrorInput={errors.email?.message}
-                              classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-darkSecond focus:border-blue-500 focus:ring-2 outline-none rounded-md"
-                              className="relative flex-1"
-                              nameInput="Email"
-                              disabled
-                            />
-                          </div>
-                          <div className="col-span-4">
-                            <Input
-                              name="name"
-                              register={register}
-                              placeholder="Nhập họ tên"
-                              messageErrorInput={errors.name?.message}
-                              classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-white dark:bg-darkPrimary focus:border-blue-500 focus:ring-2 outline-none rounded-md"
-                              className="relative flex-1"
-                              nameInput="Họ tên"
-                            />
-                          </div>
-                          <div className="col-span-4">
-                            <Input
-                              name="verify"
-                              register={register}
-                              messageErrorInput={errors.verify?.message}
-                              classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-darkSecond focus:border-blue-500 focus:ring-2 outline-none rounded-md"
-                              className="relative flex-1"
-                              nameInput="Trạng thái"
-                              disabled
-                              value={profile?.verify === 1 ? "Verified" : "Unverified"}
-                            />
-                          </div>
-                          <div className="col-span-4">
-                            <Input
-                              name="numberPhone"
-                              register={register}
-                              placeholder="Nhập số điện thoại"
-                              messageErrorInput={errors.numberPhone?.message}
-                              classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-white dark:bg-darkPrimary focus:border-blue-500 focus:ring-2 outline-none rounded-md"
-                              className="relative flex-1"
-                              nameInput="Số điện thoại"
-                            />
-                          </div>
-                          <div className="col-span-4">
-                            {/* dùng <Controller/> khi và chỉ khi component không hỗ trợ register (register giúp theo dõi giá trị trong form) */}
-                            {/* control giúp theo dõi giá trị, validate và đồng bộ dữ liệu giữa form và component tùy chỉnh  */}
-                            <Controller
-                              name="date_of_birth"
-                              control={control}
-                              render={({ field }) => {
-                                return (
-                                  <DateSelect
-                                    value={date_of_birth}
-                                    onChange={field.onChange}
-                                    errorMessage={errors.date_of_birth?.message}
-                                  />
-                                )
-                              }}
-                            />
-                          </div>
+                        <div className="mt-4 flex items-start justify-between gap-4">
+                          <div className="grid grid-cols-12 flex-wrap gap-4">
+                            <div className="col-span-6">
+                              <Input
+                                name="id"
+                                register={register}
+                                placeholder="Nhập họ tên"
+                                messageErrorInput={errors.id?.message}
+                                classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-darkSecond focus:border-blue-500 focus:ring-2 outline-none rounded-md"
+                                className="relative flex-1"
+                                nameInput="Mã khách hàng"
+                                disabled
+                              />
+                            </div>
+                            <div className="col-span-6">
+                              <Input
+                                name="name"
+                                register={register}
+                                placeholder="Nhập họ tên"
+                                messageErrorInput={errors.name?.message}
+                                classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-white dark:bg-darkPrimary focus:border-blue-500 focus:ring-2 outline-none rounded-md"
+                                className="relative flex-1"
+                                nameInput="Họ tên"
+                              />
+                            </div>
+                            <div className="col-span-6">
+                              <Input
+                                name="email"
+                                register={register}
+                                placeholder="Nhập họ tên"
+                                messageErrorInput={errors.email?.message}
+                                classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-darkSecond focus:border-blue-500 focus:ring-2 outline-none rounded-md"
+                                className="relative flex-1"
+                                nameInput="Email"
+                                disabled
+                              />
+                            </div>
+                            <div className="col-span-6">
+                              <Input
+                                name="verify"
+                                register={register}
+                                messageErrorInput={errors.verify?.message}
+                                classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-darkSecond focus:border-blue-500 focus:ring-2 outline-none rounded-md"
+                                className="relative flex-1"
+                                nameInput="Trạng thái"
+                                disabled
+                                value={profile?.verify === 1 ? "Verified" : "Unverified"}
+                              />
+                            </div>
+                            <div className="col-span-6">
+                              <Input
+                                name="numberPhone"
+                                register={register}
+                                placeholder="Nhập số điện thoại"
+                                messageErrorInput={errors.numberPhone?.message}
+                                classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-white dark:bg-darkPrimary focus:border-blue-500 focus:ring-2 outline-none rounded-md"
+                                className="relative flex-1"
+                                nameInput="Số điện thoại"
+                              />
+                            </div>
+                            <div className="col-span-6">
+                              {/* dùng <Controller/> khi và chỉ khi component không hỗ trợ register (register giúp theo dõi giá trị trong form) */}
+                              {/* control giúp theo dõi giá trị, validate và đồng bộ dữ liệu giữa form và component tùy chỉnh  */}
+                              <Controller
+                                name="date_of_birth"
+                                control={control}
+                                render={({ field }) => {
+                                  return (
+                                    <DateSelect
+                                      value={date_of_birth}
+                                      onChange={field.onChange}
+                                      errorMessage={errors.date_of_birth?.message}
+                                    />
+                                  )
+                                }}
+                              />
+                            </div>
 
-                          <div className="col-span-4">
-                            <Input
-                              name="created_at"
-                              register={register}
-                              placeholder="Nhập ngày khởi tạo"
-                              messageErrorInput={errors.created_at?.message}
-                              classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-darkSecond focus:border-blue-500 focus:ring-2 outline-none rounded-md"
-                              className="relative flex-1"
-                              nameInput="Ngày tạo"
-                              disabled
-                            />
+                            <div className="col-span-6">
+                              <Input
+                                name="created_at"
+                                register={register}
+                                placeholder="Nhập ngày khởi tạo"
+                                messageErrorInput={errors.created_at?.message}
+                                classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-darkSecond focus:border-blue-500 focus:ring-2 outline-none rounded-md"
+                                className="relative flex-1"
+                                nameInput="Ngày tạo"
+                                disabled
+                              />
+                            </div>
+                            <div className="col-span-6">
+                              <Input
+                                name="updated_at"
+                                register={register}
+                                placeholder="Nhập ngày cập nhật"
+                                messageErrorInput={errors.updated_at?.message}
+                                classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-darkSecond focus:border-blue-500 focus:ring-2 outline-none rounded-md"
+                                className="relative flex-1"
+                                nameInput="Ngày cập nhật"
+                                disabled
+                              />
+                            </div>
                           </div>
-                          <div className="col-span-4">
-                            <Input
-                              name="updated_at"
-                              register={register}
-                              placeholder="Nhập ngày cập nhật"
-                              messageErrorInput={errors.updated_at?.message}
-                              classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-darkSecond focus:border-blue-500 focus:ring-2 outline-none rounded-md"
-                              className="relative flex-1"
-                              nameInput="Ngày cập nhật"
-                              disabled
+                          <div className="w-[1px] h-[340px] bg-black/20"></div>
+                          <div className="text-center">
+                            <div className="mb-2">Avatar</div>
+                            <img
+                              src={previewImage || avatarWatch}
+                              className="h-28 w-28 rounded-full mx-auto"
+                              alt="avatar default"
                             />
+                            <InputFileImage onChange={handleChangeImage} />
                           </div>
-                        </div>
-                        <div className="text-center">
-                          <div className="mb-2">Avatar</div>
-                          <img
-                            src={previewImage || avatarWatch}
-                            className="h-28 w-28 rounded-full mx-auto"
-                            alt="avatar default"
-                          />
-                          <InputFileImage onChange={handleChangeImage} />
                         </div>
                         <div className="flex items-center justify-end">
                           <Button

@@ -57,6 +57,22 @@ export type SupplierItemType = {
   updated_at: string
 }
 
+export type SupplyItemType = {
+  _id: string
+  productId: {
+    name: string
+  }[]
+  supplierId: {
+    name: string
+  }[]
+  importPrice: number
+  warrantyMonths: number
+  leadTimeDays: number
+  description: string
+  created_at: string
+  updated_at: string
+}
+
 export type ProductItemType = {
   _id: string
   name: string

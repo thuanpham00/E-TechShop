@@ -41,7 +41,7 @@ export default function BrandItem({
   }
 
   const handleNavigateProductList = (nameBrand: string, nameCategory: string) => {
-    navigate(`${path.AdminProducts}?brand_product=${nameBrand}&category_product=${nameCategory}`)
+    navigate(`${path.AdminProducts}?brand=${nameBrand}&category=${nameCategory}`)
   }
 
   return (
