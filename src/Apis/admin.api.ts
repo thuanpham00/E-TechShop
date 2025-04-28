@@ -3,7 +3,8 @@ import {
   CreateProductBodyReq,
   UpdateBodyReq,
   UpdateCategoryBodyReq,
-  UpdateSupplierBodyReq
+  UpdateSupplierBodyReq,
+  UpdateSupplyBodyReq
 } from "src/Types/product.type"
 import {
   queryParamConfigBrand,
@@ -178,6 +179,14 @@ export const adminAPI = {
       return Http.get(`/admin/name-suppliers`)
     },
 
+    // lấy danh sách tên nhà cung cấp dựa trên tên sản phẩm
+    // nếu sản phẩm đã liên kết với nhà cung cấp đó rồi sẽ bị lọc ra
+    getNameSuppliersBasedOnNameProduct: (productId: string) => {
+      return Http.get(`/admin/name-suppliers-based-on-product`, {
+        params: { productId }
+      })
+    },
+
     // thêm nhà cung cấp
     createSupplier: (body: {
       name: string
@@ -209,6 +218,11 @@ export const adminAPI = {
       })
     },
 
+    // lấy chi tiết cung ứng
+    getSupplyDetail: (id: string) => {
+      return Http.get(`/admin/supplies/${id}`)
+    },
+
     createSupply: (body: {
       productId: string
       supplierId: string
@@ -218,6 +232,11 @@ export const adminAPI = {
       description: string
     }) => {
       return Http.post(`/admin/supplies`, body)
+    },
+
+    // cập nhật chi tiết cung ứng
+    updateSupplyDetail: (id: string, body: UpdateSupplyBodyReq) => {
+      return Http.patch(`/admin/supplies/${id}`, body)
     }
   }
 }

@@ -618,7 +618,7 @@ export default function ManageCustomers() {
                       </h3>
                       <div className="w-full h-[1px] bg-[#dadada]"></div>
                       <div className="p-4 pt-0">
-                        <div className="mt-4 flex items-start justify-between gap-4">
+                        <div className="mt-4 flex items-center justify-between gap-4">
                           <div className="grid grid-cols-12 flex-wrap gap-4">
                             <div className="col-span-6">
                               <Input

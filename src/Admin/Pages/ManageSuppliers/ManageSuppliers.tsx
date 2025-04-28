@@ -278,6 +278,7 @@ export default function ManageSuppliers() {
     (data) => {
       const params = cleanObject({
         ...queryConfig,
+        page: 1,
         name: data.name,
         email: data.email,
         phone: data.phone,

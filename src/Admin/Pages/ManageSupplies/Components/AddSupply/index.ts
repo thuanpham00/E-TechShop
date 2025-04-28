@@ -1,3 +1,3 @@
-import AddSupplier from "./AddSupplier"
+import AddSupply from "./AddSupply"
 
-export default AddSupplier
+export default AddSupply

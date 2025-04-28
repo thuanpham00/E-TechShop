@@ -1,4 +1,4 @@
-import { keepPreviousData, useMutation, useQuery } from "@tanstack/react-query"
+import { keepPreviousData, useQuery } from "@tanstack/react-query"
 import { isUndefined, omit, omitBy } from "lodash"
 import { useCallback, useEffect, useRef, useState } from "react"
 import { Helmet } from "react-helmet-async"
@@ -17,8 +17,7 @@ import { SupplyItemType } from "src/Types/product.type"
 import { queryParamConfigSupplier, queryParamConfigSupply } from "src/Types/queryParams.type"
 import { SuccessResponse } from "src/Types/utils.type"
 import SupplyItem from "./Components/SupplyItem"
-import { FolderUp, Plus, RotateCcw, Search, X } from "lucide-react"
-import { queryClient } from "src/main"
+import { FolderUp, Plus, RotateCcw, Search } from "lucide-react"
 import { toast } from "react-toastify"
 import { Controller, useForm } from "react-hook-form"
 import { yupResolver } from "@hookform/resolvers/yup"
@@ -27,6 +26,7 @@ import { cleanObject } from "src/Helpers/common"
 import DatePicker from "src/Admin/Components/DatePickerRange"
 import AddSupply from "./Components/AddSupply/AddSupply"
 import { HttpStatusCode } from "src/Constants/httpStatus"
+import SupplyDetail from "./Components/SupplyDetail"
 
 type FormDataSearch = Pick<
   SchemaSupplyType,
@@ -46,12 +46,18 @@ export default function ManageSupplies() {
   const navigate = useNavigate()
   const { downloadExcel } = useDownloadExcel()
 
+  const [inputValueProduct, setInputValueProduct] = useState("")
+  const [inputValueSupplier, setInputValueSupplier] = useState("")
+  const [filterList, setFilterList] = useState<string[]>([])
+  const inputRef_1 = useRef<HTMLDivElement>(null)
+  const inputRef_2 = useRef<HTMLDivElement>(null)
+
   // const queryClient = useQueryClient()
   const queryParams: queryParamConfigSupply = useQueryParams()
   const queryConfig: queryParamConfigSupply = omitBy(
     {
       page: queryParams.page || "1", // mặc định page = 1
-      limit: queryParams.limit || "5", // mặc định limit =
+      limit: queryParams.limit || "5", // mặc định limit = 5
       name_product: queryParams.name_product,
       name_supplier: queryParams.name_supplier,
       created_at_start: queryParams.created_at_start,
@@ -73,7 +79,6 @@ export default function ManageSupplies() {
     },
     retry: 0, // số lần retry lại khi hủy request (dùng abort signal)
     staleTime: 3 * 60 * 1000, // dưới 3 phút nó không gọi lại api
-
     placeholderData: keepPreviousData
   })
 
@@ -84,27 +89,28 @@ export default function ManageSupplies() {
     limit: string
     totalOfPage: string
   }>
-
   const listSupplier = result?.result?.result
-
   const page_size = Math.ceil(Number(result?.result.total) / Number(result?.result.limit))
 
   const [idSupply, setIdSupply] = useState<string | null>(null)
 
+  const handleEditItem = useCallback((id: string) => {
+    setIdSupply(id)
+  }, [])
+
+  // xử lý tìm kiếm
   const getNameProducts = useQuery({
     queryKey: ["nameProduct"],
     queryFn: () => {
       return adminAPI.product.getNameProducts()
     },
-    retry: 0, // số lần retry lại khi hủy request (dùng abort signal)
-    staleTime: 15 * 60 * 1000, // dưới 1 phút nó không gọi lại api
-    placeholderData: keepPreviousData // giữ data cũ trong 1p
+    retry: 0,
+    staleTime: 15 * 60 * 1000,
+    placeholderData: keepPreviousData
   })
-
   const listNameProduct = getNameProducts.data?.data as SuccessResponse<{
     result: string[]
   }>
-
   const listNameProductResult = listNameProduct?.result.result
 
   const getNameSuppliers = useQuery({
@@ -116,59 +122,50 @@ export default function ManageSupplies() {
     staleTime: 15 * 60 * 1000, // dưới 1 phút nó không gọi lại api
     placeholderData: keepPreviousData // giữ data cũ trong 1p
   })
-
   const listNameSupplier = getNameSuppliers.data?.data as SuccessResponse<{
     result: string[]
   }>
-
   const listNameSupplierResult = listNameSupplier?.result.result
 
-  const handleEditItem = useCallback((id: string) => {
-    setIdSupply(id)
-  }, [])
-
-  const handleExitsEditItem = () => {
-    setIdSupply(null)
-  }
-
-  const deleteSupplierMutation = useMutation({
-    mutationFn: (id: string) => {
-      return adminAPI.supplier.deleteSupplierDetail(id)
-    }
-  })
+  // const deleteSupplierMutation = useMutation({
+  //   mutationFn: (id: string) => {
+  //     return adminAPI.supplier.deleteSupplierDetail(id)
+  //   }
+  // })
 
   const handleDeleteSupplier = (id: string) => {
-    deleteSupplierMutation.mutate(id, {
-      onSuccess: () => {
-        const data = queryClient.getQueryData(["listSupply", queryConfig])
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const data_2 = (data as any).data as SuccessResponse<{
-          result: SupplyItemType[]
-          total: string
-          page: string
-          limit: string
-          totalOfPage: string
-        }>
-        if (data && data_2.result.result.length === 1 && Number(queryConfig.page) > 1) {
-          navigate({
-            pathname: path.AdminSuppliers,
-            search: createSearchParams({
-              ...queryConfig,
-              page: (Number(queryConfig.page) - 1).toString()
-            }).toString()
-          })
-        }
-        queryClient.invalidateQueries({ queryKey: ["listSupplier"] })
-        toast.success("Xóa thành công!", { autoClose: 1500 })
-      }
-      // onError: (error) => {
-      //   if (isError400<ErrorResponse<MessageResponse>>(error)) {
-      //     toast.error(error.response?.data.message, {
-      //       autoClose: 1500
-      //     })
-      //   }
-      // }
-    })
+    console.log(id)
+    // deleteSupplierMutation.mutate(id, {
+    //   onSuccess: () => {
+    //     const data = queryClient.getQueryData(["listSupply", queryConfig])
+    //     // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    //     const data_2 = (data as any).data as SuccessResponse<{
+    //       result: SupplyItemType[]
+    //       total: string
+    //       page: string
+    //       limit: string
+    //       totalOfPage: string
+    //     }>
+    //     if (data && data_2.result.result.length === 1 && Number(queryConfig.page) > 1) {
+    //       navigate({
+    //         pathname: path.AdminSuppliers,
+    //         search: createSearchParams({
+    //           ...queryConfig,
+    //           page: (Number(queryConfig.page) - 1).toString()
+    //         }).toString()
+    //       })
+    //     }
+    //     queryClient.invalidateQueries({ queryKey: ["listSupplier"] })
+    //     toast.success("Xóa thành công!", { autoClose: 1500 })
+    //   }
+    //   // onError: (error) => {
+    //   //   if (isError400<ErrorResponse<MessageResponse>>(error)) {
+    //   //     toast.error(error.response?.data.message, {
+    //   //       autoClose: 1500
+    //   //     })
+    //   //   }
+    //   // }
+    // })
   }
 
   const {
@@ -176,7 +173,7 @@ export default function ManageSupplies() {
     handleSubmit: handleSubmitFormSearch,
     reset: resetFormSearch,
     control: controlFormSearch,
-    setValue,
+    setValue: setValueSearch,
     trigger
   } = useForm<FormDataSearch>({
     resolver: yupResolver(formDataSearch)
@@ -184,9 +181,9 @@ export default function ManageSupplies() {
 
   const handleSubmitSearch = handleSubmitFormSearch(
     (data) => {
-      console.log(data)
       const params = cleanObject({
         ...queryConfig,
+        page: 1,
         name_product: data.name_product,
         name_supplier: data.name_supplier,
         created_at_start: data.created_at_start?.toISOString(),
@@ -224,14 +221,7 @@ export default function ManageSupplies() {
     navigate({ pathname: path.AdminSupplies, search: createSearchParams(filteredSearch).toString() })
   }
 
-  const [addItem, setAddItem] = useState(false)
-
   const [activeField, setActiveField] = useState<"name_product" | "name_supplier" | null>(null) // check coi input nào đang focus
-  const [inputValueProduct, setInputValueProduct] = useState("")
-  const [inputValueSupplier, setInputValueSupplier] = useState("")
-  const [filterList, setFilterList] = useState<string[]>([])
-  const inputRef_1 = useRef<HTMLDivElement>(null)
-  const inputRef_2 = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     const handler = setTimeout(() => {
@@ -270,15 +260,17 @@ export default function ManageSupplies() {
 
   const handleClickItemList = (item: string) => {
     if (activeField === "name_product") {
-      setValue("name_product", item)
+      setValueSearch("name_product", item)
       setInputValueProduct(item)
     } else if (activeField === "name_supplier") {
-      setValue("name_supplier", item)
+      setValueSearch("name_supplier", item)
       setInputValueSupplier(item)
     }
     setActiveField(null)
     setFilterList([])
   }
+
+  const [addItem, setAddItem] = useState(false)
 
   if (isError) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -357,7 +349,7 @@ export default function ManageSupplies() {
                     {activeField === "name_supplier" && filterList.length > 0 && (
                       <div
                         ref={inputRef_2}
-                        className="absolute top-11 left-0 bg-[#fff] z-20 rounded-md max-h-60 overflow-y-auto shadow-md"
+                        className="absolute top-11 left-0 bg-[#fff] z-20 rounded-md w-full max-h-60 overflow-y-auto shadow-md"
                       >
                         {filterList.map((item) => (
                           <button
@@ -520,133 +512,7 @@ export default function ManageSupplies() {
               pathNavigate={path.AdminSupplies}
             />
             {idSupply !== null ? (
-              <Fragment>
-                <div className="fixed left-0 top-0 z-10 h-screen w-screen bg-black/60"></div>
-                <div className="z-20 fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
-                  <button onClick={handleExitsEditItem} className="absolute right-2 top-1">
-                    <X color="gray" size={22} />
-                  </button>
-                  <form className="bg-white dark:bg-darkPrimary rounded-md w-[900px]">
-                    <h3 className="py-2 px-4 text-[15px] font-medium bg-[#f2f2f2] rounded-md">
-                      Thông tin nhà cung cấp
-                    </h3>
-                    <div className="w-full h-[1px] bg-[#dadada]"></div>
-                    <div className="p-4 pt-0">
-                      <div className="mt-4 flex items-center gap-4">
-                        <Input
-                          name="id"
-                          // register={register}
-                          placeholder="Nhập id"
-                          // messageErrorInput={errors.id?.message}
-                          classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-darkSecond focus:border-blue-500 focus:ring-2 outline-none rounded-md"
-                          className="relative flex-1"
-                          nameInput="Id"
-                          disabled
-                        />
-                        <Input
-                          name="taxCode"
-                          // register={register}
-                          placeholder="Nhập tax-code"
-                          // messageErrorInput={errors.taxCode?.message}
-                          classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-darkSecond focus:border-blue-500 focus:ring-2 outline-none rounded-md"
-                          className="relative flex-1"
-                          nameInput="Mã số thuế"
-                          disabled
-                        />
-                      </div>
-                      <div className="mt-4 flex items-center gap-4">
-                        <Input
-                          name="name"
-                          // register={register}
-                          placeholder="Nhập tên nhà cung cấp"
-                          // messageErrorInput={errors.name?.message}
-                          classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-white dark:bg-darkPrimary focus:border-blue-500 focus:ring-2 outline-none rounded-md"
-                          className="relative flex-1"
-                          nameInput="Tên nhà cung cấp"
-                        />
-                        <Input
-                          name="contactName"
-                          // register={register}
-                          placeholder="Nhập họ tên"
-                          // messageErrorInput={errors.contactName?.message}
-                          classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#fff] dark:bg-darkPrimary focus:border-blue-500 focus:ring-2 outline-none rounded-md"
-                          className="relative flex-1"
-                          nameInput="Tên người đại diện"
-                        />
-                      </div>
-                      <div className="mt-4 flex items-center gap-4">
-                        <Input
-                          name="email"
-                          // register={register}
-                          placeholder="Nhập email"
-                          // messageErrorInput={errors.email?.message}
-                          classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#fff] dark:bg-darkPrimary focus:border-blue-500 focus:ring-2 outline-none rounded-md"
-                          className="relative flex-1"
-                          nameInput="Email"
-                        />
-                        <Input
-                          name="phone"
-                          // register={register}
-                          placeholder="Nhập số điện thoại"
-                          // messageErrorInput={errors.phone?.message}
-                          classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-white dark:bg-darkPrimary focus:border-blue-500 focus:ring-2 outline-none rounded-md"
-                          className="relative flex-1"
-                          nameInput="Số điện thoại"
-                        />
-                      </div>
-                      <div className="mt-4 flex items-center gap-4">
-                        <Input
-                          name="address"
-                          // register={register}
-                          placeholder="Nhập địa chỉ"
-                          // messageErrorInput={errors.address?.message}
-                          classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-white dark:bg-darkPrimary focus:border-blue-500 focus:ring-2 outline-none rounded-md"
-                          className="relative flex-1"
-                          nameInput="Địa chỉ"
-                        />
-                        <Input
-                          name="description"
-                          // register={register}
-                          placeholder="Nhập mô tả"
-                          // messageErrorInput={errors.description?.message}
-                          classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-white dark:bg-darkPrimary focus:border-blue-500 focus:ring-2 outline-none rounded-md"
-                          className="relative flex-1"
-                          nameInput="Mô tả"
-                        />
-                      </div>
-                      <div className="mt-2 flex items-center gap-4">
-                        <Input
-                          name="created_at"
-                          // register={register}
-                          placeholder="Nhập ngày tạo"
-                          // messageErrorInput={errors.created_at?.message}
-                          classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-darkSecond focus:border-blue-500 focus:ring-2 outline-none rounded-md"
-                          className="relative flex-1"
-                          nameInput="Ngày tạo"
-                          disabled
-                        />
-                        <Input
-                          name="updated_at"
-                          // register={register}
-                          placeholder="Nhập ngày tạo cập nhật"
-                          // messageErrorInput={errors.updated_at?.message}
-                          classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-darkSecond focus:border-blue-500 focus:ring-2 outline-none rounded-md"
-                          className="relative flex-1"
-                          nameInput="Ngày cập nhật"
-                          disabled
-                        />
-                      </div>
-                      <div className="flex items-center justify-end">
-                        <Button
-                          type="submit"
-                          nameButton="Cập nhật"
-                          classNameButton="w-[120px] p-4 py-2 bg-blue-500 mt-2 w-full text-white font-semibold rounded-sm hover:bg-blue-500/80 duration-200"
-                        />
-                      </div>
-                    </div>
-                  </form>
-                </div>
-              </Fragment>
+              <SupplyDetail idSupply={idSupply} setIdSupply={setIdSupply} queryConfig={queryConfig} />
             ) : (
               ""
             )}

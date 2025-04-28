@@ -60,18 +60,18 @@ export default function AddCategory({ setAddItem }: Props) {
           <X color="gray" size={22} />
         </button>
         <form onSubmit={handleAddCategorySubmit} className="bg-white dark:bg-darkPrimary rounded-md">
-          <h3 className="py-2 px-4 text-[15px] font-medium bg-[#f2f2f2] rounded-md">Thông tin thể loại</h3>
+          <h3 className="py-2 px-4 text-[15px] font-medium bg-[#f2f2f2] rounded-md">Thông tin danh mục</h3>
           <div className="w-full h-[1px] bg-[#dadada]"></div>
           <div className="p-4 pt-0">
             <div className="mt-4 flex items-center gap-4">
               <Input
                 name="name"
                 register={register}
-                placeholder="Nhập tên thể loại"
+                placeholder="Nhập tên danh mục"
                 messageErrorInput={errors.name?.message}
                 classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-white dark:bg-darkPrimary focus:border-blue-500 focus:ring-2 outline-none rounded-md"
                 className="relative flex-1"
-                nameInput="Tên thể loại"
+                nameInput="Tên danh mục"
               />
             </div>
             <div className="flex items-center justify-end">

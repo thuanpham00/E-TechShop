@@ -116,6 +116,15 @@ export type UpdateSupplierBodyReq = {
   address?: string
 }
 
+export type UpdateSupplyBodyReq = {
+  productId?: string
+  supplierId?: string
+  importPrice?: number
+  warrantyMonths?: number
+  leadTimeDays?: number
+  description?: string
+}
+
 export type ProductDetailType = {
   _id: string
   name: string

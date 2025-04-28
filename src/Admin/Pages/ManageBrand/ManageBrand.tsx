@@ -230,6 +230,7 @@ export default function ManageBrand() {
     (data) => {
       const params = cleanObject({
         ...queryConfig,
+        page: 1,
         name: data.name,
         created_at_start: data.created_at_start?.toISOString(),
         created_at_end: data.created_at_end?.toISOString(),
@@ -472,7 +473,7 @@ export default function ManageBrand() {
                     <X color="gray" size={22} />
                   </button>
                   <form onSubmit={handleSubmitUpdate} className="bg-white dark:bg-darkPrimary rounded-md">
-                    <h3 className="py-2 px-4 text-[15px] font-medium bg-[#f2f2f2] rounded-md">Thông tin thể loại</h3>
+                    <h3 className="py-2 px-4 text-[15px] font-medium bg-[#f2f2f2] rounded-md">Thông tin thương hiệu</h3>
                     <div className="w-full h-[1px] bg-[#dadada]"></div>
                     <div className="p-4 pt-0">
                       <div className="mt-4 flex items-center gap-4">
@@ -483,7 +484,7 @@ export default function ManageBrand() {
                           messageErrorInput={errors.id?.message}
                           classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-darkSecond focus:border-blue-500 focus:ring-2 outline-none rounded-md"
                           className="relative flex-1"
-                          nameInput="Id"
+                          nameInput="Mã thương hiệu"
                           disabled
                         />
                         <Input
@@ -493,7 +494,7 @@ export default function ManageBrand() {
                           messageErrorInput={errors.name?.message}
                           classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-white dark:bg-darkPrimary focus:border-blue-500 focus:ring-2 outline-none rounded-md"
                           className="relative flex-1"
-                          nameInput="Tên thể loại"
+                          nameInput="Tên thương hiệu"
                         />
                       </div>
                       <div className="mt-2 flex items-center gap-4">
