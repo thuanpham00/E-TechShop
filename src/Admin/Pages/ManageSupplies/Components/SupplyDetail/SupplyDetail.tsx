@@ -64,8 +64,8 @@ export default function SupplyDetail({
   })
 
   const infoCategory = getInfoSupply.data?.data as SuccessResponse<{ result: SupplyItemType[] }>
-
   const profile = infoCategory?.result?.result[0]
+
   const {
     register,
     formState: { errors },
@@ -118,6 +118,10 @@ export default function SupplyDetail({
     )
   })
 
+  const handleExitsEditItem = () => {
+    setIdSupply(null)
+  }
+
   const getNameProducts = useQuery({
     queryKey: ["nameProduct"],
     queryFn: () => {
@@ -145,10 +149,6 @@ export default function SupplyDetail({
     result: string[]
   }>
   const listNameSupplierFilterResult = listNameSupplierFilter?.result.result
-
-  const handleExitsEditItem = () => {
-    setIdSupply(null)
-  }
 
   const handleClickItemUpdate = (item: string) => {
     if (activeField === "name_product") {
@@ -211,7 +211,7 @@ export default function SupplyDetail({
               <Input
                 name="id"
                 register={register}
-                placeholder="Nhập giá nhập"
+                placeholder="Nhập mã cung ứng"
                 messageErrorInput={errors.importPrice?.message}
                 classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-darkPrimary focus:border-blue-500 focus:ring-2 outline-none rounded-md"
                 className="relative flex-1"
@@ -321,7 +321,6 @@ export default function SupplyDetail({
                 nameInput="Ghi chú (Optional)"
               />
             </div>
-
             <div className="mt-2 flex items-center gap-4">
               <Input
                 name="created_at"

@@ -14,7 +14,7 @@ import { path } from "src/Constants/path"
 import useDownloadExcel from "src/Hook/useDowloadExcel"
 import useQueryParams from "src/Hook/useQueryParams"
 import { SupplyItemType } from "src/Types/product.type"
-import { queryParamConfigSupplier, queryParamConfigSupply } from "src/Types/queryParams.type"
+import { queryParamConfigSupply } from "src/Types/queryParams.type"
 import { SuccessResponse } from "src/Types/utils.type"
 import SupplyItem from "./Components/SupplyItem"
 import { FolderUp, Plus, RotateCcw, Search } from "lucide-react"
@@ -52,7 +52,6 @@ export default function ManageSupplies() {
   const inputRef_1 = useRef<HTMLDivElement>(null)
   const inputRef_2 = useRef<HTMLDivElement>(null)
 
-  // const queryClient = useQueryClient()
   const queryParams: queryParamConfigSupply = useQueryParams()
   const queryConfig: queryParamConfigSupply = omitBy(
     {
@@ -75,7 +74,7 @@ export default function ManageSupplies() {
       setTimeout(() => {
         controller.abort() // hủy request khi chờ quá lâu // 10 giây sau cho nó hủy // làm tự động
       }, 10000)
-      return adminAPI.supply.getSupplies(queryConfig as queryParamConfigSupplier, controller.signal)
+      return adminAPI.supply.getSupplies(queryConfig as queryParamConfigSupply, controller.signal)
     },
     retry: 0, // số lần retry lại khi hủy request (dùng abort signal)
     staleTime: 3 * 60 * 1000, // dưới 3 phút nó không gọi lại api
@@ -126,47 +125,6 @@ export default function ManageSupplies() {
     result: string[]
   }>
   const listNameSupplierResult = listNameSupplier?.result.result
-
-  // const deleteSupplierMutation = useMutation({
-  //   mutationFn: (id: string) => {
-  //     return adminAPI.supplier.deleteSupplierDetail(id)
-  //   }
-  // })
-
-  const handleDeleteSupplier = (id: string) => {
-    console.log(id)
-    // deleteSupplierMutation.mutate(id, {
-    //   onSuccess: () => {
-    //     const data = queryClient.getQueryData(["listSupply", queryConfig])
-    //     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    //     const data_2 = (data as any).data as SuccessResponse<{
-    //       result: SupplyItemType[]
-    //       total: string
-    //       page: string
-    //       limit: string
-    //       totalOfPage: string
-    //     }>
-    //     if (data && data_2.result.result.length === 1 && Number(queryConfig.page) > 1) {
-    //       navigate({
-    //         pathname: path.AdminSuppliers,
-    //         search: createSearchParams({
-    //           ...queryConfig,
-    //           page: (Number(queryConfig.page) - 1).toString()
-    //         }).toString()
-    //       })
-    //     }
-    //     queryClient.invalidateQueries({ queryKey: ["listSupplier"] })
-    //     toast.success("Xóa thành công!", { autoClose: 1500 })
-    //   }
-    //   // onError: (error) => {
-    //   //   if (isError400<ErrorResponse<MessageResponse>>(error)) {
-    //   //     toast.error(error.response?.data.message, {
-    //   //       autoClose: 1500
-    //   //     })
-    //   //   }
-    //   // }
-    // })
-  }
 
   const {
     register: registerFormSearch,
@@ -219,6 +177,47 @@ export default function ManageSupplies() {
     setInputValueProduct("")
     setInputValueSupplier("")
     navigate({ pathname: path.AdminSupplies, search: createSearchParams(filteredSearch).toString() })
+  }
+
+  // const deleteSupplierMutation = useMutation({
+  //   mutationFn: (id: string) => {
+  //     return adminAPI.supplier.deleteSupplierDetail(id)
+  //   }
+  // })
+
+  const handleDeleteSupplier = (id: string) => {
+    console.log(id)
+    // deleteSupplierMutation.mutate(id, {
+    //   onSuccess: () => {
+    //     const data = queryClient.getQueryData(["listSupply", queryConfig])
+    //     // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    //     const data_2 = (data as any).data as SuccessResponse<{
+    //       result: SupplyItemType[]
+    //       total: string
+    //       page: string
+    //       limit: string
+    //       totalOfPage: string
+    //     }>
+    //     if (data && data_2.result.result.length === 1 && Number(queryConfig.page) > 1) {
+    //       navigate({
+    //         pathname: path.AdminSuppliers,
+    //         search: createSearchParams({
+    //           ...queryConfig,
+    //           page: (Number(queryConfig.page) - 1).toString()
+    //         }).toString()
+    //       })
+    //     }
+    //     queryClient.invalidateQueries({ queryKey: ["listSupplier"] })
+    //     toast.success("Xóa thành công!", { autoClose: 1500 })
+    //   }
+    //   // onError: (error) => {
+    //   //   if (isError400<ErrorResponse<MessageResponse>>(error)) {
+    //   //     toast.error(error.response?.data.message, {
+    //   //       autoClose: 1500
+    //   //     })
+    //   //   }
+    //   // }
+    // })
   }
 
   const [activeField, setActiveField] = useState<"name_product" | "name_supplier" | null>(null) // check coi input nào đang focus
