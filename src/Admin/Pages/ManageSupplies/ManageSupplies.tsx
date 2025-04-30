@@ -1,13 +1,12 @@
 import { keepPreviousData, useQuery } from "@tanstack/react-query"
 import { isUndefined, omit, omitBy } from "lodash"
-import { useCallback, useEffect, useRef, useState } from "react"
+import { useCallback, useState } from "react"
 import { Helmet } from "react-helmet-async"
 import { createSearchParams, useNavigate } from "react-router-dom"
 import { Fragment } from "react/jsx-runtime"
 import NavigateBack from "src/Admin/Components/NavigateBack"
 import { adminAPI } from "src/Apis/admin.api"
 import Button from "src/Components/Button"
-import Input from "src/Components/Input"
 import Pagination from "src/Components/Pagination"
 import Skeleton from "src/Components/Skeleton"
 import { path } from "src/Constants/path"
@@ -27,6 +26,7 @@ import DatePicker from "src/Admin/Components/DatePickerRange"
 import AddSupply from "./Components/AddSupply/AddSupply"
 import { HttpStatusCode } from "src/Constants/httpStatus"
 import SupplyDetail from "./Components/SupplyDetail"
+import DropdownList from "./Components/DropdownList"
 
 type FormDataSearch = Pick<
   SchemaSupplyType,
@@ -45,12 +45,6 @@ const formDataSearch = schemaSupply.pick([
 export default function ManageSupplies() {
   const navigate = useNavigate()
   const { downloadExcel } = useDownloadExcel()
-
-  const [inputValueProduct, setInputValueProduct] = useState("")
-  const [inputValueSupplier, setInputValueSupplier] = useState("")
-  const [filterList, setFilterList] = useState<string[]>([])
-  const inputRef_1 = useRef<HTMLDivElement>(null)
-  const inputRef_2 = useRef<HTMLDivElement>(null)
 
   const queryParams: queryParamConfigSupply = useQueryParams()
   const queryConfig: queryParamConfigSupply = omitBy(
@@ -174,8 +168,8 @@ export default function ManageSupplies() {
       "updated_at_end"
     ])
     resetFormSearch()
-    setInputValueProduct("")
-    setInputValueSupplier("")
+    // setInputValueProduct("")
+    // setInputValueSupplier("")
     navigate({ pathname: path.AdminSupplies, search: createSearchParams(filteredSearch).toString() })
   }
 
@@ -220,55 +214,6 @@ export default function ManageSupplies() {
     // })
   }
 
-  const [activeField, setActiveField] = useState<"name_product" | "name_supplier" | null>(null) // check coi input nào đang focus
-
-  useEffect(() => {
-    const handler = setTimeout(() => {
-      if (activeField === "name_product") {
-        const filtered = listNameProductResult?.filter((item) =>
-          item.toLowerCase().includes(inputValueProduct.toLowerCase())
-        )
-        setFilterList(filtered || [])
-      } else if (activeField === "name_supplier") {
-        const filtered = listNameSupplierResult?.filter((item) =>
-          item.toLowerCase().includes(inputValueSupplier.toLowerCase())
-        )
-        setFilterList(filtered || [])
-      }
-    }, 300)
-
-    return () => clearTimeout(handler)
-  }, [inputValueProduct, inputValueSupplier, activeField, listNameProductResult, listNameSupplierResult])
-
-  useEffect(() => {
-    const clickOutHideList = (event: MouseEvent) => {
-      if (
-        (inputRef_1.current && !inputRef_1.current.contains(event.target as Node)) ||
-        (inputRef_2.current && !inputRef_2.current.contains(event.target as Node))
-      ) {
-        // nơi được click nằm ngoài vùng phần tử
-        setActiveField(null)
-        setFilterList([])
-      }
-    }
-
-    document.addEventListener("mousedown", clickOutHideList)
-
-    return () => document.removeEventListener("mousedown", clickOutHideList)
-  }, [])
-
-  const handleClickItemList = (item: string) => {
-    if (activeField === "name_product") {
-      setValueSearch("name_product", item)
-      setInputValueProduct(item)
-    } else if (activeField === "name_supplier") {
-      setValueSearch("name_supplier", item)
-      setInputValueSupplier(item)
-    }
-    setActiveField(null)
-    setFilterList([])
-  }
-
   const [addItem, setAddItem] = useState(false)
 
   if (isError) {
@@ -297,71 +242,26 @@ export default function ManageSupplies() {
               <div className="col-span-1 flex items-center h-14 px-2 bg-[#fff] dark:bg-darkBorder border border-[#dadada] rounded-tl-md">
                 <span className="w-1/3">Tên sản phẩm</span>
                 <div className="w-2/3 relative h-full">
-                  <div className="mt-2 w-full flex items-center gap-2 relative">
-                    <Input
-                      name="name_product"
-                      register={registerFormSearch}
-                      placeholder="Nhập tên sản phẩm"
-                      classNameInput="p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-black focus:border-blue-500 focus:ring-1 outline-none rounded-md h-[35px]"
-                      className="relative flex-grow"
-                      classNameError="hidden"
-                      value={inputValueProduct}
-                      onFocus={() => setActiveField("name_product")}
-                      onChange={(event) => setInputValueProduct(event.target.value)}
-                    />
-                    {activeField === "name_product" && filterList.length > 0 && (
-                      <div
-                        ref={inputRef_1}
-                        className={`absolute top-9 left-0 bg-[#fff] z-20 rounded-md max-h-60 w-full overflow-y-auto shadow-md`}
-                      >
-                        {filterList.map((item) => (
-                          <button
-                            type="button"
-                            key={item}
-                            className="p-2 border border-[#f2f2f2] w-full text-left text-[13px] first:rounded-tl-md first:rounded-tr-md last:rounded-bl-md last:rounded-br-md hover:bg-[#dadada] duration-200"
-                            onClick={() => handleClickItemList(item)}
-                          >
-                            {item}
-                          </button>
-                        ))}
-                      </div>
-                    )}
-                  </div>
+                  <DropdownList
+                    name="name_product"
+                    isAddItem={false}
+                    register={registerFormSearch}
+                    listItem={listNameProductResult}
+                    onSelect={(item) => setValueSearch("name_product", item)}
+                  />
                   <span className="absolute inset-y-0 left-[-5%] w-[1px] bg-[#dadada] h-full"></span>
                 </div>
               </div>
               <div className="col-span-1 flex items-center h-14 px-2 bg-[#fff] dark:bg-darkBorder border border-[#dadada] rounded-tr-md">
                 <span className="w-1/3">Tên nhà cung cấp</span>
                 <div className="w-2/3 relative h-full">
-                  <div className="mt-2 w-full flex items-center gap-2">
-                    <Input
-                      name="name_supplier"
-                      register={registerFormSearch}
-                      placeholder="Nhập tên nhà cung cấp"
-                      classNameInput="p-2 w-full border border-[#dadadad] dark:border-darkBorder bg-[#f2f2f2] dark:bg-black focus:border-blue-500 focus:ring-1 outline-none rounded-md h-[35px]"
-                      className="relative flex-grow"
-                      classNameError="hidden"
-                      value={inputValueSupplier}
-                      onFocus={() => setActiveField("name_supplier")}
-                      onChange={(event) => setInputValueSupplier(event.target.value)}
-                    />
-                    {activeField === "name_supplier" && filterList.length > 0 && (
-                      <div
-                        ref={inputRef_2}
-                        className="absolute top-11 left-0 bg-[#fff] z-20 rounded-md w-full max-h-60 overflow-y-auto shadow-md"
-                      >
-                        {filterList.map((item) => (
-                          <button
-                            key={item}
-                            className="p-2 border border-[#f2f2f2] w-full text-left text-[13px] first:rounded-tl-md first:rounded-tr-md last:rounded-bl-md last:rounded-br-md hover:bg-[#dadada] duration-200"
-                            onClick={() => handleClickItemList(item)}
-                          >
-                            {item}
-                          </button>
-                        ))}
-                      </div>
-                    )}
-                  </div>
+                  <DropdownList
+                    name="name_supplier"
+                    isAddItem={false}
+                    register={registerFormSearch}
+                    listItem={listNameSupplierResult}
+                    onSelect={(item) => setValueSearch("name_supplier", item)}
+                  />
                   <span className="absolute inset-y-0 left-[-5%] w-[1px] bg-[#dadada] h-full"></span>
                 </div>
               </div>
