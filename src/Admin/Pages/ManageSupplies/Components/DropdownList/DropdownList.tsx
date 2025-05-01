@@ -27,7 +27,7 @@ export default function DropdownList({
 
   const handleClickSelect = (item: string) => {
     handleClickItemList(item)
-    onSelect(item) // mong đợi 1 tham số với kiểu string truyền vào và return về void
+    onSelect(item) // mong đợi 1 tham số với kiểu string truyền vào và return về void // dùng để setValue
     if (name == "productId" && setInputValueProductCPNFather) {
       setInputValueProductCPNFather(item)
     }

@@ -99,7 +99,6 @@ export default function AddSupply({ setAddItem }: Props) {
       return adminAPI.supplier.getNameSuppliersBasedOnNameProduct(inputValueProduct)
     },
     retry: 0, // số lần retry lại khi hủy request (dùng abort signal)
-    placeholderData: keepPreviousData, // giữ data cũ trong 1p
     enabled: !!inputValueProduct // nó chỉ chạy khi có inputValueProduct
   })
 
