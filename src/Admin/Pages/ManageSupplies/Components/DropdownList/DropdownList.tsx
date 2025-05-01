@@ -10,7 +10,7 @@ interface DropDownListType {
   onSelect: (item: string) => void
   isAddItem: boolean
   nameInput?: string
-  setInputValueProductCPNFather?: React.Dispatch<React.SetStateAction<string>>
+  setInputValueProductCPNFather?: React.Dispatch<React.SetStateAction<string>> // (item: string) => void
 }
 
 export default function DropdownList({

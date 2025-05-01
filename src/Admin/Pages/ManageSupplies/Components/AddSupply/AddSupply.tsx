@@ -131,7 +131,7 @@ export default function AddSupply({ setAddItem }: Props) {
                 listItem={listNameProductResult}
                 onSelect={(item) => setValue("productId", item)}
                 nameInput="Chọn sản phẩm"
-                setInputValueProductCPNFather={setInputValueProduct}
+                setInputValueProductCPNFather={(e) => setInputValueProduct(e)}
               />
             </div>
             <div className="mt-4 bg-[#fff] dark:bg-darkBorder">

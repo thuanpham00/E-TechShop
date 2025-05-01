@@ -44,7 +44,7 @@
     "react-toastify": "^11.0.3",
     "swiper": "^11.2.1",
     "tailwind-merge": "^3.0.1",
-    "tailwindcss-animate"f: "^1.0.7",
+    "tailwindcss-animate": "^1.0.7",
     "tinymce": "^7.8.0",
     "xlsx": "^0.18.5",
     "yup": "^1.6.1"
