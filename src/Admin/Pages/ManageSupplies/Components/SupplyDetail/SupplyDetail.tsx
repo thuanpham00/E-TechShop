@@ -67,7 +67,8 @@ export default function SupplyDetail({
     formState: { errors },
     setValue,
     // setError,
-    handleSubmit
+    handleSubmit,
+    watch
   } = useForm<FormDataUpdate>({
     resolver: yupResolver(formDataUpdate),
     defaultValues: {
@@ -146,6 +147,9 @@ export default function SupplyDetail({
   }>
   const listNameSupplierFilterResult = listNameSupplierFilter?.result.result
 
+  const watchProduct = watch("productId")
+  const watchSupplier = watch("supplierId")
+
   return (
     <div>
       <div className="fixed left-0 top-0 z-10 h-screen w-screen bg-black/60"></div>
@@ -175,6 +179,7 @@ export default function SupplyDetail({
                 listItem={listNameProductResult}
                 onSelect={(item) => setValue("productId", item)}
                 nameInput="Chọn sản phẩm"
+                value={watchProduct}
                 setInputValueProductCPNFather={setInputValueProduct}
               />
             </div>
@@ -186,7 +191,8 @@ export default function SupplyDetail({
                 register={register}
                 listItem={listNameSupplierFilterResult}
                 onSelect={(item) => setValue("supplierId", item)}
-                nameInput="Chọn nhà cung cấp="
+                nameInput="Chọn nhà cung cấp"
+                value={watchSupplier}
               />
             </div>
 

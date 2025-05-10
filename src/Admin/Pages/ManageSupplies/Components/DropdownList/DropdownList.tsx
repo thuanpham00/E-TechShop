@@ -8,9 +8,10 @@ interface DropDownListType {
   register: UseFormRegister<any>
   listItem: string[]
   onSelect: (item: string) => void
-  isAddItem: boolean
   nameInput?: string
   setInputValueProductCPNFather?: React.Dispatch<React.SetStateAction<string>> // (item: string) => void
+  isAddItem: boolean
+  value?: string
 }
 
 export default function DropdownList({
@@ -20,10 +21,11 @@ export default function DropdownList({
   onSelect,
   isAddItem,
   nameInput,
-  setInputValueProductCPNFather
+  setInputValueProductCPNFather,
+  value
 }: DropDownListType) {
   const { activeField, setActiveField, inputValue, setInputValue, filterList, inputRef, handleClickItemList } =
-    useAutoComplete(listItem)
+    useAutoComplete(listItem, value)
 
   const handleClickSelect = (item: string) => {
     handleClickItemList(item)

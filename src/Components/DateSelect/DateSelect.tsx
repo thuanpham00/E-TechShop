@@ -2,8 +2,8 @@ import { range } from "lodash"
 import { useEffect, useState } from "react"
 
 interface Props {
-  onChange?: (value: Date) => void
   value?: Date
+  onChange?: (value: Date) => void
   errorMessage?: string
 }
 

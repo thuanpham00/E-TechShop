@@ -90,7 +90,7 @@ export default function ManageProducts() {
       </Helmet>
       <NavigateBack />
       <div className="text-lg font-bold py-2 text-[#3A5BFF]">Sản phẩm</div>
-      <div className="p-4 bg-white dark:bg-darkPrimary mb-3 border border-[#dedede] dark:border-darkBorder rounded-md">
+      <div className="p-4 bg-white dark:bg-darkPrimary mb-3 border border-gray-300 dark:border-darkBorder rounded-2xl shadow-xl">
         <h1 className="text-[15px] font-medium">Tìm kiếm</h1>
         <FilterProduct queryConfig={queryConfig} listProduct={listProduct} />
         <div>
@@ -98,8 +98,8 @@ export default function ManageProducts() {
           {!isFetching && (
             <div>
               <div className="mt-4">
-                <div className="bg-[#f2f2f2] dark:bg-darkPrimary grid grid-cols-12 items-center gap-2 py-3 border border-[#dedede] dark:border-darkBorder px-4 rounded-tl-md rounded-tr-md">
-                  <div className="col-span-2 text-[14px] font-semibold">ID</div>
+                <div className="bg-[#f2f2f2] dark:bg-darkPrimary grid grid-cols-12 items-center gap-2 py-3 border border-[#dedede] dark:border-darkBorder px-4 rounded-tl-xl rounded-tr-xl">
+                  <div className="col-span-2 text-[14px] font-semibold">Mã sản phẩm</div>
                   <div className="col-span-1 text-[14px] font-semibold">Hình ảnh</div>
                   <div className="col-span-2 text-[14px] font-semibold">Tên sản phẩm</div>
                   <div className="col-span-1 text-[14px] font-semibold">Thương hiệu</div>

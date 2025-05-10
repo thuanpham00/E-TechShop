@@ -338,12 +338,12 @@ export default function ManageSuppliers() {
       </Helmet>
       <NavigateBack />
       <div className="text-lg font-bold py-2 text-[#3A5BFF]">Nhà cung cấp</div>
-      <div className="p-4 bg-white dark:bg-darkPrimary mb-3 border border-[#dedede] dark:border-darkBorder rounded-md">
+      <div className="p-4 bg-white dark:bg-darkPrimary mb-3 border border-gray-300 dark:border-darkBorder rounded-2xl shadow-xl">
         <h1 className="text-[15px] font-medium">Tìm kiếm</h1>
         <div>
           <form onSubmit={handleSubmitSearch}>
             <div className="mt-1 grid grid-cols-2">
-              <div className="col-span-1 flex items-center h-14 px-2 bg-[#fff] dark:bg-darkBorder border border-[#dadada] rounded-tl-md">
+              <div className="col-span-1 flex items-center h-14 px-2 bg-[#fff] dark:bg-darkBorder border border-[#dadada] rounded-tl-xl">
                 <span className="w-1/3">Tên nhà cung cấp</span>
                 <div className="w-2/3 relative h-full">
                   <div className="mt-2 w-full flex items-center gap-2">
@@ -359,7 +359,7 @@ export default function ManageSuppliers() {
                   <span className="absolute inset-y-0 left-[-5%] w-[1px] bg-[#dadada] h-full"></span>
                 </div>
               </div>
-              <div className="col-span-1 flex items-center h-14 px-2 bg-[#fff] dark:bg-darkBorder border border-[#dadada] rounded-tr-md">
+              <div className="col-span-1 flex items-center h-14 px-2 bg-[#fff] dark:bg-darkBorder border border-[#dadada] rounded-tr-xl">
                 <span className="w-1/3">Tên người đại diện</span>
                 <div className="w-2/3 relative h-full">
                   <div className="mt-2 w-full flex items-center gap-2">
@@ -407,7 +407,7 @@ export default function ManageSuppliers() {
                   <span className="absolute inset-y-0 left-[-5%] w-[1px] bg-[#dadada] h-full"></span>
                 </div>
               </div>
-              <div className="col-span-1 flex items-center h-14 px-2 bg-[#fff] dark:bg-darkBorder border border-[#dadada] border-t-0 rounded-bl-md">
+              <div className="col-span-1 flex items-center h-14 px-2 bg-[#fff] dark:bg-darkBorder border border-[#dadada] border-t-0 rounded-bl-xl">
                 <span className="w-1/3">Ngày tạo</span>
                 <div className="w-2/3 relative h-full">
                   <div className="mt-2 w-full flex items-center gap-2">
@@ -446,7 +446,7 @@ export default function ManageSuppliers() {
                   <span className="absolute inset-y-0 left-[-5%] w-[1px] bg-[#dadada] h-full"></span>
                 </div>
               </div>
-              <div className="col-span-1 flex items-center h-14 px-2 bg-[#fff] dark:bg-darkBorder border border-[#dadada] border-t-0 rounded-br-md">
+              <div className="col-span-1 flex items-center h-14 px-2 bg-[#fff] dark:bg-darkBorder border border-[#dadada] border-t-0 rounded-br-xl">
                 <span className="w-1/3">Ngày cập nhật</span>
                 <div className="w-2/3 relative h-full">
                   <div className="mt-2 w-full flex items-center gap-2">
@@ -524,8 +524,8 @@ export default function ManageSuppliers() {
         {!isFetching && (
           <div>
             <div className="mt-4">
-              <div className="bg-[#f2f2f2] dark:bg-darkPrimary grid grid-cols-10 items-center gap-2 py-3 border border-[#dedede] dark:border-darkBorder px-4 rounded-tl-md rounded-tr-md">
-                <div className="col-span-2 text-[14px] font-semibold">ID</div>
+              <div className="bg-[#f2f2f2] dark:bg-darkPrimary grid grid-cols-10 items-center gap-2 py-3 border border-[#dedede] dark:border-darkBorder px-4 rounded-tl-xl rounded-tr-xl">
+                <div className="col-span-2 text-[14px] font-semibold">Mã nhà cung cấp</div>
                 <div className="col-span-2 text-[14px] font-semibold">Tên nhà cung cấp</div>
                 <div className="col-span-1 text-[14px] font-semibold">Người đại diện </div>
                 <div className="col-span-1 text-[14px] font-semibold">Email</div>
@@ -573,7 +573,7 @@ export default function ManageSuppliers() {
                           messageErrorInput={errors.id?.message}
                           classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-darkSecond focus:border-blue-500 focus:ring-2 outline-none rounded-md"
                           className="relative flex-1"
-                          nameInput="Id"
+                          nameInput="Mã nhà cung cấp"
                           disabled
                         />
                         <Input

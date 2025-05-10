@@ -24,6 +24,7 @@ export const path = {
   AdminSupplies: "/admin/supplies",
   AdminSuppliers: "/admin/suppliers",
   AdminRole: "/admin/roles",
+  AdminRevenue: "/admin/revenues",
   AdminNotFound: "/admin/not-found",
   AddProduct: "/admin/products/add"
 }

@@ -150,7 +150,7 @@ export default function FilterProduct({ queryConfig, listProduct }: Props) {
     <div>
       <form onSubmit={handleSubmitSearch}>
         <div className="mt-1 grid grid-cols-2">
-          <div className="col-span-1 flex items-center h-14 px-2 bg-[#ececec] dark:bg-darkBorder border border-[#dadada] rounded-tl-md">
+          <div className="col-span-1 flex items-center h-14 px-2 bg-[#ececec] dark:bg-darkBorder border border-[#dadada] rounded-tl-xl">
             <span className="w-[30%]">Tên sản phẩm</span>
             <div className="w-[70%] relative h-full">
               <Input
@@ -164,7 +164,7 @@ export default function FilterProduct({ queryConfig, listProduct }: Props) {
               <span className="absolute inset-y-0 left-[-5%] w-[1px] bg-[#dadada] h-full"></span>
             </div>
           </div>
-          <div className="col-span-1 flex items-center h-14 px-2 bg-[#ececec] dark:bg-darkBorder border border-[#dadada] rounded-tr-md">
+          <div className="col-span-1 flex items-center h-14 px-2 bg-[#ececec] dark:bg-darkBorder border border-[#dadada] rounded-tr-xl">
             <span className="w-[30%]">Thương hiệu</span>
             <div className="w-[70%] relative h-full">
               <Controller
@@ -326,7 +326,7 @@ export default function FilterProduct({ queryConfig, listProduct }: Props) {
               <span className="absolute inset-y-0 left-[-5%] w-[1px] bg-[#dadada] h-full"></span>
             </div>
           </div>
-          <div className="col-span-1 flex items-center h-14 px-2 bg-[#ececec] dark:bg-darkBorder  border border-[#dadada] border-t-0 rounded-br-md">
+          <div className="col-span-1 flex items-center h-14 px-2 bg-[#ececec] dark:bg-darkBorder  border border-[#dadada] border-t-0 rounded-br-xl">
             <span className="w-[30%]">Ngày cập nhật</span>
             <div className="w-[70%] relative h-full">
               <div className="mt-2 w-full flex items-center gap-2">
@@ -365,7 +365,7 @@ export default function FilterProduct({ queryConfig, listProduct }: Props) {
               <span className="absolute inset-y-0 left-[-5%] w-[1px] bg-[#dadada] h-full"></span>
             </div>
           </div>
-          <div className="col-span-1 flex items-center h-14 px-2 bg-[#fff] dark:bg-darkBorder border border-[#dadada] border-t-0 rounded-bl-md">
+          <div className="col-span-1 flex items-center h-14 px-2 bg-[#fff] dark:bg-darkBorder border border-[#dadada] border-t-0 rounded-bl-xl">
             <span className="w-[30%]">Trạng thái</span>
             <div className="w-[70%] relative h-full">
               <Controller

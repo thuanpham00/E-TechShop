@@ -295,12 +295,12 @@ export default function ManageBrand() {
       </Helmet>
       <NavigateBack />
       <div className="text-lg font-bold py-2 text-[#3A5BFF]">Thương hiệu</div>
-      <div className="p-4 bg-white dark:bg-darkPrimary mb-3 border border-[#dedede] dark:border-darkBorder rounded-md">
+      <div className="p-4 bg-white dark:bg-darkPrimary mb-3 border border-gray-300 dark:border-darkBorder rounded-2xl shadow-lg">
         <h1 className="text-[15px] font-medium">Tìm kiếm</h1>
         <div>
           <form onSubmit={handleSubmitSearch}>
             <div className="mt-1 grid grid-cols-2">
-              <div className="col-span-1 flex items-center h-14 px-2 bg-[#ececec] dark:bg-darkBorder border border-[#dadada] rounded-tl-md">
+              <div className="col-span-1 flex items-center h-14 px-2 bg-[#ececec] dark:bg-darkBorder border border-[#dadada] rounded-tl-xl">
                 <span className="w-[30%]">Ngày đăng</span>
                 <div className="w-[70%] relative h-full">
                   <div className="mt-2 w-full flex items-center gap-2">
@@ -339,7 +339,7 @@ export default function ManageBrand() {
                   <span className="absolute inset-y-0 left-[-5%] w-[1px] bg-[#dadada] h-full"></span>
                 </div>
               </div>
-              <div className="col-span-1 flex items-center h-14 px-2 bg-[#ececec] dark:bg-darkBorder border border-[#dadada] rounded-tr-md">
+              <div className="col-span-1 flex items-center h-14 px-2 bg-[#ececec] dark:bg-darkBorder border border-[#dadada] rounded-tr-xl">
                 <span className="w-[30%]">Ngày cập nhật</span>
                 <div className="w-[70%] relative h-full">
                   <div className="mt-2 w-full flex items-center gap-2">
@@ -378,7 +378,7 @@ export default function ManageBrand() {
                   <span className="absolute inset-y-0 left-[-5%] w-[1px] bg-[#dadada] h-full"></span>
                 </div>
               </div>
-              <div className="col-span-1 flex items-center h-14 px-2 bg-[#fff] dark:bg-darkBorder border border-[#dadada] border-t-0 rounded-bl-md">
+              <div className="col-span-1 flex items-center h-14 px-2 bg-[#fff] dark:bg-darkBorder border border-[#dadada] border-t-0 rounded-bl-xl">
                 <span className="w-[30%]">Tên thể loại</span>
                 <div className="w-[70%] relative h-full">
                   <div className="mt-2 w-full flex items-center gap-2">
@@ -433,8 +433,8 @@ export default function ManageBrand() {
         {!isFetching && (
           <div>
             <div className="mt-4">
-              <div className="bg-[#f2f2f2] dark:bg-darkPrimary grid grid-cols-12 items-center gap-2 py-3 border border-[#dedede] dark:border-darkBorder px-4 rounded-tl-md rounded-tr-md">
-                <div className="col-span-2 text-[14px] font-semibold">ID</div>
+              <div className="bg-[#f2f2f2] dark:bg-darkPrimary grid grid-cols-12 items-center gap-2 py-3 border border-[#dedede] dark:border-darkBorder px-4 rounded-tl-xl rounded-tr-xl">
+                <div className="col-span-2 text-[14px] font-semibold">Mã thương hiệu</div>
                 <div className="col-span-2 text-[14px] font-semibold">Tên thương hiệu</div>
                 <div className="col-span-2 text-[14px] font-semibold">Ngày tạo</div>
                 <div className="col-span-2 text-[14px] font-semibold">Ngày cập nhật</div>

@@ -1,4 +1,4 @@
-import { keepPreviousData, useQuery } from "@tanstack/react-query"
+import { keepPreviousData, useMutation, useQuery } from "@tanstack/react-query"
 import { isUndefined, omit, omitBy } from "lodash"
 import { useCallback, useState } from "react"
 import { Helmet } from "react-helmet-async"
@@ -26,7 +26,8 @@ import DatePicker from "src/Admin/Components/DatePickerRange"
 import AddSupply from "./Components/AddSupply/AddSupply"
 import { HttpStatusCode } from "src/Constants/httpStatus"
 import SupplyDetail from "./Components/SupplyDetail"
-import DropdownList from "./Components/DropdownList"
+import { queryClient } from "src/main"
+import DropdownSearch from "./Components/DropdownSearch"
 
 type FormDataSearch = Pick<
   SchemaSupplyType,
@@ -60,6 +61,8 @@ export default function ManageSupplies() {
     },
     isUndefined
   )
+
+  console.log(queryConfig)
 
   const { data, isFetching, isLoading, isError, error } = useQuery({
     queryKey: ["listSupply", queryConfig],
@@ -131,6 +134,9 @@ export default function ManageSupplies() {
     resolver: yupResolver(formDataSearch)
   })
 
+  const [inputProductValue, setInputProductValue] = useState("")
+  const [inputSupplierValue, setInputSupplierValue] = useState("")
+
   const handleSubmitSearch = handleSubmitFormSearch(
     (data) => {
       const params = cleanObject({
@@ -168,50 +174,49 @@ export default function ManageSupplies() {
       "updated_at_end"
     ])
     resetFormSearch()
-    // setInputValueProduct("")
-    // setInputValueSupplier("")
+    setInputProductValue("")
+    setInputSupplierValue("")
     navigate({ pathname: path.AdminSupplies, search: createSearchParams(filteredSearch).toString() })
   }
 
-  // const deleteSupplierMutation = useMutation({
-  //   mutationFn: (id: string) => {
-  //     return adminAPI.supplier.deleteSupplierDetail(id)
-  //   }
-  // })
+  const deleteSupplyMutation = useMutation({
+    mutationFn: (id: string) => {
+      return adminAPI.supply.deleteSupplyDetail(id)
+    }
+  })
 
-  const handleDeleteSupplier = (id: string) => {
-    console.log(id)
-    // deleteSupplierMutation.mutate(id, {
-    //   onSuccess: () => {
-    //     const data = queryClient.getQueryData(["listSupply", queryConfig])
-    //     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    //     const data_2 = (data as any).data as SuccessResponse<{
-    //       result: SupplyItemType[]
-    //       total: string
-    //       page: string
-    //       limit: string
-    //       totalOfPage: string
-    //     }>
-    //     if (data && data_2.result.result.length === 1 && Number(queryConfig.page) > 1) {
-    //       navigate({
-    //         pathname: path.AdminSuppliers,
-    //         search: createSearchParams({
-    //           ...queryConfig,
-    //           page: (Number(queryConfig.page) - 1).toString()
-    //         }).toString()
-    //       })
-    //     }
-    //     queryClient.invalidateQueries({ queryKey: ["listSupplier"] })
-    //     toast.success("Xóa thành công!", { autoClose: 1500 })
-    //   }
-    //   // onError: (error) => {
-    //   //   if (isError400<ErrorResponse<MessageResponse>>(error)) {
-    //   //     toast.error(error.response?.data.message, {
-    //   //       autoClose: 1500
-    //   //     })
-    //   //   }
-    //   // }
-    // })
+  const handleDeleteSupply = (id: string) => {
+    deleteSupplyMutation.mutate(id, {
+      onSuccess: () => {
+        const data = queryClient.getQueryData(["listSupply", queryConfig])
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const data_2 = (data as any).data as SuccessResponse<{
+          result: SupplyItemType[]
+          total: string
+          page: string
+          limit: string
+          totalOfPage: string
+        }>
+        if (data && data_2.result.result.length === 1 && Number(queryConfig.page) > 1) {
+          navigate({
+            pathname: path.AdminSupplies,
+            search: createSearchParams({
+              ...queryConfig,
+              page: (Number(queryConfig.page) - 1).toString()
+            }).toString()
+          })
+        }
+        queryClient.invalidateQueries({ queryKey: ["listSupply"] })
+        toast.success("Xóa thành công!", { autoClose: 1500 })
+      }
+      // onError: (error) => {
+      //   if (isError400<ErrorResponse<MessageResponse>>(error)) {
+      //     toast.error(error.response?.data.message, {
+      //       autoClose: 1500
+      //     })
+      //   }
+      // }
+    })
   }
 
   const [addItem, setAddItem] = useState(false)
@@ -234,38 +239,40 @@ export default function ManageSupplies() {
       </Helmet>
       <NavigateBack />
       <div className="text-lg font-bold py-2 text-[#3A5BFF]">Cung ứng sản phẩm</div>
-      <div className="p-4 bg-white dark:bg-darkPrimary mb-3 border border-[#dedede] dark:border-darkBorder rounded-md">
+      <div className="p-4 bg-white dark:bg-darkPrimary mb-3 border border-gray-300 dark:border-darkBorder rounded-2xl shadow-xl">
         <h1 className="text-[15px] font-medium">Tìm kiếm</h1>
         <div>
           <form onSubmit={handleSubmitSearch}>
             <div className="mt-1 grid grid-cols-2">
-              <div className="col-span-1 flex items-center h-14 px-2 bg-[#fff] dark:bg-darkBorder border border-[#dadada] rounded-tl-md">
+              <div className="col-span-1 flex items-center h-14 px-2 bg-[#fff] dark:bg-darkBorder border border-[#dadada] rounded-tl-xl">
                 <span className="w-1/3">Tên sản phẩm</span>
                 <div className="w-2/3 relative h-full">
-                  <DropdownList
+                  <DropdownSearch
                     name="name_product"
-                    isAddItem={false}
                     register={registerFormSearch}
                     listItem={listNameProductResult}
                     onSelect={(item) => setValueSearch("name_product", item)}
+                    onChangeInputValue={setInputProductValue}
+                    value={inputProductValue}
                   />
                   <span className="absolute inset-y-0 left-[-5%] w-[1px] bg-[#dadada] h-full"></span>
                 </div>
               </div>
-              <div className="col-span-1 flex items-center h-14 px-2 bg-[#fff] dark:bg-darkBorder border border-[#dadada] rounded-tr-md">
+              <div className="col-span-1 flex items-center h-14 px-2 bg-[#fff] dark:bg-darkBorder border border-[#dadada] rounded-tr-xl">
                 <span className="w-1/3">Tên nhà cung cấp</span>
                 <div className="w-2/3 relative h-full">
-                  <DropdownList
+                  <DropdownSearch
                     name="name_supplier"
-                    isAddItem={false}
                     register={registerFormSearch}
                     listItem={listNameSupplierResult}
                     onSelect={(item) => setValueSearch("name_supplier", item)}
+                    onChangeInputValue={setInputSupplierValue}
+                    value={inputSupplierValue}
                   />
                   <span className="absolute inset-y-0 left-[-5%] w-[1px] bg-[#dadada] h-full"></span>
                 </div>
               </div>
-              <div className="col-span-1 flex items-center h-14 px-2 bg-[#fff] dark:bg-darkBorder border border-[#dadada] border-t-0 rounded-bl-md">
+              <div className="col-span-1 flex items-center h-14 px-2 bg-[#fff] dark:bg-darkBorder border border-[#dadada] border-t-0 rounded-bl-xl">
                 <span className="w-1/3">Ngày tạo</span>
                 <div className="w-2/3 relative h-full">
                   <div className="mt-2 w-full flex items-center gap-2">
@@ -304,7 +311,7 @@ export default function ManageSupplies() {
                   <span className="absolute inset-y-0 left-[-5%] w-[1px] bg-[#dadada] h-full"></span>
                 </div>
               </div>
-              <div className="col-span-1 flex items-center h-14 px-2 bg-[#fff] dark:bg-darkBorder border border-[#dadada] border-t-0 rounded-br-md">
+              <div className="col-span-1 flex items-center h-14 px-2 bg-[#fff] dark:bg-darkBorder border border-[#dadada] border-t-0 rounded-br-xl">
                 <span className="w-1/3">Ngày cập nhật</span>
                 <div className="w-2/3 relative h-full">
                   <div className="mt-2 w-full flex items-center gap-2">
@@ -382,8 +389,8 @@ export default function ManageSupplies() {
         {!isFetching && (
           <div>
             <div className="mt-4">
-              <div className="bg-[#f2f2f2] dark:bg-darkPrimary grid grid-cols-12 items-center gap-2 py-3 border border-[#dedede] dark:border-darkBorder px-4 rounded-tl-md rounded-tr-md">
-                <div className="col-span-2 text-[14px] font-semibold">ID</div>
+              <div className="bg-[#f2f2f2] dark:bg-darkPrimary grid grid-cols-12 items-center gap-2 py-3 border border-[#dedede] dark:border-darkBorder px-4 rounded-tl-xl rounded-tr-xl">
+                <div className="col-span-2 text-[14px] font-semibold">Mã cung ứng</div>
                 <div className="col-span-3 text-[14px] font-semibold">Tên sản phẩm</div>
                 <div className="col-span-2 text-[14px] font-semibold">Tên nhà cung cấp</div>
                 <div className="col-span-1 text-[14px] font-semibold">Giá nhập</div>
@@ -396,7 +403,7 @@ export default function ManageSupplies() {
                 {listSupplier.length > 0 ? (
                   listSupplier.map((item) => (
                     <Fragment key={item._id}>
-                      <SupplyItem onDelete={handleDeleteSupplier} handleEditItem={handleEditItem} item={item} />
+                      <SupplyItem onDelete={handleDeleteSupply} handleEditItem={handleEditItem} item={item} />
                     </Fragment>
                   ))
                 ) : (

@@ -38,7 +38,7 @@ export default function ProductItem({
 
   return (
     <div
-      className="bg-white dark:bg-darkPrimary grid grid-cols-12 items-center gap-4 py-3 cursor-pointer border-t-0 border border-[#dedede] dark:border-darkBorder last:border-b-0 px-4 last:rounded-bl-md last:rounded-br-md"
+      className="bg-white dark:bg-darkPrimary grid grid-cols-12 items-center gap-4 py-3 cursor-pointer border-t-0 border border-[#dedede] dark:border-darkBorder last:border-b-0 px-4 last:rounded-bl-xl last:rounded-br-xl"
       key={item._id}
     >
       <div className="col-span-1 flex items-center justify-between">

@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from "react"
 
 // custom hook Là để tái sử dụng logic (không phải giao diện) giữa các component.
-export default function useAutoComplete(listItem: string[]) {
-  const [inputValue, setInputValue] = useState("") // lưu giá trị input nhập
+export default function useAutoComplete(listItem: string[], value?: string) {
+  const [inputValue, setInputValue] = useState(value || "") // lưu giá trị input nhập
   const [activeField, setActiveField] = useState<boolean>(false) // check input đang focus
   const [filterList, setFilterList] = useState<string[]>([]) // lưu danh sách filter
   const inputRef = useRef<HTMLDivElement>(null)
@@ -34,7 +34,11 @@ export default function useAutoComplete(listItem: string[]) {
     document.addEventListener("mousedown", clickOutHideList)
     return () => document.removeEventListener("mousedown", clickOutHideList)
   }, [])
-  
+
+  useEffect(() => {
+    setInputValue(value || "")
+  }, [value])
+
   return {
     inputValue,
     setInputValue,

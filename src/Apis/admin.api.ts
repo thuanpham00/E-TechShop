@@ -237,6 +237,11 @@ export const adminAPI = {
     // cập nhật chi tiết cung ứng
     updateSupplyDetail: (id: string, body: UpdateSupplyBodyReq) => {
       return Http.patch(`/admin/supplies/${id}`, body)
+    },
+
+    // xóa cung ứng
+    deleteSupplyDetail: (id: string) => {
+      return Http.delete(`/admin/supplies/${id}`)
     }
   }
 }

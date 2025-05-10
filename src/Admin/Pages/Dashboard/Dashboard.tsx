@@ -69,7 +69,7 @@ export default function Dashboard() {
   return (
     <div>
       <Helmet>
-        <title>Quản lý hệ thống Quản trị viên</title>
+        <title>Quản lý thống kê hệ thống</title>
         <meta
           name="description"
           content="Đây là trang TECHZONE | Laptop, PC, Màn hình, điện thoại, linh kiện Chính Hãng"
