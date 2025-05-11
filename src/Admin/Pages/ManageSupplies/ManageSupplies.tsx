@@ -134,6 +134,7 @@ export default function ManageSupplies() {
     resolver: yupResolver(formDataSearch)
   })
 
+  // component cha này sẽ quản lý giá trị này
   const [inputProductValue, setInputProductValue] = useState("")
   const [inputSupplierValue, setInputSupplierValue] = useState("")
 
@@ -249,11 +250,12 @@ export default function ManageSupplies() {
                 <div className="w-2/3 relative h-full">
                   <DropdownSearch
                     name="name_product"
+                    namePlaceholder="Nhập tên sản phẩm"
                     register={registerFormSearch}
                     listItem={listNameProductResult}
                     onSelect={(item) => setValueSearch("name_product", item)}
-                    onChangeInputValue={setInputProductValue}
                     value={inputProductValue}
+                    onChangeValue={setInputProductValue}
                   />
                   <span className="absolute inset-y-0 left-[-5%] w-[1px] bg-[#dadada] h-full"></span>
                 </div>
@@ -263,11 +265,12 @@ export default function ManageSupplies() {
                 <div className="w-2/3 relative h-full">
                   <DropdownSearch
                     name="name_supplier"
+                    namePlaceholder="Nhập tên nhà cung cấp"
                     register={registerFormSearch}
                     listItem={listNameSupplierResult}
                     onSelect={(item) => setValueSearch("name_supplier", item)}
-                    onChangeInputValue={setInputSupplierValue}
                     value={inputSupplierValue}
+                    onChangeValue={setInputSupplierValue}
                   />
                   <span className="absolute inset-y-0 left-[-5%] w-[1px] bg-[#dadada] h-full"></span>
                 </div>

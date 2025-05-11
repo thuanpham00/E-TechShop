@@ -36,7 +36,9 @@ export default function useAutoComplete(listItem: string[], value?: string) {
   }, [])
 
   useEffect(() => {
-    setInputValue(value || "")
+    if (value !== undefined) {
+      setInputValue(value)
+    }
   }, [value])
 
   return {

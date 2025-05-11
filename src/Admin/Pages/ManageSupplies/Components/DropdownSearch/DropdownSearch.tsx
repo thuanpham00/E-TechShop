@@ -1,25 +1,26 @@
-import React from "react"
 import { UseFormRegister } from "react-hook-form"
 import Input from "src/Components/Input"
 import useAutoComplete from "src/Hook/useAutoComplete"
 
 interface DropDownListType {
   name: string
+  namePlaceholder: string
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   register: UseFormRegister<any>
   listItem: string[]
   onSelect: (item: string) => void
   value?: string
-  onChangeInputValue?: React.Dispatch<React.SetStateAction<string>>
+  onChangeValue: React.Dispatch<React.SetStateAction<string>>
 }
 
 export default function DropdownSearch({
   name,
+  namePlaceholder,
   register,
   listItem,
   onSelect,
   value,
-  onChangeInputValue
+  onChangeValue
 }: DropDownListType) {
   const { activeField, setActiveField, inputValue, setInputValue, filterList, inputRef, handleClickItemList } =
     useAutoComplete(listItem, value)
@@ -27,16 +28,15 @@ export default function DropdownSearch({
   const handleClickSelect = (item: string) => {
     handleClickItemList(item)
     onSelect(item) // mong đợi 1 tham số với kiểu string truyền vào và return về void // dùng để setValue
+    onChangeValue(item)
   }
-
-  console.log(inputValue)
 
   return (
     <div className="mt-2 w-full relative">
       <Input
         name={name}
         register={register}
-        placeholder="Nhập tên sản phẩm"
+        placeholder={namePlaceholder}
         classNameInput="p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-black focus:border-blue-500 focus:ring-1 outline-none rounded-md h-[35px]"
         className="relative flex-grow"
         classNameError="hidden"
@@ -44,7 +44,7 @@ export default function DropdownSearch({
         onFocus={() => setActiveField(true)}
         onChange={(event) => {
           setInputValue(event.target.value)
-          onChangeInputValue?.(event.target.value)
+          onChangeValue(event.target.value)
         }}
       />
       {activeField && filterList.length > 0 && (
