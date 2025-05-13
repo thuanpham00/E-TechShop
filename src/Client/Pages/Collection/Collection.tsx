@@ -56,11 +56,11 @@ export default function Collection() {
         {!isFetching && slug && (
           <div>
             <img
-              className="rounded-[4px]"
+              className="rounded-lg shadow-md"
               src={(CategoryBanner as Record<string, string>)[slug]}
               alt={`Banner ${slug}`}
             />
-            <div className="bg-white rounded-[4px] mb-4 mt-4 grid grid-cols-5 gap-2 p-4">
+            <div className="bg-white rounded-lg shadow-md mb-4 mt-4 grid grid-cols-5 gap-2 p-4">
               {result?.result.map((item) => {
                 return (
                   <div key={item._id}>

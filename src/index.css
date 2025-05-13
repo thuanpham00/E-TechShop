@@ -37,6 +37,31 @@ a {
   font-size: 30px !important;
 }
 
+.custom-prev,
+.custom-next {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: white;
+  border-radius: 9999px;
+  padding: 4px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+  z-index: 10;
+}
+
+.custom-prev {
+  left: 5;
+}
+
+.custom-next {
+  right: 0;
+}
+.custom-prev:hover,
+.custom-next:hover {
+  background: #eee;
+}
+
 @layer base {
   :root {
     --background: 0 0% 100%;

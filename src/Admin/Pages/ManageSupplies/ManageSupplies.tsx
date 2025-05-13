@@ -210,13 +210,6 @@ export default function ManageSupplies() {
         queryClient.invalidateQueries({ queryKey: ["listSupply"] })
         toast.success("Xóa thành công!", { autoClose: 1500 })
       }
-      // onError: (error) => {
-      //   if (isError400<ErrorResponse<MessageResponse>>(error)) {
-      //     toast.error(error.response?.data.message, {
-      //       autoClose: 1500
-      //     })
-      //   }
-      // }
     })
   }
 

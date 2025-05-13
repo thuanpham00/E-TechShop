@@ -48,7 +48,7 @@ export default function ProductItem({
         </button>
       </div>
       <div className="col-span-2">
-        <img src={item.banner.url} alt={item._id} className="h-auto w-full object-cover" />
+        <img src={item.banner.url} loading="lazy" alt={item._id} className="h-auto w-full object-cover" />
       </div>
       <div className="col-span-2 font-semibold">{item.name}</div>
       <div className="col-span-1">{item.brand[0].name}</div>

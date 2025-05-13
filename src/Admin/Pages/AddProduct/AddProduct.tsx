@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { PencilLine, Trash2, Upload } from "lucide-react"
 import { Helmet } from "react-helmet-async"
 import NavigateBack from "src/Admin/Components/NavigateBack"
@@ -6,7 +7,7 @@ import no_img_1 from "src/Assets/img/no_image.png"
 import Input from "src/Components/Input"
 import { keepPreviousData, useMutation, useQuery } from "@tanstack/react-query"
 import { adminAPI } from "src/Apis/admin.api"
-import { SuccessResponse } from "src/Types/utils.type"
+import { ErrorResponse, SuccessResponse } from "src/Types/utils.type"
 import { Controller, useFieldArray, useForm } from "react-hook-form"
 import { useEffect, useMemo, useRef, useState } from "react"
 import Button from "src/Components/Button"
@@ -16,6 +17,7 @@ import TextEditor from "src/Admin/Components/TextEditor"
 import { config } from "src/Constants/config"
 import { toast } from "react-toastify"
 import { CreateProductBodyReq } from "src/Types/product.type"
+import { isError400 } from "src/Helpers/utils"
 
 const listSpecificationForCategory = {
   Laptop: [
@@ -106,6 +108,7 @@ export default function AddProduct() {
     handleSubmit,
     setValue,
     reset,
+    setError,
     formState: { errors }
   } = useForm<FormData>({ resolver: yupResolver(formData) })
 
@@ -260,6 +263,14 @@ export default function AddProduct() {
         reset()
         setFile(null)
         setGalleryFiles([null, null, null, null])
+      },
+      onError: (error) => {
+        if (isError400<ErrorResponse<FormData>>(error)) {
+          const formError = error.response?.data
+          setError("name", {
+            message: (formError as any).message
+          })
+        }
       }
     })
   })
@@ -277,7 +288,7 @@ export default function AddProduct() {
       <h1 className="text-lg font-bold py-2 text-[#3A5BFF]">Thêm Sản phẩm</h1>
       <div>
         <form onSubmit={handleSubmitAddProduct} className="grid grid-cols-7 gap-4">
-          <div className="col-span-3 bg-white dark:bg-darkPrimary border border-[#dedede] dark:border-darkBorder rounded-md">
+          <div className="col-span-3 bg-white dark:bg-darkPrimary border border-[#dedede] dark:border-darkBorder rounded-2xl shadow-xl">
             <div className="p-4 text-base font-semibold">Ảnh sản phẩm</div>
             <div className="h-[2px] w-full bg-[#f2f2f2]"></div>
             <div className="p-4 pt-2">
@@ -366,7 +377,7 @@ export default function AddProduct() {
               </span>
             </div>
           </div>
-          <div className="col-span-4 bg-white dark:bg-darkPrimary border border-[#dedede] dark:border-darkBorder rounded-md">
+          <div className="col-span-4 bg-white dark:bg-darkPrimary border border-[#dedede] dark:border-darkBorder rounded-2xl shadow-xl">
             <div className="p-4 text-base font-semibold">Thông tin sản phẩm</div>
             <div className="h-[2px] w-full bg-[#f2f2f2]"></div>
             <div className="p-4 pt-2">
@@ -507,7 +518,7 @@ export default function AddProduct() {
                   {fields?.map((spec, index) => {
                     return (
                       <div key={index} className="mb-2 flex items-stretch">
-                        <span className="w-1/3 bg-[#f2f2f2] p-2 border border-[#dadada] rounded-tl-md rounded-bl-md">
+                        <span className="w-1/3 bg-[#f2f2f2] p-2 border border-[#dadada] rounded-tl-md rounded-bl-md border-l-4 border-l-gray-400">
                           {spec.name}
                         </span>
                         <input

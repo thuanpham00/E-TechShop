@@ -124,7 +124,7 @@ export default function ProductDetail() {
           </Helmet>
           <Breadcrumb slug_1={nameCategory} slug_2={productDetail.name} />
           <div>
-            <div className="bg-white rounded-[4px] my-4 grid grid-cols-6 gap-6 p-6 pt-4">
+            <div className="bg-white rounded-lg shadow-md my-4 grid grid-cols-6 gap-6 p-6 pt-4">
               <div className="col-span-2 pr-2 border-r border-r-[#dedede]">
                 <div
                   className="relative pt-[100%] cursor-zoom-in overflow-hidden"
@@ -186,27 +186,41 @@ export default function ProductDetail() {
                   <button className="mt-4 py-3 bg-[#bcbec2] rounded-md text-white w-[300px] text-lg">HẾT HÀNG</button>
                 )}
 
+                {productDetail.status === "available" && (
+                  <button className="mt-4 py-3 bg-red-600 hover:bg-red-400 duration-200 rounded-md text-white w-[300px] text-lg font-semibold">
+                    Đặt hàng
+                  </button>
+                )}
+
                 <div className="mt-4">
                   <div className="flex items-center gap-1 my-2">
-                    <Check />
-                    <span className="text-[15px] font-medium">Bảo hành chính hãng 24 tháng.</span>
+                    <Check size={16} />
+                    {productDetail.specifications.map((item) => {
+                      if (item.name === "Bảo hành") {
+                        return (
+                          <span key={item.name} className="text-[15px] font-medium">
+                            Bảo hành chính hãng {item.value}.
+                          </span>
+                        )
+                      }
+                    })}
                   </div>
                   <div className="flex items-center gap-1 my-2">
-                    <Check />
+                    <Check size={16} />
                     <span className="text-[15px] font-medium">Hỗ trợ đổi mới trong 7 ngày.</span>
                   </div>
                   <div className="flex items-center gap-1 my-2">
-                    <Check />
+                    <Check size={16} />
                     <span className="text-[15px] font-medium">Windows bản quyền tích hợp.</span>
                   </div>
                   <div className="flex items-center gap-1 my-2">
-                    <Check />
+                    <Check size={16} />
                     <span className="text-[15px] font-medium">Miễn phí giao hàng toàn quốc.</span>
                   </div>
                 </div>
               </div>
             </div>
-            <div className="mt-2 bg-white rounded-[4px] my-4 p-6 pt-4">
+            <div className="mt-2 bg-white rounded-lg shadow-md my-4 p-6 pt-4">
               <h4 className="text-xl font-semibold">Sản phẩm tương tự</h4>
               <div className="mt-1 grid grid-cols-5 gap-2">
                 {listProductRelated?.map((item) => {
@@ -218,7 +232,7 @@ export default function ProductDetail() {
                 })}
               </div>
             </div>
-            <div className="mt-2 bg-white rounded-[4px] my-4 p-6">
+            <div className="mt-2 bg-white rounded-lg shadow-md my-4 p-6">
               <h4 className="text-xl font-medium">Thông tin sản phẩm</h4>
               <div className="mt-2 text-lg font-bold">Thông số kĩ thuật:</div>
               <div className="mt-2">
@@ -227,7 +241,7 @@ export default function ProductDetail() {
                     {productDetail.specifications?.map((item) => {
                       return (
                         <div key={item.name} className="flex items-stretch">
-                          <div className="w-1/3 bg-[#f2f2f2] p-4 text-base text-[#428bca] font-bold border border-[#dedede] not-first:border-t-0 first:border-t-[#dedede]">
+                          <div className="w-1/3 flex items-center bg-[#f2f2f2] p-4 text-base text-[#428bca] font-bold border border-[#dedede] not-first:border-t-0 first:border-t-[#dedede]">
                             {item.name}
                           </div>
                           <div className="w-2/3 p-4 text-base border border-[#dedede] not-first:border-t-0 first:border-t-[#dedede]">

@@ -31,7 +31,7 @@ export default function ProductItem({ item }: { item: CollectionItemType }) {
       onMouseEnter={() => handleHoverProduct(item._id)}
       onMouseLeave={() => handleHoverProduct("")}
     >
-      <div className="flex flex-col items-start">
+      <div className="flex flex-col">
         <img
           loading="lazy"
           src={item._id === imageChange ? randomImage : imageDefault}

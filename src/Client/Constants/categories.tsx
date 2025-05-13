@@ -60,6 +60,7 @@ export const CategoryBanner = {
   "laptop-acer-hoc-tap-va-lam-viec": bannerLaptopAcer,
   "laptop-asus-hoc-tap-va-lam-viec": bannerLaptopAsus,
   "laptop-duoi-15-trieu": bannerLaptopDuoi15trieu,
+  "laptop-ban-chay": bannerLaptopDuoi15trieu,
   "laptop-tu-15-den-20-trieu": bannerLaptopDuoi15trieu,
   "laptop-tren-20-trieu": bannerLaptopDuoi15trieu,
   "laptop-lenovo-hoc-tap-va-lam-viec": bannerLaptopLenovo,
