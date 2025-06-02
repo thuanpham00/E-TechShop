@@ -8,6 +8,7 @@ import {
   BrandItemType,
   CategoryItemType,
   ProductItemType,
+  ReceiptItemType,
   SupplierItemType,
   SupplyItemType
 } from "src/Types/product.type"
@@ -24,6 +25,7 @@ interface Props {
       | ProductItemType[]
       | SupplierItemType[]
       | SupplyItemType[]
+      | ReceiptItemType[]
     total: string
     page: string
     limit: string

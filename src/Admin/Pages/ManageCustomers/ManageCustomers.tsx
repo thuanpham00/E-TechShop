@@ -33,7 +33,7 @@ import Pagination from "src/Components/Pagination"
 import DateSelect from "src/Components/DateSelect"
 import InputFileImage from "src/Components/InputFileImage"
 import DatePicker from "../../Components/DatePickerRange"
-import useDownloadExcel from "src/Hook/useDowloadExcel"
+import useDownloadExcel from "src/Hook/useDownloadExcel"
 
 const formDataUpdate = schemaAuth.pick([
   "id",
@@ -108,8 +108,8 @@ export default function ManageCustomers() {
       return adminAPI.customer.getCustomers(queryConfig as queryParamConfig, controller.signal)
     },
     retry: 0, // số lần retry lại khi hủy request (dùng abort signal)
-    staleTime: 3 * 60 * 1000, // dưới 1 phút nó không gọi lại api
-    placeholderData: keepPreviousData // giữ data cũ trong 1p
+    staleTime: 3 * 60 * 1000, // dưới 3 phút nó không gọi lại api
+    placeholderData: keepPreviousData // giữ data cũ trong 3p
   })
 
   const result = data?.data as SuccessResponse<{
@@ -159,12 +159,12 @@ export default function ManageCustomers() {
       id: "",
       name: "",
       email: "",
-      numberPhone: "",
-      avatar: "",
-      date_of_birth: new Date(1990, 0, 1),
       verify: 0,
+      numberPhone: "",
+      date_of_birth: new Date(1990, 0, 1),
       created_at: "",
-      updated_at: ""
+      updated_at: "",
+      avatar: ""
     } // giá trị khởi tạo
   })
 

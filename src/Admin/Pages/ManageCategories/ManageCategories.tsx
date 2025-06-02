@@ -26,7 +26,7 @@ import Skeleton from "src/Components/Skeleton"
 import Pagination from "src/Components/Pagination"
 import AddCategory from "./Components/AddCategory"
 import DatePicker from "src/Admin/Components/DatePickerRange"
-import useDownloadExcel from "src/Hook/useDowloadExcel"
+import useDownloadExcel from "src/Hook/useDownloadExcel"
 
 type FormDataUpdate = Pick<SchemaAuthType, "name" | "id" | "created_at" | "updated_at">
 

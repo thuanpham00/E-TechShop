@@ -10,7 +10,7 @@ import Button from "src/Components/Button"
 import Pagination from "src/Components/Pagination"
 import Skeleton from "src/Components/Skeleton"
 import { path } from "src/Constants/path"
-import useDownloadExcel from "src/Hook/useDowloadExcel"
+import useDownloadExcel from "src/Hook/useDownloadExcel"
 import useQueryParams from "src/Hook/useQueryParams"
 import { SupplyItemType } from "src/Types/product.type"
 import { queryParamConfigSupply } from "src/Types/queryParams.type"
@@ -61,8 +61,6 @@ export default function ManageSupplies() {
     },
     isUndefined
   )
-
-  console.log(queryConfig)
 
   const { data, isFetching, isLoading, isError, error } = useQuery({
     queryKey: ["listSupply", queryConfig],

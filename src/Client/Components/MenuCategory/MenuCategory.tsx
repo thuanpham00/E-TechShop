@@ -38,19 +38,21 @@ export default function MenuCategory() {
             className={`grid grid-cols-12 gap-2 ${isHover && "top-[90px] z-40 fixed"}`}
           >
             <div className={`col-span-2 ${!isHover && "top-[90px] z-40 fixed"}`}>
-              {categories.map((category) => (
-                <div
-                  onMouseEnter={() => handleCategory(category.index)}
-                  key={category.index}
-                  className={`pl-3 pr-2 pt-2 pb-[10px] shadow first:rounded-tl-[4px] first:rounded-tr-[4px] last:rounded-bl-[4px] last:rounded-br-[4px] last:pb-2 hover:text-white hover:bg-primaryBlue ${showCategoryDetail === category.index ? "bg-primaryBlue text-white" : "bg-white text-black"}`}
-                >
-                  <MenuCategoryItem nameCategory={category.name} iconCategory={category.icon} />
-                </div>
-              ))}
+              <div className="flex flex-col justify-between bg-white rounded-[4px] h-[480px]">
+                {categories.map((category) => (
+                  <div
+                    onMouseEnter={() => handleCategory(category.index)}
+                    key={category.index}
+                    className={`pl-3 pr-2 pt-2 pb-[10px] first:rounded-tl-[4px] first:rounded-tr-[4px] last:rounded-bl-[4px] last:rounded-br-[4px] last:pb-2 hover:text-white hover:bg-primaryBlue ${showCategoryDetail === category.index ? "bg-primaryBlue text-white" : "bg-white text-black"}`}
+                  >
+                    <MenuCategoryItem nameCategory={category.name} iconCategory={category.icon} />
+                  </div>
+                ))}
+              </div>
             </div>
             {isHover && (
               <div className="col-span-10">
-                <div className="bg-white rounded-[4px] h-[500px] shadow p-4">
+                <div className="bg-white rounded-[4px] h-[480px] shadow p-4">
                   <CategoryDetail showDetail={showCategoryDetail} />
                 </div>
               </div>

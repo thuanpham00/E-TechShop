@@ -35,6 +35,14 @@ export type queryParamConfigSupply = queryParamConfig & {
   name_supplier?: string
 }
 
+export type queryParamConfigReceipt = queryParamConfig & {
+  name_product?: string
+  name_supplier?: string
+  quantity?: string
+  import_date_start?: string
+  import_date_end?: string
+}
+
 export type queryParamConfigProduct = queryParamConfig & {
   name?: string
   category?: string

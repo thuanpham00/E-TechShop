@@ -11,7 +11,9 @@ import {
   queryParamConfigCategory,
   queryParamConfigCustomer,
   queryParamConfigProduct,
-  queryParamConfigSupplier
+  queryParamConfigReceipt,
+  queryParamConfigSupplier,
+  queryParamConfigSupply
 } from "src/Types/queryParams.type"
 
 export const adminAPI = {
@@ -211,7 +213,7 @@ export const adminAPI = {
   },
   supply: {
     // lấy danh sách cung ứng
-    getSupplies: (params: queryParamConfigSupplier, signal: AbortSignal) => {
+    getSupplies: (params: queryParamConfigSupply, signal: AbortSignal) => {
       return Http.get(`/admin/supplies`, {
         params,
         signal
@@ -242,6 +244,16 @@ export const adminAPI = {
     // xóa cung ứng
     deleteSupplyDetail: (id: string) => {
       return Http.delete(`/admin/supplies/${id}`)
+    }
+  },
+
+  receipt: {
+    // lấy danh sách đơn nhập hàng
+    getReceipts: (params: queryParamConfigReceipt, signal: AbortSignal) => {
+      return Http.get(`/admin/receipts`, {
+        params,
+        signal
+      })
     }
   }
 }

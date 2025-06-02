@@ -1,11 +1,28 @@
 import { yupResolver } from "@hookform/resolvers/yup"
+import { keepPreviousData, useQuery } from "@tanstack/react-query"
+import { isUndefined, omitBy } from "lodash"
 import { FolderUp, Plus, RotateCcw, Search } from "lucide-react"
 import { Helmet } from "react-helmet-async"
 import { Controller, useForm } from "react-hook-form"
+import { createSearchParams, useNavigate } from "react-router-dom"
+import { Fragment } from "react/jsx-runtime"
 import DatePicker from "src/Admin/Components/DatePickerRange"
 import NavigateBack from "src/Admin/Components/NavigateBack"
+import { adminAPI } from "src/Apis/admin.api"
 import { schemaSupply, SchemaSupplyType } from "src/Client/Utils/rule"
 import Button from "src/Components/Button"
+import Pagination from "src/Components/Pagination"
+import Skeleton from "src/Components/Skeleton"
+import { path } from "src/Constants/path"
+import useQueryParams from "src/Hook/useQueryParams"
+import { ReceiptItemType } from "src/Types/product.type"
+import { queryParamConfigReceipt } from "src/Types/queryParams.type"
+import { SuccessResponse } from "src/Types/utils.type"
+import ReceiptItem from "./Components/ReceiptItem"
+import DropdownSearch from "../ManageSupplies/Components/DropdownSearch"
+import { useState } from "react"
+import { cleanObject } from "src/Helpers/common"
+import { toast } from "react-toastify"
 
 type FormDataSearch = Pick<
   SchemaSupplyType,
@@ -22,16 +39,121 @@ const formDataSearch = schemaSupply.pick([
 ])
 
 export default function ManageReceipt() {
+  const navigate = useNavigate()
+  // const { downloadExcel } = useDownloadExcel()
+
+  const queryParams: queryParamConfigReceipt = useQueryParams()
+  const queryConfig: queryParamConfigReceipt = omitBy(
+    {
+      page: queryParams.page || "1", // mặc định page = 1
+      limit: queryParams.limit || "5", // mặc định limit = 5
+      name_product: queryParams.name_product,
+      name_supplier: queryParams.name_supplier,
+      quantity: queryParams.quantity,
+      import_date_start: queryParams.import_date_start,
+      import_date_end: queryParams.import_date_end,
+      created_at_start: queryParams.created_at_start,
+      created_at_end: queryParams.created_at_end,
+      updated_at_start: queryParams.updated_at_start,
+      updated_at_end: queryParams.updated_at_end
+    },
+    isUndefined
+  )
+
+  // ##### phát triển tiếp ở chỗ tham số truy vấn quantity và import_date_start, import_date_end
+
+  const { data, isFetching, isLoading } = useQuery({
+    queryKey: ["listReceipt", queryConfig],
+    queryFn: () => {
+      const controller = new AbortController()
+      setTimeout(() => {
+        controller.abort() // hủy request khi chờ quá lâu // 10 giây sau cho nó hủy // làm tự động
+      }, 10000)
+      return adminAPI.receipt.getReceipts(queryConfig as queryParamConfigReceipt, controller.signal)
+    },
+    retry: 0, // số lần retry lại khi hủy request (dùng abort signal)
+    staleTime: 3 * 60 * 1000, // dưới 3 phút nó không gọi lại api
+    placeholderData: keepPreviousData
+  })
+
+  const result = data?.data as SuccessResponse<{
+    result: ReceiptItemType[]
+    total: string
+    page: string
+    limit: string
+    totalOfPage: string
+  }>
+  const listReceipt = result?.result?.result
+  const page_size = Math.ceil(Number(result?.result.total) / Number(result?.result.limit))
+
   const {
     register: registerFormSearch,
     handleSubmit: handleSubmitFormSearch,
-    reset: resetFormSearch,
+    // reset: resetFormSearch,
     control: controlFormSearch,
     setValue: setValueSearch,
     trigger
   } = useForm<FormDataSearch>({
     resolver: yupResolver(formDataSearch)
   })
+
+  const handleSubmitSearch = handleSubmitFormSearch(
+    (data) => {
+      const params = cleanObject({
+        ...queryConfig,
+        page: 1,
+        name_product: data.name_product,
+        name_supplier: data.name_supplier,
+        created_at_start: data.created_at_start?.toISOString(),
+        created_at_end: data.created_at_end?.toISOString(),
+        updated_at_start: data.updated_at_start?.toISOString(),
+        updated_at_end: data.updated_at_end?.toISOString()
+      })
+      navigate({
+        pathname: path.AdminReceipts,
+        search: createSearchParams(params).toString()
+      })
+    },
+    (error) => {
+      if (error.created_at_end) {
+        toast.error(error.created_at_end?.message, { autoClose: 1500 })
+      }
+      if (error.updated_at_end) {
+        toast.error(error.updated_at_end?.message, { autoClose: 1500 })
+      }
+    }
+  )
+
+  const getNameProducts = useQuery({
+    queryKey: ["nameProduct"],
+    queryFn: () => {
+      return adminAPI.product.getNameProducts()
+    },
+    retry: 0,
+    staleTime: 15 * 60 * 1000,
+    placeholderData: keepPreviousData
+  })
+  const listNameProduct = getNameProducts.data?.data as SuccessResponse<{
+    result: string[]
+  }>
+  const listNameProductResult = listNameProduct?.result.result
+
+  const getNameSuppliers = useQuery({
+    queryKey: ["nameSupplier"],
+    queryFn: () => {
+      return adminAPI.supplier.getNameSuppliers()
+    },
+    retry: 0, // số lần retry lại khi hủy request (dùng abort signal)
+    staleTime: 15 * 60 * 1000, // dưới 1 phút nó không gọi lại api
+    placeholderData: keepPreviousData // giữ data cũ trong 1p
+  })
+  const listNameSupplier = getNameSuppliers.data?.data as SuccessResponse<{
+    result: string[]
+  }>
+  const listNameSupplierResult = listNameSupplier?.result.result
+
+  const [inputProductValue, setInputProductValue] = useState("")
+  const [inputSupplierValue, setInputSupplierValue] = useState("")
 
   return (
     <div>
@@ -44,12 +166,12 @@ export default function ManageReceipt() {
       </Helmet>
       <NavigateBack />
       <div className="text-lg font-bold py-2 text-[#3A5BFF]">Cung ứng sản phẩm</div>
-      <div className="p-4 bg-white dark:bg-darkPrimary mb-3 border border-gray-300 dark:border-darkBorder rounded-2xl shadow-xl">
+      <div className="">
         <h1 className="text-[15px] font-medium">Tìm kiếm</h1>
-        <div>
-          <form>
+        <div className="p-4 bg-white dark:bg-darkPrimary mb-3 border border-gray-300 dark:border-darkBorder rounded-2xl shadow-xl">
+          <form onSubmit={handleSubmitSearch}>
             <div className="mt-1 grid grid-cols-2">
-              {/* <div className="col-span-1 flex items-center h-14 px-2 bg-[#fff] dark:bg-darkBorder border border-[#dadada] rounded-tl-xl">
+              <div className="col-span-1 flex items-center h-14 px-2 bg-[#fff] dark:bg-darkBorder border border-[#dadada] rounded-tl-xl">
                 <span className="w-1/3">Tên sản phẩm</span>
                 <div className="w-2/3 relative h-full">
                   <DropdownSearch
@@ -78,7 +200,7 @@ export default function ManageReceipt() {
                   />
                   <span className="absolute inset-y-0 left-[-5%] w-[1px] bg-[#dadada] h-full"></span>
                 </div>
-              </div> */}
+              </div>
               <div className="col-span-1 flex items-center h-14 px-2 bg-[#fff] dark:bg-darkBorder border border-[#dadada] border-t-0 rounded-bl-xl">
                 <span className="w-1/3">Ngày tạo</span>
                 <div className="w-2/3 relative h-full">
@@ -192,46 +314,32 @@ export default function ManageReceipt() {
             </div>
           </form>
         </div>
-        {/* {isLoading && <Skeleton />}
+        {isLoading && <Skeleton />}
         {!isFetching && (
           <div>
-            <div className="mt-4">
-              <div className="bg-[#f2f2f2] dark:bg-darkPrimary grid grid-cols-12 items-center gap-2 py-3 border border-[#dedede] dark:border-darkBorder px-4 rounded-tl-xl rounded-tr-xl">
-                <div className="col-span-2 text-[14px] font-semibold">Mã cung ứng</div>
-                <div className="col-span-3 text-[14px] font-semibold">Tên sản phẩm</div>
-                <div className="col-span-2 text-[14px] font-semibold">Tên nhà cung cấp</div>
-                <div className="col-span-1 text-[14px] font-semibold">Giá nhập</div>
-                <div className="col-span-1 text-[14px] font-semibold">Thời gian cung ứng</div>
-                <div className="col-span-1 text-[14px] font-semibold">Ngày tạo</div>
-                <div className="col-span-1 text-[14px] font-semibold">Ngày cập nhật</div>
-                <div className="col-span-1 text-[14px] text-center font-semibold">Hành động</div>
-              </div>
-              <div>
-                {listSupplier.length > 0 ? (
-                  listSupplier.map((item) => (
-                    <Fragment key={item._id}>
-                      <SupplyItem onDelete={handleDeleteSupply} handleEditItem={handleEditItem} item={item} />
-                    </Fragment>
-                  ))
-                ) : (
-                  <div className="text-center mt-4">Không tìm thấy kết quả</div>
-                )}
-              </div>
-            </div>
+            {listReceipt.length > 0 ? (
+              listReceipt.map((item) => (
+                <Fragment key={item._id}>
+                  <ReceiptItem item={item} />
+                </Fragment>
+              ))
+            ) : (
+              <div className="text-center mt-4">Không tìm thấy kết quả</div>
+            )}
             <Pagination
               data={result}
               queryConfig={queryConfig}
               page_size={page_size}
-              pathNavigate={path.AdminSupplies}
+              pathNavigate={path.AdminReceipts}
             />
-            {idSupply !== null ? (
+            {/* {idSupply !== null ? (
               <SupplyDetail idSupply={idSupply} setIdSupply={setIdSupply} queryConfig={queryConfig} />
             ) : (
               ""
-            )}
-            {addItem ? <AddSupply setAddItem={setAddItem} /> : ""}
+            )} */}
+            {/* {addItem ? <AddSupply setAddItem={setAddItem} /> : ""} */}
           </div>
-        )} */}
+        )}
       </div>
     </div>
   )

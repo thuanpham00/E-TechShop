@@ -19,9 +19,10 @@ export default function InputFileImage({ onChange }: { onChange?: (file?: File) 
       toast.success("File upload thành công", {
         autoClose: 1500
       })
+      // Tức là component con đang "gửi dữ liệu" lên component cha qua props.onChange
+      // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+      onChange && onChange(fileFormLocal)
     }
-    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-    onChange && onChange(fileFormLocal)
   }
 
   return (

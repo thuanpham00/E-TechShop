@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 export enum StatusProduct {
   "out_of_stock" = "out_of_stock",
   "discontinued" = "discontinued",
@@ -69,6 +70,62 @@ export type SupplyItemType = {
   warrantyMonths: number
   leadTimeDays: number
   description: string
+  created_at: string
+  updated_at: string
+}
+
+export type ReceiptItemType = {
+  _id: string
+  items: {
+    productId: {
+      _id: string
+      name: string
+      averageRating: number
+      brand: string
+      category: string
+      created_at: string
+      description: string
+      discount: number
+      gifts: any[]
+      isFeatured: string
+      medias: {
+        url: string
+        type: number
+      }[]
+      price: number
+      reviews: any[]
+      sold: number
+      specifications: any[]
+      stock: number
+      updated_at: string
+      viewCount: number
+      banner: {
+        type: number
+        url: string
+      }
+      status: string
+    }
+    supplierId: {
+      _id: string
+      name: string
+      contactName: string
+      email: string
+      phone: string
+      address: string
+      taxCode: string
+      description: string
+      created_at: string
+      updated_at: string
+      id: string
+    }
+    quantity: number
+    pricePerUnit: number
+    totalPrice: number
+  }[]
+  totalAmount: number
+  totalItem: number
+  importDate: string
+  note: string
   created_at: string
   updated_at: string
 }

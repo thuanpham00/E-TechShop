@@ -33,7 +33,7 @@ import {
 import { queryClient } from "src/main"
 import { isError400, isError422 } from "src/Helpers/utils"
 import AddSupplier from "./Components/AddSupplier"
-import useDownloadExcel from "src/Hook/useDowloadExcel"
+import useDownloadExcel from "src/Hook/useDownloadExcel"
 
 type FormDataUpdate = Pick<
   SchemaSupplierUpdateType,
