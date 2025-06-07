@@ -1,7 +1,6 @@
 import { yupResolver } from "@hookform/resolvers/yup"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { X } from "lucide-react"
-import { Fragment } from "react"
 import { useForm } from "react-hook-form"
 import { toast } from "react-toastify"
 import { adminAPI } from "src/Apis/admin.api"
@@ -10,6 +9,7 @@ import Button from "src/Components/Button"
 import Input from "src/Components/Input"
 import { isError400 } from "src/Helpers/utils"
 import { ErrorResponse, MessageResponse } from "src/Types/utils.type"
+import { motion, AnimatePresence } from "framer-motion"
 
 interface Props {
   setAddItem: React.Dispatch<React.SetStateAction<boolean>>
@@ -53,37 +53,48 @@ export default function AddCategory({ setAddItem }: Props) {
   )
 
   return (
-    <Fragment>
-      <div className="fixed left-0 top-0 z-10 h-screen w-screen bg-black/60"></div>
-      <div className="z-20 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
-        <button onClick={() => setAddItem(false)} className="absolute right-2 top-1">
-          <X color="gray" size={22} />
-        </button>
-        <form onSubmit={handleAddCategorySubmit} className="bg-white dark:bg-darkPrimary rounded-md">
-          <h3 className="py-2 px-4 text-[15px] font-medium bg-[#f2f2f2] rounded-md">Thông tin danh mục</h3>
-          <div className="w-full h-[1px] bg-[#dadada]"></div>
-          <div className="p-4 pt-0">
-            <div className="mt-4 flex items-center gap-4">
-              <Input
-                name="name"
-                register={register}
-                placeholder="Nhập tên danh mục"
-                messageErrorInput={errors.name?.message}
-                classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-white dark:bg-darkPrimary focus:border-blue-500 focus:ring-2 outline-none rounded-md"
-                className="relative flex-1"
-                nameInput="Tên danh mục"
-              />
+    <AnimatePresence>
+      <motion.div
+        initial={{ opacity: 0 }} // khởi tạo là 0
+        animate={{ opacity: 1 }} // xuất hiện dần là 1
+        exit={{ opacity: 0 }} // biến mất là 0
+        className="fixed left-0 top-0 z-10 h-screen w-screen bg-black/60 flex items-center justify-center"
+      >
+        <motion.div
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0, scale: 0.8 }}
+          className="relative"
+        >
+          <button onClick={() => setAddItem(false)} className="absolute right-2 top-1">
+            <X color="gray" size={22} />
+          </button>
+          <form onSubmit={handleAddCategorySubmit} className="bg-white dark:bg-darkPrimary rounded-md">
+            <h3 className="py-2 px-4 text-[15px] font-medium bg-[#f2f2f2] rounded-md">Thông tin danh mục</h3>
+            <div className="w-full h-[1px] bg-[#dadada]"></div>
+            <div className="p-4 pt-0">
+              <div className="mt-4 flex items-center gap-4">
+                <Input
+                  name="name"
+                  register={register}
+                  placeholder="Nhập tên danh mục"
+                  messageErrorInput={errors.name?.message}
+                  classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-white dark:bg-darkPrimary focus:border-blue-500 focus:ring-2 outline-none rounded-md"
+                  className="relative flex-1"
+                  nameInput="Tên danh mục"
+                />
+              </div>
+              <div className="flex items-center justify-end">
+                <Button
+                  type="submit"
+                  nameButton="Thêm"
+                  classNameButton="w-[120px] p-4 py-2 bg-blue-500 mt-2 w-full text-white font-semibold rounded-sm hover:bg-blue-500/80 duration-200"
+                />
+              </div>
             </div>
-            <div className="flex items-center justify-end">
-              <Button
-                type="submit"
-                nameButton="Thêm"
-                classNameButton="w-[120px] p-4 py-2 bg-blue-500 mt-2 w-full text-white font-semibold rounded-sm hover:bg-blue-500/80 duration-200"
-              />
-            </div>
-          </div>
-        </form>
-      </div>
-    </Fragment>
+          </form>
+        </motion.div>
+      </motion.div>
+    </AnimatePresence>
   )
 }

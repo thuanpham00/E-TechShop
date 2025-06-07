@@ -6,6 +6,7 @@ import { SuccessResponse } from "src/Types/utils.type"
 import Statistical from "./Components/Statistical"
 import Skeleton from "src/Components/Skeleton"
 import NavigateBack from "src/Admin/Components/NavigateBack"
+import { motion } from "framer-motion"
 
 const statistical = [
   {
@@ -79,17 +80,27 @@ export default function Dashboard() {
       <div>
         {isLoading && <Skeleton />}
         {!isFetching ? (
-          <div className="flex items-center flex-wrap gap-4">
-            {statistical.map((item, index) => {
-              const key = statisticalMapping[item.name as keyof typeof statisticalMapping]
-              const value = dataStatistical?.result[key as keyof typeof dataStatistical.result] || "0" // đảm bảo key phải là 1 trong các giá trị của keyof typeof
-              return (
-                <div key={index} className="flex-1">
-                  <Statistical classNameCircle={item.classNameCircle} name={item.name} icon={item.icon} value={value} />
-                </div>
-              )
-            })}
-          </div>
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+            <div className="text-2xl font-bold text-gray-800 bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600 my-2">
+              Thống kê hệ thống
+            </div>
+            <div className="flex items-center flex-wrap gap-4">
+              {statistical.map((item, index) => {
+                const key = statisticalMapping[item.name as keyof typeof statisticalMapping]
+                const value = dataStatistical?.result[key as keyof typeof dataStatistical.result] || "0" // đảm bảo key phải là 1 trong các giá trị của keyof typeof
+                return (
+                  <div key={index} className="flex-1">
+                    <Statistical
+                      classNameCircle={item.classNameCircle}
+                      name={item.name}
+                      icon={item.icon}
+                      value={value}
+                    />
+                  </div>
+                )
+              })}
+            </div>
+          </motion.div>
         ) : (
           ""
         )}

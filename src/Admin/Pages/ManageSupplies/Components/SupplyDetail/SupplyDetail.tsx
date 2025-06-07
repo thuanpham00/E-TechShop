@@ -14,6 +14,7 @@ import { SupplyItemType, UpdateSupplyBodyReq } from "src/Types/product.type"
 import { queryParamConfigSupply } from "src/Types/queryParams.type"
 import { SuccessResponse } from "src/Types/utils.type"
 import DropdownList from "../DropdownList"
+import { AnimatePresence, motion } from "framer-motion"
 
 type FormDataUpdate = Pick<
   SchemaSupplyUpdateType,
@@ -151,123 +152,134 @@ export default function SupplyDetail({
   const watchSupplier = watch("supplierId")
 
   return (
-    <div>
-      <div className="fixed left-0 top-0 z-10 h-screen w-screen bg-black/60"></div>
-      <div className="z-20 fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
-        <button onClick={handleExitsEditItem} className="absolute right-2 top-1">
-          <X color="gray" size={22} />
-        </button>
-        <form onSubmit={handleSubmitUpdate} className="bg-white dark:bg-darkPrimary rounded-md w-[700px]">
-          <h3 className="py-2 px-4 text-[15px] font-medium bg-[#f2f2f2] rounded-md">Thông tin cung ứng</h3>
-          <div className="w-full h-[1px] bg-[#dadada]"></div>
-          <div className="p-4 pt-0">
-            <div className="mt-4 bg-[#fff] dark:bg-darkBorder">
-              <Input
-                name="id"
-                register={register}
-                placeholder="Nhập mã cung ứng"
-                messageErrorInput={errors.importPrice?.message}
-                classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-darkPrimary focus:border-blue-500 focus:ring-2 outline-none rounded-md"
-                className="relative flex-1"
-                nameInput="Mã cung ứng"
-                disabled
-              />
-              <DropdownList
-                name="productId"
-                isAddItem={true}
-                register={register}
-                listItem={listNameProductResult}
-                onSelect={(item) => setValue("productId", item)}
-                nameInput="Chọn sản phẩm"
-                value={watchProduct}
-                setInputValueProductCPNFather={setInputValueProduct}
-              />
-            </div>
+    <AnimatePresence>
+      <motion.div
+        initial={{ opacity: 0 }} // khởi tạo là 0
+        animate={{ opacity: 1 }} // xuất hiện dần là 1
+        exit={{ opacity: 0 }} // biến mất là 0
+        className="fixed left-0 top-0 z-10 h-screen w-screen bg-black/60 flex items-center justify-center"
+      >
+        <motion.div
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0, scale: 0.8 }}
+          className="relative"
+        >
+          <button onClick={handleExitsEditItem} className="absolute right-2 top-1">
+            <X color="gray" size={22} />
+          </button>
+          <form onSubmit={handleSubmitUpdate} className="bg-white dark:bg-darkPrimary rounded-md w-[700px]">
+            <h3 className="py-2 px-4 text-[15px] font-medium bg-[#f2f2f2] rounded-md">Thông tin cung ứng</h3>
+            <div className="w-full h-[1px] bg-[#dadada]"></div>
+            <div className="p-4 pt-0">
+              <div className="mt-4 bg-[#fff] dark:bg-darkBorder">
+                <Input
+                  name="id"
+                  register={register}
+                  placeholder="Nhập mã cung ứng"
+                  messageErrorInput={errors.importPrice?.message}
+                  classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-darkPrimary focus:border-blue-500 focus:ring-2 outline-none rounded-md"
+                  className="relative flex-1"
+                  nameInput="Mã cung ứng"
+                  disabled
+                />
+                <DropdownList
+                  name="productId"
+                  isAddItem={true}
+                  register={register}
+                  listItem={listNameProductResult}
+                  onSelect={(item) => setValue("productId", item)}
+                  nameInput="Chọn sản phẩm"
+                  value={watchProduct}
+                  setInputValueProductCPNFather={setInputValueProduct}
+                />
+              </div>
 
-            <div className="mt-4 bg-[#fff] dark:bg-darkBorder">
-              <DropdownList
-                name="supplierId"
-                isAddItem={true}
-                register={register}
-                listItem={listNameSupplierFilterResult}
-                onSelect={(item) => setValue("supplierId", item)}
-                nameInput="Chọn nhà cung cấp"
-                value={watchSupplier}
-              />
-            </div>
+              <div className="mt-4 bg-[#fff] dark:bg-darkBorder">
+                <DropdownList
+                  name="supplierId"
+                  isAddItem={true}
+                  register={register}
+                  listItem={listNameSupplierFilterResult}
+                  onSelect={(item) => setValue("supplierId", item)}
+                  nameInput="Chọn nhà cung cấp"
+                  value={watchSupplier}
+                />
+              </div>
 
-            <div className="mt-4 flex items-center gap-4">
-              <Input
-                name="importPrice"
-                register={register}
-                placeholder="Nhập giá nhập"
-                messageErrorInput={errors.importPrice?.message}
-                classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#fff] dark:bg-darkPrimary focus:border-blue-500 focus:ring-2 outline-none rounded-md"
-                className="relative flex-1"
-                nameInput="Giá nhập"
-              />
-              <Input
-                name="warrantyMonths"
-                register={register}
-                placeholder="Nhập thời gian bảo hành"
-                messageErrorInput={errors.warrantyMonths?.message}
-                classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-white dark:bg-darkPrimary focus:border-blue-500 focus:ring-2 outline-none rounded-md"
-                className="relative flex-1"
-                nameInput="Thời gian bảo hành"
-              />
-              <Input
-                name="leadTimeDays"
-                register={register}
-                placeholder="Nhập thời gian cung ứng"
-                messageErrorInput={errors.leadTimeDays?.message}
-                classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-white dark:bg-darkPrimary focus:border-blue-500 focus:ring-2 outline-none rounded-md"
-                className="relative flex-1"
-                nameInput="Thời gian cung ứng"
-              />
+              <div className="mt-4 flex items-center gap-4">
+                <Input
+                  name="importPrice"
+                  register={register}
+                  placeholder="Nhập giá nhập"
+                  messageErrorInput={errors.importPrice?.message}
+                  classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#fff] dark:bg-darkPrimary focus:border-blue-500 focus:ring-2 outline-none rounded-md"
+                  className="relative flex-1"
+                  nameInput="Giá nhập"
+                />
+                <Input
+                  name="warrantyMonths"
+                  register={register}
+                  placeholder="Nhập thời gian bảo hành"
+                  messageErrorInput={errors.warrantyMonths?.message}
+                  classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-white dark:bg-darkPrimary focus:border-blue-500 focus:ring-2 outline-none rounded-md"
+                  className="relative flex-1"
+                  nameInput="Thời gian bảo hành"
+                />
+                <Input
+                  name="leadTimeDays"
+                  register={register}
+                  placeholder="Nhập thời gian cung ứng"
+                  messageErrorInput={errors.leadTimeDays?.message}
+                  classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-white dark:bg-darkPrimary focus:border-blue-500 focus:ring-2 outline-none rounded-md"
+                  className="relative flex-1"
+                  nameInput="Thời gian cung ứng"
+                />
+              </div>
+              <div className="mt-4 flex items-center gap-4">
+                <Input
+                  name="description"
+                  register={register}
+                  placeholder="Nhập mô tả"
+                  messageErrorInput={errors.description?.message}
+                  classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-white dark:bg-darkPrimary focus:border-blue-500 focus:ring-2 outline-none rounded-md"
+                  className="relative flex-1"
+                  nameInput="Ghi chú (Optional)"
+                />
+              </div>
+              <div className="mt-2 flex items-center gap-4">
+                <Input
+                  name="created_at"
+                  register={register}
+                  placeholder="Nhập ngày tạo"
+                  messageErrorInput={errors.created_at?.message}
+                  classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-darkSecond focus:border-blue-500 focus:ring-2 outline-none rounded-md"
+                  className="relative flex-1"
+                  nameInput="Ngày tạo"
+                  disabled
+                />
+                <Input
+                  name="updated_at"
+                  register={register}
+                  placeholder="Nhập ngày tạo cập nhật"
+                  messageErrorInput={errors.updated_at?.message}
+                  classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-darkSecond focus:border-blue-500 focus:ring-2 outline-none rounded-md"
+                  className="relative flex-1"
+                  nameInput="Ngày cập nhật"
+                  disabled
+                />
+              </div>
+              <div className="flex items-center justify-end">
+                <Button
+                  type="submit"
+                  nameButton="Cập nhật"
+                  classNameButton="w-[120px] p-4 py-2 bg-blue-500 mt-2 w-full text-white font-semibold rounded-sm hover:bg-blue-500/80 duration-200"
+                />
+              </div>
             </div>
-            <div className="mt-4 flex items-center gap-4">
-              <Input
-                name="description"
-                register={register}
-                placeholder="Nhập mô tả"
-                messageErrorInput={errors.description?.message}
-                classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-white dark:bg-darkPrimary focus:border-blue-500 focus:ring-2 outline-none rounded-md"
-                className="relative flex-1"
-                nameInput="Ghi chú (Optional)"
-              />
-            </div>
-            <div className="mt-2 flex items-center gap-4">
-              <Input
-                name="created_at"
-                register={register}
-                placeholder="Nhập ngày tạo"
-                messageErrorInput={errors.created_at?.message}
-                classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-darkSecond focus:border-blue-500 focus:ring-2 outline-none rounded-md"
-                className="relative flex-1"
-                nameInput="Ngày tạo"
-                disabled
-              />
-              <Input
-                name="updated_at"
-                register={register}
-                placeholder="Nhập ngày tạo cập nhật"
-                messageErrorInput={errors.updated_at?.message}
-                classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-darkSecond focus:border-blue-500 focus:ring-2 outline-none rounded-md"
-                className="relative flex-1"
-                nameInput="Ngày cập nhật"
-                disabled
-              />
-            </div>
-            <div className="flex items-center justify-end">
-              <Button
-                type="submit"
-                nameButton="Cập nhật"
-                classNameButton="w-[120px] p-4 py-2 bg-blue-500 mt-2 w-full text-white font-semibold rounded-sm hover:bg-blue-500/80 duration-200"
-              />
-            </div>
-          </div>
-        </form>
-      </div>
-    </div>
+          </form>
+        </motion.div>
+      </motion.div>
+    </AnimatePresence>
   )
 }

@@ -1,7 +1,6 @@
 import { keepPreviousData, useQuery } from "@tanstack/react-query"
 import { isUndefined, omitBy } from "lodash"
 import { Helmet } from "react-helmet-async"
-import { Fragment } from "react/jsx-runtime"
 import { adminAPI } from "src/Apis/admin.api"
 import { path } from "src/Constants/path"
 import useQueryParams from "src/Hook/useQueryParams"
@@ -15,6 +14,7 @@ import ProductItem from "./Components/ProductItem"
 import { useNavigate } from "react-router-dom"
 import { HttpStatusCode } from "src/Constants/httpStatus"
 import FilterProduct from "./Components/FilterProduct"
+import { motion } from "framer-motion"
 
 export default function ManageProducts() {
   const navigate = useNavigate()
@@ -89,50 +89,66 @@ export default function ManageProducts() {
         />
       </Helmet>
       <NavigateBack />
-      <div className="text-lg font-bold py-2 text-[#3A5BFF]">Sản phẩm</div>
-      <div className="p-4 bg-white dark:bg-darkPrimary mb-3 border border-gray-300 dark:border-darkBorder rounded-2xl shadow-xl">
-        <h1 className="text-[15px] font-medium">Tìm kiếm</h1>
-        <FilterProduct queryConfig={queryConfig} listProduct={listProduct} />
-        <div>
-          {isLoading && <Skeleton />}
-          {!isFetching && (
-            <div>
-              <div className="mt-4">
-                <div className="bg-[#f2f2f2] dark:bg-darkPrimary grid grid-cols-12 items-center gap-2 py-3 border border-[#dedede] dark:border-darkBorder px-4 rounded-tl-xl rounded-tr-xl">
-                  <div className="col-span-2 text-[14px] font-semibold">Mã sản phẩm</div>
-                  <div className="col-span-1 text-[14px] font-semibold">Hình ảnh</div>
-                  <div className="col-span-2 text-[14px] font-semibold">Tên sản phẩm</div>
-                  <div className="col-span-1 text-[14px] font-semibold">Thương hiệu</div>
-                  <div className="col-span-1 text-[14px] font-semibold">Thể loại</div>
-                  <div className="col-span-1 text-[14px] font-semibold">Giá gốc</div>
-                  <div className="col-span-1 text-[14px] text-center font-semibold">Trạng thái</div>
-                  <div className="col-span-1 text-[14px] text-center font-semibold">Ngày tạo</div>
-                  <div className="col-span-1 text-[14px] text-center font-semibold">Ngày cập nhật</div>
-                  <div className="col-span-1 text-[14px] text-center font-semibold">Hành động</div>
+      <div className="text-2xl font-bold text-gray-800 bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600 my-2">
+        Sản phẩm
+      </div>
+      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+        <div className="p-4 bg-white dark:bg-darkPrimary mb-3 border border-gray-300 dark:border-darkBorder rounded-2xl shadow-xl">
+          <h1 className="text-[15px] font-medium">Tìm kiếm</h1>
+          <FilterProduct queryConfig={queryConfig} listProduct={listProduct} />
+          <div>
+            {isLoading && <Skeleton />}
+            {!isFetching && (
+              <div>
+                <div className="mt-4">
+                  <div className="bg-[#f2f2f2] dark:bg-darkPrimary grid grid-cols-12 items-center gap-2 py-3 border border-[#dedede] dark:border-darkBorder px-4 rounded-tl-xl rounded-tr-xl">
+                    <div className="col-span-2 text-[14px] font-semibold tracking-wider uppercase">Mã sản phẩm</div>
+                    <div className="col-span-1 text-[14px] font-semibold tracking-wider uppercase">Hình ảnh</div>
+                    <div className="col-span-2 text-[14px] font-semibold tracking-wider uppercase">Tên sản phẩm</div>
+                    <div className="col-span-1 text-[14px] font-semibold tracking-wider uppercase">Thương hiệu</div>
+                    <div className="col-span-1 text-[14px] font-semibold tracking-wider uppercase">Thể loại</div>
+                    <div className="col-span-1 text-[14px] font-semibold tracking-wider uppercase">Giá gốc</div>
+                    <div className="col-span-1 text-[14px] text-center font-semibold tracking-wider uppercase">
+                      Trạng thái
+                    </div>
+                    <div className="col-span-1 text-[14px] text-center font-semibold tracking-wider uppercase">
+                      Ngày tạo
+                    </div>
+                    <div className="col-span-1 text-[14px] text-center font-semibold tracking-wider uppercase">
+                      Ngày cập nhật
+                    </div>
+                    <div className="col-span-1 text-[14px] text-center font-semibold tracking-wider uppercase">
+                      Hành động
+                    </div>
+                  </div>
+                  <div className="">
+                    {listProduct.length > 0 ? (
+                      listProduct.map((item, index) => (
+                        <motion.div
+                          key={item._id}
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: index * 0.1 }}
+                        >
+                          <ProductItem
+                            // onDelete={handleDeleteCategory}
+                            // handleEditItem={handleEditItem}
+                            item={item}
+                          />
+                        </motion.div>
+                      ))
+                    ) : (
+                      <div className="text-center mt-4">Không tìm thấy kết quả</div>
+                    )}
+                  </div>
                 </div>
-                <div className="">
-                  {listProduct.length > 0 ? (
-                    listProduct.map((item) => (
-                      <Fragment key={item._id}>
-                        <ProductItem
-                          // onDelete={handleDeleteCategory}
-                          // handleEditItem={handleEditItem}
-                          item={item}
-                        />
-                      </Fragment>
-                    ))
-                  ) : (
-                    <div className="text-center mt-4">Không tìm thấy kết quả</div>
-                  )}
-                </div>
-              </div>
-              <Pagination
-                data={result}
-                queryConfig={queryConfig}
-                page_size={page_size}
-                pathNavigate={path.AdminProducts}
-              />
-              {/* {idCategory !== null ? (
+                <Pagination
+                  data={result}
+                  queryConfig={queryConfig}
+                  page_size={page_size}
+                  pathNavigate={path.AdminProducts}
+                />
+                {/* {idCategory !== null ? (
               <Fragment>
                 <div className="fixed left-0 top-0 z-10 h-screen w-screen bg-black/60 "></div>
                 <div className="z-20 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
@@ -198,10 +214,11 @@ export default function ManageProducts() {
             ) : (
               ""
             )} */}
-            </div>
-          )}
+              </div>
+            )}
+          </div>
         </div>
-      </div>
+      </motion.div>
     </div>
   )
 }

@@ -5,7 +5,6 @@ import { FolderUp, Plus, RotateCcw, Search } from "lucide-react"
 import { Helmet } from "react-helmet-async"
 import { Controller, useForm } from "react-hook-form"
 import { createSearchParams, useNavigate } from "react-router-dom"
-import { Fragment } from "react/jsx-runtime"
 import DatePicker from "src/Admin/Components/DatePickerRange"
 import NavigateBack from "src/Admin/Components/NavigateBack"
 import { adminAPI } from "src/Apis/admin.api"
@@ -23,6 +22,7 @@ import DropdownSearch from "../ManageSupplies/Components/DropdownSearch"
 import { useState } from "react"
 import { cleanObject } from "src/Helpers/common"
 import { toast } from "react-toastify"
+import { motion } from "framer-motion"
 
 type FormDataSearch = Pick<
   SchemaSupplyType,
@@ -165,10 +165,12 @@ export default function ManageReceipt() {
         />
       </Helmet>
       <NavigateBack />
-      <div className="text-lg font-bold py-2 text-[#3A5BFF]">Cung ứng sản phẩm</div>
-      <div className="">
-        <h1 className="text-[15px] font-medium">Tìm kiếm</h1>
+      <div className="text-2xl font-bold text-gray-800 bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600 my-2">
+        Đơn nhập hàng
+      </div>
+      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
         <div className="p-4 bg-white dark:bg-darkPrimary mb-3 border border-gray-300 dark:border-darkBorder rounded-2xl shadow-xl">
+          <h1 className="text-[15px] font-medium">Tìm kiếm</h1>
           <form onSubmit={handleSubmitSearch}>
             <div className="mt-1 grid grid-cols-2">
               <div className="col-span-1 flex items-center h-14 px-2 bg-[#fff] dark:bg-darkBorder border border-[#dadada] rounded-tl-xl">
@@ -318,10 +320,15 @@ export default function ManageReceipt() {
         {!isFetching && (
           <div>
             {listReceipt.length > 0 ? (
-              listReceipt.map((item) => (
-                <Fragment key={item._id}>
+              listReceipt.map((item, index) => (
+                <motion.div
+                  key={item._id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.1 }}
+                >
                   <ReceiptItem item={item} />
-                </Fragment>
+                </motion.div>
               ))
             ) : (
               <div className="text-center mt-4">Không tìm thấy kết quả</div>
@@ -340,7 +347,7 @@ export default function ManageReceipt() {
             {/* {addItem ? <AddSupply setAddItem={setAddItem} /> : ""} */}
           </div>
         )}
-      </div>
+      </motion.div>
     </div>
   )
 }
