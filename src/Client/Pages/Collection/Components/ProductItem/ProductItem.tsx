@@ -6,6 +6,19 @@ import { CollectionItemType } from "src/Types/product.type"
 import image_default from "src/Assets/img/anh_default_url.jpg"
 import { Link } from "react-router-dom"
 
+const getStatusTagClass = (status: string) => {
+  switch (status?.toLowerCase()) {
+    case "available":
+      return "bg-gradient-to-r from-blue-400 to-blue-600"
+    case "discontinued":
+      return "bg-gradient-to-r from-orange-400 to-pink-500"
+    case "out_of_stock":
+      return "bg-gradient-to-r from-yellow-400 to-orange-400"
+    default:
+      return "bg-gray-300"
+  }
+}
+
 export default function ProductItem({ item }: { item: CollectionItemType }) {
   const [imageChange, setImageChange] = useState<string | null>("")
 
@@ -31,12 +44,25 @@ export default function ProductItem({ item }: { item: CollectionItemType }) {
       onMouseEnter={() => handleHoverProduct(item._id)}
       onMouseLeave={() => handleHoverProduct("")}
     >
-      <div className="flex flex-col">
+      <div className="flex flex-col relative">
+        <div className="absolute top-[-4px] right-[-16px]">
+          {item.status && (
+            <span
+              className={`${getStatusTagClass(item.status)} text-white px-3 pt-[4px] pb-[6px] rounded-[4px] text-xs font-medium w-fit mb-2`}
+            >
+              {item.status === "available"
+                ? "Còn hàng"
+                : item.status === "discontinued"
+                  ? "Ngừng sản xuất"
+                  : "Hết hàng"}
+            </span>
+          )}
+        </div>
         <img
           loading="lazy"
           src={item._id === imageChange ? randomImage : imageDefault}
           alt={item.name}
-          className="object-cover w-full duration-200 transition-all"
+          className="mt-4 object-cover w-full duration-200 transition-all"
         />
         <span className="text-[14px] font-bold my-4">{item.name}</span>
         {item.discount ? (

@@ -2,7 +2,7 @@
 import { yupResolver } from "@hookform/resolvers/yup"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { AnimatePresence, motion } from "framer-motion"
-import { X } from "lucide-react"
+import { House, X } from "lucide-react"
 import { useForm } from "react-hook-form"
 import { toast } from "react-toastify"
 import { adminAPI } from "src/Apis/admin.api"
@@ -97,12 +97,11 @@ export default function AddSupplier({ setAddItem }: Props) {
           exit={{ opacity: 0, scale: 0.8 }}
           className="relative"
         >
-          <button onClick={() => setAddItem(false)} className="absolute right-2 top-1">
+          <button onClick={() => setAddItem(false)} className="absolute right-2 top-2">
             <X color="gray" size={22} />
           </button>
           <form onSubmit={handleAddSupplierSubmit} className="bg-white dark:bg-darkPrimary rounded-md w-[900px]">
-            <h3 className="py-2 px-4 text-[15px] font-medium bg-[#f2f2f2] rounded-md">Thông tin nhà cung cấp</h3>
-            <div className="w-full h-[1px] bg-[#dadada]"></div>
+            <h3 className="py-2 px-4 text-lg font-semibold tracking-wide rounded-md">Thông tin nhà cung cấp</h3>
             <div className="p-4 pt-0">
               <div className="mt-4 flex items-center gap-4">
                 <Input
@@ -179,7 +178,8 @@ export default function AddSupplier({ setAddItem }: Props) {
                 <Button
                   type="submit"
                   nameButton="Thêm"
-                  classNameButton="w-[120px] p-4 py-2 bg-blue-500 mt-2 w-full text-white font-semibold rounded-sm hover:bg-blue-500/80 duration-200"
+                  icon={<House size={18} />}
+                  classNameButton="w-[120px] p-4 py-2 bg-blue-500 mt-2 w-full text-white font-semibold rounded-3xl shadow-xl hover:bg-blue-500/80 duration-200 flex items-center gap-1"
                 />
               </div>
             </div>

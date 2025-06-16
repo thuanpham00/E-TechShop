@@ -99,6 +99,7 @@ export default function FilterProduct({ queryConfig, listProduct }: Props) {
     (data) => {
       const params = cleanObject({
         ...queryConfig,
+        page: 1,
         name: data.name,
         category: data.category,
         brand: data.brand,
@@ -398,7 +399,7 @@ export default function FilterProduct({ queryConfig, listProduct }: Props) {
             <div className="flex items-center justify-end gap-2">
               <Link
                 to={path.AddProduct}
-                className="p-2 bg-blue-500 w-full text-white font-medium rounded-md hover:bg-blue-500/80 duration-200 text-[13px] flex items-center gap-1"
+                className="py-2 px-3 bg-blue-500 w-full text-white font-medium rounded-3xl hover:bg-blue-500/80 duration-200 text-[13px] flex items-center gap-1"
               >
                 <Plus size={15} />
                 <span>Thêm mới</span>
@@ -407,7 +408,7 @@ export default function FilterProduct({ queryConfig, listProduct }: Props) {
                 onClick={() => downloadExcel(listProduct)}
                 icon={<FolderUp size={15} />}
                 nameButton="Export"
-                classNameButton="p-2 border border-[#E2E7FF] bg-[#E2E7FF] w-full text-[#3A5BFF] font-medium rounded-md hover:bg-blue-500/40 duration-200 text-[13px] flex items-center gap-1"
+                classNameButton="py-2 px-3 border border-[#E2E7FF] bg-[#E2E7FF] w-full text-[#3A5BFF] font-medium rounded-3xl hover:bg-blue-500/40 duration-200 text-[13px] flex items-center gap-1"
               />
             </div>
           </div>
@@ -417,13 +418,13 @@ export default function FilterProduct({ queryConfig, listProduct }: Props) {
               type="button"
               icon={<RotateCcw size={15} />}
               nameButton="Xóa bộ lọc tìm kiếm"
-              classNameButton="p-2 bg-[#f2f2f2] border border-[#dedede] w-full text-black font-medium hover:bg-[#dedede]/80 rounded-md duration-200 text-[13px] flex items-center gap-1 h-[35px]"
+              classNameButton="py-2 px-3 bg-[#f2f2f2] border border-[#dedede] w-full text-black font-medium hover:bg-[#dedede]/80 rounded-3xl duration-200 text-[13px] flex items-center gap-1 h-[35px]"
             />
             <Button
               type="submit"
               icon={<Search size={15} />}
               nameButton="Tìm kiếm"
-              classNameButton="py-2 px-3 bg-blue-500 w-full text-white font-medium hover:bg-blue-500/80 rounded-md duration-200 text-[13px] flex items-center gap-1 h-[35px]"
+              classNameButton="py-2 px-3 bg-blue-500 w-full text-white font-medium hover:bg-blue-500/80 rounded-3xl duration-200 text-[13px] flex items-center gap-1 h-[35px]"
             />
           </div>
         </div>

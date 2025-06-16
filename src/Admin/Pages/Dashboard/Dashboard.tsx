@@ -81,9 +81,9 @@ export default function Dashboard() {
         {isLoading && <Skeleton />}
         {!isFetching ? (
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-            <div className="text-2xl font-bold text-gray-800 bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600 my-2">
+            <h1 className="text-2xl font-bold text-gray-800 bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600 my-2">
               Thống kê hệ thống
-            </div>
+            </h1>
             <div className="flex items-center flex-wrap gap-4">
               {statistical.map((item, index) => {
                 const key = statisticalMapping[item.name as keyof typeof statisticalMapping]

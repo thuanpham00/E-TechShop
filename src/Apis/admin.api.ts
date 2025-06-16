@@ -1,6 +1,8 @@
 import Http from "src/Helpers/http"
 import {
+  CreateCustomerBodyReq,
   CreateProductBodyReq,
+  CreateReceiptBodyReq,
   UpdateBodyReq,
   UpdateCategoryBodyReq,
   UpdateSupplierBodyReq,
@@ -13,7 +15,8 @@ import {
   queryParamConfigProduct,
   queryParamConfigReceipt,
   queryParamConfigSupplier,
-  queryParamConfigSupply
+  queryParamConfigSupply,
+  queryParamsPricePerUnit
 } from "src/Types/queryParams.type"
 
 export const adminAPI = {
@@ -26,6 +29,10 @@ export const adminAPI = {
     }
   },
   customer: {
+    createCustomer: (body: CreateCustomerBodyReq) => {
+      return Http.post("/admin/customers", body)
+    },
+
     // lấy danh sách khách hàng
     getCustomers: (params: queryParamConfigCustomer, signal: AbortSignal) => {
       return Http.get("/admin/customers", {
@@ -183,8 +190,14 @@ export const adminAPI = {
 
     // lấy danh sách tên nhà cung cấp dựa trên tên sản phẩm
     // nếu sản phẩm đã liên kết với nhà cung cấp đó rồi sẽ bị lọc ra
-    getNameSuppliersBasedOnNameProduct: (productId: string) => {
-      return Http.get(`/admin/name-suppliers-based-on-product`, {
+    getNameSuppliersNotLinkedToProduct: (productId: string) => {
+      return Http.get(`/admin/not-linked-to-product`, {
+        params: { productId }
+      })
+    },
+
+    getNameSuppliersLinkedToProduct: (productId: string) => {
+      return Http.get(`/admin/linked-to-product`, {
         params: { productId }
       })
     },
@@ -254,7 +267,16 @@ export const adminAPI = {
         params,
         signal
       })
+    },
+
+    getPricePerUnitBasedOnProductAndSupplier: (params: queryParamsPricePerUnit) => {
+      return Http.get(`/admin/get-pricePerUnit`, {
+        params
+      })
+    },
+
+    createReceipt: (body: CreateReceiptBodyReq) => {
+      return Http.post(`/admin/receipts`, body)
     }
   }
 }
-// /AnimatePresence

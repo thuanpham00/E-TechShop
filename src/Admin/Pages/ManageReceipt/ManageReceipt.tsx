@@ -1,10 +1,10 @@
 import { yupResolver } from "@hookform/resolvers/yup"
 import { keepPreviousData, useQuery } from "@tanstack/react-query"
-import { isUndefined, omitBy } from "lodash"
+import { isUndefined, omit, omitBy } from "lodash"
 import { FolderUp, Plus, RotateCcw, Search } from "lucide-react"
 import { Helmet } from "react-helmet-async"
 import { Controller, useForm } from "react-hook-form"
-import { createSearchParams, useNavigate } from "react-router-dom"
+import { createSearchParams, Link, useNavigate } from "react-router-dom"
 import DatePicker from "src/Admin/Components/DatePickerRange"
 import NavigateBack from "src/Admin/Components/NavigateBack"
 import { adminAPI } from "src/Apis/admin.api"
@@ -23,15 +23,24 @@ import { useState } from "react"
 import { cleanObject } from "src/Helpers/common"
 import { toast } from "react-toastify"
 import { motion } from "framer-motion"
+import useDownloadExcel from "src/Hook/useDownloadExcel"
+import Input from "src/Components/Input"
 
 type FormDataSearch = Pick<
   SchemaSupplyType,
-  "name_product" | "name_supplier" | "created_at_start" | "created_at_end" | "updated_at_start" | "updated_at_end"
+  | "name_product"
+  | "name_supplier"
+  | "created_at_start"
+  | "created_at_end"
+  | "updated_at_start"
+  | "updated_at_end"
+  | "quantity"
 >
 
 const formDataSearch = schemaSupply.pick([
   "name_product",
   "name_supplier",
+  "quantity",
   "created_at_start",
   "created_at_end",
   "updated_at_start",
@@ -40,7 +49,7 @@ const formDataSearch = schemaSupply.pick([
 
 export default function ManageReceipt() {
   const navigate = useNavigate()
-  // const { downloadExcel } = useDownloadExcel()
+  const { downloadExcel } = useDownloadExcel()
 
   const queryParams: queryParamConfigReceipt = useQueryParams()
   const queryConfig: queryParamConfigReceipt = omitBy(
@@ -50,8 +59,6 @@ export default function ManageReceipt() {
       name_product: queryParams.name_product,
       name_supplier: queryParams.name_supplier,
       quantity: queryParams.quantity,
-      import_date_start: queryParams.import_date_start,
-      import_date_end: queryParams.import_date_end,
       created_at_start: queryParams.created_at_start,
       created_at_end: queryParams.created_at_end,
       updated_at_start: queryParams.updated_at_start,
@@ -89,7 +96,7 @@ export default function ManageReceipt() {
   const {
     register: registerFormSearch,
     handleSubmit: handleSubmitFormSearch,
-    // reset: resetFormSearch,
+    reset: resetFormSearch,
     control: controlFormSearch,
     setValue: setValueSearch,
     trigger
@@ -104,6 +111,7 @@ export default function ManageReceipt() {
         page: 1,
         name_product: data.name_product,
         name_supplier: data.name_supplier,
+        quantity: data.quantity,
         created_at_start: data.created_at_start?.toISOString(),
         created_at_end: data.created_at_end?.toISOString(),
         updated_at_start: data.updated_at_start?.toISOString(),
@@ -155,6 +163,22 @@ export default function ManageReceipt() {
   const [inputProductValue, setInputProductValue] = useState("")
   const [inputSupplierValue, setInputSupplierValue] = useState("")
 
+  const handleResetFormSearch = () => {
+    const filteredSearch = omit(queryConfig, [
+      "name_product",
+      "name_supplier",
+      "quantity",
+      "import_date_start",
+      "import_date_end",
+      "created_at_start",
+      "created_at_end",
+      "updated_at_start",
+      "updated_at_end"
+    ])
+    resetFormSearch()
+    navigate({ pathname: path.AdminReceipts, search: createSearchParams(filteredSearch).toString() })
+  }
+
   return (
     <div>
       <Helmet>
@@ -165,9 +189,9 @@ export default function ManageReceipt() {
         />
       </Helmet>
       <NavigateBack />
-      <div className="text-2xl font-bold text-gray-800 bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600 my-2">
+      <h1 className="text-2xl font-bold text-gray-800 bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600 my-2">
         Đơn nhập hàng
-      </div>
+      </h1>
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
         <div className="p-4 bg-white dark:bg-darkPrimary mb-3 border border-gray-300 dark:border-darkBorder rounded-2xl shadow-xl">
           <h1 className="text-[15px] font-medium">Tìm kiếm</h1>
@@ -203,7 +227,23 @@ export default function ManageReceipt() {
                   <span className="absolute inset-y-0 left-[-5%] w-[1px] bg-[#dadada] h-full"></span>
                 </div>
               </div>
-              <div className="col-span-1 flex items-center h-14 px-2 bg-[#fff] dark:bg-darkBorder border border-[#dadada] border-t-0 rounded-bl-xl">
+              <div className="col-span-1 flex items-center h-14 px-2 bg-[#fff] dark:bg-darkBorder border border-[#dadada] border-t-0">
+                <span className="w-1/3">Số lượng sản phẩm</span>
+                <div className="w-2/3 relative h-full">
+                  <div className="mt-2 w-full flex items-center gap-2">
+                    <Input
+                      name="quantity"
+                      register={registerFormSearch}
+                      placeholder="Nhập số lượng"
+                      classNameInput="p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-black focus:border-blue-500 focus:ring-1 outline-none rounded-md h-[35px]"
+                      className="relative flex-grow"
+                      classNameError="hidden"
+                    />
+                  </div>
+                  <span className="absolute inset-y-0 left-[-5%] w-[1px] bg-[#dadada] h-full"></span>
+                </div>
+              </div>
+              <div className="col-span-1 flex items-center h-14 px-2 bg-[#fff] dark:bg-darkBorder border border-[#dadada] border-t-0 ">
                 <span className="w-1/3">Ngày tạo</span>
                 <div className="w-2/3 relative h-full">
                   <div className="mt-2 w-full flex items-center gap-2">
@@ -242,7 +282,7 @@ export default function ManageReceipt() {
                   <span className="absolute inset-y-0 left-[-5%] w-[1px] bg-[#dadada] h-full"></span>
                 </div>
               </div>
-              <div className="col-span-1 flex items-center h-14 px-2 bg-[#fff] dark:bg-darkBorder border border-[#dadada] border-t-0 rounded-br-xl">
+              <div className="col-span-1 flex items-center h-14 px-2 bg-[#fff] dark:bg-darkBorder border border-[#dadada] border-t-0 rounded-bl-xl">
                 <span className="w-1/3">Ngày cập nhật</span>
                 <div className="w-2/3 relative h-full">
                   <div className="mt-2 w-full flex items-center gap-2">
@@ -284,32 +324,33 @@ export default function ManageReceipt() {
             </div>
             <div className="flex justify-between mt-4">
               <div className="flex items-center gap-2">
+                <Link
+                  to={path.AddReceipt}
+                  className="py-2 px-3 bg-blue-500 w-full text-white font-medium rounded-3xl hover:bg-blue-500/80 duration-200 text-[13px] flex items-center gap-1"
+                >
+                  <Plus size={15} />
+                  <span>Thêm mới</span>
+                </Link>
                 <Button
-                  // onClick={() => setAddItem(true)}
-                  icon={<Plus size={15} />}
-                  nameButton="Thêm mới"
-                  classNameButton="p-2 bg-blue-500 w-full text-white font-medium rounded-md hover:bg-blue-500/80 duration-200 text-[13px] flex items-center gap-1"
-                />
-                <Button
-                  // onClick={() => downloadExcel(listSupplier)}
+                  onClick={() => downloadExcel(listReceipt)}
                   icon={<FolderUp size={15} />}
                   nameButton="Export"
-                  classNameButton="p-2 border border-[#E2E7FF] bg-[#E2E7FF] w-full text-[#3A5BFF] font-medium rounded-md hover:bg-blue-500/40 duration-200 text-[13px] flex items-center gap-1"
+                  classNameButton="py-2 px-3 border border-[#E2E7FF] bg-[#E2E7FF] w-full text-[#3A5BFF] font-medium rounded-3xl hover:bg-blue-500/40 duration-200 text-[13px] flex items-center gap-1"
                 />
               </div>
               <div className="flex items-center gap-2">
                 <Button
-                  // onClick={handleResetFormSearch}
+                  onClick={handleResetFormSearch}
                   type="button"
                   icon={<RotateCcw size={15} />}
                   nameButton="Xóa bộ lọc tìm kiếm"
-                  classNameButton="p-2 bg-[#f2f2f2] border border-[#dedede] w-full text-black font-medium hover:bg-[#dedede]/80 rounded-md duration-200 text-[13px] flex items-center gap-1 h-[35px]"
+                  classNameButton="py-2 px-3 bg-[#f2f2f2] border border-[#dedede] w-full text-black font-medium hover:bg-[#dedede]/80 rounded-3xl duration-200 text-[13px] flex items-center gap-1 h-[35px]"
                 />
                 <Button
                   type="submit"
                   icon={<Search size={15} />}
                   nameButton="Tìm kiếm"
-                  classNameButton="p-2 px-3 bg-blue-500 w-full text-white font-medium rounded-md hover:bg-blue-500/80 duration-200 text-[13px] flex items-center gap-1 h-[35px]"
+                  classNameButton="py-2 px-3 bg-blue-500 w-full text-white font-medium rounded-3xl hover:bg-blue-500/80 duration-200 text-[13px] flex items-center gap-1 h-[35px]"
                   className="flex-shrink-0"
                 />
               </div>

@@ -24,6 +24,7 @@
     "@tanstack/react-query-devtools": "^5.64.1",
     "@tinymce/tinymce-react": "^6.1.0",
     "axios": "^1.7.9",
+    "bson": "^6.10.4",
     "class-variance-authority": "^0.7.1",
     "classnames": "^2.5.1",
     "clsx": "^2.1.1",

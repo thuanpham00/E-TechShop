@@ -68,7 +68,11 @@ export default function ReceiptItem({ item }: Props) {
         </div>
         <div className="col-span-2">
           <span>Ghi chú:</span>
-          <textarea rows={3} className="mt-1 block border border-[#dadada] p-2 w-full rounded-md dark:bg-darkPrimary">
+          <textarea
+            rows={3}
+            disabled
+            className="mt-1 block border border-[#dadada] p-2 w-full rounded-md dark:bg-darkPrimary"
+          >
             {item.note ? item.note : "Không có ghi chú"}
           </textarea>
         </div>
@@ -87,7 +91,7 @@ export default function ReceiptItem({ item }: Props) {
         >
           {item.items.map((product, index) => (
             <div key={index} className="flex items-stretch mb-4 ">
-              <div className="w-[7%] bg-orange-500 p-2 rounded-tl-lg rounded-bl-lg text-white text-lg flex items-center justify-center">
+              <div className="w-[7%] p-2 rounded-tl-lg rounded-bl-lg text-black text-lg flex items-center justify-center tracking-wide text-[15px] font-semibold px-3 bg-blue-200">
                 SP{index + 1}
               </div>
               <div className="w-[93%] grid grid-cols-2 gap-4 px-4 py-2 bg-[#edf2f4 rounded-tr-lg rounded-br-lg border border-gray-300">

@@ -18,6 +18,7 @@ import { config } from "src/Constants/config"
 import { toast } from "react-toastify"
 import { CreateProductBodyReq } from "src/Types/product.type"
 import { isError400 } from "src/Helpers/utils"
+import { motion } from "framer-motion"
 
 const listSpecificationForCategory = {
   Laptop: [
@@ -34,7 +35,15 @@ const listSpecificationForCategory = {
     "Màu sắc",
     "Bảo hành"
   ],
-  "Tai nghe": ["Cpu", "Ram", "Ổ cứng", "Card đồ họa"]
+  "Màn hình": [
+    "Thời gian phản hồi",
+    "Độ phân giải",
+    "Tần số quét",
+    "Kiểu màn hình",
+    "Tấm nền",
+    "Kích thước",
+    "Bảo hành"
+  ]
 } as const
 
 type CategoryType = keyof typeof listSpecificationForCategory
@@ -285,8 +294,10 @@ export default function AddProduct() {
         />
       </Helmet>
       <NavigateBack />
-      <h1 className="text-lg font-bold py-2 text-[#3A5BFF]">Thêm Sản phẩm</h1>
-      <div>
+      <h1 className="text-2xl font-bold text-gray-800 bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600 my-2">
+        Thêm sản phẩm
+      </h1>
+      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
         <form onSubmit={handleSubmitAddProduct} className="grid grid-cols-7 gap-4">
           <div className="col-span-3 bg-white dark:bg-darkPrimary border border-[#dedede] dark:border-darkBorder rounded-2xl shadow-xl">
             <div className="p-4 text-base font-semibold">Ảnh sản phẩm</div>
@@ -302,7 +313,7 @@ export default function AddProduct() {
                 <input
                   className="hidden"
                   type="file"
-                  accept=".jpg,.jpeg,.png"
+                  accept=".jpg,.jpeg,.png,.webp"
                   ref={refBanner}
                   onChange={onChangeImageBanner}
                 />
@@ -348,7 +359,7 @@ export default function AddProduct() {
                       <input
                         className="hidden"
                         type="file"
-                        accept=".jpg,.jpeg,.png"
+                        accept=".jpg,.jpeg,.png,.webp"
                         ref={(el) => (refGallery.current[index] = el)}
                         onChange={onChangeImageGallery(index)}
                       />
@@ -406,7 +417,7 @@ export default function AddProduct() {
                             onChange={(e) => {
                               const selected = e.target.value || undefined
                               field.onChange(selected)
-                              setSelectedCategory(selected as "Laptop" | "Tai nghe") // set state danh mục đã chọn
+                              setSelectedCategory(selected as "Laptop" | "Màn hình") // set state danh mục đã chọn
                             }} // ✅ Cập nhật vào form
                             className="p-2 border border-gray-300 dark:border-darkBorder bg-[#f2f2f2] dark:bg-black w-full mt-2 rounded-md"
                           >
@@ -575,7 +586,7 @@ export default function AddProduct() {
             </div>
           </div>
         </form>
-      </div>
+      </motion.div>
     </div>
   )
 }

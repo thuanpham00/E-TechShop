@@ -26,6 +26,7 @@ export type CollectionItemType = {
   reviews: string[]
   category: string[]
   brand: string[]
+  status: StatusProduct
 }
 
 export type CategoryItemType = {
@@ -226,4 +227,28 @@ export type CreateProductBodyReq = {
   banner: File
   medias: File[]
   specifications: { name: string; value: string }[]
+}
+
+export type CreateReceiptBodyReq = {
+  importDate: string
+  totalItem: number
+  totalAmount: number
+  items: {
+    productId: string
+    supplierId: string
+    quantity: number
+    pricePerUnit: number
+    totalPrice: number
+  }[]
+}
+
+export type CreateCustomerBodyReq = {
+  id: string
+  name: string
+  email: string
+  phone: string
+  date_of_birth: Date
+  password: string
+  confirm_password: string
+  avatar: string
 }

@@ -10,7 +10,7 @@ import { CalculateSalePrice, formatCurrency } from "src/Helpers/common"
 import { CollectionItemType, ProductDetailType } from "src/Types/product.type"
 import { SuccessResponse } from "src/Types/utils.type"
 import star from "src/Assets/img/star.png"
-import { Check } from "lucide-react"
+import { Heart } from "lucide-react"
 import ProductItem from "../Collection/Components/ProductItem"
 import { useEffect, useRef, useState } from "react"
 
@@ -157,7 +157,13 @@ export default function ProductDetail() {
                 </div>
               </div>
               <div className="col-span-4">
-                <h1 className="text-2xl font-semibold">{productDetail.name}</h1>
+                <div className="flex items-center gap-2">
+                  <h1 className="text-2xl font-semibold">{productDetail.name}</h1>
+                  <span className="bg-gradient-to-r from-orange-400 to-pink-500 text-white px-3 py-1 rounded-full text-sm font-semibold">
+                    {productDetail.isFeatured === "true" ? "Nổi bật" : ""}
+                  </span>
+                </div>
+
                 <div className="mt-2 flex items-center gap-1">
                   <h3 className="text-base text-yellow-500 font-semibold">0.0</h3>
                   <img src={star} alt="ngôi sao icon" className="w-3 h-3" />
@@ -165,7 +171,7 @@ export default function ProductDetail() {
                 </div>
                 <div className="mt-2 ">
                   {productDetail.discount > 0 && (
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-3 my-4">
                       <h2 className="text-3xl font-semibold text-red-500">
                         {CalculateSalePrice(productDetail.price, productDetail.discount)}₫
                       </h2>
@@ -180,42 +186,75 @@ export default function ProductDetail() {
                   {productDetail.discount === 0 && (
                     <h2 className="text-3xl font-semibold text-red-500">{formatCurrency(productDetail.price)}₫</h2>
                   )}
+                  <span className="text-sm">Đã bao gồm VAT</span>
                 </div>
 
-                {productDetail.status === "out_of_stock" && (
-                  <button className="mt-4 py-3 bg-[#bcbec2] rounded-md text-white w-[300px] text-lg">HẾT HÀNG</button>
-                )}
+                {productDetail.status === "available" && <div className="flex items-center gap-2">hihi</div>}
 
-                {productDetail.status === "available" && (
-                  <button className="mt-4 py-3 bg-red-600 hover:bg-red-400 duration-200 rounded-md text-white w-[300px] text-lg font-semibold">
-                    Đặt hàng
+                <div className="flex items-center gap-2 mt-4">
+                  {productDetail.status === "out_of_stock" && (
+                    <button className="py-2 bg-[#bcbec2] rounded-md text-white w-[180px] text-[15px]">HẾT HÀNG</button>
+                  )}
+
+                  {productDetail.status === "discontinued" && (
+                    <button className="py-2 bg-[#bcbec2] rounded-md text-white w-[180px] text-[15px]">
+                      Ngừng sản xuất
+                    </button>
+                  )}
+
+                  {productDetail.status === "available" && (
+                    <div className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        className="py-2 border-2 border-red-600 hover:bg-red-100 duration-200  rounded-md text-red-600 min-w-[180px] text-[15px] font-semibold"
+                      >
+                        Thêm vào giỏ hàng
+                      </button>
+                      <button
+                        type="button"
+                        className="py-2 border-2 border-red-600 bg-red-600 hover:bg-red-400 duration-200 rounded-md text-white min-w-[150px] text-[15px] font-semibold"
+                      >
+                        Mua ngay
+                      </button>
+                    </div>
+                  )}
+                  <button className="p-2 border border-orange-300 rounded-lg transition-all duration-300 hover:shadow-md">
+                    <Heart className="text-red-500 fill-red-500" size={18} />
+                    {/* <Heart className="text-gray-800" /> */}
                   </button>
-                )}
+                </div>
 
-                <div className="mt-4">
-                  <div className="flex items-center gap-1 my-2">
-                    <Check size={16} />
-                    {productDetail.specifications.map((item) => {
-                      if (item.name === "Bảo hành") {
-                        return (
-                          <span key={item.name} className="text-[15px] font-medium">
-                            Bảo hành chính hãng {item.value}.
-                          </span>
-                        )
-                      }
-                    })}
+                <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="flex items-start gap-3 p-4 rounded-xl bg-gradient-to-br from-blue-100 to-blue-50">
+                    <div className="text-blue-600 text-xl">🚚</div>
+                    <div>
+                      <div className="text-sm font-semibold text-gray-800">Miễn phí vận chuyển</div>
+                      <div className="text-xs text-gray-500">Đơn hàng từ 500k</div>
+                    </div>
                   </div>
-                  <div className="flex items-center gap-1 my-2">
-                    <Check size={16} />
-                    <span className="text-[15px] font-medium">Hỗ trợ đổi mới trong 7 ngày.</span>
+
+                  <div className="flex items-start gap-3 p-4 rounded-xl bg-gradient-to-br from-green-100 to-green-50">
+                    <div className="text-green-600 text-xl">🛡️</div>
+                    <div>
+                      <div className="text-sm font-semibold text-gray-800">Bảo hành chính hãng</div>
+                      {productDetail.specifications.map((item) => {
+                        if (item.name === "Bảo hành") {
+                          return (
+                            <span key={item.name} className="text-xs font-medium">
+                              {item.value}.
+                            </span>
+                          )
+                        }
+                      })}
+                    </div>
                   </div>
-                  <div className="flex items-center gap-1 my-2">
-                    <Check size={16} />
-                    <span className="text-[15px] font-medium">Windows bản quyền tích hợp.</span>
-                  </div>
-                  <div className="flex items-center gap-1 my-2">
-                    <Check size={16} />
-                    <span className="text-[15px] font-medium">Miễn phí giao hàng toàn quốc.</span>
+
+                  <div className="flex items-start gap-3 p-4 rounded-xl bg-gradient-to-br from-orange-100 to-orange-50">
+                    <div className="text-orange-600 text-xl">🔁</div>
+                    <div>
+                      <div className="text-sm font-semibold text-gray-800">Đổi trả dễ dàng</div>
+                      <div className="text-xs text-gray-500">Trong 7 ngày</div>
+                    </div>
                   </div>
                 </div>
               </div>

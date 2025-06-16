@@ -1,6 +1,6 @@
 import { yupResolver } from "@hookform/resolvers/yup"
 import { keepPreviousData, useMutation, useQuery } from "@tanstack/react-query"
-import { X } from "lucide-react"
+import { PackageSearch, X } from "lucide-react"
 import { useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
 import { toast } from "react-toastify"
@@ -137,7 +137,7 @@ export default function SupplyDetail({
   const getNameSuppliersBasedOnNameProduct = useQuery({
     queryKey: ["nameSupplierBasedOnNameProduct", profile?.productId[0]?.name],
     queryFn: () => {
-      return adminAPI.supplier.getNameSuppliersBasedOnNameProduct(profile?.productId[0]?.name || inputValueProduct)
+      return adminAPI.supplier.getNameSuppliersNotLinkedToProduct(profile?.productId[0]?.name || inputValueProduct)
     },
     retry: 0,
     placeholderData: keepPreviousData,
@@ -165,12 +165,11 @@ export default function SupplyDetail({
           exit={{ opacity: 0, scale: 0.8 }}
           className="relative"
         >
-          <button onClick={handleExitsEditItem} className="absolute right-2 top-1">
+          <button onClick={handleExitsEditItem} className="absolute right-2 top-2">
             <X color="gray" size={22} />
           </button>
           <form onSubmit={handleSubmitUpdate} className="bg-white dark:bg-darkPrimary rounded-md w-[700px]">
-            <h3 className="py-2 px-4 text-[15px] font-medium bg-[#f2f2f2] rounded-md">Thông tin cung ứng</h3>
-            <div className="w-full h-[1px] bg-[#dadada]"></div>
+            <h3 className="py-2 px-4 text-lg font-semibold tracking-wide rounded-md">Thông tin cung ứng</h3>
             <div className="p-4 pt-0">
               <div className="mt-4 bg-[#fff] dark:bg-darkBorder">
                 <Input
@@ -273,7 +272,8 @@ export default function SupplyDetail({
                 <Button
                   type="submit"
                   nameButton="Cập nhật"
-                  classNameButton="w-[120px] p-4 py-2 bg-blue-500 mt-2 w-full text-white font-semibold rounded-sm hover:bg-blue-500/80 duration-200"
+                  icon={<PackageSearch size={18} />}
+                  classNameButton="w-[120px] p-4 py-2 bg-blue-500 mt-2 w-full text-white font-semibold rounded-3xl hover:bg-blue-500/80 duration-200 flex items-center gap-1"
                 />
               </div>
             </div>

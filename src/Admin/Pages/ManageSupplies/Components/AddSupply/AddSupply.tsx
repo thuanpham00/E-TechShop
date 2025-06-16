@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { yupResolver } from "@hookform/resolvers/yup"
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import { X } from "lucide-react"
+import { PackageSearch, X } from "lucide-react"
 import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { toast } from "react-toastify"
@@ -96,7 +96,7 @@ export default function AddSupply({ setAddItem }: Props) {
   const getNameSuppliersBasedOnNameProduct = useQuery({
     queryKey: ["nameSupplierBasedOnNameProduct", inputValueProduct],
     queryFn: () => {
-      return adminAPI.supplier.getNameSuppliersBasedOnNameProduct(inputValueProduct)
+      return adminAPI.supplier.getNameSuppliersNotLinkedToProduct(inputValueProduct)
     },
     retry: 0, // số lần retry lại khi hủy request (dùng abort signal)
     enabled: !!inputValueProduct // nó chỉ chạy khi có inputValueProduct
@@ -122,7 +122,7 @@ export default function AddSupply({ setAddItem }: Props) {
           exit={{ opacity: 0, scale: 0.8 }}
           className="relative"
         >
-          <button onClick={() => setAddItem(false)} className="absolute right-2 top-1">
+          <button onClick={() => setAddItem(false)} className="absolute right-2 top-2">
             <X color="gray" size={22} />
           </button>
           <form
@@ -130,8 +130,7 @@ export default function AddSupply({ setAddItem }: Props) {
             onSubmit={handleAddSupplySubmit}
             className="bg-white dark:bg-darkPrimary rounded-md w-[700px]"
           >
-            <h3 className="py-2 px-4 text-[15px] font-medium bg-[#f2f2f2] rounded-md">Thông tin cung ứng</h3>
-            <div className="w-full h-[1px] bg-[#dadada]"></div>
+            <h3 className="py-2 px-4 text-lg font-semibold tracking-wide rounded-md">Thông tin cung ứng</h3>
             <div className="p-4 pt-0">
               <div className="mt-4 bg-[#fff] dark:bg-darkBorder">
                 <DropdownList
@@ -199,8 +198,9 @@ export default function AddSupply({ setAddItem }: Props) {
               <div className="flex items-center justify-end">
                 <Button
                   type="submit"
+                  icon={<PackageSearch size={18} />}
                   nameButton="Thêm"
-                  classNameButton="w-[120px] p-4 py-2 bg-blue-500 mt-2 w-full text-white font-semibold rounded-sm hover:bg-blue-500/80 duration-200"
+                  classNameButton="w-[120px] px-4 py-2 bg-blue-500 mt-2 w-full text-white font-semibold rounded-3xl hover:bg-blue-500/80 duration-200 flex items-center gap-1"
                 />
               </div>
             </div>

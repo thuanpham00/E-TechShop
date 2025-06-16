@@ -1,6 +1,6 @@
 import { yupResolver } from "@hookform/resolvers/yup"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
-import { X } from "lucide-react"
+import { BookOpenCheck, X } from "lucide-react"
 import { useForm } from "react-hook-form"
 import { toast } from "react-toastify"
 import { adminAPI } from "src/Apis/admin.api"
@@ -66,12 +66,11 @@ export default function AddCategory({ setAddItem }: Props) {
           exit={{ opacity: 0, scale: 0.8 }}
           className="relative"
         >
-          <button onClick={() => setAddItem(false)} className="absolute right-2 top-1">
+          <button onClick={() => setAddItem(false)} className="absolute right-2 top-2">
             <X color="gray" size={22} />
           </button>
           <form onSubmit={handleAddCategorySubmit} className="bg-white dark:bg-darkPrimary rounded-md">
-            <h3 className="py-2 px-4 text-[15px] font-medium bg-[#f2f2f2] rounded-md">Thông tin danh mục</h3>
-            <div className="w-full h-[1px] bg-[#dadada]"></div>
+            <h3 className="py-2 px-4 text-lg font-semibold tracking-wide rounded-md">Thông tin danh mục</h3>
             <div className="p-4 pt-0">
               <div className="mt-4 flex items-center gap-4">
                 <Input
@@ -87,8 +86,9 @@ export default function AddCategory({ setAddItem }: Props) {
               <div className="flex items-center justify-end">
                 <Button
                   type="submit"
+                  icon={<BookOpenCheck size={18} />}
                   nameButton="Thêm"
-                  classNameButton="w-[120px] p-4 py-2 bg-blue-500 mt-2 w-full text-white font-semibold rounded-sm hover:bg-blue-500/80 duration-200"
+                  classNameButton="w-[120px] p-4 py-2 bg-blue-500 mt-2 w-full text-white font-semibold rounded-3xl hover:bg-blue-500/80 duration-200 flex items-center gap-1"
                 />
               </div>
             </div>

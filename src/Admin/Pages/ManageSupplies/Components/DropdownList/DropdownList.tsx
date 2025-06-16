@@ -9,9 +9,12 @@ interface DropDownListType {
   listItem: string[]
   onSelect: (item: string) => void
   nameInput?: string
-  setInputValueProductCPNFather?: React.Dispatch<React.SetStateAction<string>> // (item: string) => void
+  setInputValueProductCPNFather?: React.Dispatch<React.SetStateAction<string>>
+  setInputValueProductCPNFather_2?: (value: string, index: number) => void
   isAddItem: boolean
   value?: string
+  classNameWrapper?: string
+  index?: number
 }
 
 export default function DropdownList({
@@ -22,7 +25,10 @@ export default function DropdownList({
   isAddItem,
   nameInput,
   setInputValueProductCPNFather,
-  value
+  setInputValueProductCPNFather_2,
+  value,
+  classNameWrapper = "mt-2 w-full relative",
+  index
 }: DropDownListType) {
   const { activeField, setActiveField, inputValue, setInputValue, filterList, inputRef, handleClickItemList } =
     useAutoComplete(listItem, value)
@@ -33,10 +39,14 @@ export default function DropdownList({
     if (name == "productId" && setInputValueProductCPNFather) {
       setInputValueProductCPNFather(item)
     }
+
+    if (name == "productId" && setInputValueProductCPNFather_2 && typeof index === "number") {
+      setInputValueProductCPNFather_2(item, index)
+    }
   }
 
   return (
-    <div className="mt-2 w-full relative">
+    <div className={classNameWrapper}>
       {isAddItem ? (
         <Input
           name={name}

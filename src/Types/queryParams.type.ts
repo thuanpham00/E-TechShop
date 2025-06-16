@@ -51,3 +51,8 @@ export type queryParamConfigProduct = queryParamConfig & {
   price_max?: string
   status?: string
 }
+
+export type queryParamsPricePerUnit = {
+  name_product: string
+  name_supplier: string
+}

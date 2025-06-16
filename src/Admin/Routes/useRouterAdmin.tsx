@@ -23,6 +23,7 @@ const ManageOrders = lazy(() => import("src/Admin/Pages/ManageOrders"))
 const ManageProducts = lazy(() => import("src/Admin/Pages/ManageProducts"))
 const ManageBrand = lazy(() => import("src/Admin/Pages/ManageBrand"))
 const AddProduct = lazy(() => import("src/Admin/Pages/AddProduct"))
+const AddReceipt = lazy(() => import("src/Admin/Pages/AddReceipt"))
 
 const ProtectedRoute = () => {
   const { isAuthenticated } = useContext(AppContext)
@@ -101,6 +102,14 @@ export default function useRouterAdmin() {
               element: (
                 <Suspense>
                   <AddProduct />
+                </Suspense>
+              )
+            },
+            {
+              path: path.AddReceipt,
+              element: (
+                <Suspense>
+                  <AddReceipt />
                 </Suspense>
               )
             },

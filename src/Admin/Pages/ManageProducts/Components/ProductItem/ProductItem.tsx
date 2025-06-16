@@ -53,7 +53,7 @@ export default function ProductItem({
       <div className="col-span-2 font-semibold">{item.name}</div>
       <div className="col-span-1">{item.brand[0].name}</div>
       <div className="col-span-1">{item.category[0].name}</div>
-      <div className="col-span-1">{formatCurrency(item.price)}</div>
+      <div className="col-span-1 text-red-600 font-semibold">{formatCurrency(item.price)}đ</div>
       <div className="col-span-1">
         {item.status === "out_of_stock" && (
           <div className=" text-[13px] font-medium py-1 px-2 border border-[#ffdcdc] bg-[#ffdcdc] text-[#f00] text-center rounded-full flex gap-1 justify-center items-center">

@@ -13,6 +13,12 @@ export function formatCurrency(current: number) {
 }
 // format 10000 -> 10.000
 
+export function parseCurrencyToNumber(currencyStr: string) {
+  if (!currencyStr) return 0
+  const normalized = currencyStr.replace(/[^\d]/g, "") // Xóa tất cả ký tự không phải số
+  return Number(normalized)
+}
+
 export function CalculateSalePrice(price: number, discount: number) {
   const priceSale = price - price * (discount / 100)
   return formatCurrency(priceSale)

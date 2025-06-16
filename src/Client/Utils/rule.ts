@@ -180,7 +180,8 @@ export const schemaSupply = schemaAuth
   .shape({
     name_product: yup.string(),
     name_supplier: yup.string(),
-    importPrice: yup.string()
+    importPrice: yup.string(),
+    quantity: yup.number()
   })
 
 export const schemaSupplyUpdate = schemaAuth.pick(["created_at", "updated_at", "id"]).shape({
@@ -190,6 +191,29 @@ export const schemaSupplyUpdate = schemaAuth.pick(["created_at", "updated_at", "
   warrantyMonths: yup.number().required("Thời gian bảo hành bắt buộc!"),
   leadTimeDays: yup.number().required("Thời gian cung ứng bắt buộc!"),
   description: yup.string().default("")
+})
+
+export const schemaAddReceipt = yup.object({
+  items: yup
+    .array()
+    .min(1, "Sản phẩm bắt buộc!") // đảm bảo có ít nhất 1 item
+    .required("Sản phẩm bắt buộc!")
+    .of(
+      yup.object({
+        productId: yup.string().required("Sản phẩm bắt buộc!"),
+        supplierId: yup.string().required("Nhà cung cấp bắt buộc!"),
+        quantity: yup.string().required("Số lượng bắt buộc!"),
+        pricePerUnit: yup.string().required("Giá nhập bắt buộc!"),
+        totalPrice: yup.string().required("Tổng giá tiền bắt buộc!")
+      })
+    ),
+  importDate: yup.string().required(),
+  totalItem: yup
+    .number()
+    .transform((value, originalValue) => (originalValue === "" ? undefined : value))
+    .moreThan(0, "Số lượng sản phẩm phải lớn hơn 0"),
+
+  totalAmount: yup.string()
 })
 
 export type SchemaAuthType = yup.InferType<typeof schemaAuth>
@@ -207,3 +231,5 @@ export type SchemaSupplierUpdateType = yup.InferType<typeof schemaSupplierUpdate
 export type SchemaSupplyType = yup.InferType<typeof schemaSupply>
 
 export type SchemaSupplyUpdateType = yup.InferType<typeof schemaSupplyUpdate>
+
+export type SchemaAddReceiptType = yup.InferType<typeof schemaAddReceipt>
