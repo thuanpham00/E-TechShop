@@ -1,4 +1,5 @@
-import { keepPreviousData, useQuery } from "@tanstack/react-query"
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { Helmet } from "react-helmet-async"
 import { useLocation, useNavigate, useParams } from "react-router-dom"
 import { collectionAPI } from "src/Apis/collections.api"
@@ -6,17 +7,22 @@ import Breadcrumb from "src/Client/Components/Breadcrumb"
 import Skeleton from "src/Components/Skeleton"
 import { HttpStatusCode } from "src/Constants/httpStatus"
 import { path } from "src/Constants/path"
-import { CalculateSalePrice, formatCurrency } from "src/Helpers/common"
-import { CollectionItemType, ProductDetailType } from "src/Types/product.type"
+import { CalculateSalePrice, formatCurrency, getNameFromNameId } from "src/Helpers/common"
+import { CollectionItemType, FavouritesType, ProductDetailType } from "src/Types/product.type"
 import { SuccessResponse } from "src/Types/utils.type"
 import star from "src/Assets/img/star.png"
 import { Heart } from "lucide-react"
 import ProductItem from "../Collection/Components/ProductItem"
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useMemo, useRef, useState } from "react"
+import { toast } from "react-toastify"
+import { getAccessTokenFromLS } from "src/Helpers/auth"
 
 export default function ProductDetail() {
+  const queryClient = useQueryClient()
+  // const [liked, setLiked] = useState<boolean>(false)
   const { state: nameCategory } = useLocation()
   const { name } = useParams()
+  const id = getNameFromNameId(name as string)
   const imgRef = useRef<HTMLImageElement>(null)
 
   const navigate = useNavigate()
@@ -26,14 +32,14 @@ export default function ProductDetail() {
   }, [])
 
   const { data, isError, isFetching, isLoading, error } = useQuery({
-    queryKey: ["productDetail", name],
+    queryKey: ["productDetail", id],
     queryFn: () => {
       const controller = new AbortController()
       setTimeout(() => {
         controller.abort() // hủy request khi chờ quá lâu // 10 giây sau cho nó hủy // làm tự động
       }, 10000)
 
-      return collectionAPI.getProductDetail(name as string)
+      return collectionAPI.getProductDetail(id as string)
     },
     retry: 0, // số lần retry lại khi hủy request (dùng abort signal)
     staleTime: 5 * 60 * 1000, // dưới 5 phút nó không gọi lại api
@@ -110,6 +116,36 @@ export default function ProductDetail() {
     setImageCurrent(img)
   }
 
+  const addFavouriteMutation = useMutation({
+    mutationFn: (body: FavouritesType) => {
+      return collectionAPI.createCollectionsFavourite(body)
+    }
+  })
+
+  const token = getAccessTokenFromLS()
+  const handleAddProductToFavourite = async (product: FavouritesType) => {
+    // nếu sản phẩm đã tồn tại thì remove còn chưa tồn tại thì add vào
+    addFavouriteMutation
+      .mutateAsync(product)
+      .then((res) => {
+        toast.success(res.data.message, { autoClose: 1500 })
+        queryClient.invalidateQueries({ queryKey: ["listFavourite", token] })
+      })
+      .catch(() => {
+        navigate(`${path.Login}?redirect_url=${encodeURIComponent(`/products/${name}`)}`)
+      })
+  }
+
+  const { data: favouriteData } = useQuery({ queryKey: ["listFavourite", token] })
+
+  const liked = useMemo(() => {
+    if (productDetail) {
+      const listFavourite = (favouriteData as any)?.data?.result.products || []
+      const check = listFavourite.some((item: FavouritesType) => item._id === productDetail._id)
+      return check
+    }
+  }, [favouriteData, productDetail])
+
   return (
     <div className="container">
       {isLoading && <Skeleton />}
@@ -158,13 +194,14 @@ export default function ProductDetail() {
               </div>
               <div className="col-span-4">
                 <div className="flex items-center gap-2">
-                  <h1 className="text-2xl font-semibold">{productDetail.name}</h1>
+                  <h1 className="text-2xl font-semibold max-w-[500px]">{productDetail.name}</h1>
                   <span className="bg-gradient-to-r from-orange-400 to-pink-500 text-white px-3 py-1 rounded-full text-sm font-semibold">
                     {productDetail.isFeatured === "true" ? "Nổi bật" : ""}
                   </span>
                 </div>
 
                 <div className="mt-2 flex items-center gap-1">
+                  <span className="text-[14px] font-medium text-gray-500 block">Đã bán: {productDetail.sold} | </span>
                   <h3 className="text-base text-yellow-500 font-semibold">0.0</h3>
                   <img src={star} alt="ngôi sao icon" className="w-3 h-3" />
                   <span className="ml-3 text-base text-blue-500">Xem đánh giá</span>
@@ -212,15 +249,29 @@ export default function ProductDetail() {
                       </button>
                       <button
                         type="button"
-                        className="py-2 border-2 border-red-600 bg-red-600 hover:bg-red-400 duration-200 rounded-md text-white min-w-[150px] text-[15px] font-semibold"
+                        className="py-2 border-2 border-red-600 bg-red-600 hover:bg-red-400 hover:border-red-400 duration-200 rounded-md text-white min-w-[150px] text-[15px] font-semibold"
                       >
                         Mua ngay
                       </button>
                     </div>
                   )}
-                  <button className="p-2 border border-orange-300 rounded-lg transition-all duration-300 hover:shadow-md">
-                    <Heart className="text-red-500 fill-red-500" size={18} />
-                    {/* <Heart className="text-gray-800" /> */}
+                  <button
+                    onClick={() =>
+                      handleAddProductToFavourite({
+                        _id: productDetail._id,
+                        name: productDetail.name,
+                        image: productDetail.banner.url,
+                        price: productDetail.price,
+                        discount: productDetail.discount
+                      })
+                    }
+                    className={`p-2 px-3 border border-red-400 duration-300 rounded-lg transition-all hover:shadow-md ${liked ? "bg-red-500 hover:bg-red-400" : "bg-red-100 hover:bg-red-200"}`}
+                  >
+                    {liked ? (
+                      <Heart className="" color="white" size={18} />
+                    ) : (
+                      <Heart className="text-red-500" size={18} />
+                    )}
                   </button>
                 </div>
 

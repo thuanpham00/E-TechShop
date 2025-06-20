@@ -35,6 +35,21 @@ const listSpecificationForCategory = {
     "Màu sắc",
     "Bảo hành"
   ],
+  "Laptop Gaming": [
+    "Cpu",
+    "Ram",
+    "Ổ cứng",
+    "Card đồ họa",
+    "Màn hình",
+    "Bàn phím",
+    "Webcam",
+    "Hệ điều hành",
+    "Pin",
+    "Trọng lượng",
+    "Màu sắc",
+    "Bảo hành"
+  ],
+  "PC GVN": ["Mainboard", "Cpu", "Ram", "Vga", "Ssd", "Hhd", "Psu", "Case", "Tản nhiệt"],
   "Màn hình": [
     "Thời gian phản hồi",
     "Độ phân giải",
@@ -417,7 +432,7 @@ export default function AddProduct() {
                             onChange={(e) => {
                               const selected = e.target.value || undefined
                               field.onChange(selected)
-                              setSelectedCategory(selected as "Laptop" | "Màn hình") // set state danh mục đã chọn
+                              setSelectedCategory(selected as "Laptop" | "Laptop Gaming" | "PC GVN" | "Màn hình") // set state danh mục đã chọn
                             }} // ✅ Cập nhật vào form
                             className="p-2 border border-gray-300 dark:border-darkBorder bg-[#f2f2f2] dark:bg-black w-full mt-2 rounded-md"
                           >

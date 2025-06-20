@@ -201,7 +201,7 @@ export default function AddReceipt() {
               <Input
                 name="totalAmount"
                 register={register}
-                nameInput="Tổng thành tiền"
+                nameInput="Tổng thành tiền (đ)"
                 classNameInput="p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-black focus:border-blue-500 focus:ring-1 outline-none rounded-md h-[35px] text-base text-red-500 font-semibold"
                 className="relative flex-grow"
                 classNameLabel="font-semibold mb-1 block text-base text-red-500"
@@ -277,7 +277,7 @@ export default function AddReceipt() {
                         <Input
                           name={`items.${index}.pricePerUnit`}
                           register={register}
-                          nameInput="Giá nhập"
+                          nameInput="Giá nhập (đ)"
                           classNameInput="p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#fff] dark:bg-black focus:border-blue-500 focus:ring-1 outline-none rounded-md h-[35px]"
                           className="relative flex-grow"
                           classNameLabel="font-semibold mb-1 block"
@@ -296,7 +296,7 @@ export default function AddReceipt() {
                         <Input
                           name={`items.${index}.totalPrice`}
                           register={register}
-                          nameInput="Giá tiền"
+                          nameInput="Giá tiền (đ)"
                           classNameInput="p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#fff] dark:bg-black focus:border-blue-500 focus:ring-1 outline-none rounded-md h-[35px] text-red-500 font-semibold"
                           className="relative flex-grow"
                           classNameLabel="font-semibold mb-1 block"

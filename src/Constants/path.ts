@@ -2,6 +2,7 @@ export const path = {
   // client
   Home: "/home",
   Cart: "/cart",
+  Order: "/order",
   Register: "/register",
   Login: "/login",
   LoginGoogle: "/login/oauth",

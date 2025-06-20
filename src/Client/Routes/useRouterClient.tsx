@@ -5,6 +5,7 @@ import { lazy, Suspense, useContext } from "react"
 import MainLayoutAuth from "../Layout/MainLayoutAuth"
 import { AppContext } from "src/Context/authContext"
 import { RoleType } from "src/Constants/enum"
+import Order from "../Pages/Order"
 
 const Home = lazy(() => import("../Pages/Home"))
 const Login = lazy(() => import("../Pages/Login"))
@@ -105,6 +106,14 @@ export default function useRouterClient() {
               element: (
                 <Suspense>
                   <Cart />
+                </Suspense>
+              )
+            },
+            {
+              path: path.Order,
+              element: (
+                <Suspense>
+                  <Order />
                 </Suspense>
               )
             },

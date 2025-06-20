@@ -42,6 +42,7 @@ export default function AppClientProvider({ children }: Props) {
   const [isShowCategory, setIsShowCategory] = useState<boolean>(initialStateContext.isShowCategory)
   const [role, setRole] = useState<string | null>(initialStateContext.role)
   const [avatar, setAvatar] = useState<string | null>(initialStateContext.avatar)
+
   /**
    * Các biến trong context (như isAuthenticated, nameUser, isShowCategory, ...) phải khớp với các biến state trong AppClientProvider để đảm bảo rằng chúng phản ánh đúng dữ liệu toàn cục được quản lý bởi context.
    * Việc các biến trong context đặt tên giống state là giúp quản lý trạng thái dữ liệu toàn cục và khi các biến trong context thay đổi đồng thời state thay đổi dẫn đến các component con sử dụng context đó sẽ re-render lại do state

@@ -1,8 +1,19 @@
 import Http from "src/Helpers/http"
+import { FavouritesType } from "src/Types/product.type"
 
 export const collectionAPI = {
   getCollections: (slug: string, signal?: AbortSignal) => {
     return Http.get(`/collections/${slug}`, {
+      signal
+    })
+  },
+
+  createCollectionsFavourite: (body: FavouritesType) => {
+    return Http.post(`/collections/favourite`, body)
+  },
+
+  getCollectionsFavourite: (signal?: AbortSignal) => {
+    return Http.get(`/collections/favourite`, {
       signal
     })
   },

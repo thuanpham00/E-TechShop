@@ -20,7 +20,7 @@ export default function CategoryDetail({ showDetail }: Props) {
     <div className="flex items-start">
       {MenuCategoryDetail[Number(showDetail)]?.map((item, index) => (
         <div key={index} className="mr-20">
-          <span className="text-[14px] font-semibold text-primaryBlue">{item.heading}</span>
+          <span className="text-base tracking-wide font-semibold text-primaryBlue">{item.heading}</span>
           {item.value.map((valueItem, indexValue) => (
             <button
               onClick={() => handleNavigate(valueItem.path)}

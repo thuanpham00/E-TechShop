@@ -252,3 +252,11 @@ export type CreateCustomerBodyReq = {
   confirm_password: string
   avatar: string
 }
+
+export type FavouritesType = {
+  _id: string
+  name: string
+  image: string
+  price: number
+  discount: number
+}

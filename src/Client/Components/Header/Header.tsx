@@ -1,19 +1,27 @@
 import avatarDefault from "src/Assets/img/avatarDefault.png"
-import { Cpu, Heart, Info, LogOut, PackageSearch, ShoppingCart } from "lucide-react"
+import { Cpu, Heart, HeartOff, Info, LogOut, PackageSearch, ShoppingCart } from "lucide-react"
 import { Link, useNavigate } from "react-router-dom"
 import { path } from "src/Constants/path"
 import { useContext } from "react"
-import { useMutation } from "@tanstack/react-query"
+import { keepPreviousData, useMutation, useQuery } from "@tanstack/react-query"
 import { userAPI } from "src/Apis/user.api"
 import { toast } from "react-toastify"
 import { AppContext } from "src/Context/authContext"
 import Popover from "src/Components/Popover"
+import cartImg from "src/Assets/img/cart.png"
+import { motion } from "framer-motion"
+import { collectionAPI } from "src/Apis/collections.api"
+import { SuccessResponse } from "src/Types/utils.type"
+import { FavouritesType } from "src/Types/product.type"
+import { CalculateSalePrice, formatCurrency, slugify } from "src/Helpers/common"
+import { getAccessTokenFromLS } from "src/Helpers/auth"
 
 export default function Header() {
   const navigate = useNavigate()
   const { isAuthenticated, nameUser, avatar, setIsAuthenticated, setNameUser, setRole, setIsShowCategory, setAvatar } =
     useContext(AppContext)
 
+  const token = getAccessTokenFromLS()
   const logoutMutation = useMutation({
     mutationFn: () => {
       return userAPI.logoutUser()
@@ -38,6 +46,28 @@ export default function Header() {
   const handleShowCategory = () => {
     setIsShowCategory(true)
   }
+
+  // xử lý danh sách yêu thích
+  const { data } = useQuery({
+    queryKey: ["listFavourite", token],
+    queryFn: () => {
+      const controller = new AbortController()
+      setTimeout(() => {
+        controller.abort() // hủy request khi chờ quá lâu // 10 giây sau cho nó hủy // làm tự động
+      }, 10000)
+      return collectionAPI.getCollectionsFavourite(controller.signal)
+    },
+    retry: 0, // số lần retry lại khi hủy request (dùng abort signal)
+    staleTime: 10 * 60 * 1000, // dưới 5 phút nó không gọi lại api
+    placeholderData: keepPreviousData
+  })
+
+  const result = data?.data as SuccessResponse<{
+    total: number
+    products: FavouritesType[]
+  }>
+  const listFavourite = result?.result?.products
+  const lengthFavourite = result?.result?.total
 
   return (
     <div className="bg-primaryBlue sticky top-0 left-0 z-20">
@@ -95,43 +125,101 @@ export default function Header() {
             <div className="flex">
               <div className="w-[65%] flex items-center">
                 <div className="flex-1">
-                  <div className="flex items-center justify-center gap-1 cursor-pointer relative">
+                  <Link to={path.Order} className="flex items-center justify-center gap-1 cursor-pointer relative">
                     <PackageSearch color="white" size={28} />
                     <span className="text-[13px] text-white font-semibold text-center">Đơn hàng</span>
                     {isAuthenticated ? (
-                      <span className="absolute -top-1 left-8 w-[14px] h-[14px] bg-yellow-500 border border-white text-black text-[10px] flex items-center justify-center rounded-full">
-                        0
-                      </span>
-                    ) : (
-                      ""
-                    )}
-                  </div>
-                </div>
-                <div className="flex-1">
-                  <div className="flex items-center justify-center gap-1 cursor-pointer relative">
-                    <Heart color="white" size={24} />
-                    <span className="text-[13px] text-white font-semibold">Yêu thích</span>
-                    {isAuthenticated ? (
-                      <span className="absolute -top-1 left-8 w-[14px] h-[14px] bg-yellow-500 border border-white text-black text-[10px] flex items-center justify-center rounded-full">
-                        0
-                      </span>
-                    ) : (
-                      ""
-                    )}
-                  </div>
-                </div>
-                <div className="flex-1">
-                  <Link to={path.Cart} className="flex items-center justify-center gap-1 cursor-pointer relative">
-                    <ShoppingCart color="white" size={24} />
-                    <span className="text-[13px] text-white font-semibold">Giỏ hàng</span>
-                    {isAuthenticated ? (
-                      <span className="absolute -top-1 left-8 w-[14px] h-[14px] bg-yellow-500 border border-white text-black text-[10px] flex items-center justify-center rounded-full">
+                      <span className="absolute -top-3 left-7 w-[20px] h-[20px] bg-red-500 border border-white text-[10px] flex items-center justify-center rounded-full text-white font-semibold">
                         0
                       </span>
                     ) : (
                       ""
                     )}
                   </Link>
+                </div>
+                <div className="flex-1">
+                  <Popover
+                    renderPopover={
+                      <div className="bg-white shadow-md rounded-sm border border-gray-200">
+                        {lengthFavourite > 0 ? (
+                          <div className="p-2 py-2 w-[300px] max-h-[300px] overflow-y-auto">
+                            <span className="text-gray-700 font-semibold mb-3 block">Sản phẩm đã lưu</span>
+                            {listFavourite?.map((item, index) => (
+                              <motion.div
+                                key={index}
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ delay: index * 0.1 }}
+                                className=" transition-colors"
+                              >
+                                <Link
+                                  to={`/products/${slugify(item.name)}-i-${item._id}`}
+                                  className="flex items-center gap-1 hover:bg-gray-200 duration-200 p-2"
+                                >
+                                  <img src={item.image} alt={item.name} className="w-[80px] h-[80px]" />
+                                  <div>
+                                    <span className="block text-right text-[13px]">{item.name}</span>
+                                    <span className="block text-right text-[14px] text-red-500 font-semibold">
+                                      {item.discount > 0
+                                        ? CalculateSalePrice(item.price, item.discount)
+                                        : formatCurrency(Number(item.price))}{" "}
+                                      đ
+                                    </span>
+                                  </div>
+                                </Link>
+                              </motion.div>
+                            ))}
+                          </div>
+                        ) : (
+                          <div className="p-4 h-[200px] w-[180px] flex items-center justify-center flex-col">
+                            <HeartOff className="text-red-600" />
+                            <span className="text-sm text-center mt-4">Chưa có sản phẩm!</span>
+                          </div>
+                        )}
+                      </div>
+                    }
+                  >
+                    <div className="flex items-center justify-center gap-1 cursor-pointer relative">
+                      <Heart color="white" size={24} />
+                      <span className="text-[13px] text-white font-semibold">Yêu thích</span>
+                      {isAuthenticated ? (
+                        <span className="absolute -top-3 left-7 w-[20px] h-[20px] bg-red-500 border border-white text-white text-[10px] flex items-center justify-center rounded-full font-semibold">
+                          {lengthFavourite}
+                        </span>
+                      ) : (
+                        ""
+                      )}
+                    </div>
+                  </Popover>
+                </div>
+
+                <div className="flex-1">
+                  <Popover
+                    renderPopover={
+                      <div className="bg-white shadow-md rounded-sm border border-gray-200">
+                        {listFavourite?.length > 0 ? (
+                          <div>1</div>
+                        ) : (
+                          <div className="p-4 flex items-center justify-center flex-col">
+                            <img src={cartImg} alt="ảnh lỗi" className="w-[150px]" />
+                            <span className="text-sm">Chưa có sản phẩm!</span>
+                          </div>
+                        )}
+                      </div>
+                    }
+                  >
+                    <Link to={path.Cart} className="flex items-center justify-center gap-1 cursor-pointer relative">
+                      <ShoppingCart color="white" size={24} />
+                      <span className="text-[13px] text-white font-semibold">Giỏ hàng</span>
+                      {isAuthenticated ? (
+                        <span className="absolute -top-3 left-7 w-[20px] h-[20px] bg-red-500 border border-white text-white text-[10px] flex items-center justify-center rounded-full font-semibold">
+                          {lengthFavourite}
+                        </span>
+                      ) : (
+                        ""
+                      )}
+                    </Link>
+                  </Popover>
                 </div>
               </div>
               <div className="w-[35%]">

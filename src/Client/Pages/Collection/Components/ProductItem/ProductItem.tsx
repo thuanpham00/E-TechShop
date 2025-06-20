@@ -1,7 +1,7 @@
 import { Eye, Star } from "lucide-react"
 import { useMemo, useState } from "react"
 import { Fragment } from "react/jsx-runtime"
-import { CalculateSalePrice, ConvertAverageRating, formatCurrency } from "src/Helpers/common"
+import { CalculateSalePrice, ConvertAverageRating, formatCurrency, slugify } from "src/Helpers/common"
 import { CollectionItemType } from "src/Types/product.type"
 import image_default from "src/Assets/img/anh_default_url.jpg"
 import { Link } from "react-router-dom"
@@ -37,7 +37,7 @@ export default function ProductItem({ item }: { item: CollectionItemType }) {
   return (
     <Link
       to={{
-        pathname: `/products/${item._id}`
+        pathname: `/products/${slugify(item.name)}-i-${item._id}`
       }}
       state={item.category[0]}
       className="col-span-1 block border border-[#dedede] rounded-[4px] p-4 pt-[6px] bg-white transition-all duration-200 ease-in cursor-pointer"
@@ -62,9 +62,9 @@ export default function ProductItem({ item }: { item: CollectionItemType }) {
           loading="lazy"
           src={item._id === imageChange ? randomImage : imageDefault}
           alt={item.name}
-          className="mt-4 object-cover w-full duration-200 transition-all"
+          className="mt-4 object-cover w-full h-[180px] duration-200 transition-all"
         />
-        <span className="text-[14px] font-bold my-4">{item.name}</span>
+        <span className="text-[14px] font-bold mt-4 mb-2 line-clamp-2">{item.name}</span>
         {item.discount ? (
           <Fragment>
             <span className="block text-[14px] line-through text-[#6d7e72] font-semibold">

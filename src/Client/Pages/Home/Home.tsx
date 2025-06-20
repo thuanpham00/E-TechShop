@@ -24,6 +24,7 @@ import { Navigation, Autoplay } from "swiper/modules"
 import "../../../index.css"
 import { ChevronLeft, ChevronRight } from "lucide-react"
 import { useNavigate } from "react-router-dom"
+import bannerMonitor from "src/Assets/img/banner_category/asus-monitor.webp"
 
 export default function Home() {
   const navigate = useNavigate()
@@ -49,7 +50,61 @@ export default function Home() {
       }, 10000)
 
       return collectionAPI
-        .getCollections("laptop-ban-chay", controller.signal)
+        .getCollections("top-10-laptop-ban-chay", controller.signal)
+        .then((res) => res)
+        .catch((err) => Promise.reject(err))
+    },
+    retry: 0, // số lần retry lại khi hủy request (dùng abort signal)
+    staleTime: 15 * 60 * 1000, // dưới 5 phút nó không gọi lại api
+    placeholderData: keepPreviousData
+  })
+
+  const getCollectionLaptopGamingTopSold = useQuery({
+    queryKey: ["getCollectionLaptopGamingTopSold"],
+    queryFn: () => {
+      const controller = new AbortController()
+      setTimeout(() => {
+        controller.abort() // hủy request khi chờ quá lâu // 10 giây sau cho nó hủy // làm tự động
+      }, 10000)
+
+      return collectionAPI
+        .getCollections("top-10-laptop-gaming-ban-chay", controller.signal)
+        .then((res) => res)
+        .catch((err) => Promise.reject(err))
+    },
+    retry: 0, // số lần retry lại khi hủy request (dùng abort signal)
+    staleTime: 15 * 60 * 1000, // dưới 5 phút nó không gọi lại api
+    placeholderData: keepPreviousData
+  })
+
+  const getCollectionPCTopSold = useQuery({
+    queryKey: ["getCollectionPCTopSold"],
+    queryFn: () => {
+      const controller = new AbortController()
+      setTimeout(() => {
+        controller.abort() // hủy request khi chờ quá lâu // 10 giây sau cho nó hủy // làm tự động
+      }, 10000)
+
+      return collectionAPI
+        .getCollections("top-10-pc-ban-chay", controller.signal)
+        .then((res) => res)
+        .catch((err) => Promise.reject(err))
+    },
+    retry: 0, // số lần retry lại khi hủy request (dùng abort signal)
+    staleTime: 15 * 60 * 1000, // dưới 5 phút nó không gọi lại api
+    placeholderData: keepPreviousData
+  })
+
+  const getCollectionMonitorTopSold = useQuery({
+    queryKey: ["getCollectionMonitorTopSold"],
+    queryFn: () => {
+      const controller = new AbortController()
+      setTimeout(() => {
+        controller.abort() // hủy request khi chờ quá lâu // 10 giây sau cho nó hủy // làm tự động
+      }, 10000)
+
+      return collectionAPI
+        .getCollections("top-10-man-hinh-ban-chay", controller.signal)
         .then((res) => res)
         .catch((err) => Promise.reject(err))
     },
@@ -59,6 +114,9 @@ export default function Home() {
   })
 
   const result = getCollectionLaptopTopSold.data?.data as SuccessResponse<CollectionItemType[]>
+  const resultLaptopGaming = getCollectionLaptopGamingTopSold.data?.data as SuccessResponse<CollectionItemType[]>
+  const resultPC = getCollectionPCTopSold.data?.data as SuccessResponse<CollectionItemType[]>
+  const resultMonitor = getCollectionMonitorTopSold.data?.data as SuccessResponse<CollectionItemType[]>
 
   const handleNavigateCollections = (slug: string) => {
     navigate(`/collections/${slug}`)
@@ -117,7 +175,7 @@ export default function Home() {
                   <div className="flex justify-between items-center">
                     <h1 className="text-xl font-semibold mb-2">Laptop bán chạy</h1>
                     <button
-                      onClick={() => handleNavigateCollections("laptop-ban-chay")}
+                      onClick={() => handleNavigateCollections("top-10-laptop-ban-chay")}
                       className="text-blue-500 text-sm hover:text-blue-400 cursor-pointer duration-200"
                     >
                       Xem tất cả
@@ -135,7 +193,140 @@ export default function Home() {
                     loop={true}
                     className="mySwiper relative"
                   >
-                    {result.result.map((item, index) => (
+                    {result?.result.map((item, index) => (
+                      <SwiperSlide key={index}>
+                        <ProductItem item={item} />
+                      </SwiperSlide>
+                    ))}
+                  </Swiper>
+
+                  <button className="custom-prev">
+                    <ChevronLeft />
+                  </button>
+
+                  <button className="custom-next">
+                    <ChevronRight />
+                  </button>
+                </Fragment>
+              )}
+            </div>
+
+            <div className="relative bg-white rounded-lg shadow-md my-4 p-4">
+              {getCollectionLaptopGamingTopSold.isLoading && <Skeleton />}
+              {!getCollectionLaptopGamingTopSold.isFetching && (
+                <Fragment>
+                  <div className="flex justify-between items-center">
+                    <h1 className="text-xl font-semibold mb-2">Laptop Gaming bán chạy</h1>
+                    <button
+                      onClick={() => handleNavigateCollections("top-10-laptop-gaming-ban-chay")}
+                      className="text-blue-500 text-sm hover:text-blue-400 cursor-pointer duration-200"
+                    >
+                      Xem tất cả
+                    </button>
+                  </div>
+                  <Swiper
+                    modules={[Navigation, Autoplay]}
+                    slidesPerView={5}
+                    spaceBetween={20}
+                    navigation={{
+                      nextEl: ".custom-next",
+                      prevEl: ".custom-prev"
+                    }}
+                    autoplay={{ delay: 3000, disableOnInteraction: false }}
+                    loop={true}
+                    className="mySwiper relative"
+                  >
+                    {resultLaptopGaming?.result.map((item, index) => (
+                      <SwiperSlide key={index}>
+                        <ProductItem item={item} />
+                      </SwiperSlide>
+                    ))}
+                  </Swiper>
+
+                  <button className="custom-prev">
+                    <ChevronLeft />
+                  </button>
+
+                  <button className="custom-next">
+                    <ChevronRight />
+                  </button>
+                </Fragment>
+              )}
+            </div>
+
+            <div className="relative bg-white rounded-lg shadow-md my-4 p-4">
+              {getCollectionPCTopSold.isLoading && <Skeleton />}
+              {!getCollectionPCTopSold.isFetching && (
+                <Fragment>
+                  <div className="flex justify-between items-center">
+                    <h1 className="text-xl font-semibold mb-2">PC bán chạy</h1>
+                    <button
+                      onClick={() => handleNavigateCollections("top-10-pc-ban-chay")}
+                      className="text-blue-500 text-sm hover:text-blue-400 cursor-pointer duration-200"
+                    >
+                      Xem tất cả
+                    </button>
+                  </div>
+                  <Swiper
+                    modules={[Navigation, Autoplay]}
+                    slidesPerView={5}
+                    spaceBetween={20}
+                    navigation={{
+                      nextEl: ".custom-next",
+                      prevEl: ".custom-prev"
+                    }}
+                    autoplay={{ delay: 3000, disableOnInteraction: false }}
+                    loop={true}
+                    className="mySwiper relative"
+                  >
+                    {resultPC?.result.map((item, index) => (
+                      <SwiperSlide key={index}>
+                        <ProductItem item={item} />
+                      </SwiperSlide>
+                    ))}
+                  </Swiper>
+
+                  <button className="custom-prev">
+                    <ChevronLeft />
+                  </button>
+
+                  <button className="custom-next">
+                    <ChevronRight />
+                  </button>
+                </Fragment>
+              )}
+            </div>
+
+            <div>
+              <img src={bannerMonitor} alt="banner" className="w-full h-[300px] rounded-md shadow-3xl" />
+            </div>
+
+            <div className="relative bg-white rounded-lg shadow-md my-4 p-4">
+              {getCollectionMonitorTopSold.isLoading && <Skeleton />}
+              {!getCollectionMonitorTopSold.isFetching && (
+                <Fragment>
+                  <div className="flex justify-between items-center">
+                    <h1 className="text-xl font-semibold mb-2">Màn hình chính hãng</h1>
+                    <button
+                      onClick={() => handleNavigateCollections("top-10-man-hinh-ban-chay")}
+                      className="text-blue-500 text-sm hover:text-blue-400 cursor-pointer duration-200"
+                    >
+                      Xem tất cả
+                    </button>
+                  </div>
+                  <Swiper
+                    modules={[Navigation, Autoplay]}
+                    slidesPerView={5}
+                    spaceBetween={20}
+                    navigation={{
+                      nextEl: ".custom-next",
+                      prevEl: ".custom-prev"
+                    }}
+                    autoplay={{ delay: 3000, disableOnInteraction: false }}
+                    loop={true}
+                    className="mySwiper relative"
+                  >
+                    {resultMonitor?.result.map((item, index) => (
                       <SwiperSlide key={index}>
                         <ProductItem item={item} />
                       </SwiperSlide>

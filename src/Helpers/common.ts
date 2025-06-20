@@ -58,3 +58,17 @@ export const cleanObject = (obj: Record<string, any>) => {
   }
   return result
 }
+
+export function slugify(str: string) {
+  return str
+    .toLowerCase()
+    .normalize("NFD") // loại bỏ dấu tiếng Việt
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9]+/g, "-") // thay ký tự không phải chữ/số bằng dấu -
+    .replace(/^-+|-+$/g, "") // bỏ dấu - ở đầu/cuối
+}
+
+export function getNameFromNameId(nameId: string) {
+  const arr = nameId.split("-i-")
+  return arr[arr.length - 1]
+}

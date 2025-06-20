@@ -56,18 +56,22 @@ export default function Collection() {
         {!isFetching && slug && (
           <div>
             <img
-              className="rounded-lg shadow-md"
+              className="rounded-lg shadow-md h-[300px] w-full"
               src={(CategoryBanner as Record<string, string>)[slug]}
               alt={`Banner ${slug}`}
             />
             <div className="bg-white rounded-lg shadow-md mb-4 mt-4 grid grid-cols-5 gap-2 p-4">
-              {result?.result.map((item) => {
-                return (
-                  <div key={item._id}>
-                    <ProductItem item={item} />
-                  </div>
-                )
-              })}
+              {result?.result.length > 0 ? (
+                result?.result.map((item) => {
+                  return (
+                    <div key={item._id}>
+                      <ProductItem item={item} />
+                    </div>
+                  )
+                })
+              ) : (
+                <div className="text-center w-full col-span-5">Không có sản phẩm</div>
+              )}
             </div>
           </div>
         )}
