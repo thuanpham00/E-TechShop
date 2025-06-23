@@ -1,5 +1,5 @@
 import Http from "src/Helpers/http"
-import { FavouritesType } from "src/Types/product.type"
+import { CartType, FavouriteType } from "src/Types/product.type"
 
 export const collectionAPI = {
   getCollections: (slug: string, signal?: AbortSignal) => {
@@ -8,12 +8,22 @@ export const collectionAPI = {
     })
   },
 
-  createCollectionsFavourite: (body: FavouritesType) => {
+  addProductToFavourite: (body: FavouriteType) => {
     return Http.post(`/collections/favourite`, body)
   },
 
-  getCollectionsFavourite: (signal?: AbortSignal) => {
+  getProductInFavourite: (signal?: AbortSignal) => {
     return Http.get(`/collections/favourite`, {
+      signal
+    })
+  },
+
+  addProductToCart: (body: CartType) => {
+    return Http.post(`/collections/cart`, body)
+  },
+
+  getProductInCart: (signal?: AbortSignal) => {
+    return Http.get(`/collections/cart`, {
       signal
     })
   },

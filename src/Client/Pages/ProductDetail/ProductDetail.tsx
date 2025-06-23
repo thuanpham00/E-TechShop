@@ -8,7 +8,7 @@ import Skeleton from "src/Components/Skeleton"
 import { HttpStatusCode } from "src/Constants/httpStatus"
 import { path } from "src/Constants/path"
 import { CalculateSalePrice, formatCurrency, getNameFromNameId } from "src/Helpers/common"
-import { CollectionItemType, FavouritesType, ProductDetailType } from "src/Types/product.type"
+import { CartType, CollectionItemType, FavouriteType, ProductDetailType, ProductItemType } from "src/Types/product.type"
 import { SuccessResponse } from "src/Types/utils.type"
 import star from "src/Assets/img/star.png"
 import { Heart } from "lucide-react"
@@ -16,6 +16,7 @@ import ProductItem from "../Collection/Components/ProductItem"
 import { useEffect, useMemo, useRef, useState } from "react"
 import { toast } from "react-toastify"
 import { getAccessTokenFromLS } from "src/Helpers/auth"
+import InputNumberQuantity from "src/Client/Components/InputNumberQuantity"
 
 export default function ProductDetail() {
   const queryClient = useQueryClient()
@@ -117,16 +118,17 @@ export default function ProductDetail() {
   }
 
   const addFavouriteMutation = useMutation({
-    mutationFn: (body: FavouritesType) => {
-      return collectionAPI.createCollectionsFavourite(body)
+    mutationFn: (body: FavouriteType) => {
+      return collectionAPI.addProductToFavourite(body)
     }
   })
 
   const token = getAccessTokenFromLS()
-  const handleAddProductToFavourite = async (product: FavouritesType) => {
+
+  const handleAddProductToFavourite = async (productId: string) => {
     // nếu sản phẩm đã tồn tại thì remove còn chưa tồn tại thì add vào
     addFavouriteMutation
-      .mutateAsync(product)
+      .mutateAsync({ product_id: productId, added_at: new Date() })
       .then((res) => {
         toast.success(res.data.message, { autoClose: 1500 })
         queryClient.invalidateQueries({ queryKey: ["listFavourite", token] })
@@ -140,11 +142,32 @@ export default function ProductDetail() {
 
   const liked = useMemo(() => {
     if (productDetail) {
-      const listFavourite = (favouriteData as any)?.data?.result.products || []
-      const check = listFavourite.some((item: FavouritesType) => item._id === productDetail._id)
+      const listFavourite = (favouriteData as any)?.data?.result.products[0].products || []
+      const check = listFavourite.some((item: ProductItemType) => item._id === productDetail._id)
       return check
     }
   }, [favouriteData, productDetail])
+
+  const [valueQuantity, setValueQuantity] = useState<number>(1)
+
+  const handleValueQuantity = (value: number) => {
+    setValueQuantity(value)
+  }
+
+  // xử lý giỏ hàng
+  const addProductToCartMutation = useMutation({
+    mutationFn: (body: CartType) => {
+      return collectionAPI.addProductToCart(body)
+    }
+  })
+
+  const addProductToCart = async (productId: string, quantity: number) => {
+    addProductToCartMutation
+      .mutateAsync({ product_id: productId, quantity: quantity, added_at: new Date() })
+      .then((res) => {
+        console.log(res.data)
+      })
+  }
 
   return (
     <div className="container">
@@ -161,7 +184,7 @@ export default function ProductDetail() {
           <Breadcrumb slug_1={nameCategory} slug_2={productDetail.name} />
           <div>
             <div className="bg-white rounded-lg shadow-md my-4 grid grid-cols-6 gap-6 p-6 pt-4">
-              <div className="col-span-2 pr-2 border-r border-r-[#dedede]">
+              <div className="col-span-2">
                 <div
                   className="relative pt-[100%] cursor-zoom-in overflow-hidden"
                   onMouseMove={handleZoom}
@@ -195,9 +218,13 @@ export default function ProductDetail() {
               <div className="col-span-4">
                 <div className="flex items-center gap-2">
                   <h1 className="text-2xl font-semibold max-w-[500px]">{productDetail.name}</h1>
-                  <span className="bg-gradient-to-r from-orange-400 to-pink-500 text-white px-3 py-1 rounded-full text-sm font-semibold">
-                    {productDetail.isFeatured === "true" ? "Nổi bật" : ""}
-                  </span>
+                  {productDetail.isFeatured === "true" ? (
+                    <span className="bg-gradient-to-r from-orange-400 to-pink-500 text-white px-3 py-1 rounded-full text-sm font-semibold">
+                      Nổi bật
+                    </span>
+                  ) : (
+                    ""
+                  )}
                 </div>
 
                 <div className="mt-2 flex items-center gap-1">
@@ -223,10 +250,22 @@ export default function ProductDetail() {
                   {productDetail.discount === 0 && (
                     <h2 className="text-3xl font-semibold text-red-500">{formatCurrency(productDetail.price)}₫</h2>
                   )}
-                  <span className="text-sm">Đã bao gồm VAT</span>
+                  <span className="text-[13px] text-gray-500">Giá đã bao gồm VAT</span>
                 </div>
 
-                {productDetail.status === "available" && <div className="flex items-center gap-2">hihi</div>}
+                {productDetail.status === "available" && (
+                  <div className="flex items-center gap-8 my-4">
+                    <span className="text-gray-500">Số lượng</span>
+                    <InputNumberQuantity
+                      value={valueQuantity}
+                      onChangeValue={handleValueQuantity}
+                      onDecrease={handleValueQuantity}
+                      onIncrease={handleValueQuantity}
+                      max={productDetail.stock}
+                    />
+                    <span className="text-gray-500">{productDetail.stock} Sản phẩm có sẵn</span>
+                  </div>
+                )}
 
                 <div className="flex items-center gap-2 mt-4">
                   {productDetail.status === "out_of_stock" && (
@@ -243,28 +282,21 @@ export default function ProductDetail() {
                     <div className="flex items-center gap-2">
                       <button
                         type="button"
-                        className="py-2 border-2 border-red-600 hover:bg-red-100 duration-200  rounded-md text-red-600 min-w-[180px] text-[15px] font-semibold"
+                        onClick={() => addProductToCart(productDetail._id, valueQuantity)}
+                        className="py-2 border-2 border-red-600 hover:bg-red-100 duration-200  rounded-md text-red-600 min-w-[180px] text-sm font-semibold"
                       >
                         Thêm vào giỏ hàng
                       </button>
                       <button
                         type="button"
-                        className="py-2 border-2 border-red-600 bg-red-600 hover:bg-red-400 hover:border-red-400 duration-200 rounded-md text-white min-w-[150px] text-[15px] font-semibold"
+                        className="py-2 border-2 border-red-600 bg-red-600 hover:bg-red-400 hover:border-red-400 duration-200 rounded-md text-white min-w-[150px] text-sm font-semibold"
                       >
                         Mua ngay
                       </button>
                     </div>
                   )}
                   <button
-                    onClick={() =>
-                      handleAddProductToFavourite({
-                        _id: productDetail._id,
-                        name: productDetail.name,
-                        image: productDetail.banner.url,
-                        price: productDetail.price,
-                        discount: productDetail.discount
-                      })
-                    }
+                    onClick={() => handleAddProductToFavourite(productDetail._id)}
                     className={`p-2 px-3 border border-red-400 duration-300 rounded-lg transition-all hover:shadow-md ${liked ? "bg-red-500 hover:bg-red-400" : "bg-red-100 hover:bg-red-200"}`}
                   >
                     {liked ? (

@@ -12,9 +12,10 @@ import cartImg from "src/Assets/img/cart.png"
 import { motion } from "framer-motion"
 import { collectionAPI } from "src/Apis/collections.api"
 import { SuccessResponse } from "src/Types/utils.type"
-import { FavouritesType } from "src/Types/product.type"
+import { ProductDetailType } from "src/Types/product.type"
 import { CalculateSalePrice, formatCurrency, slugify } from "src/Helpers/common"
 import { getAccessTokenFromLS } from "src/Helpers/auth"
+import Button from "src/Components/Button"
 
 export default function Header() {
   const navigate = useNavigate()
@@ -55,7 +56,7 @@ export default function Header() {
       setTimeout(() => {
         controller.abort() // hủy request khi chờ quá lâu // 10 giây sau cho nó hủy // làm tự động
       }, 10000)
-      return collectionAPI.getCollectionsFavourite(controller.signal)
+      return collectionAPI.getProductInFavourite(controller.signal)
     },
     retry: 0, // số lần retry lại khi hủy request (dùng abort signal)
     staleTime: 10 * 60 * 1000, // dưới 5 phút nó không gọi lại api
@@ -64,10 +65,36 @@ export default function Header() {
 
   const result = data?.data as SuccessResponse<{
     total: number
-    products: FavouritesType[]
+    products: {
+      products: ProductDetailType[]
+    }[]
   }>
-  const listFavourite = result?.result?.products
+
+  const { data: data2 } = useQuery({
+    queryKey: ["listCart", token],
+    queryFn: () => {
+      const controller = new AbortController()
+      setTimeout(() => {
+        controller.abort() // hủy request khi chờ quá lâu // 10 giây sau cho nó hủy // làm tự động
+      }, 10000)
+      return collectionAPI.getProductInCart(controller.signal)
+    },
+    retry: 0, // số lần retry lại khi hủy request (dùng abort signal)
+    staleTime: 10 * 60 * 1000, // dưới 5 phút nó không gọi lại api
+    placeholderData: keepPreviousData
+  })
+
+  const resultCart = data2?.data as SuccessResponse<{
+    total: number
+    products: {
+      products: ProductDetailType[]
+    }[]
+  }>
+
+  const listFavourite = result?.result?.products[0].products
+  const listCart = resultCart?.result?.products[0].products
   const lengthFavourite = result?.result?.total
+  const lengthCart = resultCart?.result?.total
 
   return (
     <div className="bg-primaryBlue sticky top-0 left-0 z-20">
@@ -142,8 +169,10 @@ export default function Header() {
                     renderPopover={
                       <div className="bg-white shadow-md rounded-sm border border-gray-200">
                         {lengthFavourite > 0 ? (
-                          <div className="p-2 py-2 w-[300px] max-h-[300px] overflow-y-auto">
-                            <span className="text-gray-700 font-semibold mb-3 block">Sản phẩm đã lưu</span>
+                          <div className="px-1 py-2 w-[300px] max-h-[300px] overflow-y-auto">
+                            <span className="text-gray-700 ml-3 mt-1 font-semibold mb-1 block text-[13px]">
+                              Sản phẩm đã lưu
+                            </span>
                             {listFavourite?.map((item, index) => (
                               <motion.div
                                 key={index}
@@ -154,12 +183,12 @@ export default function Header() {
                               >
                                 <Link
                                   to={`/products/${slugify(item.name)}-i-${item._id}`}
-                                  className="flex items-center gap-1 hover:bg-gray-200 duration-200 p-2"
+                                  className="flex items-center gap-1 hover:bg-gray-100 duration-200 p-2"
                                 >
-                                  <img src={item.image} alt={item.name} className="w-[80px] h-[80px]" />
+                                  <img src={item.banner.url} alt={item.name} className="w-[80px] h-[80px]" />
                                   <div>
-                                    <span className="block text-right text-[13px]">{item.name}</span>
-                                    <span className="block text-right text-[14px] text-red-500 font-semibold">
+                                    <span className="block text-[13px] line-clamp-2">{item.name}</span>
+                                    <span className="block text-[14px] text-red-500 font-semibold">
                                       {item.discount > 0
                                         ? CalculateSalePrice(item.price, item.discount)
                                         : formatCurrency(Number(item.price))}{" "}
@@ -197,8 +226,45 @@ export default function Header() {
                   <Popover
                     renderPopover={
                       <div className="bg-white shadow-md rounded-sm border border-gray-200">
-                        {listFavourite?.length > 0 ? (
-                          <div>1</div>
+                        {listCart?.length > 0 ? (
+                          <div className="px-1 py-2 w-[300px] max-h-[300px] overflow-y-auto">
+                            <span className="text-gray-700 ml-3 mt-1 font-semibold mb-1 block text-[13px]">
+                              Sản phẩm mới được thêm vào
+                            </span>
+                            {listCart?.map((item, index) => (
+                              <motion.div
+                                key={index}
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ delay: index * 0.1 }}
+                                className=" transition-colors"
+                              >
+                                <Link
+                                  to={`/products/${slugify(item.name)}-i-${item._id}`}
+                                  className="flex items-center gap-1 hover:bg-gray-100 duration-200 p-2"
+                                >
+                                  <img src={item.banner.url} alt={item.name} className="w-[80px] h-[80px]" />
+                                  <div>
+                                    <span className="block text-[13px] line-clamp-2">{item.name}</span>
+                                    <div className="flex items-center justify-between">
+                                      <span className="block text-[14px] text-red-500 font-semibold">
+                                        {item.discount > 0
+                                          ? CalculateSalePrice(item.price, item.discount)
+                                          : formatCurrency(Number(item.price))}{" "}
+                                        đ
+                                      </span>
+                                      <span>x {item?.quantity}</span>
+                                    </div>
+                                  </div>
+                                </Link>
+                              </motion.div>
+                            ))}
+                            <Button
+                              classNameButton="mt-2 p-2 bg-blue-500 w-full text-white rounded-sm hover:bg-blue-500/80 duration-200 text-sm"
+                              nameButton="Xem giỏ hàng"
+                              type="button"
+                            />
+                          </div>
                         ) : (
                           <div className="p-4 flex items-center justify-center flex-col">
                             <img src={cartImg} alt="ảnh lỗi" className="w-[150px]" />
@@ -213,7 +279,7 @@ export default function Header() {
                       <span className="text-[13px] text-white font-semibold">Giỏ hàng</span>
                       {isAuthenticated ? (
                         <span className="absolute -top-3 left-7 w-[20px] h-[20px] bg-red-500 border border-white text-white text-[10px] flex items-center justify-center rounded-full font-semibold">
-                          {lengthFavourite}
+                          {lengthCart}
                         </span>
                       ) : (
                         ""

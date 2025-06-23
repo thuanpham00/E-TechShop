@@ -122,8 +122,8 @@ export default function ManageProducts() {
                     </div>
                   </div>
                   <div className="">
-                    {listProduct.length > 0 ? (
-                      listProduct.map((item, index) => (
+                    {listProduct?.length > 0 ? (
+                      listProduct?.map((item, index) => (
                         <motion.div
                           key={item._id}
                           initial={{ opacity: 0, y: 20 }}

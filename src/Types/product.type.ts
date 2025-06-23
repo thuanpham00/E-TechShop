@@ -213,6 +213,8 @@ export type ProductDetailType = {
     url: string
   }
   status: StatusProduct
+
+  quantity?: number // Thêm trường quantity nếu cần thiết - dành cho cart
 }
 
 export type CreateProductBodyReq = {
@@ -253,10 +255,13 @@ export type CreateCustomerBodyReq = {
   avatar: string
 }
 
-export type FavouritesType = {
-  _id: string
-  name: string
-  image: string
-  price: number
-  discount: number
+export type FavouriteType = {
+  product_id: string
+  added_at?: Date
+}
+
+export type CartType = {
+  product_id: string
+  quantity: number
+  added_at?: Date
 }

@@ -9,8 +9,6 @@ import { categories } from "src/Client/Constants/categories"
 import MenuCategoryItem from "src/Client/Components/MenuCategoryItem"
 import CategoryDetail from "src/Client/Components/CategoryDetail"
 import SlideShow from "./Components/SlideShow"
-import { keepPreviousData, useQuery } from "@tanstack/react-query"
-import { collectionAPI } from "src/Apis/collections.api"
 import Skeleton from "src/Components/Skeleton"
 import { SuccessResponse } from "src/Types/utils.type"
 import { CollectionItemType } from "src/Types/product.type"
@@ -25,6 +23,7 @@ import "../../../index.css"
 import { ChevronLeft, ChevronRight } from "lucide-react"
 import { useNavigate } from "react-router-dom"
 import bannerMonitor from "src/Assets/img/banner_category/asus-monitor.webp"
+import useCollectionTopSold from "src/Hook/useCollectionTopSold"
 
 export default function Home() {
   const navigate = useNavigate()
@@ -41,77 +40,13 @@ export default function Home() {
     setIsHover(false)
   }, [])
 
-  const getCollectionLaptopTopSold = useQuery({
-    queryKey: ["getCollectionLaptopTopSold"],
-    queryFn: () => {
-      const controller = new AbortController()
-      setTimeout(() => {
-        controller.abort() // hủy request khi chờ quá lâu // 10 giây sau cho nó hủy // làm tự động
-      }, 10000)
-
-      return collectionAPI
-        .getCollections("top-10-laptop-ban-chay", controller.signal)
-        .then((res) => res)
-        .catch((err) => Promise.reject(err))
-    },
-    retry: 0, // số lần retry lại khi hủy request (dùng abort signal)
-    staleTime: 15 * 60 * 1000, // dưới 5 phút nó không gọi lại api
-    placeholderData: keepPreviousData
-  })
-
-  const getCollectionLaptopGamingTopSold = useQuery({
-    queryKey: ["getCollectionLaptopGamingTopSold"],
-    queryFn: () => {
-      const controller = new AbortController()
-      setTimeout(() => {
-        controller.abort() // hủy request khi chờ quá lâu // 10 giây sau cho nó hủy // làm tự động
-      }, 10000)
-
-      return collectionAPI
-        .getCollections("top-10-laptop-gaming-ban-chay", controller.signal)
-        .then((res) => res)
-        .catch((err) => Promise.reject(err))
-    },
-    retry: 0, // số lần retry lại khi hủy request (dùng abort signal)
-    staleTime: 15 * 60 * 1000, // dưới 5 phút nó không gọi lại api
-    placeholderData: keepPreviousData
-  })
-
-  const getCollectionPCTopSold = useQuery({
-    queryKey: ["getCollectionPCTopSold"],
-    queryFn: () => {
-      const controller = new AbortController()
-      setTimeout(() => {
-        controller.abort() // hủy request khi chờ quá lâu // 10 giây sau cho nó hủy // làm tự động
-      }, 10000)
-
-      return collectionAPI
-        .getCollections("top-10-pc-ban-chay", controller.signal)
-        .then((res) => res)
-        .catch((err) => Promise.reject(err))
-    },
-    retry: 0, // số lần retry lại khi hủy request (dùng abort signal)
-    staleTime: 15 * 60 * 1000, // dưới 5 phút nó không gọi lại api
-    placeholderData: keepPreviousData
-  })
-
-  const getCollectionMonitorTopSold = useQuery({
-    queryKey: ["getCollectionMonitorTopSold"],
-    queryFn: () => {
-      const controller = new AbortController()
-      setTimeout(() => {
-        controller.abort() // hủy request khi chờ quá lâu // 10 giây sau cho nó hủy // làm tự động
-      }, 10000)
-
-      return collectionAPI
-        .getCollections("top-10-man-hinh-ban-chay", controller.signal)
-        .then((res) => res)
-        .catch((err) => Promise.reject(err))
-    },
-    retry: 0, // số lần retry lại khi hủy request (dùng abort signal)
-    staleTime: 15 * 60 * 1000, // dưới 5 phút nó không gọi lại api
-    placeholderData: keepPreviousData
-  })
+  const getCollectionLaptopTopSold = useCollectionTopSold("top-10-laptop-ban-chay", "getCollectionLaptopTopSold")
+  const getCollectionLaptopGamingTopSold = useCollectionTopSold(
+    "top-10-laptop-gaming-ban-chay",
+    "getCollectionLaptopGamingTopSold"
+  )
+  const getCollectionPCTopSold = useCollectionTopSold("top-10-pc-ban-chay", "getCollectionPCTopSold")
+  const getCollectionMonitorTopSold = useCollectionTopSold("top-10-man-hinh-ban-chay", "getCollectionMonitorTopSold")
 
   const result = getCollectionLaptopTopSold.data?.data as SuccessResponse<CollectionItemType[]>
   const resultLaptopGaming = getCollectionLaptopGamingTopSold.data?.data as SuccessResponse<CollectionItemType[]>
