@@ -447,8 +447,9 @@ export default function ManageCategories() {
                 page_size={page_size}
                 pathNavigate={path.AdminCategories}
               />
-              {idCategory !== null ? (
-                <AnimatePresence>
+
+              <AnimatePresence>
+                {idCategory && (
                   <motion.div
                     initial={{ opacity: 0 }} // khởi tạo là 0
                     animate={{ opacity: 1 }} // xuất hiện dần là 1
@@ -522,11 +523,10 @@ export default function ManageCategories() {
                       </form>
                     </motion.div>
                   </motion.div>
-                </AnimatePresence>
-              ) : (
-                ""
-              )}
-              {addItem ? <AddCategory setAddItem={setAddItem} /> : ""}
+                )}
+              </AnimatePresence>
+
+              <AddCategory setAddItem={setAddItem} addItem={addItem} />
             </div>
           )}
         </div>

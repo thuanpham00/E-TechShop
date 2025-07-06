@@ -477,8 +477,9 @@ export default function ManageBrand() {
                 page_size={page_size}
                 pathNavigate={`${path.AdminCategories}/${id}`}
               />
-              {idBrand !== null ? (
-                <AnimatePresence>
+
+              <AnimatePresence>
+                {idBrand && (
                   <motion.div
                     initial={{ opacity: 0 }} // khởi tạo là 0
                     animate={{ opacity: 1 }} // xuất hiện dần là 1
@@ -554,12 +555,10 @@ export default function ManageBrand() {
                       </form>
                     </motion.div>
                   </motion.div>
-                </AnimatePresence>
-              ) : (
-                ""
-              )}
+                )}
+              </AnimatePresence>
 
-              {addItem ? <AddBrand setAddItem={setAddItem} categoryId={id} /> : ""}
+              <AddBrand setAddItem={setAddItem} addItem={addItem} categoryId={id} />
             </div>
           )}
         </div>

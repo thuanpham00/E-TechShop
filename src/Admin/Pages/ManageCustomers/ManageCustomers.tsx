@@ -623,8 +623,9 @@ export default function ManageCustomers() {
                   page_size={page_size}
                   pathNavigate={path.AdminCustomers}
                 />
-                {idCustomer !== null ? (
-                  <AnimatePresence>
+
+                <AnimatePresence>
+                  {idCustomer !== null && (
                     <motion.div
                       initial={{ opacity: 0 }} // khởi tạo là 0
                       animate={{ opacity: 1 }} // xuất hiện dần là 1
@@ -708,6 +709,7 @@ export default function ManageCustomers() {
                                     nameInput="Số điện thoại"
                                   />
                                 </div>
+
                                 <div className="col-span-6">
                                   {/* dùng <Controller/> khi và chỉ khi component không hỗ trợ register (register giúp theo dõi giá trị trong form) */}
                                   {/* control giúp theo dõi giá trị, validate và đồng bộ dữ liệu giữa form và component tùy chỉnh  */}
@@ -774,12 +776,10 @@ export default function ManageCustomers() {
                         </form>
                       </motion.div>
                     </motion.div>
-                  </AnimatePresence>
-                ) : (
-                  ""
-                )}
+                  )}
+                </AnimatePresence>
 
-                {addItem ? <AddCustomer setAddItem={setAddItem} /> : ""}
+                <AddCustomer setAddItem={setAddItem} addItem={addItem} />
               </div>
             )}
           </div>

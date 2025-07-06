@@ -22,6 +22,10 @@ export const collectionAPI = {
     return Http.post(`/collections/cart`, body)
   },
 
+  removeProductToCart: (productId: string) => {
+    return Http.delete(`/collections/cart/${productId}`)
+  },
+
   getProductInCart: (signal?: AbortSignal) => {
     return Http.get(`/collections/cart`, {
       signal

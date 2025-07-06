@@ -20,16 +20,16 @@ import InputNumberQuantity from "src/Client/Components/InputNumberQuantity"
 
 export default function ProductDetail() {
   const queryClient = useQueryClient()
-  // const [liked, setLiked] = useState<boolean>(false)
+  const token = getAccessTokenFromLS()
   const { state: nameCategory } = useLocation()
   const { name } = useParams()
   const id = getNameFromNameId(name as string)
   const imgRef = useRef<HTMLImageElement>(null)
-
+  const [valueQuantity, setValueQuantity] = useState<number>(1)
   const navigate = useNavigate()
 
   useEffect(() => {
-    window.scrollTo({ top: 0, behavior: "smooth" }) // scroll mượt
+    window.scroll(0, 0) // scroll mượt
   }, [])
 
   const { data, isError, isFetching, isLoading, error } = useQuery({
@@ -63,8 +63,8 @@ export default function ProductDetail() {
       })
     },
     retry: 0, // số lần retry lại khi hủy request (dùng abort signal)
-    staleTime: 5 * 60 * 1000, // dưới 5 phút nó không gọi lại api
-    placeholderData: keepPreviousData,
+    // staleTime: 5 * 60 * 1000, // dưới 5 phút nó không gọi lại api
+    // placeholderData: keepPreviousData,
     enabled: !!brandProduct && !!categoryProduct && !!idProduct // chỉ gọi api khi brand và category có giá trị
   })
 
@@ -123,8 +123,6 @@ export default function ProductDetail() {
     }
   })
 
-  const token = getAccessTokenFromLS()
-
   const handleAddProductToFavourite = async (productId: string) => {
     // nếu sản phẩm đã tồn tại thì remove còn chưa tồn tại thì add vào
     addFavouriteMutation
@@ -148,8 +146,6 @@ export default function ProductDetail() {
     }
   }, [favouriteData, productDetail])
 
-  const [valueQuantity, setValueQuantity] = useState<number>(1)
-
   const handleValueQuantity = (value: number) => {
     setValueQuantity(value)
   }
@@ -165,9 +161,17 @@ export default function ProductDetail() {
     addProductToCartMutation
       .mutateAsync({ product_id: productId, quantity: quantity, added_at: new Date() })
       .then((res) => {
-        console.log(res.data)
+        queryClient.invalidateQueries({ queryKey: ["listCart", token] })
+        toast.success(res.data.message, { autoClose: 1500 })
       })
+      .catch((err) => console.log(err))
   }
+
+  useEffect(() => {
+    if (productDetail?._id) {
+      setValueQuantity(1)
+    }
+  }, [productDetail?._id])
 
   return (
     <div className="container">

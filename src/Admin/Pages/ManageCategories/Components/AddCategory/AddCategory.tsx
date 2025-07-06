@@ -13,12 +13,13 @@ import { motion, AnimatePresence } from "framer-motion"
 
 interface Props {
   setAddItem: React.Dispatch<React.SetStateAction<boolean>>
+  addItem: boolean
 }
 
 type FormData = Pick<SchemaAuthType, "name">
 const formData = schemaAuth.pick(["name"])
 
-export default function AddCategory({ setAddItem }: Props) {
+export default function AddCategory({ setAddItem, addItem }: Props) {
   const queryClient = useQueryClient()
   const {
     handleSubmit,
@@ -54,47 +55,49 @@ export default function AddCategory({ setAddItem }: Props) {
 
   return (
     <AnimatePresence>
-      <motion.div
-        initial={{ opacity: 0 }} // khởi tạo là 0
-        animate={{ opacity: 1 }} // xuất hiện dần là 1
-        exit={{ opacity: 0 }} // biến mất là 0
-        className="fixed left-0 top-0 z-10 h-screen w-screen bg-black/60 flex items-center justify-center"
-      >
+      {addItem === true && (
         <motion.div
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 1, scale: 1 }}
-          exit={{ opacity: 0, scale: 0.8 }}
-          className="relative"
+          initial={{ opacity: 0 }} // khởi tạo là 0
+          animate={{ opacity: 1 }} // xuất hiện dần là 1
+          exit={{ opacity: 0 }} // biến mất là 0
+          className="fixed left-0 top-0 z-10 h-screen w-screen bg-black/60 flex items-center justify-center"
         >
-          <button onClick={() => setAddItem(false)} className="absolute right-2 top-2">
-            <X color="gray" size={22} />
-          </button>
-          <form onSubmit={handleAddCategorySubmit} className="bg-white dark:bg-darkPrimary rounded-md">
-            <h3 className="py-2 px-4 text-lg font-semibold tracking-wide rounded-md">Thông tin danh mục</h3>
-            <div className="p-4 pt-0">
-              <div className="mt-4 flex items-center gap-4">
-                <Input
-                  name="name"
-                  register={register}
-                  placeholder="Nhập tên danh mục"
-                  messageErrorInput={errors.name?.message}
-                  classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-white dark:bg-darkPrimary focus:border-blue-500 focus:ring-2 outline-none rounded-md"
-                  className="relative flex-1"
-                  nameInput="Tên danh mục"
-                />
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.8 }}
+            className="relative"
+          >
+            <button onClick={() => setAddItem(false)} className="absolute right-2 top-2">
+              <X color="gray" size={22} />
+            </button>
+            <form onSubmit={handleAddCategorySubmit} className="bg-white dark:bg-darkPrimary rounded-md">
+              <h3 className="py-2 px-4 text-lg font-semibold tracking-wide rounded-md">Thông tin danh mục</h3>
+              <div className="p-4 pt-0">
+                <div className="mt-4 flex items-center gap-4">
+                  <Input
+                    name="name"
+                    register={register}
+                    placeholder="Nhập tên danh mục"
+                    messageErrorInput={errors.name?.message}
+                    classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-white dark:bg-darkPrimary focus:border-blue-500 focus:ring-2 outline-none rounded-md"
+                    className="relative flex-1"
+                    nameInput="Tên danh mục"
+                  />
+                </div>
+                <div className="flex items-center justify-end">
+                  <Button
+                    type="submit"
+                    icon={<BookOpenCheck size={18} />}
+                    nameButton="Thêm"
+                    classNameButton="w-[120px] p-4 py-2 bg-blue-500 mt-2 w-full text-white font-semibold rounded-3xl hover:bg-blue-500/80 duration-200 flex items-center gap-1"
+                  />
+                </div>
               </div>
-              <div className="flex items-center justify-end">
-                <Button
-                  type="submit"
-                  icon={<BookOpenCheck size={18} />}
-                  nameButton="Thêm"
-                  classNameButton="w-[120px] p-4 py-2 bg-blue-500 mt-2 w-full text-white font-semibold rounded-3xl hover:bg-blue-500/80 duration-200 flex items-center gap-1"
-                />
-              </div>
-            </div>
-          </form>
+            </form>
+          </motion.div>
         </motion.div>
-      </motion.div>
+      )}
     </AnimatePresence>
   )
 }

@@ -562,8 +562,9 @@ export default function ManageSuppliers() {
                 page_size={page_size}
                 pathNavigate={path.AdminSuppliers}
               />
-              {idSupplier !== null ? (
-                <AnimatePresence>
+
+              <AnimatePresence>
+                {idSupplier && (
                   <motion.div
                     initial={{ opacity: 0 }} // khởi tạo là 0
                     animate={{ opacity: 1 }} // xuất hiện dần là 1
@@ -700,11 +701,10 @@ export default function ManageSuppliers() {
                       </form>
                     </motion.div>
                   </motion.div>
-                </AnimatePresence>
-              ) : (
-                ""
-              )}
-              {addItem ? <AddSupplier setAddItem={setAddItem} /> : ""}
+                )}
+              </AnimatePresence>
+
+              <AddSupplier setAddItem={setAddItem} addItem={addItem} />
             </div>
           )}
         </div>

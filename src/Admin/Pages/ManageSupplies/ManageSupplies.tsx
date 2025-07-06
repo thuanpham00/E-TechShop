@@ -423,12 +423,10 @@ export default function ManageSupplies() {
                 page_size={page_size}
                 pathNavigate={path.AdminSupplies}
               />
-              {idSupply !== null ? (
-                <SupplyDetail idSupply={idSupply} setIdSupply={setIdSupply} queryConfig={queryConfig} />
-              ) : (
-                ""
-              )}
-              {addItem ? <AddSupply setAddItem={setAddItem} /> : ""}
+
+              <SupplyDetail idSupply={idSupply} setIdSupply={setIdSupply} queryConfig={queryConfig} />
+
+              <AddSupply setAddItem={setAddItem} addItem={addItem} />
             </div>
           )}
         </div>

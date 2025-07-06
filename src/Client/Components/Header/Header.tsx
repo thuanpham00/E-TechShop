@@ -15,7 +15,6 @@ import { SuccessResponse } from "src/Types/utils.type"
 import { ProductDetailType } from "src/Types/product.type"
 import { CalculateSalePrice, formatCurrency, slugify } from "src/Helpers/common"
 import { getAccessTokenFromLS } from "src/Helpers/auth"
-import Button from "src/Components/Button"
 
 export default function Header() {
   const navigate = useNavigate()
@@ -91,8 +90,8 @@ export default function Header() {
     }[]
   }>
 
-  const listFavourite = result?.result?.products[0].products
-  const listCart = resultCart?.result?.products[0].products
+  const listFavourite = result?.result?.products[0]?.products
+  const listCart = resultCart?.result?.products[0]?.products
   const lengthFavourite = result?.result?.total
   const lengthCart = resultCart?.result?.total
 
@@ -169,35 +168,37 @@ export default function Header() {
                     renderPopover={
                       <div className="bg-white shadow-md rounded-sm border border-gray-200">
                         {lengthFavourite > 0 ? (
-                          <div className="px-1 py-2 w-[300px] max-h-[300px] overflow-y-auto">
+                          <div className="px-1 py-2 w-[300px]">
                             <span className="text-gray-700 ml-3 mt-1 font-semibold mb-1 block text-[13px]">
                               Sản phẩm đã lưu
                             </span>
-                            {listFavourite?.map((item, index) => (
-                              <motion.div
-                                key={index}
-                                initial={{ opacity: 0, y: 20 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ delay: index * 0.1 }}
-                                className=" transition-colors"
-                              >
-                                <Link
-                                  to={`/products/${slugify(item.name)}-i-${item._id}`}
-                                  className="flex items-center gap-1 hover:bg-gray-100 duration-200 p-2"
+                            <div className="min-[100px] max-h-[200px] overflow-y-auto">
+                              {listFavourite?.map((item, index) => (
+                                <motion.div
+                                  key={index}
+                                  initial={{ opacity: 0, y: 20 }}
+                                  animate={{ opacity: 1, y: 0 }}
+                                  transition={{ delay: index * 0.1 }}
+                                  className=" transition-colors"
                                 >
-                                  <img src={item.banner.url} alt={item.name} className="w-[80px] h-[80px]" />
-                                  <div>
-                                    <span className="block text-[13px] line-clamp-2">{item.name}</span>
-                                    <span className="block text-[14px] text-red-500 font-semibold">
-                                      {item.discount > 0
-                                        ? CalculateSalePrice(item.price, item.discount)
-                                        : formatCurrency(Number(item.price))}{" "}
-                                      đ
-                                    </span>
-                                  </div>
-                                </Link>
-                              </motion.div>
-                            ))}
+                                  <Link
+                                    to={`/products/${slugify(item.name)}-i-${item._id}`}
+                                    className="flex items-center gap-1 hover:bg-gray-100 duration-200 p-2"
+                                  >
+                                    <img src={item.banner.url} alt={item.name} className="w-[80px] h-[80px]" />
+                                    <div>
+                                      <span className="block text-[13px] line-clamp-2">{item.name}</span>
+                                      <span className="block text-[14px] text-red-500 font-semibold">
+                                        {item.discount > 0
+                                          ? CalculateSalePrice(item.price, item.discount)
+                                          : formatCurrency(Number(item.price))}{" "}
+                                        đ
+                                      </span>
+                                    </div>
+                                  </Link>
+                                </motion.div>
+                              ))}
+                            </div>
                           </div>
                         ) : (
                           <div className="p-4 h-[200px] w-[180px] flex items-center justify-center flex-col">
@@ -227,43 +228,46 @@ export default function Header() {
                     renderPopover={
                       <div className="bg-white shadow-md rounded-sm border border-gray-200">
                         {listCart?.length > 0 ? (
-                          <div className="px-1 py-2 w-[300px] max-h-[300px] overflow-y-auto">
+                          <div className="px-1 py-2 w-[300px]">
                             <span className="text-gray-700 ml-3 mt-1 font-semibold mb-1 block text-[13px]">
                               Sản phẩm mới được thêm vào
                             </span>
-                            {listCart?.map((item, index) => (
-                              <motion.div
-                                key={index}
-                                initial={{ opacity: 0, y: 20 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ delay: index * 0.1 }}
-                                className=" transition-colors"
-                              >
-                                <Link
-                                  to={`/products/${slugify(item.name)}-i-${item._id}`}
-                                  className="flex items-center gap-1 hover:bg-gray-100 duration-200 p-2"
+                            <div className="max-h-[200px] overflow-y-auto">
+                              {listCart?.map((item, index) => (
+                                <motion.div
+                                  key={index}
+                                  initial={{ opacity: 0, y: 20 }}
+                                  animate={{ opacity: 1, y: 0 }}
+                                  transition={{ delay: index * 0.1 }}
+                                  className=" transition-colors"
                                 >
-                                  <img src={item.banner.url} alt={item.name} className="w-[80px] h-[80px]" />
-                                  <div>
-                                    <span className="block text-[13px] line-clamp-2">{item.name}</span>
-                                    <div className="flex items-center justify-between">
-                                      <span className="block text-[14px] text-red-500 font-semibold">
-                                        {item.discount > 0
-                                          ? CalculateSalePrice(item.price, item.discount)
-                                          : formatCurrency(Number(item.price))}{" "}
-                                        đ
-                                      </span>
-                                      <span>x {item?.quantity}</span>
+                                  <Link
+                                    to={`/products/${slugify(item.name)}-i-${item._id}`}
+                                    className="flex items-center gap-1 hover:bg-gray-100 duration-200 p-2"
+                                  >
+                                    <img src={item.banner.url} alt={item.name} className="w-[80px] h-[80px]" />
+                                    <div>
+                                      <span className="block text-[13px] line-clamp-2">{item.name}</span>
+                                      <div className="flex items-center justify-between">
+                                        <span className="block text-[14px] text-red-500 font-semibold">
+                                          {item.discount > 0
+                                            ? CalculateSalePrice(item.price, item.discount)
+                                            : formatCurrency(Number(item.price))}{" "}
+                                          đ
+                                        </span>
+                                        <span>x {item?.quantity}</span>
+                                      </div>
                                     </div>
-                                  </div>
-                                </Link>
-                              </motion.div>
-                            ))}
-                            <Button
-                              classNameButton="mt-2 p-2 bg-blue-500 w-full text-white rounded-sm hover:bg-blue-500/80 duration-200 text-sm"
-                              nameButton="Xem giỏ hàng"
-                              type="button"
-                            />
+                                  </Link>
+                                </motion.div>
+                              ))}
+                            </div>
+                            <Link
+                              to={"/cart"}
+                              className="mt-2 w-full block p-2 bg-blue-500 text-white rounded-sm hover:bg-blue-500/80 duration-200 text-sm text-center"
+                            >
+                              Xem giỏ hàng
+                            </Link>
                           </div>
                         ) : (
                           <div className="p-4 flex items-center justify-center flex-col">
