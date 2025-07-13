@@ -198,21 +198,26 @@ export default function Order() {
                                 {/* Giá tiền */}
                                 <div className="text-right">
                                   {item.discount !== 0 ? (
-                                    <p className="text-sm text-gray-600">
-                                      Đơn giá:{" "}
-                                      {formatCurrency(
-                                        (item.price - item.price * (item.discount / 100)) * item.quantity
-                                      )}
-                                      đ
-                                    </p>
+                                    <div>
+                                      <p className="text-sm text-gray-600">
+                                        Đơn giá: {formatCurrency(item.price - item.price * (item.discount / 100))}đ
+                                      </p>
+                                      <p className="text-sm font-semibold text-gray-700">
+                                        Thành tiền:{" "}
+                                        {formatCurrency(
+                                          (item.price - item.price * (item.discount / 100)) * item.quantity
+                                        )}
+                                        đ
+                                      </p>
+                                    </div>
                                   ) : (
-                                    <p className="text-sm text-gray-600">
-                                      Đơn giá: {formatCurrency(item.price * item.quantity)} đ
-                                    </p>
+                                    <div>
+                                      <p className="text-sm text-gray-600">Đơn giá: {formatCurrency(item.price)} đ</p>
+                                      <p className="text-sm font-semibold text-gray-700">
+                                        Thành tiền: {formatCurrency(item.price * item.quantity)}đ
+                                      </p>
+                                    </div>
                                   )}
-                                  <p className="text-sm font-semibold text-gray-700">
-                                    Thành tiền: {formatCurrency(item.price * item.quantity)} đ
-                                  </p>
                                 </div>
                               </div>
                             )

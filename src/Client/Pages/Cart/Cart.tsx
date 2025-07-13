@@ -182,7 +182,7 @@ export default function Cart() {
   // cập nhật số lượng sản phẩm giỏ hàng
   const updateProductToCartMutation = useMutation({
     mutationFn: (body: CartType) => {
-      return collectionAPI.addProductToCart(body)
+      return collectionAPI.updateQuantityProductInCart(body)
     }
   })
 

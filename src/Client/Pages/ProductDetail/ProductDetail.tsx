@@ -167,6 +167,17 @@ export default function ProductDetail() {
       .catch((err) => console.log(err))
   }
 
+  const handleBuyNow = (productId: string, quantity: number) => {
+    addProductToCartMutation
+      .mutateAsync({ product_id: productId, quantity: quantity, added_at: new Date() })
+      .then((res) => {
+        navigate(path.Cart)
+        queryClient.invalidateQueries({ queryKey: ["listCart", token] })
+        toast.success(res.data.message, { autoClose: 1500 })
+      })
+      .catch((err) => console.log(err))
+  }
+
   useEffect(() => {
     if (productDetail?._id) {
       setValueQuantity(1)
@@ -292,6 +303,7 @@ export default function ProductDetail() {
                         Thêm vào giỏ hàng
                       </button>
                       <button
+                        onClick={() => handleBuyNow(productDetail._id, valueQuantity)}
                         type="button"
                         className="py-2 border-2 border-red-600 bg-red-600 hover:bg-red-400 hover:border-red-400 duration-200 rounded-md text-white min-w-[150px] text-sm font-semibold"
                       >
