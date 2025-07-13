@@ -2,14 +2,13 @@
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { ChevronLeft } from "lucide-react"
 import { Helmet } from "react-helmet-async"
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import { collectionAPI } from "src/Apis/collections.api"
-import CheckoutSteps from "src/Client/Components/CheckoutStep"
 import { getAccessTokenFromLS } from "src/Helpers/auth"
 import { CartType, ProductDetailType } from "src/Types/product.type"
 import { SuccessResponse } from "src/Types/utils.type"
 import cartImg from "src/Assets/img/cart.png"
-import { Table, Checkbox, Image, Typography, Button, InputNumber } from "antd"
+import { Table, Checkbox, Image, Typography, Button, InputNumber, Steps } from "antd"
 import { useEffect, useMemo, useState } from "react"
 import { CalculateSalePrice, formatCurrency, slugify } from "src/Helpers/common"
 import { debounce } from "lodash"
@@ -27,16 +26,35 @@ type CartList = {
 }[]
 
 export default function Cart() {
+  const navigate = useNavigate()
   const queryClient = useQueryClient()
   const token = getAccessTokenFromLS()
   const [listCart, setListCart] = useState<CartList>([])
   const [listCheck, setListCheck] = useState<Record<string, boolean>>({})
+  const [selectedProducts, setSelectedProducts] = useState<CartList>([]) // sản phẩm selected
+  const [flag, setFlag] = useState<boolean>(false)
 
   const columns = [
     {
       title: "Chọn",
       dataIndex: "select",
-      render: (_: any, record: any) => <Checkbox checked={listCheck[record.key]} />,
+      render: (_: any, record: any) => (
+        <Checkbox
+          checked={listCheck[record.key]}
+          onChange={(e) => {
+            const { checked } = e.target
+            if (checked) {
+              setSelectedProducts((prev) => [...prev, record])
+            } else {
+              setSelectedProducts((prev) => prev.filter((item) => item.key !== record.key))
+            }
+            setListCheck((prev) => ({
+              ...prev,
+              [record.key]: checked
+            }))
+          }}
+        />
+      ),
       width: 50
     },
     {
@@ -132,7 +150,15 @@ export default function Cart() {
     placeholderData: keepPreviousData
   })
 
-  const listProductCart = data?.data?.result.products[0].products as ProductDetailType[]
+  const listProductCart = data?.data?.result?.products[0]?.products as ProductDetailType[]
+  const resultCart = data?.data as SuccessResponse<{
+    total: number
+    products: {
+      products: ProductDetailType[]
+    }[]
+  }>
+
+  const lengthCart = resultCart?.result?.total
 
   useEffect(() => {
     if (listProductCart) {
@@ -153,16 +179,7 @@ export default function Cart() {
     }
   }, [listProductCart])
 
-  const resultCart = data?.data as SuccessResponse<{
-    total: number
-    products: {
-      products: ProductDetailType[]
-    }[]
-  }>
-
-  const lengthCart = resultCart?.result?.total
-
-  // xử lý giỏ hàng
+  // cập nhật số lượng sản phẩm giỏ hàng
   const updateProductToCartMutation = useMutation({
     mutationFn: (body: CartType) => {
       return collectionAPI.addProductToCart(body)
@@ -173,7 +190,7 @@ export default function Cart() {
     updateProductToCartMutation
       .mutateAsync({ product_id: productId, quantity: quantity, added_at: new Date() })
       .then(() => {
-        queryClient.invalidateQueries({ queryKey: ["listCart", token] })
+        queryClient.invalidateQueries({ queryKey: ["listCart", token] }) // đồng bộ
       })
       .catch((err) => console.log(err))
   }
@@ -186,7 +203,7 @@ export default function Cart() {
     []
   )
 
-  // xử lý giỏ hàng
+  // xóa 1 sản phẩm giỏ hàng
   const removeProductToCartMutation = useMutation({
     mutationFn: (body: string) => {
       return collectionAPI.removeProductToCart(body)
@@ -194,24 +211,76 @@ export default function Cart() {
   })
 
   const removeProductToCart = async (productId: string) => {
-    removeProductToCartMutation
-      .mutateAsync(productId)
-      .then((res) => {
-        toast.success(res.data.message, { autoClose: 1500 })
-        queryClient.invalidateQueries({ queryKey: ["listCart", token] })
-      })
-      .catch((err) => console.log(err))
+    removeProductToCartMutation.mutateAsync(productId).then((res) => {
+      toast.success(res.data.message, { autoClose: 1500 })
+      queryClient.invalidateQueries({ queryKey: ["listCart", token] })
+    })
   }
 
-  const [flag, setFlag] = useState(false)
+  // clear giỏ hàng
+  const clearProductInCartMutation = useMutation({
+    mutationFn: () => {
+      return collectionAPI.clearProductToCart()
+    }
+  })
+
+  const clearProductInCart = () => {
+    clearProductInCartMutation.mutate(undefined, {
+      onSuccess: (res) => {
+        toast.success(res.data.message, { autoClose: 1500 })
+        queryClient.invalidateQueries({ queryKey: ["listCart", token] }) // đồng bộ
+      }
+    })
+  }
+
   const handleCheckAllProduct = () => {
     const checkValue = !flag
     const newCheck: Record<string, boolean> = {}
+    const selectedProduct: CartList = []
     listCart.map((item) => {
       newCheck[item.key] = checkValue
+      selectedProduct.push(item)
     })
+    if (flag) {
+      setSelectedProducts([])
+    } else {
+      setSelectedProducts(selectedProduct)
+    }
     setFlag(checkValue)
     setListCheck(newCheck)
+  }
+
+  const isAllSelected = useMemo(() => {
+    return listCart.length > 0 && selectedProducts.length === listCart.length
+  }, [selectedProducts.length, listCart.length])
+
+  const totalPriceProducts = useMemo(() => {
+    return selectedProducts.reduce((total, product) => {
+      const finalPrice =
+        product.discount !== 0 ? product.price - product.price * (product.discount / 100) : product.price
+
+      return total + finalPrice * product.quantity
+    }, 0)
+  }, [selectedProducts])
+
+  const saveMoneyProducts = useMemo(() => {
+    return selectedProducts.reduce((total, product) => {
+      const finalPrice = product.price * product.quantity
+      return total + finalPrice
+    }, 0)
+  }, [selectedProducts])
+
+  const handleOrderProduct = () => {
+    if (selectedProducts.length === 0) {
+      toast.error("Bạn chưa chọn sản phẩm nào!", { autoClose: 1500 })
+    } else {
+      navigate("/cart/info", {
+        state: {
+          selectedProducts,
+          totalPriceProducts
+        }
+      })
+    }
   }
 
   return (
@@ -230,7 +299,27 @@ export default function Cart() {
           <div className="p-4 bg-white rounded-md mt-4">
             {lengthCart > 0 ? (
               <div className="relative">
-                <CheckoutSteps currentStep={0} />
+                <div className="bg-red-50 px-4 py-6">
+                  <Steps
+                    size="small"
+                    current={0}
+                    type="default"
+                    items={[
+                      {
+                        title: <span style={{ color: "red", fontWeight: "500" }}>Giỏ hàng</span>
+                      },
+                      {
+                        title: <span className="text-gray-500">Thông tin đặt hàng</span>
+                      },
+                      {
+                        title: <span className="text-gray-500">Thanh toán</span>
+                      },
+                      {
+                        title: <span className="text-gray-500">Hoàn tất</span>
+                      }
+                    ]}
+                  />
+                </div>
 
                 <div className="mt-4">
                   <Table columns={columns} dataSource={listCart} pagination={false} bordered />
@@ -257,8 +346,10 @@ export default function Cart() {
                   >
                     {/* Left */}
                     <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
-                      <Checkbox onClick={handleCheckAllProduct}>Chọn tất cả</Checkbox>
-                      <Text type="danger" strong className="cursor-pointer">
+                      <Checkbox checked={isAllSelected} onClick={handleCheckAllProduct}>
+                        Chọn tất cả
+                      </Checkbox>
+                      <Text onClick={clearProductInCart} type="danger" strong className="cursor-pointer">
                         Xóa tất cả
                       </Text>
                     </div>
@@ -267,15 +358,23 @@ export default function Cart() {
                     <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
                       <div style={{ textAlign: "right" }}>
                         <div style={{ fontSize: "16px" }}>
-                          <b>Tổng thanh toán (0)</b> <span style={{ padding: "0 4px" }}>Sản phẩm</span>{" "}
-                          <span style={{ color: "#ff6600" }}>0đ</span>
+                          <span>Tổng tiền ({selectedProducts.length})</span>
+                          <span style={{ padding: "0 4px" }}>sản phẩm:</span>
+                          <span style={{ color: "#ff4d4f", fontSize: "18px", fontWeight: 500 }}>
+                            {formatCurrency(totalPriceProducts)}đ
+                          </span>
                         </div>
                         <div style={{ fontSize: "12px", color: "#888" }}>
-                          Tiết kiệm <span style={{ color: "#ff6600", marginLeft: 4 }}>0đ</span>
+                          Tiết kiệm
+                          <span style={{ color: "#ff4d4f", marginLeft: 4 }}>
+                            {formatCurrency(saveMoneyProducts - totalPriceProducts)}đ
+                          </span>
                         </div>
                       </div>
                       <Button
+                        onClick={handleOrderProduct}
                         type="primary"
+                        className="custom-button"
                         style={{
                           background: "red",
                           border: "none",

@@ -126,3 +126,12 @@ a {
     @apply bg-background text-foreground;
   }
 }
+
+.custom-button {
+  background: red !important;
+  color: white;
+}
+
+.custom-button:hover {
+  background: rgba(255, 0, 0, 0.6) !important;
+}

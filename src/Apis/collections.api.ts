@@ -22,6 +22,14 @@ export const collectionAPI = {
     return Http.post(`/collections/cart`, body)
   },
 
+  updateQuantityProductInCart: (body: CartType) => {
+    return Http.put(`/collections/cart`, body)
+  },
+
+  clearProductToCart: () => {
+    return Http.delete(`/collections/cart`)
+  },
+
   removeProductToCart: (productId: string) => {
     return Http.delete(`/collections/cart/${productId}`)
   },

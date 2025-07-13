@@ -1,5 +1,11 @@
 import { createContext, useState } from "react"
-import { getAccessTokenFromLS, getAvatarImageFromLS, getNameUserFromLS, getRoleFromLS } from "src/Helpers/auth"
+import {
+  getAccessTokenFromLS,
+  getAvatarImageFromLS,
+  getNameUserFromLS,
+  getRoleFromLS,
+  getUserIdFromLS
+} from "src/Helpers/auth"
 
 type Props = {
   children: React.ReactNode
@@ -10,13 +16,15 @@ type TypeInitialState = {
   setIsAuthenticated: React.Dispatch<React.SetStateAction<boolean>>
   nameUser: string | null
   setNameUser: React.Dispatch<React.SetStateAction<string | null>>
-  isShowCategory: boolean
-  setIsShowCategory: React.Dispatch<React.SetStateAction<boolean>>
-  reset: () => void
   role: string | null
   setRole: React.Dispatch<React.SetStateAction<string | null>>
   avatar: string | null
   setAvatar: React.Dispatch<React.SetStateAction<string | null>>
+  userId: string | null
+  setUserId: React.Dispatch<React.SetStateAction<string | null>>
+  isShowCategory: boolean
+  setIsShowCategory: React.Dispatch<React.SetStateAction<boolean>>
+  reset: () => void
 }
 
 // giá trị khởi tạo cho state global
@@ -25,13 +33,15 @@ const initialStateContext: TypeInitialState = {
   setIsAuthenticated: () => null,
   nameUser: getNameUserFromLS(),
   setNameUser: () => null,
-  isShowCategory: false,
-  setIsShowCategory: () => null,
-  reset: () => null,
   role: getRoleFromLS(),
   setRole: () => null,
   avatar: getAvatarImageFromLS(),
-  setAvatar: () => null
+  setAvatar: () => null,
+  userId: getUserIdFromLS(),
+  setUserId: () => null,
+  isShowCategory: false,
+  setIsShowCategory: () => null,
+  reset: () => null
 }
 
 export const AppContext = createContext<TypeInitialState>(initialStateContext)
@@ -42,6 +52,7 @@ export default function AppClientProvider({ children }: Props) {
   const [isShowCategory, setIsShowCategory] = useState<boolean>(initialStateContext.isShowCategory)
   const [role, setRole] = useState<string | null>(initialStateContext.role)
   const [avatar, setAvatar] = useState<string | null>(initialStateContext.avatar)
+  const [userId, setUserId] = useState<string | null>(initialStateContext.userId)
 
   /**
    * Các biến trong context (như isAuthenticated, nameUser, isShowCategory, ...) phải khớp với các biến state trong AppClientProvider để đảm bảo rằng chúng phản ánh đúng dữ liệu toàn cục được quản lý bởi context.
@@ -53,6 +64,7 @@ export default function AppClientProvider({ children }: Props) {
     setNameUser(null)
     setRole(null)
     setAvatar(null)
+    setUserId(null)
   }
 
   return (
@@ -68,7 +80,9 @@ export default function AppClientProvider({ children }: Props) {
         role,
         setRole,
         avatar,
-        setAvatar
+        setAvatar,
+        userId,
+        setUserId
       }}
     >
       {children}

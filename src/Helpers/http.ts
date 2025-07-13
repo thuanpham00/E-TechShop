@@ -5,7 +5,8 @@ import {
   setAccessTokenToLS,
   setAvatarImageToLS,
   setNameUserToLS,
-  setRoleToLS
+  setRoleToLS,
+  setUserIdToLS
 } from "src/Helpers/auth"
 import { config } from "src/Constants/config"
 import { AuthResponse, MessageResponse, SuccessResponse } from "src/Types/utils.type"
@@ -52,6 +53,7 @@ class http {
           setNameUserToLS(data.result.userInfo.name)
           setRoleToLS(data.result.userInfo.role)
           setAvatarImageToLS(data.result.userInfo.avatar)
+          setUserIdToLS(data.result.userInfo._id)
           // ở server sẽ tự động lưu RT vào cookie ở trình duyệt
         }
         if (response.config.url === "users/logout") {

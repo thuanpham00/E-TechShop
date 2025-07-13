@@ -1,0 +1,4 @@
+/* file: index.css hoặc global CSS */
+input[type="file"].hidden {
+  display: none !important;
+}

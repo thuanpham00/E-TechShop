@@ -38,7 +38,7 @@ type FormData = Pick<SchemaAuthType, "email" | "password"> // kiểu dữ liệu
 const formData = schemaAuth.pick(["email", "password"]) // validate ở client
 
 export default function Login() {
-  const { setIsAuthenticated, setNameUser, setRole, setAvatar } = useContext(AppContext)
+  const { setIsAuthenticated, setNameUser, setRole, setAvatar, setUserId } = useContext(AppContext)
   const {
     formState: { errors },
     setError,
@@ -63,6 +63,7 @@ export default function Login() {
         setNameUser(response.data.result.userInfo.name)
         setRole(response.data.result.userInfo.role)
         setAvatar(response.data.result.userInfo.avatar)
+        setUserId(response.data.result.userInfo._id)
         // nếu không set state tại đây thì nó chỉ set LS và không re-render app
         // -> dẫn đến UI không cập nhật (mới nhất sau khi login) -> cần set state
         // để app re-render lại và đặt giá trị mới cho state global

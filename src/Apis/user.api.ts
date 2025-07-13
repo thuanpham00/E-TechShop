@@ -1,4 +1,6 @@
 import Http from "src/Helpers/http"
+import { UpdateBodyReq } from "src/Types/product.type"
+import { UserType } from "src/Types/user.type"
 import { AuthResponse, MessageResponse } from "src/Types/utils.type"
 
 export const userAPI = {
@@ -14,8 +16,12 @@ export const userAPI = {
     return Http.post<MessageResponse>("users/logout")
   },
 
-  getMe: () => {
-    return Http.get<AuthResponse>("users/me")
+  getMe: (signal: AbortSignal) => {
+    return Http.get<{ result: UserType }>("users/me", { signal })
+  },
+
+  updateMe: (body: UpdateBodyReq) => {
+    return Http.patch("/users/me", body)
   },
 
   verifyEmail: (email_verify_token: string) => {

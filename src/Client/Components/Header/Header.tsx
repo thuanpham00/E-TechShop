@@ -15,11 +15,21 @@ import { SuccessResponse } from "src/Types/utils.type"
 import { ProductDetailType } from "src/Types/product.type"
 import { CalculateSalePrice, formatCurrency, slugify } from "src/Helpers/common"
 import { getAccessTokenFromLS } from "src/Helpers/auth"
+import { OrderApi } from "src/Apis/order.api"
 
 export default function Header() {
   const navigate = useNavigate()
-  const { isAuthenticated, nameUser, avatar, setIsAuthenticated, setNameUser, setRole, setIsShowCategory, setAvatar } =
-    useContext(AppContext)
+  const {
+    isAuthenticated,
+    nameUser,
+    avatar,
+    setIsAuthenticated,
+    setNameUser,
+    setRole,
+    setIsShowCategory,
+    setAvatar,
+    setUserId
+  } = useContext(AppContext)
 
   const token = getAccessTokenFromLS()
   const logoutMutation = useMutation({
@@ -35,7 +45,7 @@ export default function Header() {
         setNameUser(null)
         setRole(null)
         setAvatar(null)
-
+        setUserId(null)
         toast.success(response.data.message, {
           autoClose: 1000
         })
@@ -90,10 +100,25 @@ export default function Header() {
     }[]
   }>
 
+  const { data: data3 } = useQuery({
+    queryKey: ["listOrder", token],
+    queryFn: () => {
+      const controller = new AbortController()
+      setTimeout(() => {
+        controller.abort() // hủy request khi chờ quá lâu // 10 giây sau cho nó hủy // làm tự động
+      }, 10000)
+      return OrderApi.getOrders(controller.signal)
+    },
+    retry: 0, // số lần retry lại khi hủy request (dùng abort signal)
+    staleTime: 10 * 60 * 1000, // dưới 5 phút nó không gọi lại api
+    placeholderData: keepPreviousData
+  })
+
   const listFavourite = result?.result?.products[0]?.products
   const listCart = resultCart?.result?.products[0]?.products
   const lengthFavourite = result?.result?.total
   const lengthCart = resultCart?.result?.total
+  const lengthOrder = data3?.data?.total
 
   return (
     <div className="bg-primaryBlue sticky top-0 left-0 z-20">
@@ -156,7 +181,7 @@ export default function Header() {
                     <span className="text-[13px] text-white font-semibold text-center">Đơn hàng</span>
                     {isAuthenticated ? (
                       <span className="absolute -top-3 left-7 w-[20px] h-[20px] bg-red-500 border border-white text-[10px] flex items-center justify-center rounded-full text-white font-semibold">
-                        0
+                        {lengthOrder}
                       </span>
                     ) : (
                       ""

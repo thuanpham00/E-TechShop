@@ -30,6 +30,7 @@ export default function ForgotPassword() {
       return userAPI.forgotPassword(email)
     }
   })
+
   const handleSubmitForm = handleSubmit((data) => {
     forgotPasswordMutation.mutate(data.email, {
       onError: (error) => {

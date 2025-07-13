@@ -30,6 +30,14 @@ export const getAvatarImageFromLS = () => {
   return localStorage.getItem("avatar") || ""
 }
 
+export const setUserIdToLS = (userId: string) => {
+  return localStorage.setItem("userId", userId)
+}
+
+export const getUserIdFromLS = () => {
+  return localStorage.getItem("userId") || ""
+}
+
 export const LocalStorageEventTarget = new EventTarget() // tạo ra 1 event target để lắng nghe sự kiện thay đổi LocalStorage
 
 export const clearLS = () => {

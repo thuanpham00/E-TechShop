@@ -265,3 +265,21 @@ export type CartType = {
   quantity: number
   added_at?: Date
 }
+
+export type OrderType = {
+  customer_info: {
+    name: string // người nhận
+    phone: string
+    address: string
+  }
+  products: {
+    product_id: string // ref tới bảng Product (để tra cứu thêm nếu cần)
+    name: string // tên sản phẩm tại thời điểm mua
+    price: number // đơn giá lúc mua
+    quantity: number // số lượng mua
+    image: string
+    discount?: number
+  }[]
+  totalAmount: number
+  note?: string
+}
