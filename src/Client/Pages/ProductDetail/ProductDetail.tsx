@@ -171,7 +171,11 @@ export default function ProductDetail() {
     addProductToCartMutation
       .mutateAsync({ product_id: productId, quantity: quantity, added_at: new Date() })
       .then((res) => {
-        navigate(path.Cart)
+        navigate(path.Cart, {
+          state: {
+            productId
+          }
+        })
         queryClient.invalidateQueries({ queryKey: ["listCart", token] })
         toast.success(res.data.message, { autoClose: 1500 })
       })

@@ -153,13 +153,14 @@ export default function Profile() {
         <span className="text-sm">Quản lý thông tin hồ sơ để bảo mật tài khoản</span>
       </div>
 
-      <div className="mt-4">
+      <div className="mt-4 py-4 px-8">
         <Form
           form={form}
           onFinish={onFinish}
           labelCol={{
             span: 6
           }}
+          labelAlign="left"
           layout="horizontal"
         >
           <Row gutter={16}>

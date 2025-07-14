@@ -28,6 +28,10 @@ export const userAPI = {
     return Http.post("/users/verify-email", { email_verify_token })
   },
 
+  changePassword: (body: { old_password: string; password: string; confirm_password: string }) => {
+    return Http.post("/users/change-password", body)
+  },
+
   forgotPassword: (email: string) => {
     return Http.post("/users/forgot-password", { email })
   },

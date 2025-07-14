@@ -2,7 +2,7 @@
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { ChevronLeft } from "lucide-react"
 import { Helmet } from "react-helmet-async"
-import { Link, useNavigate } from "react-router-dom"
+import { Link, useLocation, useNavigate } from "react-router-dom"
 import { collectionAPI } from "src/Apis/collections.api"
 import { getAccessTokenFromLS } from "src/Helpers/auth"
 import { CartType, ProductDetailType } from "src/Types/product.type"
@@ -27,6 +27,10 @@ type CartList = {
 
 export default function Cart() {
   const navigate = useNavigate()
+  const { state } = useLocation()
+  const productSelectedBuyNow = state?.productId
+  console.log(productSelectedBuyNow)
+
   const queryClient = useQueryClient()
   const token = getAccessTokenFromLS()
   const [listCart, setListCart] = useState<CartList>([])
@@ -162,22 +166,28 @@ export default function Cart() {
 
   useEffect(() => {
     if (listProductCart) {
-      const list: CartList = listProductCart?.map((item) => ({
-        key: item._id,
-        name: item.name,
-        image: item.banner.url,
-        price: item.price,
-        discount: item.discount,
-        quantity: Number(item.quantity)
-      }))
-      setListCart(list)
       const initialCheck: Record<string, boolean> = {}
-      list.map((item) => {
-        initialCheck[item.key] = false
+      const list: CartList = listProductCart?.map((item) => {
+        const isSelected = item._id === productSelectedBuyNow
+        initialCheck[item._id] = isSelected
+
+        return {
+          key: item._id,
+          name: item.name,
+          image: item.banner.url,
+          price: item.price,
+          discount: item.discount,
+          quantity: Number(item.quantity)
+        }
       })
+
+      setListCart(list)
+      const productBuyNow = list?.find((item) => item.key === productSelectedBuyNow)
+      setSelectedProducts(productBuyNow ? [productBuyNow] : [])
+
       setListCheck(initialCheck)
     }
-  }, [listProductCart])
+  }, [listProductCart, productSelectedBuyNow])
 
   // cập nhật số lượng sản phẩm giỏ hàng
   const updateProductToCartMutation = useMutation({
