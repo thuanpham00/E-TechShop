@@ -131,6 +131,31 @@ export type ReceiptItemType = {
   updated_at: string
 }
 
+export type OrderItemType = {
+  _id: string
+  user_id: string
+  customer_info: {
+    name: string
+    phone: string
+    address: string
+  }
+  products: {
+    product_id: string
+    name: string
+    price: number
+    quantity: number
+    image: string
+    discount: number // phần trăm giảm giá, ví dụ: 5 = 5%
+  }[]
+  totalAmount: number
+  status: OrderStatus
+  note: string
+  created_at: string // hoặc Date nếu bạn muốn parse
+  updated_at: string // hoặc Date nếu bạn muốn parse
+}
+
+type OrderStatus = "Chờ xác nhận" | "Đang xử lý" | "Đang vận chuyển" | "Đã giao hàng" | "Đã hủy"
+
 export type ProductItemType = {
   _id: string
   name: string

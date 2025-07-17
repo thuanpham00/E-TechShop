@@ -25,6 +25,7 @@ import { toast } from "react-toastify"
 import { motion } from "framer-motion"
 import useDownloadExcel from "src/Hook/useDownloadExcel"
 import Input from "src/Components/Input"
+import InputNumber from "src/Components/InputNumber"
 
 type FormDataSearch = Pick<
   SchemaSupplyType,
@@ -35,6 +36,8 @@ type FormDataSearch = Pick<
   | "updated_at_start"
   | "updated_at_end"
   | "quantity"
+  | "price_max"
+  | "price_min"
 >
 
 const formDataSearch = schemaSupply.pick([
@@ -44,7 +47,9 @@ const formDataSearch = schemaSupply.pick([
   "created_at_start",
   "created_at_end",
   "updated_at_start",
-  "updated_at_end"
+  "updated_at_end",
+  "price_max",
+  "price_min"
 ])
 
 export default function ManageReceipt() {
@@ -59,6 +64,8 @@ export default function ManageReceipt() {
       name_product: queryParams.name_product,
       name_supplier: queryParams.name_supplier,
       quantity: queryParams.quantity,
+      price_min: queryParams.price_min,
+      price_max: queryParams.price_max,
       created_at_start: queryParams.created_at_start,
       created_at_end: queryParams.created_at_end,
       updated_at_start: queryParams.updated_at_start,
@@ -66,8 +73,6 @@ export default function ManageReceipt() {
     },
     isUndefined
   )
-
-  // ##### phát triển tiếp ở chỗ tham số truy vấn quantity và import_date_start, import_date_end
 
   const { data, isFetching, isLoading } = useQuery({
     queryKey: ["listReceipt", queryConfig],
@@ -106,6 +111,7 @@ export default function ManageReceipt() {
 
   const handleSubmitSearch = handleSubmitFormSearch(
     (data) => {
+      console.log(data)
       const params = cleanObject({
         ...queryConfig,
         page: 1,
@@ -115,7 +121,9 @@ export default function ManageReceipt() {
         created_at_start: data.created_at_start?.toISOString(),
         created_at_end: data.created_at_end?.toISOString(),
         updated_at_start: data.updated_at_start?.toISOString(),
-        updated_at_end: data.updated_at_end?.toISOString()
+        updated_at_end: data.updated_at_end?.toISOString(),
+        price_max: data.price_max,
+        price_min: data.price_min
       })
       navigate({
         pathname: path.AdminReceipts,
@@ -128,6 +136,9 @@ export default function ManageReceipt() {
       }
       if (error.updated_at_end) {
         toast.error(error.updated_at_end?.message, { autoClose: 1500 })
+      }
+      if (error.price_min) {
+        toast.error(error.price_min?.message, { autoClose: 1500 })
       }
     }
   )
@@ -173,7 +184,9 @@ export default function ManageReceipt() {
       "created_at_start",
       "created_at_end",
       "updated_at_start",
-      "updated_at_end"
+      "updated_at_end",
+      "price_max",
+      "price_min"
     ])
     resetFormSearch()
     navigate({ pathname: path.AdminReceipts, search: createSearchParams(filteredSearch).toString() })
@@ -182,7 +195,7 @@ export default function ManageReceipt() {
   return (
     <div>
       <Helmet>
-        <title>Quản lý cung ứng</title>
+        <title>Quản lý đơn nhập hàng</title>
         <meta
           name="description"
           content="Đây là trang TECHZONE | Laptop, PC, Màn hình, điện thoại, linh kiện Chính Hãng"
@@ -197,7 +210,7 @@ export default function ManageReceipt() {
           <h1 className="text-[15px] font-medium">Tìm kiếm</h1>
           <form onSubmit={handleSubmitSearch}>
             <div className="mt-1 grid grid-cols-2">
-              <div className="col-span-1 flex items-center h-14 px-2 bg-[#fff] dark:bg-darkBorder border border-[#dadada] rounded-tl-xl">
+              <div className="col-span-1 flex items-center h-14 px-2 bg-[#ececec] dark:bg-darkBorder border border-[#dadada] rounded-tl-xl">
                 <span className="w-1/3">Tên sản phẩm</span>
                 <div className="w-2/3 relative h-full">
                   <DropdownSearch
@@ -212,7 +225,7 @@ export default function ManageReceipt() {
                   <span className="absolute inset-y-0 left-[-5%] w-[1px] bg-[#dadada] h-full"></span>
                 </div>
               </div>
-              <div className="col-span-1 flex items-center h-14 px-2 bg-[#fff] dark:bg-darkBorder border border-[#dadada] rounded-tr-xl">
+              <div className="col-span-1 flex items-center h-14 px-2 bg-[#ececec] dark:bg-darkBorder border border-[#dadada] rounded-tr-xl">
                 <span className="w-1/3">Tên nhà cung cấp</span>
                 <div className="w-2/3 relative h-full">
                   <DropdownSearch
@@ -243,7 +256,60 @@ export default function ManageReceipt() {
                   <span className="absolute inset-y-0 left-[-5%] w-[1px] bg-[#dadada] h-full"></span>
                 </div>
               </div>
-              <div className="col-span-1 flex items-center h-14 px-2 bg-[#fff] dark:bg-darkBorder border border-[#dadada] border-t-0 ">
+              <div className="col-span-1 flex items-center h-14 px-2 bg-[#fff] dark:bg-darkBorder border border-[#dadada] border-t-0">
+                <span className="w-1/3">Lọc theo giá</span>
+                <div className="w-2/3 relative h-full">
+                  <div className="flex items-center justify-between gap-2">
+                    <Controller
+                      name="price_min"
+                      control={controlFormSearch}
+                      render={({ field }) => {
+                        return (
+                          <InputNumber
+                            type="text"
+                            placeholder="đ Từ"
+                            autoComplete="on"
+                            classNameInput="p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-black focus:border-blue-500 focus:ring-1 outline-none rounded-md h-[35px]"
+                            className="relative mt-2 flex-grow"
+                            value={field.value}
+                            ref={field.ref}
+                            onChange={(event) => {
+                              field.onChange(event)
+                              trigger("price_max")
+                            }}
+                            classNameError="hidden"
+                          />
+                        )
+                      }}
+                    />
+                    <span>-</span>
+                    <Controller
+                      name="price_max"
+                      control={controlFormSearch}
+                      render={({ field }) => {
+                        return (
+                          <InputNumber
+                            type="text"
+                            placeholder="đ Đến"
+                            autoComplete="on"
+                            classNameInput="p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-black focus:border-blue-500 focus:ring-1 outline-none rounded-md h-[35px]"
+                            className="relative mt-2 flex-grow"
+                            value={field.value}
+                            ref={field.ref}
+                            onChange={(event) => {
+                              field.onChange(event)
+                              trigger("price_min")
+                            }}
+                            classNameError="hidden"
+                          />
+                        )
+                      }}
+                    />
+                  </div>
+                  <span className="absolute inset-y-0 left-[-5%] w-[1px] bg-[#dadada] h-full"></span>
+                </div>
+              </div>
+              <div className="col-span-1 flex items-center h-14 px-2 bg-[#ececec] dark:bg-darkBorder border border-[#dadada] border-t-0 rounded-bl-xl">
                 <span className="w-1/3">Ngày tạo</span>
                 <div className="w-2/3 relative h-full">
                   <div className="mt-2 w-full flex items-center gap-2">
@@ -282,7 +348,7 @@ export default function ManageReceipt() {
                   <span className="absolute inset-y-0 left-[-5%] w-[1px] bg-[#dadada] h-full"></span>
                 </div>
               </div>
-              <div className="col-span-1 flex items-center h-14 px-2 bg-[#fff] dark:bg-darkBorder border border-[#dadada] border-t-0 rounded-bl-xl">
+              <div className="col-span-1 flex items-center h-14 px-2 bg-[#ececec] dark:bg-darkBorder border border-[#dadada] border-t-0 rounded-br-xl">
                 <span className="w-1/3">Ngày cập nhật</span>
                 <div className="w-2/3 relative h-full">
                   <div className="mt-2 w-full flex items-center gap-2">

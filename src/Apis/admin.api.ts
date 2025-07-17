@@ -12,6 +12,7 @@ import {
   queryParamConfigBrand,
   queryParamConfigCategory,
   queryParamConfigCustomer,
+  queryParamConfigOrder,
   queryParamConfigProduct,
   queryParamConfigReceipt,
   queryParamConfigSupplier,
@@ -277,6 +278,16 @@ export const adminAPI = {
 
     createReceipt: (body: CreateReceiptBodyReq) => {
       return Http.post(`/admin/receipts`, body)
+    }
+  },
+
+  order: {
+    // lấy danh sách đơn nhập hàng
+    getOrder: (params: queryParamConfigOrder, signal: AbortSignal) => {
+      return Http.get(`/admin/orders`, {
+        params,
+        signal
+      })
     }
   }
 }

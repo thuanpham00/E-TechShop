@@ -181,7 +181,28 @@ export const schemaSupply = schemaAuth
     name_product: yup.string(),
     name_supplier: yup.string(),
     importPrice: yup.string(),
-    quantity: yup.number()
+    quantity: yup.string(),
+    price_min: yup.string().test({
+      name: "price-not-allowed",
+      message: "Giá không phù hợp!",
+      test: function (value) {
+        if (!value) return true // Không nhập thì bỏ qua
+        const price_min = Number(value)
+        const price_max = this.parent?.price_max ? Number(this.parent.price_max) : null
+        return price_max === null || price_max >= price_min
+      }
+    }),
+
+    price_max: yup.string().test({
+      name: "price-not-allowed",
+      message: "Giá không phù hợp!",
+      test: function (value) {
+        if (!value) return true
+        const price_max = Number(value)
+        const price_min = this.parent?.price_min ? Number(this.parent.price_min) : null
+        return price_min === null || price_max >= price_min
+      }
+    })
   })
 
 export const schemaSupplyUpdate = schemaAuth.pick(["created_at", "updated_at", "id"]).shape({
