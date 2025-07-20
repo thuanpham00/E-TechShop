@@ -1,24 +1,62 @@
 import { Helmet } from "react-helmet-async"
 import NavigateBack from "src/Admin/Components/NavigateBack"
-import { FolderUp, Plus, RotateCcw, Search } from "lucide-react"
-import { Link, useNavigate } from "react-router-dom"
+import { ArrowUpFromLine, ArrowUpNarrowWide, FolderUp, Plus, RotateCcw, Search, X } from "lucide-react"
+import { createSearchParams, Link, useNavigate } from "react-router-dom"
 import Button from "src/Components/Button"
-import { motion } from "framer-motion"
+import { AnimatePresence, motion } from "framer-motion"
 import Input from "src/Components/Input"
 import { path } from "src/Constants/path"
-import useDownloadExcel from "src/Hook/useDownloadExcel"
 import useQueryParams from "src/Hook/useQueryParams"
 import { isUndefined, omitBy } from "lodash"
 import { queryParamConfigOrder } from "src/Types/queryParams.type"
-import { keepPreviousData, useQuery } from "@tanstack/react-query"
+import { keepPreviousData, useMutation, useQuery } from "@tanstack/react-query"
 import { adminAPI } from "src/Apis/admin.api"
 import { SuccessResponse } from "src/Types/utils.type"
 import { OrderItemType } from "src/Types/product.type"
+import Skeleton from "src/Components/Skeleton"
+import Pagination from "src/Components/Pagination"
+import OrderItem from "./Components/OrderItem"
+import { useCallback, useEffect, useState } from "react"
+import { Select, Steps } from "antd"
+import "./ManageOrders.css"
+import { Controller, useForm } from "react-hook-form"
+import { yupResolver } from "@hookform/resolvers/yup"
+import { schemaOrder, SchemaOrderType } from "src/Client/Utils/rule"
+import { convertDateTime, formatCurrency } from "src/Helpers/common"
+import { toast } from "react-toastify"
+import { queryClient } from "src/main"
+
+type FormDataUpdate = Pick<
+  SchemaOrderType,
+  "customer_info" | "id" | "note" | "products" | "created_at" | "updated_at" | "status" | "totalAmount"
+>
+const formDataUpdate = schemaOrder.pick([
+  "id",
+  "customer_info",
+  "products",
+  "note",
+  "totalAmount",
+  "status",
+  "created_at",
+  "updated_at"
+])
+
+type FormDataSearch = Pick<
+  SchemaProductType,
+  | "name"
+  | "category"
+  | "brand"
+  | "price_max"
+  | "price_min"
+  | "created_at_start"
+  | "created_at_end"
+  | "updated_at_start"
+  | "updated_at_end"
+  | "status"
+>
 
 export default function ManageOrders() {
   const navigate = useNavigate()
-  const { downloadExcel } = useDownloadExcel()
-
   const queryParams: queryParamConfigOrder = useQueryParams()
   const queryConfig: queryParamConfigOrder = omitBy(
     {
@@ -32,19 +70,21 @@ export default function ManageOrders() {
       created_at_start: queryParams.created_at_start,
       created_at_end: queryParams.created_at_end,
       updated_at_start: queryParams.updated_at_start,
-      updated_at_end: queryParams.updated_at_end
+      updated_at_end: queryParams.updated_at_end,
+
+      sortBy: queryParams.sortBy || "new" // mặc định sort mới nhất
     },
     isUndefined
   )
 
   const { data, isFetching, isLoading } = useQuery({
-    queryKey: ["listReceipt", queryConfig],
+    queryKey: ["listOrder", queryConfig],
     queryFn: () => {
       const controller = new AbortController()
       setTimeout(() => {
         controller.abort() // hủy request khi chờ quá lâu // 10 giây sau cho nó hủy // làm tự động
       }, 10000)
-      return adminAPI.order.getOrder(queryConfig as queryParamConfigOrder, controller.signal)
+      return adminAPI.order.getOrderList(queryConfig as queryParamConfigOrder, controller.signal)
     },
     retry: 0, // số lần retry lại khi hủy request (dùng abort signal)
     staleTime: 3 * 60 * 1000, // dưới 3 phút nó không gọi lại api
@@ -60,6 +100,106 @@ export default function ManageOrders() {
   }>
   const listOrder = result?.result?.result
   const page_size = Math.ceil(Number(result?.result.total) / Number(result?.result.limit))
+
+  // xử lý sort ds
+  const handleChangeSortListOrder = (value: string) => {
+    const body = {
+      ...queryConfig,
+      sortBy: value
+    }
+    console.log(body)
+    navigate({
+      pathname: `${path.AdminOrders}`,
+      search: createSearchParams(body).toString()
+    })
+  }
+
+  const [idOrder, setIdOrder] = useState<string | null>(null)
+
+  const handleEditItem = useCallback((id: string) => {
+    setIdOrder(id)
+  }, [])
+
+  const handleExitsEditItem = () => {
+    setIdOrder(null)
+  }
+
+  const getInfoOrder = useQuery({
+    queryKey: ["orderDetail", idOrder],
+    queryFn: () => {
+      return adminAPI.order.getOrderDetail(idOrder as string)
+    },
+    enabled: Boolean(idOrder)
+  })
+
+  const infoOrder = getInfoOrder.data?.data as SuccessResponse<OrderItemType>
+  const order = infoOrder?.result
+
+  const {
+    register,
+    formState: { errors },
+    setValue,
+    control,
+    handleSubmit
+  } = useForm<FormDataUpdate>({
+    resolver: yupResolver(formDataUpdate),
+    defaultValues: {
+      id: "",
+      customer_info: {
+        name: "",
+        address: "",
+        phone: ""
+      },
+      products: [],
+      status: "",
+      totalAmount: 0,
+      note: "",
+      created_at: "",
+      updated_at: ""
+    } // giá trị khởi tạo
+  })
+
+  useEffect(() => {
+    if (order) {
+      setValue("id", order._id)
+      setValue("customer_info.name", order.customer_info.name)
+      setValue("customer_info.address", order.customer_info.address)
+      setValue("customer_info.phone", order.customer_info.phone)
+      setValue("totalAmount", order.totalAmount)
+      setValue("status", order.status)
+      setValue("created_at", convertDateTime(order.created_at))
+      setValue("updated_at", convertDateTime(order.updated_at))
+    }
+  }, [order, setValue])
+
+  const updateStatusOrderMutation = useMutation({
+    mutationFn: (body: { id: string; status: string }) => {
+      return adminAPI.order.updateOrderStatus(body.id, body.status)
+    }
+  })
+
+  const handleUpdateOrder = handleSubmit((data) => {
+    updateStatusOrderMutation.mutate(
+      { id: data.id as string, status: data.status as string },
+      {
+        onSuccess: (res) => {
+          setIdOrder(null)
+          toast.success(res.data.message, { autoClose: 1500 })
+          queryClient.invalidateQueries({ queryKey: ["listOrder", queryConfig] })
+        }
+      }
+    )
+  })
+
+  const {
+    register: registerFormSearch,
+    handleSubmit: handleSubmitFormSearch,
+    reset: resetFormSearch,
+    control: controlFormSearch,
+    trigger
+  } = useForm<FormDataSearch>({
+    resolver: yupResolver(formDataSearch)
+  })
 
   return (
     <div>
@@ -77,52 +217,87 @@ export default function ManageOrders() {
 
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
         <div className="p-4 bg-white dark:bg-darkPrimary mb-3 border border-gray-300 dark:border-darkBorder rounded-2xl shadow-xl">
-          <h1 className="text-[15px] font-medium">Tìm kiếm</h1>
+          <h1 className="text-[16px] font-semibold tracking-wide">Bộ lọc & Tìm kiếm</h1>
           <form>
             <div className="mt-1 grid grid-cols-2">
               <div className="col-span-1 flex items-center h-14 px-2 bg-[#ececec] dark:bg-darkBorder border border-[#dadada] rounded-tl-xl">
-                <span className="w-1/3">Tên sản phẩm</span>
+                <span className="w-1/3">Tên người nhận</span>
                 <div className="w-2/3 relative h-full">
-                  {/* <DropdownSearch
-                    name="name_product"
-                    namePlaceholder="Nhập tên sản phẩm"
-                    // register={registerFormSearch}
-                    // listItem={listNameProductResult}
-                    onSelect={(item) => setValueSearch("name_product", item)}
-                    value={inputProductValue}
-                    onChangeValue={setInputProductValue}
-                  /> */}
+                  <div className="mt-2 w-full flex items-center gap-2">
+                    <Input
+                      name="name"
+                      // register={registerFormSearch}
+                      placeholder="Nhập tên người nhận"
+                      classNameInput="p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#fff] dark:bg-black focus:border-blue-500 focus:ring-1 outline-none rounded-md h-[35px]"
+                      className="relative flex-grow"
+                      classNameError="hidden"
+                    />
+                  </div>
                   <span className="absolute inset-y-0 left-[-5%] w-[1px] bg-[#dadada] h-full"></span>
                 </div>
               </div>
               <div className="col-span-1 flex items-center h-14 px-2 bg-[#ececec] dark:bg-darkBorder border border-[#dadada] rounded-tr-xl">
-                <span className="w-1/3">Tên nhà cung cấp</span>
+                <span className="w-1/3">Địa chỉ người nhận</span>
                 <div className="w-2/3 relative h-full">
-                  {/* <DropdownSearch
-                    name="name_supplier"
-                    namePlaceholder="Nhập tên nhà cung cấp"
-                    register={registerFormSearch}
-                    listItem={listNameSupplierResult}
-                    onSelect={(item) => setValueSearch("name_supplier", item)}
-                    value={inputSupplierValue}
-                    onChangeValue={setInputSupplierValue}
-                  /> */}
+                  <div className="mt-2 w-full flex items-center gap-2">
+                    <Input
+                      name="name"
+                      // register={registerFormSearch}
+                      placeholder="Nhập địa chỉ"
+                      classNameInput="p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#fff] dark:bg-black focus:border-blue-500 focus:ring-1 outline-none rounded-md h-[35px]"
+                      className="relative flex-grow"
+                      classNameError="hidden"
+                    />
+                  </div>
                   <span className="absolute inset-y-0 left-[-5%] w-[1px] bg-[#dadada] h-full"></span>
                 </div>
               </div>
               <div className="col-span-1 flex items-center h-14 px-2 bg-[#fff] dark:bg-darkBorder border border-[#dadada] border-t-0">
-                <span className="w-1/3">Số lượng sản phẩm</span>
+                <span className="w-1/3">Số điện thoại</span>
                 <div className="w-2/3 relative h-full">
                   <div className="mt-2 w-full flex items-center gap-2">
                     <Input
                       name="quantity"
                       // register={registerFormSearch}
-                      placeholder="Nhập số lượng"
+                      placeholder="Nhập số điện thoại"
                       classNameInput="p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-black focus:border-blue-500 focus:ring-1 outline-none rounded-md h-[35px]"
                       className="relative flex-grow"
                       classNameError="hidden"
                     />
                   </div>
+                  <span className="absolute inset-y-0 left-[-5%] w-[1px] bg-[#dadada] h-full"></span>
+                </div>
+              </div>
+              <div className="col-span-1 flex items-center h-14 px-2 bg-[#fff] dark:bg-darkBorder border border-[#dadada] border-t-0">
+                <span className="w-1/3">Trạng thái</span>
+                <div className="w-2/3 relative h-full">
+                  <Controller
+                    name="category"
+                    control={registerFormSearch}
+                    render={({ field }) => {
+                      return (
+                        <select
+                          // {...field}
+                          value={field.value ?? ""} // ✅ Giá trị từ form
+                          onChange={(e) => field.onChange(e.target.value ? e.target.value : undefined)} // ✅ Cập nhật vào form
+                          className="p-2 border border-gray-300 dark:border-darkBorder bg-[#f2f2f2] dark:bg-black w-full mt-2 rounded-md"
+                        >
+                          <option value="" disabled>
+                            -- Chọn thể loại --
+                          </option>
+                          {["Chờ xác nhận", "Đang xử lý", "Đang vận chuyển", "Đã giao hàng", "Đã hủy"]?.map(
+                            (item, index) => {
+                              return (
+                                <option key={index} value={item}>
+                                  {item}
+                                </option>
+                              )
+                            }
+                          )}
+                        </select>
+                      )
+                    }}
+                  />
                   <span className="absolute inset-y-0 left-[-5%] w-[1px] bg-[#dadada] h-full"></span>
                 </div>
               </div>
@@ -220,6 +395,16 @@ export default function ManageOrders() {
                   nameButton="Export"
                   classNameButton="py-2 px-3 border border-[#E2E7FF] bg-[#E2E7FF] w-full text-[#3A5BFF] font-medium rounded-3xl hover:bg-blue-500/40 duration-200 text-[13px] flex items-center gap-1"
                 />
+                <Select
+                  defaultValue="Mới nhất"
+                  className="select-sort"
+                  onChange={handleChangeSortListOrder}
+                  suffixIcon={<ArrowUpNarrowWide />}
+                  options={[
+                    { value: "old", label: "Cũ nhất" },
+                    { value: "new", label: "Mới nhất" }
+                  ]}
+                />
               </div>
               <div className="flex items-center gap-2">
                 <Button
@@ -239,38 +424,277 @@ export default function ManageOrders() {
               </div>
             </div>
           </form>
+          {isLoading && <Skeleton />}
+          {!isFetching && (
+            <div>
+              <div className="mt-4">
+                <div className="bg-[#f2f2f2] dark:bg-darkPrimary grid grid-cols-12 items-center gap-2 py-3 border border-[#dedede] dark:border-darkBorder px-4 rounded-tl-xl rounded-tr-xl">
+                  <div className="col-span-1 text-[14px] font-semibold tracking-wider uppercase sticky top-0 left-0">
+                    Mã đơn hàng
+                  </div>
+                  <div className="col-span-2 text-[14px] font-semibold tracking-wider uppercase">Người nhận hàng</div>
+                  <div className="col-span-1 text-[14px] font-semibold tracking-wider uppercase">Số điện thoại</div>
+                  <div className="col-span-3 text-[14px] text-center font-semibold tracking-wider uppercase">
+                    Địa chỉ
+                  </div>
+                  <div className="col-span-1 text-[14px] font-semibold tracking-wider uppercase">Tổng tiền</div>
+                  <div className="col-span-1 text-[14px] text-center font-semibold tracking-wider uppercase">
+                    Sản phẩm
+                  </div>
+                  <div className="col-span-1 text-[14px] text-center font-semibold tracking-wider uppercase">
+                    Trạng thái
+                  </div>
+                  <div className="col-span-1 text-[14px] font-semibold tracking-wider uppercase">Ngày tạo</div>
+                  <div className="col-span-1 text-[14px] text-center font-semibold tracking-wider uppercase">
+                    Hành động
+                  </div>
+                </div>
+                <div>
+                  {listOrder?.length > 0 ? (
+                    listOrder?.map((item, index) => (
+                      <motion.div
+                        key={item._id}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: index * 0.1 }}
+                      >
+                        <OrderItem
+                          handleEditItem={handleEditItem}
+                          item={item}
+                          maxIndex={listOrder?.length}
+                          index={index}
+                        />
+                      </motion.div>
+                    ))
+                  ) : (
+                    <div className="text-center mt-4">Không tìm thấy kết quả</div>
+                  )}
+                </div>
+              </div>
+              <Pagination
+                data={result}
+                queryConfig={queryConfig}
+                page_size={page_size}
+                pathNavigate={path.AdminOrders}
+              />
+
+              <AnimatePresence>
+                {idOrder && (
+                  <motion.div
+                    initial={{ opacity: 0 }} // khởi tạo là 0
+                    animate={{ opacity: 1 }} // xuất hiện dần là 1
+                    exit={{ opacity: 0 }} // biến mất là 0
+                    className="fixed left-0 top-0 z-10 h-screen w-screen bg-black/60 flex items-center justify-center"
+                  >
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.8 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.8 }}
+                      className="relative"
+                    >
+                      <button onClick={handleExitsEditItem} className="absolute z-30 right-3 top-2">
+                        <X color="gray" size={22} />
+                      </button>
+                      <form
+                        onSubmit={handleUpdateOrder}
+                        className="bg-white dark:bg-darkPrimary rounded-md w-[1100px] overflow-hidden"
+                      >
+                        <div className="max-h-[600px] overflow-y-auto">
+                          <h3 className="py-2 px-4 text-lg font-semibold tracking-wide rounded-md sticky top-0 left-0 bg-white dark:bg-darkPrimary z-20">
+                            Thông tin đơn hàng
+                          </h3>
+                          <div className="p-4 pt-0 flex items-start justify-between gap-4">
+                            <div className="w-2/3">
+                              <div className="mt-4 flex items-center gap-4">
+                                <Input
+                                  name="id"
+                                  register={register}
+                                  placeholder="Nhập họ tên"
+                                  messageErrorInput={errors.id?.message}
+                                  classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-darkSecond focus:border-blue-500 focus:ring-2 outline-none rounded-md"
+                                  className="relative flex-1"
+                                  nameInput="Mã đơn hàng"
+                                  disabled
+                                />
+                                <Input
+                                  name="customer_info.name"
+                                  register={register}
+                                  placeholder="Nhập họ tên"
+                                  messageErrorInput={errors.customer_info?.name?.message}
+                                  classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-darkPrimary focus:border-blue-500 focus:ring-2 outline-none rounded-md"
+                                  className="relative flex-1"
+                                  nameInput="Tên người nhận"
+                                  disabled
+                                />
+                                <Input
+                                  register={register}
+                                  name="customer_info.phone"
+                                  placeholder="Nhập số điện thoại"
+                                  messageErrorInput={errors.customer_info?.phone?.message}
+                                  classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-darkSecond  focus:border-blue-500 focus:ring-2 outline-none rounded-md"
+                                  className="relative flex-1"
+                                  nameInput="Số điện thoại"
+                                  disabled
+                                />
+                              </div>
+                              <div className="mt-2 flex items-center gap-4">
+                                <Input
+                                  name="customer_info.address"
+                                  register={register}
+                                  placeholder="Nhập địa chỉ"
+                                  messageErrorInput={errors.customer_info?.address?.message}
+                                  classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-darkSecond focus:border-blue-500 focus:ring-2 outline-none rounded-md"
+                                  className="relative flex-1"
+                                  nameInput="Địa chỉ"
+                                  disabled
+                                />
+                              </div>
+                              <div className="mt-2 flex items-center gap-4">
+                                <Input
+                                  register={register}
+                                  name="note"
+                                  placeholder="Nhập ghi chú"
+                                  messageErrorInput={errors.customer_info?.phone?.message}
+                                  classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-darkSecond  focus:border-blue-500 focus:ring-2 outline-none rounded-md"
+                                  className="relative flex-1"
+                                  nameInput="Ghi chú (Optional)"
+                                  disabled
+                                />
+                              </div>
+                              <div className="mt-2 flex items-center gap-4">
+                                <Input
+                                  name="created_at"
+                                  register={register}
+                                  placeholder="Nhập ngày tạo"
+                                  messageErrorInput={errors.created_at?.message}
+                                  classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-darkSecond focus:border-blue-500 focus:ring-2 outline-none rounded-md"
+                                  className="relative flex-1"
+                                  nameInput="Ngày tạo"
+                                  disabled
+                                />
+                                <Input
+                                  name="updated_at"
+                                  register={register}
+                                  placeholder="Nhập ngày tạo cập nhật"
+                                  messageErrorInput={errors.updated_at?.message}
+                                  classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-darkSecond  focus:border-blue-500 focus:ring-2 outline-none rounded-md"
+                                  className="relative flex-1"
+                                  nameInput="Ngày cập nhật"
+                                  disabled
+                                />
+                              </div>
+                              <div className="mt-1">
+                                <span>Trạng thái</span>
+                                <Controller
+                                  name="status"
+                                  control={control}
+                                  render={({ field }) => (
+                                    <Select
+                                      value={field.value}
+                                      onChange={field.onChange}
+                                      className="select-status"
+                                      options={[
+                                        { value: "Chờ xác nhận", label: "Chờ xác nhận" },
+                                        { value: "Đang xử lý", label: "Đang xử lý" },
+                                        { value: "Đang vận chuyển", label: "Đang vận chuyển" },
+                                        { value: "Đã giao hàng", label: "Đã giao hàng" },
+                                        { value: "Đã hủy", label: "Đã hủy" }
+                                      ]}
+                                    />
+                                  )}
+                                />
+                              </div>
+                              <div className="mt-2">
+                                <div className="text-lg text-center font-semibold mb-2 tracking-wide">
+                                  Danh sách sản phẩm ({order?.products.length})
+                                </div>
+                                <div className="space-y-3">
+                                  {order?.products.map((item) => {
+                                    return (
+                                      <div
+                                        key={item.product_id}
+                                        className="flex items-center justify-between p-3 border border-gray-200 rounded-md shadow-sm bg-white"
+                                      >
+                                        <div className="flex items-center gap-4">
+                                          <img
+                                            src={item.image}
+                                            alt={item.name}
+                                            className="w-16 h-16 object-cover rounded-md border"
+                                          />
+                                          <div>
+                                            <p className="font-medium text-gray-800">{item.name}</p>
+                                            <p className="text-sm text-gray-500">Số lượng: {item.quantity}</p>
+                                          </div>
+                                        </div>
+
+                                        {/* Giá tiền */}
+                                        <div className="text-right">
+                                          {item.discount !== 0 ? (
+                                            <div>
+                                              <p className="text-sm text-gray-600">
+                                                Đơn giá:{" "}
+                                                {formatCurrency(item.price - item.price * (item.discount / 100))}đ
+                                              </p>
+                                              <p className="text-sm font-semibold text-gray-700">
+                                                Thành tiền:{" "}
+                                                {formatCurrency(
+                                                  (item.price - item.price * (item.discount / 100)) * item.quantity
+                                                )}
+                                                đ
+                                              </p>
+                                            </div>
+                                          ) : (
+                                            <div>
+                                              <p className="text-sm text-gray-600">
+                                                Đơn giá: {formatCurrency(item.price)} đ
+                                              </p>
+                                              <p className="text-sm font-semibold text-gray-700">
+                                                Thành tiền: {formatCurrency(item.price * item.quantity)}đ
+                                              </p>
+                                            </div>
+                                          )}
+                                        </div>
+                                      </div>
+                                    )
+                                  })}
+                                </div>
+                                <div className="mt-2 text-red-500 text-base text-right font-semibold">
+                                  Tổng tiền: {formatCurrency((order?.totalAmount as number) || 0)} đ
+                                </div>
+                              </div>
+                              <div className="flex items-center justify-end">
+                                <Button
+                                  type="submit"
+                                  icon={<ArrowUpFromLine size={18} />}
+                                  nameButton="Cập nhật"
+                                  classNameButton="w-[120px] p-4 py-2 bg-blue-500 mt-2 w-full text-white font-semibold rounded-3xl hover:bg-blue-500/80 duration-200 flex items-center gap-1"
+                                />
+                              </div>
+                            </div>
+                            <div className="w-1/3">
+                              <div className="text-base font-semibold tracking-wide">Lịch sử đơn hàng</div>
+                              <div className="ml-2">
+                                <Steps
+                                  progressDot
+                                  current={order?.status_history.length}
+                                  direction="vertical"
+                                  items={order?.status_history.map((item) => ({
+                                    title: item.status,
+                                    description: convertDateTime(item.updated_at)
+                                  }))}
+                                />
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </form>
+                    </motion.div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          )}
         </div>
-        {/* {isLoading && <Skeleton />}
-        {!isFetching && (
-          <div>
-            {listReceipt.length > 0 ? (
-              listReceipt.map((item, index) => (
-                <motion.div
-                  key={item._id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.1 }}
-                >
-                  <ReceiptItem item={item} />
-                </motion.div>
-              ))
-            ) : (
-              <div className="text-center mt-4">Không tìm thấy kết quả</div>
-            )} */}
-        {/* <Pagination
-              data={result}
-              queryConfig={queryConfig}
-              page_size={page_size}
-              pathNavigate={path.AdminReceipts}
-            /> */}
-        {/* {idSupply !== null ? (
-              <SupplyDetail idSupply={idSupply} setIdSupply={setIdSupply} queryConfig={queryConfig} />
-            ) : (
-              ""
-            )} */}
-        {/* {addItem ? <AddSupply setAddItem={setAddItem} /> : ""} */}
-        {/* </div> */}
-        {/* // )} */}
       </motion.div>
     </div>
   )

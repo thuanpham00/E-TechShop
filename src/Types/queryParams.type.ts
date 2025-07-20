@@ -53,6 +53,8 @@ export type queryParamConfigOrder = queryParamConfig & {
   price_max?: string
   import_date_start?: string
   import_date_end?: string
+
+  sortBy?: string
 }
 
 export type queryParamConfigProduct = queryParamConfig & {

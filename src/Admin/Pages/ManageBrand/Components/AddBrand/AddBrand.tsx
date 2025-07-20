@@ -1,7 +1,7 @@
 import { yupResolver } from "@hookform/resolvers/yup"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { AnimatePresence, motion } from "framer-motion"
-import { BookOpenCheck, X } from "lucide-react"
+import { Plus, X } from "lucide-react"
 import { useForm } from "react-hook-form"
 import { toast } from "react-toastify"
 import { adminAPI } from "src/Apis/admin.api"
@@ -92,7 +92,7 @@ export default function AddBrand({ setAddItem, addItem, categoryId }: Props) {
                 <div className="flex items-center justify-end">
                   <Button
                     type="submit"
-                    icon={<BookOpenCheck size={18} />}
+                    icon={<Plus size={18} />}
                     nameButton="Thêm"
                     classNameButton="w-[120px] p-4 py-2 bg-blue-500 mt-2 w-full text-white font-semibold rounded-3xl hover:bg-blue-500/80 duration-200 flex items-center gap-1"
                   />

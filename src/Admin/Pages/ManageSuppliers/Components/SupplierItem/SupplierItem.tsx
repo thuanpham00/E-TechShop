@@ -17,11 +17,15 @@ import { SupplierItemType } from "src/Types/product.type"
 export default function CategoryItem({
   item,
   onDelete,
-  handleEditItem
+  handleEditItem,
+  maxIndex,
+  index
 }: {
   item: SupplierItemType
   onDelete: (id: string) => void
   handleEditItem: (id: string) => void
+  maxIndex: number
+  index: number
 }) {
   const { copiedId, handleCopyText } = useCopyText()
 
@@ -31,7 +35,7 @@ export default function CategoryItem({
 
   return (
     <div
-      className="bg-white dark:bg-darkPrimary grid grid-cols-10 items-center gap-2 py-3 cursor-pointer border-t-0 border border-[#dedede] dark:border-darkBorder px-4 last:rounded-bl-xl last:rounded-br-xl"
+      className={`bg-white dark:bg-darkPrimary grid grid-cols-10 items-center gap-2 py-3 cursor-pointer border-t-0 border border-[#dedede] dark:border-darkBorder px-4 ${index + 1 === maxIndex ? "rounded-bl-xl rounded-br-xl" : ""}`}
       key={item._id}
     >
       <div className="col-span-2 flex items-center justify-between">

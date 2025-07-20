@@ -235,7 +235,7 @@ export default function ManageSupplies() {
       </h1>
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
         <div className="p-4 bg-white dark:bg-darkPrimary mb-3 border border-gray-300 dark:border-darkBorder rounded-2xl shadow-xl">
-          <h1 className="text-[15px] font-medium">Tìm kiếm</h1>
+          <h1 className="text-[16px] font-semibold tracking-wide">Bộ lọc & Tìm kiếm</h1>
           <div>
             <form onSubmit={handleSubmitSearch}>
               <div className="mt-1 grid grid-cols-2">
@@ -409,7 +409,13 @@ export default function ManageSupplies() {
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: index * 0.1 }}
                       >
-                        <SupplyItem onDelete={handleDeleteSupply} handleEditItem={handleEditItem} item={item} />
+                        <SupplyItem
+                          onDelete={handleDeleteSupply}
+                          handleEditItem={handleEditItem}
+                          item={item}
+                          maxIndex={listSupplier?.length}
+                          index={index}
+                        />
                       </motion.div>
                     ))
                   ) : (

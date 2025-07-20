@@ -94,7 +94,7 @@ export default function ManageProducts() {
       </h1>
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
         <div className="p-4 bg-white dark:bg-darkPrimary mb-3 border border-gray-300 dark:border-darkBorder rounded-2xl shadow-xl">
-          <h1 className="text-[15px] font-medium">Tìm kiếm</h1>
+          <h1 className="text-[16px] font-semibold tracking-wide">Bộ lọc & Tìm kiếm</h1>
           <FilterProduct queryConfig={queryConfig} listProduct={listProduct} />
           <div>
             {isLoading && <Skeleton />}
@@ -134,6 +134,8 @@ export default function ManageProducts() {
                             // onDelete={handleDeleteCategory}
                             // handleEditItem={handleEditItem}
                             item={item}
+                            maxIndex={listProduct?.length}
+                            index={index}
                           />
                         </motion.div>
                       ))

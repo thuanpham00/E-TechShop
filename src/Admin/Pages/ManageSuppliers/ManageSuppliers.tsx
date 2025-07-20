@@ -16,7 +16,7 @@ import { SupplierItemType, UpdateSupplierBodyReq } from "src/Types/product.type"
 import { HttpStatusCode } from "src/Constants/httpStatus"
 import Button from "src/Components/Button"
 import { useCallback, useEffect, useState } from "react"
-import { FolderUp, House, Plus, RotateCcw, Search, X } from "lucide-react"
+import { ArrowUpFromLine, FolderUp, Plus, RotateCcw, Search, X } from "lucide-react"
 import { toast } from "react-toastify"
 import { yupResolver } from "@hookform/resolvers/yup"
 import { Controller, useForm } from "react-hook-form"
@@ -342,7 +342,7 @@ export default function ManageSuppliers() {
       </h1>
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
         <div className="p-4 bg-white dark:bg-darkPrimary mb-3 border border-gray-300 dark:border-darkBorder rounded-2xl shadow-xl">
-          <h1 className="text-[15px] font-medium">Tìm kiếm</h1>
+          <h1 className="text-[16px] font-semibold tracking-wide">Bộ lọc & Tìm kiếm</h1>
           <div>
             <form onSubmit={handleSubmitSearch}>
               <div className="mt-1 grid grid-cols-2">
@@ -548,7 +548,13 @@ export default function ManageSuppliers() {
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: index * 0.1 }}
                       >
-                        <SupplierItem onDelete={handleDeleteSupplier} handleEditItem={handleEditItem} item={item} />
+                        <SupplierItem
+                          onDelete={handleDeleteSupplier}
+                          handleEditItem={handleEditItem}
+                          item={item}
+                          maxIndex={listSupplier?.length}
+                          index={index}
+                        />
                       </motion.div>
                     ))
                   ) : (
@@ -692,7 +698,7 @@ export default function ManageSuppliers() {
                           <div className="flex items-center justify-end">
                             <Button
                               type="submit"
-                              icon={<House size={18} />}
+                              icon={<ArrowUpFromLine size={18} />}
                               nameButton="Cập nhật"
                               classNameButton="w-[120px] p-4 py-2 bg-blue-500 mt-2 w-full text-white font-semibold rounded-3xl hover:bg-blue-500/80 duration-200 flex items-center gap-1 shadow-xl"
                             />

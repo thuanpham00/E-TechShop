@@ -237,6 +237,26 @@ export const schemaAddReceipt = yup.object({
   totalAmount: yup.string()
 })
 
+export const schemaOrder = schemaAuth.pick(["created_at", "updated_at", "id"]).shape({
+  note: yup.string(),
+  status: yup.string(),
+  totalAmount: yup.number(),
+  customer_info: yup.object({
+    name: yup.string(),
+    phone: yup.string(),
+    address: yup.string()
+  }),
+  products: yup.array().of(
+    yup.object({
+      product_id: yup.string(),
+      name: yup.string(),
+      price: yup.number(),
+      quantity: yup.number(),
+      image: yup.string()
+    })
+  )
+})
+
 export type SchemaAuthType = yup.InferType<typeof schemaAuth>
 
 export type SchemaProductType = SchemaAuthType & yup.InferType<typeof schemaProduct>
@@ -254,3 +274,5 @@ export type SchemaSupplyType = yup.InferType<typeof schemaSupply>
 export type SchemaSupplyUpdateType = yup.InferType<typeof schemaSupplyUpdate>
 
 export type SchemaAddReceiptType = yup.InferType<typeof schemaAddReceipt>
+
+export type SchemaOrderType = yup.InferType<typeof schemaOrder>

@@ -283,11 +283,19 @@ export const adminAPI = {
 
   order: {
     // lấy danh sách đơn nhập hàng
-    getOrder: (params: queryParamConfigOrder, signal: AbortSignal) => {
+    getOrderList: (params: queryParamConfigOrder, signal: AbortSignal) => {
       return Http.get(`/admin/orders`, {
         params,
         signal
       })
+    },
+
+    getOrderDetail: (idOrder: string) => {
+      return Http.get(`/admin/orders/${idOrder}`)
+    },
+
+    updateOrderStatus: (idOrder: string, status: string) => {
+      return Http.put(`/admin/orders/${idOrder}`, { status })
     }
   }
 }

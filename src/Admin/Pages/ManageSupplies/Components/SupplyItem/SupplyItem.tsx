@@ -17,11 +17,15 @@ import {
 export default function SupplyItem({
   item,
   onDelete,
-  handleEditItem
+  handleEditItem,
+  maxIndex,
+  index
 }: {
   item: SupplyItemType
   onDelete: (id: string) => void
   handleEditItem: (id: string) => void
+  maxIndex: number
+  index: number
 }) {
   const { copiedId, handleCopyText } = useCopyText()
 
@@ -31,7 +35,7 @@ export default function SupplyItem({
 
   return (
     <div
-      className="bg-white dark:bg-darkPrimary grid grid-cols-12 items-center gap-2 py-3 cursor-pointer border-t-0 border border-[#dedede] dark:border-darkBorder px-4 last:rounded-bl-xl last:rounded-br-xl"
+      className={`bg-white dark:bg-darkPrimary grid grid-cols-12 items-center gap-2 py-3 cursor-pointer border-t-0 border border-[#dedede] dark:border-darkBorder px-4 ${index + 1 === maxIndex ? "rounded-bl-xl rounded-br-xl" : ""}`}
       key={item._id}
     >
       <div className="col-span-2 flex items-center justify-between">

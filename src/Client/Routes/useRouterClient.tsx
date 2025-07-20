@@ -5,24 +5,24 @@ import { lazy, Suspense, useContext } from "react"
 import MainLayoutAuth from "../Layout/MainLayoutAuth"
 import { AppContext } from "src/Context/authContext"
 import { RoleType } from "src/Constants/enum"
-import Order from "../Pages/Order"
-import InfoOrder from "../Pages/InfoOrder"
-import CheckoutSuccess from "../Pages/CheckoutSuccess"
 import UserLayout from "../Pages/User/Layout/UserLayout"
-import ChangePassword from "../Pages/User/Pages/ChangePassword"
 
 const Home = lazy(() => import("../Pages/Home"))
 const Login = lazy(() => import("../Pages/Login"))
 const Register = lazy(() => import("../Pages/Register"))
 const LoginGoogle = lazy(() => import("../Pages/LoginGoogle"))
 const Cart = lazy(() => import("../Pages/Cart"))
-const Profile = lazy(() => import("../Pages/User/Pages/Profile"))
 const Collection = lazy(() => import("../Pages/Collection"))
 const NotFound = lazy(() => import("../Pages/NotFound"))
 const VerifyEmail = lazy(() => import("../Pages/VerifyEmail"))
 const ForgotPassword = lazy(() => import("../Pages/ForgotPassword"))
 const ResetPassword = lazy(() => import("../Pages/ResetPassword"))
 const ProductDetail = lazy(() => import("../Pages/ProductDetail"))
+const Order = lazy(() => import("../Pages/Order"))
+const InfoOrder = lazy(() => import("../Pages/InfoOrder"))
+const CheckoutSuccess = lazy(() => import("../Pages/CheckoutSuccess"))
+const ChangePassword = lazy(() => import("../Pages/User/Pages/ChangePassword"))
+const Profile = lazy(() => import("../Pages/User/Pages/Profile"))
 
 const ProjectRouter = () => {
   const { isAuthenticated } = useContext(AppContext)

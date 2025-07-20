@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { yupResolver } from "@hookform/resolvers/yup"
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import { PackageSearch, X } from "lucide-react"
+import { Plus, X } from "lucide-react"
 import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { toast } from "react-toastify"
@@ -200,7 +200,7 @@ export default function AddSupply({ setAddItem, addItem }: Props) {
                 <div className="flex items-center justify-end">
                   <Button
                     type="submit"
-                    icon={<PackageSearch size={18} />}
+                    icon={<Plus size={18} />}
                     nameButton="Thêm"
                     classNameButton="w-[120px] px-4 py-2 bg-blue-500 mt-2 w-full text-white font-semibold rounded-3xl hover:bg-blue-500/80 duration-200 flex items-center gap-1"
                   />

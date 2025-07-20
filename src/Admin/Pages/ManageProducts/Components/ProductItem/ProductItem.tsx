@@ -15,13 +15,17 @@ import {
 } from "src/Components/ui/alert-dialog"
 
 export default function ProductItem({
-  item
+  item,
   // handleEditItem
   // onDelete
+  maxIndex,
+  index
 }: {
   item: ProductItemType
   onDelete?: (id: string) => void
   handleEditItem?: (id: string) => void
+  maxIndex: number
+  index: number
 }) {
   // const navigate = useNavigate()
   const { copiedId, handleCopyText } = useCopyText()
@@ -38,7 +42,7 @@ export default function ProductItem({
 
   return (
     <div
-      className="bg-white dark:bg-darkPrimary grid grid-cols-12 items-center gap-4 py-3 cursor-pointer border-t-0 border border-[#dedede] dark:border-darkBorder last:border-b-0 px-4 last:rounded-bl-xl last:rounded-br-xl"
+      className={`bg-white dark:bg-darkPrimary grid grid-cols-12 items-center gap-4 py-3 cursor-pointer border border-[#dedede] dark:border-darkBorder px-4 ${index + 1 === maxIndex ? "rounded-bl-xl rounded-br-xl" : ""}`}
       key={item._id}
     >
       <div className="col-span-1 flex items-center justify-between">

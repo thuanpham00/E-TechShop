@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { yupResolver } from "@hookform/resolvers/yup"
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import { FolderUp, Plus, RotateCcw, Search, User, X } from "lucide-react"
+import { ArrowUpFromLine, FolderUp, Plus, RotateCcw, Search, X } from "lucide-react"
 import { Helmet } from "react-helmet-async"
 import { Controller, useForm } from "react-hook-form"
 import { adminAPI } from "src/Apis/admin.api"
@@ -394,12 +394,12 @@ export default function ManageCustomers() {
       </h1>
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
         <div className="p-4 bg-white dark:bg-darkPrimary mb-3 border border-gray-300 dark:border-darkBorder rounded-2xl shadow-xl">
-          <h1 className="text-[15px] font-medium">Tìm kiếm</h1>
+          <h1 className="text-[16px] font-semibold tracking-wide">Bộ lọc & Tìm kiếm</h1>
           <form onSubmit={handleSubmitSearch}>
             <div className="mt-1 grid grid-cols-2">
               <div className="col-span-1 flex items-center h-14 px-2 bg-[#ececec] dark:bg-darkBorder border border-[#dadada] rounded-tl-xl">
-                <span className="w-[30%] dark:text-white">Email</span>
-                <div className="w-[70%] relative h-full">
+                <span className="w-1/3 dark:text-white">Email</span>
+                <div className="w-2/3 relative h-full">
                   <Input
                     name="email"
                     register={registerFormSearch}
@@ -413,8 +413,8 @@ export default function ManageCustomers() {
                 </div>
               </div>
               <div className="col-span-1 flex items-center h-14 px-2 bg-[#ececec] dark:bg-darkBorder  border border-[#dadada] rounded-tr-xl">
-                <span className="w-[30%]">Họ tên</span>
-                <div className="w-[70%] relative h-full">
+                <span className="w-1/3">Họ tên</span>
+                <div className="w-2/3 relative h-full">
                   <Input
                     name="name"
                     register={registerFormSearch}
@@ -428,8 +428,8 @@ export default function ManageCustomers() {
                 </div>
               </div>
               <div className="col-span-1 flex items-center h-14 px-2 bg-[#fff] dark:bg-darkBorder border border-[#dadada] border-t-0">
-                <span className="w-[30%]">Số điện thoại</span>
-                <div className="w-[70%] relative h-full">
+                <span className="w-1/3">Số điện thoại</span>
+                <div className="w-2/3 relative h-full">
                   <Input
                     name="numberPhone"
                     register={registerFormSearch}
@@ -443,8 +443,8 @@ export default function ManageCustomers() {
                 </div>
               </div>
               <div className="col-span-1 flex items-center h-14 px-2 bg-[#fff] dark:bg-darkBorder border border-[#dadada] border-t-0">
-                <span className="w-[30%]">Trạng thái</span>
-                <div className="w-[70%] relative h-full">
+                <span className="w-1/3">Trạng thái</span>
+                <div className="w-2/3 relative h-full">
                   <Controller
                     name="verify"
                     control={controlFormSearch}
@@ -468,9 +468,9 @@ export default function ManageCustomers() {
                   <span className="absolute inset-y-0 left-[-5%] w-[1px] bg-[#dadada] h-full"></span>
                 </div>
               </div>
-              <div className="col-span-1 flex items-center h-14 px-2 bg-[#ececec] dark:bg-darkBorder  border border-[#dadada] rounded-bl-xl">
-                <span className="w-[30%]">Ngày tạo</span>
-                <div className="w-[70%] relative h-full">
+              <div className="col-span-1 flex items-center h-14 px-2 bg-[#ececec] dark:bg-darkBorder border border-[#dadada] rounded-bl-xl border-t-0">
+                <span className="w-1/3">Ngày tạo</span>
+                <div className="w-2/3 relative h-full">
                   <div className="mt-2 w-full flex items-center gap-2">
                     <Controller
                       name="created_at_start"
@@ -508,8 +508,8 @@ export default function ManageCustomers() {
                 </div>
               </div>
               <div className="col-span-1 flex items-center h-14 px-2 bg-[#ececec] dark:bg-darkBorder  border border-[#dadada] border-t-0 rounded-br-xl">
-                <span className="w-[30%]">Ngày cập nhật</span>
-                <div className="w-[70%] relative h-full">
+                <span className="w-1/3">Ngày cập nhật</span>
+                <div className="w-2/3 relative h-full">
                   <div className="mt-2 w-full flex items-center gap-2">
                     <Controller
                       name="updated_at_start"
@@ -601,7 +601,7 @@ export default function ManageCustomers() {
                     </div>
                   </div>
                   <div>
-                    {listCustomer.length > 0 ? (
+                    {listCustomer?.length > 0 ? (
                       listCustomer?.map((item, index) => (
                         <motion.div
                           key={item._id}
@@ -609,7 +609,13 @@ export default function ManageCustomers() {
                           animate={{ opacity: 1, y: 0 }}
                           transition={{ delay: index * 0.1 }}
                         >
-                          <CustomerItem onDelete={handleDeleteCustomer} handleEditItem={handleEditItem} item={item} />
+                          <CustomerItem
+                            onDelete={handleDeleteCustomer}
+                            handleEditItem={handleEditItem}
+                            item={item}
+                            maxIndex={listCustomer?.length}
+                            index={index}
+                          />
                         </motion.div>
                       ))
                     ) : (
@@ -767,7 +773,7 @@ export default function ManageCustomers() {
                             <div className="flex items-center justify-end">
                               <Button
                                 type="submit"
-                                icon={<User size={18} />}
+                                icon={<ArrowUpFromLine size={18} />}
                                 nameButton="Cập nhật"
                                 classNameButton="w-[120px] p-4 py-2 bg-blue-500 mt-2 w-full text-white font-semibold rounded-3xl hover:bg-blue-500/80 duration-200 flex items-center gap-1"
                               />

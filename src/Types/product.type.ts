@@ -149,6 +149,10 @@ export type OrderItemType = {
   }[]
   totalAmount: number
   status: OrderStatus
+  status_history: {
+    status: OrderStatus
+    updated_at: string
+  }[]
   note: string
   created_at: string // hoặc Date nếu bạn muốn parse
   updated_at: string // hoặc Date nếu bạn muốn parse

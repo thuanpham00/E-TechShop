@@ -89,10 +89,9 @@ export default function ReceiptItem({ item }: Props) {
         </div>
       </div>
       <div className="py-2 px-1">
-        <div className="flex items-center justify-between">
-          <h3 className="font-semibold">Danh sách sản phẩm: ({item?.items?.length})</h3>
+        <div className="flex items-center justify-end">
           <button onClick={() => setShowDetail((prev) => !prev)} className="text-sm text-red-500 hover:underline">
-            {showDetail ? "Ẩn chi tiết" : "Xem chi tiết"}
+            {showDetail ? "Ẩn chi tiết" : `Xem chi tiết (${item?.items?.length}) sản phẩm`}
           </button>
         </div>
       </div>
@@ -125,6 +124,9 @@ export default function ReceiptItem({ item }: Props) {
             ref={listProductInReceipt}
             className="fixed right-4 top-0 z-20 bg-white w-[600px] h-screen overflow-y-scroll p-2"
           >
+            <div className="text-lg text-center font-semibold mb-2 tracking-wide">
+              Danh sách sản phẩm ({item.items.length})
+            </div>
             {item?.items?.map((product, index) => (
               <div key={index} className="flex items-stretch mb-4 ">
                 <div className="w-[10%] p-2 rounded-tl-lg rounded-bl-lg text-black text-lg flex items-center justify-center tracking-wide text-[15px] font-semibold px-3 bg-blue-200">

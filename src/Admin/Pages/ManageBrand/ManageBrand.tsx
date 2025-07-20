@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import { BookOpenCheck, FolderUp, Plus, RotateCcw, Search, X } from "lucide-react"
+import { ArrowUpFromLine, FolderUp, Plus, RotateCcw, Search, X } from "lucide-react"
 import { Helmet } from "react-helmet-async"
 import { createSearchParams, useLocation, useNavigate, useParams } from "react-router-dom"
 import { adminAPI } from "src/Apis/admin.api"
@@ -237,7 +237,6 @@ export default function ManageBrand() {
         updated_at_start: data.updated_at_start?.toISOString(),
         updated_at_end: data.updated_at_end?.toISOString()
       })
-      console.log(data)
       navigate(
         {
           pathname: `${path.AdminCategories}/${id}`,
@@ -299,13 +298,13 @@ export default function ManageBrand() {
       </h1>
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
         <div className="p-4 bg-white dark:bg-darkPrimary mb-3 border border-gray-300 dark:border-darkBorder rounded-2xl shadow-lg">
-          <h1 className="text-[15px] font-medium">Tìm kiếm</h1>
+          <h1 className="text-[16px] font-semibold tracking-wide">Bộ lọc & Tìm kiếm</h1>
           <div>
             <form onSubmit={handleSubmitSearch}>
               <div className="mt-1 grid grid-cols-2">
                 <div className="col-span-1 flex items-center h-14 px-2 bg-[#ececec] dark:bg-darkBorder border border-[#dadada] rounded-tl-xl">
-                  <span className="w-[30%]">Ngày đăng</span>
-                  <div className="w-[70%] relative h-full">
+                  <span className="w-1/3">Ngày đăng</span>
+                  <div className="w-2/3 relative h-full">
                     <div className="mt-2 w-full flex items-center gap-2">
                       <Controller
                         name="created_at_start"
@@ -343,8 +342,8 @@ export default function ManageBrand() {
                   </div>
                 </div>
                 <div className="col-span-1 flex items-center h-14 px-2 bg-[#ececec] dark:bg-darkBorder border border-[#dadada] rounded-tr-xl">
-                  <span className="w-[30%]">Ngày cập nhật</span>
-                  <div className="w-[70%] relative h-full">
+                  <span className="w-1/3">Ngày cập nhật</span>
+                  <div className="w-2/3 relative h-full">
                     <div className="mt-2 w-full flex items-center gap-2">
                       <Controller
                         name="updated_at_start"
@@ -382,8 +381,8 @@ export default function ManageBrand() {
                   </div>
                 </div>
                 <div className="col-span-1 flex items-center h-14 px-2 bg-[#fff] dark:bg-darkBorder border border-[#dadada] border-t-0 rounded-bl-xl">
-                  <span className="w-[30%]">Tên thể loại</span>
-                  <div className="w-[70%] relative h-full">
+                  <span className="w-1/3">Tên thể loại</span>
+                  <div className="w-2/3 relative h-full">
                     <div className="mt-2 w-full flex items-center gap-2">
                       <Input
                         name="name"
@@ -463,6 +462,8 @@ export default function ManageBrand() {
                           handleEditItem={handleEditItem}
                           item={item}
                           nameCategory={state}
+                          maxIndex={listBrandOfCategory?.length}
+                          index={index}
                         />
                       </motion.div>
                     ))
@@ -546,7 +547,7 @@ export default function ManageBrand() {
                           <div className="flex items-center justify-end">
                             <Button
                               type="submit"
-                              icon={<BookOpenCheck size={18} />}
+                              icon={<ArrowUpFromLine size={18} />}
                               nameButton="Cập nhật"
                               classNameButton="w-[120px] p-4 py-2 bg-blue-500 mt-2 w-full text-white font-semibold rounded-3xl hover:bg-blue-500/80 duration-200 flex items-center gap-1"
                             />
