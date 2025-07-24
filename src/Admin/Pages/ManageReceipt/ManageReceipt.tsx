@@ -26,6 +26,7 @@ import { motion } from "framer-motion"
 import useDownloadExcel from "src/Hook/useDownloadExcel"
 import Input from "src/Components/Input"
 import InputNumber from "src/Components/InputNumber"
+import { Empty } from "antd"
 
 type FormDataSearch = Pick<
   SchemaSupplyType,
@@ -438,7 +439,9 @@ export default function ManageReceipt() {
                 </motion.div>
               ))
             ) : (
-              <div className="text-center mt-4">Không tìm thấy kết quả</div>
+              <div className="text-center mt-4">
+                <Empty />
+              </div>
             )}
             <Pagination
               data={result}

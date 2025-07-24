@@ -49,7 +49,7 @@ export const adminAPI = {
 
     // cập nhật khách hàng
     updateProfileCustomer: (id: string, body: UpdateBodyReq) => {
-      return Http.patch(`/admin/customers/${id}`, body)
+      return Http.put(`/admin/customers/${id}`, body)
     },
 
     // xóa khách hàng
@@ -82,7 +82,7 @@ export const adminAPI = {
 
     // cập nhật danh mục
     updateCategoryDetail: (id: string, body: UpdateCategoryBodyReq) => {
-      return Http.patch(`/admin/categories/${id}`, body)
+      return Http.put(`/admin/categories/${id}`, body)
     },
 
     // xóa danh mục
@@ -114,7 +114,7 @@ export const adminAPI = {
 
     // cập nhật thương hiệu
     updateBrandDetail: (id: string, body: UpdateCategoryBodyReq) => {
-      return Http.patch(`/admin/brands/${id}`, body)
+      return Http.put(`/admin/brands/${id}`, body)
     },
 
     // xóa thương hiệu
@@ -217,7 +217,7 @@ export const adminAPI = {
 
     // cập nhật chi tiết nhà cung cấp
     updateSupplierDetail: (id: string, body: UpdateSupplierBodyReq) => {
-      return Http.patch(`/admin/suppliers/${id}`, body)
+      return Http.put(`/admin/suppliers/${id}`, body)
     },
 
     // xóa nhà cung cấp
@@ -252,7 +252,7 @@ export const adminAPI = {
 
     // cập nhật chi tiết cung ứng
     updateSupplyDetail: (id: string, body: UpdateSupplyBodyReq) => {
-      return Http.patch(`/admin/supplies/${id}`, body)
+      return Http.put(`/admin/supplies/${id}`, body)
     },
 
     // xóa cung ứng

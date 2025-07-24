@@ -34,6 +34,7 @@ import { isError400, isError422 } from "src/Helpers/utils"
 import AddSupplier from "./Components/AddSupplier"
 import useDownloadExcel from "src/Hook/useDownloadExcel"
 import { motion, AnimatePresence } from "framer-motion"
+import { Empty } from "antd"
 
 type FormDataUpdate = Pick<
   SchemaSupplierUpdateType,
@@ -539,7 +540,7 @@ export default function ManageSuppliers() {
                     Hành động
                   </div>
                 </div>
-                <div className="">
+                <div>
                   {listSupplier.length > 0 ? (
                     listSupplier.map((item, index) => (
                       <motion.div
@@ -558,7 +559,9 @@ export default function ManageSuppliers() {
                       </motion.div>
                     ))
                   ) : (
-                    <div className="text-center mt-4">Không tìm thấy kết quả</div>
+                    <div className="text-center mt-4">
+                      <Empty />
+                    </div>
                   )}
                 </div>
               </div>

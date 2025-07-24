@@ -1,14 +1,16 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { keepPreviousData, useQuery } from "@tanstack/react-query"
-import { Table, Tag, Typography } from "antd"
+import { keepPreviousData, useMutation, useQuery } from "@tanstack/react-query"
+import { Table, Tabs, TabsProps, Tag, Typography } from "antd"
 import { ChevronLeft } from "lucide-react"
 import { Helmet } from "react-helmet-async"
 import { Link } from "react-router-dom"
 import { OrderApi } from "src/Apis/order.api"
 import { getAccessTokenFromLS } from "src/Helpers/auth"
 import cartImg from "src/Assets/img/cart.png"
-import { useEffect, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { convertDateTime, formatCurrency } from "src/Helpers/common"
+import Button from "src/Components/Button"
+import { toast } from "react-toastify"
 
 type OrderList = {
   key: string // mã đơn hàng
@@ -22,8 +24,40 @@ type OrderList = {
 
 const { Text } = Typography
 
+const items: TabsProps["items"] = [
+  {
+    key: "1",
+    label: (
+      <div>
+        <span>Tất cả</span>
+      </div>
+    )
+  },
+  {
+    key: "2",
+    label: "Chờ xác nhận"
+  },
+  {
+    key: "3",
+    label: "Đang xử lý"
+  },
+  {
+    key: "4",
+    label: "Đang vận chuyển"
+  },
+  {
+    key: "5",
+    label: "Đã giao hàng"
+  },
+  {
+    key: "6",
+    label: "Đã hủy"
+  }
+]
+
 export default function Order() {
   const token = getAccessTokenFromLS()
+  const [activeTabKey, setActiveTabKey] = useState("1")
   const [listOrder, setListOrder] = useState<OrderList>([])
   const { data } = useQuery({
     queryKey: ["listOrder", token],
@@ -146,6 +180,41 @@ export default function Order() {
     }
   }, [listOrderData])
 
+  const filterListOrder = useMemo(() => {
+    switch (activeTabKey) {
+      case "2":
+        return listOrder.filter((order) => order.status === "Chờ xác nhận")
+      case "3":
+        return listOrder.filter((order) => order.status === "Đang xử lý")
+      case "4":
+        return listOrder.filter((order) => order.status === "Đang vận chuyển")
+      case "5":
+        return listOrder.filter((order) => order.status === "Đã giao hàng")
+      case "6":
+        return listOrder.filter((order) => order.status === "Đã hủy")
+      default:
+        return listOrder // Tất cả
+    }
+  }, [activeTabKey, listOrder])
+
+  const updateOrderStatus = useMutation({
+    mutationFn: (body: { idOrder: string; status: number }) => {
+      return OrderApi.updateStatusOrderForCustomer(body.idOrder, body.status)
+    }
+  })
+
+  const handleCancelOrder = (idOrder: string, status: number) => {
+    updateOrderStatus.mutate(
+      { idOrder, status },
+      {
+        onSuccess: (res) => {
+          console.log(res)
+          // toast.success(res.message, { autoClose: 1500 })
+        }
+      }
+    )
+  }
+
   return (
     <div>
       <Helmet>
@@ -163,10 +232,22 @@ export default function Order() {
             {lengthOrder > 0 ? (
               <div>
                 <h1 className="mb-2 ml-1 text-lg font-semibold">Danh sách đơn hàng ({listOrder.length}) của bạn</h1>
+                <Tabs
+                  defaultActiveKey="1"
+                  items={items}
+                  centered={true}
+                  tabBarStyle={{ width: "100%" }}
+                  onChange={setActiveTabKey}
+                />
                 <Table
                   columns={columns}
-                  dataSource={listOrder}
-                  pagination={false}
+                  dataSource={filterListOrder}
+                  pagination={{
+                    pageSize: 5,
+                    showSizeChanger: true,
+                    pageSizeOptions: ["10", "20", "50"],
+                    showTotal: (total, range) => `Hiển thị ${range[0]}-${range[1]} trong ${total} đơn hàng`
+                  }}
                   bordered
                   expandable={{
                     expandedRowRender: (record: any) => {
@@ -225,6 +306,23 @@ export default function Order() {
 
                           <div className="text-red-500 text-base text-right font-semibold">
                             Tổng tiền: {formatCurrency(total)} đ
+                          </div>
+
+                          <div className="flex justify-between items-center gap-2">
+                            <span className="text-red-500">
+                              Bạn chỉ có thể hủy hàng nếu đơn hàng chưa được xác nhận
+                            </span>
+                            <div className="flex gap-2">
+                              <Button
+                                classNameButton={`px-4 py-2 w-full text-white font-semibold rounded-lg duration-200 ${record.status === "Chờ xác nhận" ? "bg-red-500 hover:bg-red-500/80" : " bg-red-300 cursor-not-allowed"}`}
+                                nameButton="Hủy đơn hàng"
+                                onClick={() => handleCancelOrder(record.key, 0)}
+                              />
+                              <Button
+                                classNameButton={`px-4 py-2 w-full text-white font-semibold rounded-lg duration-200 ${record.status === "Đang vận chuyển" ? "bg-blue-500 hover:bg-blue-500/80" : " bg-blue-300 cursor-not-allowed"}`}
+                                nameButton="Đã nhận hàng"
+                              />
+                            </div>
                           </div>
                         </div>
                       )

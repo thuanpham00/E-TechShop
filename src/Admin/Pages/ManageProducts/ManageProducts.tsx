@@ -15,6 +15,7 @@ import { useNavigate } from "react-router-dom"
 import { HttpStatusCode } from "src/Constants/httpStatus"
 import FilterProduct from "./Components/FilterProduct"
 import { motion } from "framer-motion"
+import { Empty } from "antd"
 
 export default function ManageProducts() {
   const navigate = useNavigate()
@@ -121,7 +122,7 @@ export default function ManageProducts() {
                       Hành động
                     </div>
                   </div>
-                  <div className="">
+                  <div>
                     {listProduct?.length > 0 ? (
                       listProduct?.map((item, index) => (
                         <motion.div
@@ -140,7 +141,9 @@ export default function ManageProducts() {
                         </motion.div>
                       ))
                     ) : (
-                      <div className="text-center mt-4">Không tìm thấy kết quả</div>
+                      <div className="text-center mt-4">
+                        <Empty />
+                      </div>
                     )}
                   </div>
                 </div>

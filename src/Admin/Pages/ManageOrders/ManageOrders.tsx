@@ -7,7 +7,7 @@ import { AnimatePresence, motion } from "framer-motion"
 import Input from "src/Components/Input"
 import { path } from "src/Constants/path"
 import useQueryParams from "src/Hook/useQueryParams"
-import { isUndefined, omitBy } from "lodash"
+import { isUndefined, omit, omitBy } from "lodash"
 import { queryParamConfigOrder } from "src/Types/queryParams.type"
 import { keepPreviousData, useMutation, useQuery } from "@tanstack/react-query"
 import { adminAPI } from "src/Apis/admin.api"
@@ -21,10 +21,12 @@ import { Select, Steps } from "antd"
 import "./ManageOrders.css"
 import { Controller, useForm } from "react-hook-form"
 import { yupResolver } from "@hookform/resolvers/yup"
-import { schemaOrder, SchemaOrderType } from "src/Client/Utils/rule"
-import { convertDateTime, formatCurrency } from "src/Helpers/common"
+import { schemaOrder, schemaOrderSearch, SchemaOrderSearchType, SchemaOrderType } from "src/Client/Utils/rule"
+import { cleanObject, convertDateTime, formatCurrency } from "src/Helpers/common"
 import { toast } from "react-toastify"
 import { queryClient } from "src/main"
+import DatePicker from "src/Admin/Components/DatePickerRange"
+import useDownloadExcel from "src/Hook/useDownloadExcel"
 
 type FormDataUpdate = Pick<
   SchemaOrderType,
@@ -42,35 +44,37 @@ const formDataUpdate = schemaOrder.pick([
 ])
 
 type FormDataSearch = Pick<
-  SchemaProductType,
-  | "name"
-  | "category"
-  | "brand"
-  | "price_max"
-  | "price_min"
-  | "created_at_start"
-  | "created_at_end"
-  | "updated_at_start"
-  | "updated_at_end"
-  | "status"
+  SchemaOrderSearchType,
+  "created_at_start" | "created_at_end" | "status" | "name" | "address" | "phone" | "price_min" | "price_max"
 >
+
+const formDataSearch = schemaOrderSearch.pick([
+  "created_at_start",
+  "created_at_end",
+  "status",
+  "name",
+  "address",
+  "phone",
+  "price_min",
+  "price_max"
+])
 
 export default function ManageOrders() {
   const navigate = useNavigate()
+  const { downloadExcel } = useDownloadExcel()
   const queryParams: queryParamConfigOrder = useQueryParams()
   const queryConfig: queryParamConfigOrder = omitBy(
     {
       page: queryParams.page || "1", // mặc định page = 1
       limit: queryParams.limit || "5", // mặc định limit = 5
-      name_product: queryParams.name_product,
-      name_supplier: queryParams.name_supplier,
-      quantity: queryParams.quantity,
+      name: queryParams.name,
+      address: queryParams.address,
+      phone: queryParams.phone,
+      status: queryParams.status,
       price_min: queryParams.price_min,
       price_max: queryParams.price_max,
       created_at_start: queryParams.created_at_start,
       created_at_end: queryParams.created_at_end,
-      updated_at_start: queryParams.updated_at_start,
-      updated_at_end: queryParams.updated_at_end,
 
       sortBy: queryParams.sortBy || "new" // mặc định sort mới nhất
     },
@@ -193,13 +197,56 @@ export default function ManageOrders() {
 
   const {
     register: registerFormSearch,
-    handleSubmit: handleSubmitFormSearch,
-    reset: resetFormSearch,
     control: controlFormSearch,
-    trigger
+    trigger,
+    handleSubmit: handleSubmitFormSearch,
+    reset: resetFormSearch
   } = useForm<FormDataSearch>({
     resolver: yupResolver(formDataSearch)
   })
+
+  const handleSubmitSearch = handleSubmitFormSearch(
+    (data) => {
+      console.log(data)
+      const params = cleanObject({
+        ...queryConfig,
+        page: 1,
+        sortBy: "new",
+        name: encodeURIComponent(data.name as string),
+        address: encodeURIComponent(data.address as string),
+        phone: data.phone,
+        status: data.status,
+        created_at_start: data.created_at_start?.toISOString(),
+        created_at_end: data.created_at_end?.toISOString()
+      })
+
+      navigate({
+        pathname: path.AdminOrders,
+        search: createSearchParams(params).toString()
+      })
+    },
+    (error) => {
+      if (error.price_min) {
+        toast.error(error.price_min?.message, { autoClose: 1500 })
+      }
+      if (error.created_at_end) {
+        toast.error(error.created_at_end?.message, { autoClose: 1500 })
+      }
+    }
+  ) // nó điều hướng với query params truyền vào và nó render lại component || tren URL lấy queryConfig xuống và fetch lại api ra danh sách cần thiết
+
+  const handleResetFormSearch = () => {
+    const filteredSearch = omit(queryConfig, [
+      "name",
+      "address",
+      "phone",
+      "status",
+      "created_at_start",
+      "created_at_end"
+    ])
+    resetFormSearch()
+    navigate({ pathname: `${path.AdminOrders}`, search: createSearchParams(filteredSearch).toString() })
+  }
 
   return (
     <div>
@@ -218,7 +265,7 @@ export default function ManageOrders() {
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
         <div className="p-4 bg-white dark:bg-darkPrimary mb-3 border border-gray-300 dark:border-darkBorder rounded-2xl shadow-xl">
           <h1 className="text-[16px] font-semibold tracking-wide">Bộ lọc & Tìm kiếm</h1>
-          <form>
+          <form onSubmit={handleSubmitSearch}>
             <div className="mt-1 grid grid-cols-2">
               <div className="col-span-1 flex items-center h-14 px-2 bg-[#ececec] dark:bg-darkBorder border border-[#dadada] rounded-tl-xl">
                 <span className="w-1/3">Tên người nhận</span>
@@ -226,7 +273,7 @@ export default function ManageOrders() {
                   <div className="mt-2 w-full flex items-center gap-2">
                     <Input
                       name="name"
-                      // register={registerFormSearch}
+                      register={registerFormSearch}
                       placeholder="Nhập tên người nhận"
                       classNameInput="p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#fff] dark:bg-black focus:border-blue-500 focus:ring-1 outline-none rounded-md h-[35px]"
                       className="relative flex-grow"
@@ -241,8 +288,8 @@ export default function ManageOrders() {
                 <div className="w-2/3 relative h-full">
                   <div className="mt-2 w-full flex items-center gap-2">
                     <Input
-                      name="name"
-                      // register={registerFormSearch}
+                      name="address"
+                      register={registerFormSearch}
                       placeholder="Nhập địa chỉ"
                       classNameInput="p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#fff] dark:bg-black focus:border-blue-500 focus:ring-1 outline-none rounded-md h-[35px]"
                       className="relative flex-grow"
@@ -257,8 +304,8 @@ export default function ManageOrders() {
                 <div className="w-2/3 relative h-full">
                   <div className="mt-2 w-full flex items-center gap-2">
                     <Input
-                      name="quantity"
-                      // register={registerFormSearch}
+                      name="phone"
+                      register={registerFormSearch}
                       placeholder="Nhập số điện thoại"
                       classNameInput="p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-black focus:border-blue-500 focus:ring-1 outline-none rounded-md h-[35px]"
                       className="relative flex-grow"
@@ -272,8 +319,8 @@ export default function ManageOrders() {
                 <span className="w-1/3">Trạng thái</span>
                 <div className="w-2/3 relative h-full">
                   <Controller
-                    name="category"
-                    control={registerFormSearch}
+                    name="status"
+                    control={controlFormSearch}
                     render={({ field }) => {
                       return (
                         <select
@@ -301,67 +348,12 @@ export default function ManageOrders() {
                   <span className="absolute inset-y-0 left-[-5%] w-[1px] bg-[#dadada] h-full"></span>
                 </div>
               </div>
-              <div className="col-span-1 flex items-center h-14 px-2 bg-[#fff] dark:bg-darkBorder border border-[#dadada] border-t-0 ">
+              <div className="col-span-1 flex items-center h-14 px-2 bg-[#fff] dark:bg-darkBorder border border-[#dadada] border-t-0 rounded-bl-xl">
                 <span className="w-1/3">Ngày tạo</span>
                 <div className="w-2/3 relative h-full">
                   <div className="mt-2 w-full flex items-center gap-2">
-                    {/* <Controller
+                    <Controller
                       name="created_at_start"
-                      // control={controlFormSearch}
-                      render={({ field }) => {
-                        return (
-                          <DatePicker
-                            value={field.value as Date}
-                            onChange={(event) => {
-                              field.onChange(event)
-                              // trigger("created_at_end")
-                            }}
-                          />
-                        )
-                      }}
-                    /> */}
-                    <span>-</span>
-                    {/* <Controller
-                      name="created_at_end"
-                      // control={controlFormSearch}
-                      render={({ field }) => {
-                        return (
-                          <DatePicker
-                            value={field.value as Date}
-                            onChange={(event) => {
-                              field.onChange(event)
-                              // trigger("created_at_start")
-                            }}
-                          />
-                        )
-                      }}
-                    /> */}
-                  </div>
-                  <span className="absolute inset-y-0 left-[-5%] w-[1px] bg-[#dadada] h-full"></span>
-                </div>
-              </div>
-              <div className="col-span-1 flex items-center h-14 px-2 bg-[#fff] dark:bg-darkBorder border border-[#dadada] border-t-0 rounded-bl-xl">
-                <span className="w-1/3">Ngày cập nhật</span>
-                <div className="w-2/3 relative h-full">
-                  <div className="mt-2 w-full flex items-center gap-2">
-                    {/* <Controller
-                      name="updated_at_start"
-                      // control={controlFormSearch}
-                      render={({ field }) => {
-                        return (
-                          <DatePicker
-                            value={field.value as Date}
-                            onChange={(event) => {
-                              field.onChange(event)
-                              // trigger("updated_at_end")
-                            }}
-                          />
-                        )
-                      }}
-                    /> */}
-                    <span>-</span>
-                    {/* <Controller
-                      name="updated_at_end"
                       control={controlFormSearch}
                       render={({ field }) => {
                         return (
@@ -369,12 +361,28 @@ export default function ManageOrders() {
                             value={field.value as Date}
                             onChange={(event) => {
                               field.onChange(event)
-                              trigger("updated_at_start")
+                              trigger("created_at_end")
                             }}
                           />
                         )
                       }}
-                    /> */}
+                    />
+                    <span>-</span>
+                    <Controller
+                      name="created_at_end"
+                      control={controlFormSearch}
+                      render={({ field }) => {
+                        return (
+                          <DatePicker
+                            value={field.value as Date}
+                            onChange={(event) => {
+                              field.onChange(event)
+                              trigger("created_at_start")
+                            }}
+                          />
+                        )
+                      }}
+                    />
                   </div>
                   <span className="absolute inset-y-0 left-[-5%] w-[1px] bg-[#dadada] h-full"></span>
                 </div>
@@ -390,7 +398,7 @@ export default function ManageOrders() {
                   <span>Thêm mới</span>
                 </Link>
                 <Button
-                  // onClick={() => downloadExcel(listReceipt)}
+                  onClick={() => downloadExcel(listOrder)}
                   icon={<FolderUp size={15} />}
                   nameButton="Export"
                   classNameButton="py-2 px-3 border border-[#E2E7FF] bg-[#E2E7FF] w-full text-[#3A5BFF] font-medium rounded-3xl hover:bg-blue-500/40 duration-200 text-[13px] flex items-center gap-1"
@@ -408,7 +416,7 @@ export default function ManageOrders() {
               </div>
               <div className="flex items-center gap-2">
                 <Button
-                  // onClick={handleResetFormSearch}
+                  onClick={handleResetFormSearch}
                   type="button"
                   icon={<RotateCcw size={15} />}
                   nameButton="Xóa bộ lọc tìm kiếm"
@@ -434,14 +442,14 @@ export default function ManageOrders() {
                   </div>
                   <div className="col-span-2 text-[14px] font-semibold tracking-wider uppercase">Người nhận hàng</div>
                   <div className="col-span-1 text-[14px] font-semibold tracking-wider uppercase">Số điện thoại</div>
-                  <div className="col-span-3 text-[14px] text-center font-semibold tracking-wider uppercase">
+                  <div className="col-span-2 text-[14px] text-center font-semibold tracking-wider uppercase">
                     Địa chỉ
                   </div>
                   <div className="col-span-1 text-[14px] font-semibold tracking-wider uppercase">Tổng tiền</div>
                   <div className="col-span-1 text-[14px] text-center font-semibold tracking-wider uppercase">
                     Sản phẩm
                   </div>
-                  <div className="col-span-1 text-[14px] text-center font-semibold tracking-wider uppercase">
+                  <div className="col-span-2 text-[14px] text-center font-semibold tracking-wider uppercase">
                     Trạng thái
                   </div>
                   <div className="col-span-1 text-[14px] font-semibold tracking-wider uppercase">Ngày tạo</div>

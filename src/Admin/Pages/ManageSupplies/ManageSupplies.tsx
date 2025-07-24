@@ -28,6 +28,7 @@ import SupplyDetail from "./Components/SupplyDetail"
 import { queryClient } from "src/main"
 import DropdownSearch from "./Components/DropdownSearch"
 import { motion } from "framer-motion"
+import { Empty } from "antd"
 
 type FormDataSearch = Pick<
   SchemaSupplyType,
@@ -419,7 +420,9 @@ export default function ManageSupplies() {
                       </motion.div>
                     ))
                   ) : (
-                    <div className="text-center mt-4">Không tìm thấy kết quả</div>
+                    <div className="text-center mt-4">
+                      <Empty />
+                    </div>
                   )}
                 </div>
               </div>

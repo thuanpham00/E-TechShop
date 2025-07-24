@@ -46,13 +46,12 @@ export type queryParamConfigReceipt = queryParamConfig & {
 }
 
 export type queryParamConfigOrder = queryParamConfig & {
-  name_product?: string
-  name_supplier?: string
-  quantity?: string
+  name?: string
+  address?: string
+  phone?: string
+  status?: string
   price_min?: string
   price_max?: string
-  import_date_start?: string
-  import_date_end?: string
 
   sortBy?: string
 }

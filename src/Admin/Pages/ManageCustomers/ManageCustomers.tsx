@@ -35,6 +35,7 @@ import DatePicker from "../../Components/DatePickerRange"
 import useDownloadExcel from "src/Hook/useDownloadExcel"
 import { motion, AnimatePresence } from "framer-motion"
 import AddCustomer from "./Components/AddCustomer"
+import { Empty } from "antd"
 
 const formDataUpdate = schemaAuth.pick([
   "id",
@@ -46,12 +47,12 @@ const formDataUpdate = schemaAuth.pick([
   "created_at",
   "updated_at",
   "avatar"
-])
+]) // giúp validate các field trong form
 
 type FormDataUpdate = Pick<
   SchemaAuthType,
   "id" | "name" | "email" | "verify" | "numberPhone" | "date_of_birth" | "created_at" | "updated_at" | "avatar"
->
+> // các field (type) trong 1 form
 
 const formDataSearch = schemaCustomer.pick([
   "email",
@@ -81,7 +82,7 @@ export default function ManageCustomers() {
   const navigate = useNavigate()
   const queryClient = useQueryClient()
 
-  // Gọi api danh sách và xử lý phân trang
+  // xử lý lấy query-params
   const queryParams: queryParamConfigCustomer = useQueryParams()
   const queryConfig: queryParamConfigCustomer = omitBy(
     {
@@ -99,6 +100,7 @@ export default function ManageCustomers() {
     isUndefined
   )
 
+  // Gọi api danh sách + query-params và xử lý phân trang
   const { data, isFetching, isLoading, error, isError } = useQuery({
     queryKey: ["listCustomer", queryConfig],
     queryFn: () => {
@@ -202,6 +204,7 @@ export default function ManageCustomers() {
   const avatarWatch = watch("avatar")
   const date_of_birth = watch("date_of_birth")
 
+  // Gọi api cập nhật và fetch lại api
   const updateProfileMutation = useMutation({
     mutationFn: (body: { body: UpdateBodyReq; id: string }) => {
       return adminAPI.customer.updateProfileCustomer(body.id, body.body)
@@ -269,6 +272,7 @@ export default function ManageCustomers() {
     }
   })
 
+  // Gọi api xóa và fetch lại api
   const deleteCustomerMutation = useMutation({
     mutationFn: (id: string) => {
       return adminAPI.customer.deleteProfileCustomer(id)
@@ -306,6 +310,7 @@ export default function ManageCustomers() {
     })
   }
 
+  // Xử lý bộ lọc tìm kiếm và fetch lại api
   const {
     register: registerFormSearch,
     handleSubmit: handleSubmitFormSearch,
@@ -619,7 +624,9 @@ export default function ManageCustomers() {
                         </motion.div>
                       ))
                     ) : (
-                      <div className="text-center mt-4">Không tìm thấy kết quả</div>
+                      <div className="text-center mt-4">
+                        <Empty />
+                      </div>
                     )}
                   </div>
                 </div>

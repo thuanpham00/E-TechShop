@@ -28,6 +28,7 @@ import AddBrand from "./Components/AddBrand"
 import DatePicker from "src/Admin/Components/DatePickerRange"
 import useDownloadExcel from "src/Hook/useDownloadExcel"
 import { motion, AnimatePresence } from "framer-motion"
+import { Empty } from "antd"
 
 type FormDataUpdate = Pick<SchemaAuthType, "name" | "id" | "created_at" | "updated_at">
 const formDataUpdate = schemaAuth.pick(["name", "id", "created_at", "updated_at"])
@@ -468,7 +469,9 @@ export default function ManageBrand() {
                       </motion.div>
                     ))
                   ) : (
-                    <div className="text-center mt-4">Không tìm thấy kết quả</div>
+                    <div className="text-center mt-4">
+                      <Empty />
+                    </div>
                   )}
                 </div>
               </div>

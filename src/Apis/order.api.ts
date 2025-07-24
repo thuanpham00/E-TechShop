@@ -10,5 +10,9 @@ export const OrderApi = {
 
   createOrder: (body: OrderType) => {
     return Http.post(`/orders`, body)
+  },
+
+  updateStatusOrderForCustomer: (idOrder: string, status: number) => {
+    return Http.put(`/orders/${idOrder}`, { status })
   }
 }

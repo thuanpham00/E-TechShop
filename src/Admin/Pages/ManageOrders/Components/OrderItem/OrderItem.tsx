@@ -56,15 +56,15 @@ export default function OrderItem({
         </div>
         <div className="col-span-2">{item.customer_info ? item.customer_info.name : ""}</div>
         <div className="col-span-1 break-words">{item.customer_info ? item.customer_info.phone : ""}</div>
-        <div className="col-span-3 text-center">{item.customer_info ? item.customer_info.address : ""}</div>
+        <div className="col-span-2 text-center">{item.customer_info ? item.customer_info.address : ""}</div>
         <div className="col-span-1 text-red-500 font-semibold">
           {item.totalAmount ? formatCurrency(item.totalAmount) + "đ" : ""}
         </div>
         <div className="col-span-1 text-center text-red-500 font-semibold">
           {item.products ? "(" + item.products.length + ")" : ""}
         </div>
-        <div className="col-span-1 flex justify-center">
-          <Tag color={color} className="text-sm">
+        <div className="col-span-2 flex justify-center">
+          <Tag color={color} className="text-sm text-center break-words whitespace-normal max-w-full">
             {status}
           </Tag>
         </div>

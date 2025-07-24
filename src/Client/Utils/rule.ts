@@ -257,6 +257,15 @@ export const schemaOrder = schemaAuth.pick(["created_at", "updated_at", "id"]).s
   )
 })
 
+export const schemaOrderSearch = schemaSupply
+  .pick(["created_at_start", "created_at_end", "price_max", "price_min"])
+  .shape({
+    status: yup.string(),
+    name: yup.string(),
+    address: yup.string(),
+    phone: yup.string()
+  })
+
 export type SchemaAuthType = yup.InferType<typeof schemaAuth>
 
 export type SchemaProductType = SchemaAuthType & yup.InferType<typeof schemaProduct>
@@ -276,3 +285,5 @@ export type SchemaSupplyUpdateType = yup.InferType<typeof schemaSupplyUpdate>
 export type SchemaAddReceiptType = yup.InferType<typeof schemaAddReceipt>
 
 export type SchemaOrderType = yup.InferType<typeof schemaOrder>
+
+export type SchemaOrderSearchType = yup.InferType<typeof schemaOrderSearch>

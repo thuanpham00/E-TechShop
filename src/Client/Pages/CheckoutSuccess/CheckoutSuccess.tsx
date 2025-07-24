@@ -51,7 +51,7 @@ export default function CheckoutSuccess() {
                 <div className="flex items-center justify-center bg-gray-100">
                   <div className="my-8 w-full max-w-md bg-white rounded-2xl shadow-xl p-8">
                     <div className="flex flex-col items-center">
-                      <div className="bg-green-100 p-4 rounded-full">
+                      <div className="bg-green-100 p-4 rounded-full ">
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
                           fill="none"
