@@ -140,7 +140,7 @@ export default function ProductDetail() {
 
   const liked = useMemo(() => {
     if (productDetail) {
-      const listFavourite = (favouriteData as any)?.data?.result.products[0].products || []
+      const listFavourite = (favouriteData as any)?.data?.result?.products[0]?.products || []
       const check = listFavourite.some((item: ProductItemType) => item._id === productDetail._id)
       return check
     }

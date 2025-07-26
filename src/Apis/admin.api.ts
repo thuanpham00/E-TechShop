@@ -23,8 +23,15 @@ import {
 export const adminAPI = {
   statistical: {
     // lấy số liệu thống kê hệ thống
-    getStatistical: (signal: AbortSignal) => {
-      return Http.get("/admin/statistical", {
+    getStatisticalSell: (signal: AbortSignal, params: { year: number; month: number }) => {
+      return Http.get("/admin/statistical_sell", {
+        params,
+        signal
+      })
+    },
+
+    getStatisticalProduct: (signal: AbortSignal) => {
+      return Http.get("/admin/statistical_product", {
         signal
       })
     }

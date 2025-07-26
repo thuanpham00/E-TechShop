@@ -1,13 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { keepPreviousData, useMutation, useQuery } from "@tanstack/react-query"
-import { Table, Tabs, TabsProps, Tag, Typography } from "antd"
+import { Modal, Table, Tabs, TabsProps, Tag, Typography } from "antd"
 import { ChevronLeft } from "lucide-react"
 import { Helmet } from "react-helmet-async"
 import { Link } from "react-router-dom"
 import { OrderApi } from "src/Apis/order.api"
 import { getAccessTokenFromLS } from "src/Helpers/auth"
 import cartImg from "src/Assets/img/cart.png"
-import { useEffect, useMemo, useState } from "react"
+import { Fragment, useEffect, useMemo, useState } from "react"
 import { convertDateTime, formatCurrency } from "src/Helpers/common"
 import Button from "src/Components/Button"
 import { toast } from "react-toastify"
@@ -28,11 +28,7 @@ const { Text } = Typography
 const items: TabsProps["items"] = [
   {
     key: "1",
-    label: (
-      <div>
-        <span>Tất cả</span>
-      </div>
-    )
+    label: "Tất cả"
   },
   {
     key: "2",
@@ -216,6 +212,26 @@ export default function Order() {
     )
   }
 
+  const [open, setOpen] = useState(false)
+  const [confirmLoading, setConfirmLoading] = useState(false)
+
+  const showModal = () => {
+    setOpen(true)
+  }
+
+  const handleOk = (idOrder: string) => {
+    setConfirmLoading(true)
+    setTimeout(() => {
+      setOpen(false)
+      setConfirmLoading(false)
+    }, 2000)
+    handleCancelOrder(idOrder, 0)
+  }
+
+  const handleCancel = () => {
+    setOpen(false)
+  }
+
   return (
     <div>
       <Helmet>
@@ -249,7 +265,6 @@ export default function Order() {
                     pageSizeOptions: ["10", "20", "50"],
                     showTotal: (total, range) => `Hiển thị ${range[0]}-${range[1]} trong ${total} đơn hàng`
                   }}
-                  bordered
                   expandable={{
                     expandedRowRender: (record: any) => {
                       let total = 0
@@ -317,12 +332,35 @@ export default function Order() {
                               <Button
                                 classNameButton={`px-4 py-2 w-full text-white font-semibold rounded-lg duration-200 ${record.status === "Chờ xác nhận" ? "bg-red-500 hover:bg-red-500/80" : " bg-red-300 cursor-not-allowed"}`}
                                 nameButton="Hủy đơn hàng"
-                                onClick={() => handleCancelOrder(record.key, 0)}
+                                onClick={showModal}
+                                disabled={record.status !== "Chờ xác nhận"}
                               />
                               <Button
                                 classNameButton={`px-4 py-2 w-full text-white font-semibold rounded-lg duration-200 ${record.status === "Đang vận chuyển" ? "bg-blue-500 hover:bg-blue-500/80" : " bg-blue-300 cursor-not-allowed"}`}
                                 nameButton="Đã nhận hàng"
+                                disabled={record.status !== "Đang vận chuyển"}
                               />
+                              <Modal
+                                title="Bạn có chắc chắn muốn hủy đơn hàng này không?"
+                                open={open}
+                                onOk={() => handleOk(record.key)}
+                                confirmLoading={confirmLoading}
+                                onCancel={handleCancel}
+                                className="top-1/2 -translate-y-1/2"
+                                okText={"Xác nhận hủy"}
+                                cancelText={"Thoát"}
+                                okButtonProps={{
+                                  className: "bg-red-500 hover:bg-red-600 text-white"
+                                }}
+                              >
+                                <Fragment>
+                                  <div>
+                                    Hành động này không thể hoàn tác. Đơn hàng sau khi hủy sẽ không thể phục hồi và các
+                                    sản phẩm trong đơn sẽ được hoàn về kho (nếu áp dụng).
+                                  </div>
+                                  <div className="mt-2">Vui lòng xác nhận để tiếp tục.</div>
+                                </Fragment>
+                              </Modal>
                             </div>
                           </div>
                         </div>
