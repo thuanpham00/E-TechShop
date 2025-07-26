@@ -11,6 +11,7 @@ import { useEffect, useMemo, useState } from "react"
 import { convertDateTime, formatCurrency } from "src/Helpers/common"
 import Button from "src/Components/Button"
 import { toast } from "react-toastify"
+import { queryClient } from "src/main"
 
 type OrderList = {
   key: string // mã đơn hàng
@@ -60,7 +61,7 @@ export default function Order() {
   const [activeTabKey, setActiveTabKey] = useState("1")
   const [listOrder, setListOrder] = useState<OrderList>([])
   const { data } = useQuery({
-    queryKey: ["listOrder", token],
+    queryKey: ["listOrderClient", token],
     queryFn: () => {
       const controller = new AbortController()
       setTimeout(() => {
@@ -208,8 +209,8 @@ export default function Order() {
       { idOrder, status },
       {
         onSuccess: (res) => {
-          console.log(res)
-          // toast.success(res.message, { autoClose: 1500 })
+          queryClient.invalidateQueries({ queryKey: ["listOrderClient", token] })
+          toast.success(res.data.message, { autoClose: 1500 })
         }
       }
     )
