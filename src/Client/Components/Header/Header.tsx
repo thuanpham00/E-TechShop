@@ -2,7 +2,7 @@ import avatarDefault from "src/Assets/img/avatarDefault.png"
 import { Cpu, Heart, HeartOff, Info, LogOut, PackageSearch, ShoppingCart } from "lucide-react"
 import { Link, useNavigate } from "react-router-dom"
 import { path } from "src/Constants/path"
-import { useContext } from "react"
+import { useContext, useEffect, useRef, useState } from "react"
 import { keepPreviousData, useMutation, useQuery } from "@tanstack/react-query"
 import { userAPI } from "src/Apis/user.api"
 import { toast } from "react-toastify"
@@ -16,6 +16,7 @@ import { ProductDetailType } from "src/Types/product.type"
 import { CalculateSalePrice, formatCurrency, slugify } from "src/Helpers/common"
 import { getAccessTokenFromLS } from "src/Helpers/auth"
 import { OrderApi } from "src/Apis/order.api"
+import useDebounce from "src/Hook/useDebounce"
 
 export default function Header() {
   const navigate = useNavigate()
@@ -120,6 +121,58 @@ export default function Header() {
   const lengthCart = resultCart?.result?.total
   const lengthOrder = data3?.data?.total
 
+  const [searchText, setSearchText] = useState("")
+
+  const inputSearchDebounce = useDebounce(searchText, 500)
+
+  const getSearchProduct = useQuery({
+    queryKey: ["searchProduct", inputSearchDebounce],
+    queryFn: () => {
+      const controller = new AbortController()
+      setTimeout(() => {
+        controller.abort() // hủy request khi chờ quá lâu // 10 giây sau cho nó hủy // làm tự động
+      }, 10000)
+      return collectionAPI.getSearchProduct({ search: inputSearchDebounce }, controller.signal)
+    },
+    retry: 0, // số lần retry lại khi hủy request (dùng abort signal)
+    enabled: inputSearchDebounce.trim() !== ""
+  })
+
+  const listProductFind = getSearchProduct?.data?.data as SuccessResponse<{
+    total: { total: number }[]
+    data: {
+      _id: string
+      name: string
+      discount: number
+      price: number
+      banner: {
+        type: string
+        url: string
+      }
+    }[]
+  }>
+
+  const listProductData = listProductFind?.result?.data
+
+  const searchRef = useRef<HTMLDivElement>(null)
+  const [showListSearch, setShowListSearch] = useState(false)
+
+  useEffect(() => {
+    const shouldShow = listProductData?.length > 0 && searchText.trim() !== ""
+    setShowListSearch(shouldShow)
+  }, [listProductData?.length, searchText])
+
+  useEffect(() => {
+    const clickOutHideList = (event: MouseEvent) => {
+      if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
+        setShowListSearch(false)
+      }
+    }
+
+    document.addEventListener("mousedown", clickOutHideList)
+    return () => document.removeEventListener("mousedown", clickOutHideList)
+  }, [])
+
   return (
     <div className="bg-primaryBlue sticky top-0 left-0 z-20">
       <div className="container">
@@ -149,27 +202,68 @@ export default function Header() {
             <form className="w-full relative flex">
               <input
                 type="text"
+                value={searchText}
+                onChange={(e) => setSearchText(e.target.value)}
+                onFocus={() => setShowListSearch(true)}
                 className="flex-grow text-[13px] p-3 outline-none rounded-[4px]"
                 placeholder="Bạn cần tìm gì?"
               />
-              <button className="absolute top-1/2 -translate-y-1/2 right-2" type="submit">
-                <div className="">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    strokeWidth={2}
-                    stroke="black"
-                    className="h-4 w-4"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"
-                    />
-                  </svg>
+              <div className="absolute top-1/2 -translate-y-1/2 right-2">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth={2}
+                  stroke="black"
+                  className="h-4 w-4"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"
+                  />
+                </svg>
+              </div>
+
+              <div
+                className={`absolute top-12 bg-white w-full rounded shadow z-50 transition-all ease-linear duration-100 overflow-hidden ${
+                  showListSearch && searchText.trim() !== "" ? "opacity-100" : "opacity-0"
+                }`}
+                ref={searchRef}
+              >
+                <div className="max-h-[500px] overflow-y-auto">
+                  {listProductData && listProductData.length > 0 ? (
+                    listProductData.map((item) => (
+                      <Link
+                        to={`/products/${slugify(item.name)}-i-${item._id}`}
+                        key={item._id}
+                        onClick={() => setShowListSearch(false)}
+                      >
+                        <div
+                          className={`cursor-pointer hover:bg-gray-100 px-3 py-2 border-b border-gray-200 last:border-b-0`}
+                        >
+                          <div className="flex justify-between items-center">
+                            <div className="flex-1 pr-2">
+                              <div className="text-sm font-medium text-gray-800">{item.name}</div>
+                              <div className="flex items-center gap-2">
+                                <span className="text-red-500 font-semibold text-sm">
+                                  {CalculateSalePrice(item.price, item.discount)}đ
+                                </span>
+                                <span className="text-gray-400 line-through text-xs">
+                                  {formatCurrency(item.price)}đ
+                                </span>
+                              </div>
+                            </div>
+                            <img src={item.banner.url} alt={item.name} className="w-12 h-12 border rounded" />
+                          </div>
+                        </div>
+                      </Link>
+                    ))
+                  ) : (
+                    <div className="text-center text-sm text-gray-500 py-4">Không tìm thấy sản phẩm phù hợp</div>
+                  )}
                 </div>
-              </button>
+              </div>
             </form>
           </div>
           <div className="col-span-5">

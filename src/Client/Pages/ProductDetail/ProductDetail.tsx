@@ -63,8 +63,8 @@ export default function ProductDetail() {
       })
     },
     retry: 0, // số lần retry lại khi hủy request (dùng abort signal)
-    // staleTime: 5 * 60 * 1000, // dưới 5 phút nó không gọi lại api
-    // placeholderData: keepPreviousData,
+    staleTime: 5 * 60 * 1000, // dưới 5 phút nó không gọi lại api
+    placeholderData: keepPreviousData,
     enabled: !!brandProduct && !!categoryProduct && !!idProduct // chỉ gọi api khi brand và category có giá trị
   })
 

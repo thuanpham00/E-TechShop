@@ -3,6 +3,7 @@ import useCopyText from "src/Hook/useCopyText"
 import { OrderItemType } from "src/Types/product.type"
 import { convertDateTime, formatCurrency } from "src/Helpers/common"
 import { Tag } from "antd"
+import { useMemo } from "react"
 
 export default function OrderItem({
   item,
@@ -42,6 +43,12 @@ export default function OrderItem({
     handleEditItem(id)
   }
 
+  const countProductBuy = useMemo(() => {
+    return item.products.reduce((total, item) => {
+      return total + item.quantity
+    }, 0)
+  }, [item.products])
+
   return (
     <div>
       <div
@@ -61,7 +68,7 @@ export default function OrderItem({
           {item.totalAmount ? formatCurrency(item.totalAmount) + "đ" : ""}
         </div>
         <div className="col-span-1 text-center text-red-500 font-semibold">
-          {item.products ? "(" + item.products.length + ")" : ""}
+          {item.products ? "(" + countProductBuy + ")" : ""}
         </div>
         <div className="col-span-2 flex justify-center">
           <Tag color={color} className="text-sm text-center break-words whitespace-normal max-w-full">

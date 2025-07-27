@@ -48,5 +48,12 @@ export const collectionAPI = {
 
   getProductDetail: (id: string) => {
     return Http.get(`/products/${id}`)
+  },
+
+  getSearchProduct: (params: { search: string }, signal?: AbortSignal) => {
+    return Http.get(`/products`, {
+      params,
+      signal
+    })
   }
 }
