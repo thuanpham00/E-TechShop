@@ -83,7 +83,6 @@ export default function StatisticalProduct() {
 
   // xử lý biểu đồ danh sách các sản phẩm sắp hết hàng
   const productRunningOutOfStock = dataStatisticalProduct?.result.productRunningOutOfStock
-  console.log(productRunningOutOfStock)
 
   const options: ChartOptions<"bar"> = {
     indexAxis: "y", // 🔥 Biểu đồ cột ngang
@@ -260,7 +259,6 @@ export default function StatisticalProduct() {
       {!getStatisticalProduct.isFetching ? (
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
           <div className="mt-4">
-            <div className="text-base font-semibold tracking-wide">Quản lý sản phẩm</div>
             <Row gutter={[24, 24]} className="mt-2">
               <Col span={12}>
                 <div

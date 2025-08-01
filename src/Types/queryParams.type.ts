@@ -12,15 +12,19 @@ export type queryParamConfigCustomer = queryParamConfig & {
   name?: string
   phone?: string
   verify?: string
+
+  sortBy?: string
 }
 
 export type queryParamConfigCategory = queryParamConfig & {
   name?: string
+  sortBy?: string
 }
 
 export type queryParamConfigBrand = queryParamConfig & {
   name?: string
   id?: string
+  sortBy?: string
 }
 
 export type queryParamConfigSupplier = queryParamConfig & {
@@ -28,11 +32,15 @@ export type queryParamConfigSupplier = queryParamConfig & {
   email?: string
   phone?: string
   contactName?: string
+
+  sortBy?: string
 }
 
 export type queryParamConfigSupply = queryParamConfig & {
   name_product?: string
   name_supplier?: string
+
+  sortBy?: string
 }
 
 export type queryParamConfigReceipt = queryParamConfig & {
@@ -43,6 +51,8 @@ export type queryParamConfigReceipt = queryParamConfig & {
   price_max?: string
   import_date_start?: string
   import_date_end?: string
+
+  sortBy?: string
 }
 
 export type queryParamConfigOrder = queryParamConfig & {
@@ -63,6 +73,8 @@ export type queryParamConfigProduct = queryParamConfig & {
   price_min?: string
   price_max?: string
   status?: string
+
+  sortBy?: string
 }
 
 export type queryParamsPricePerUnit = {

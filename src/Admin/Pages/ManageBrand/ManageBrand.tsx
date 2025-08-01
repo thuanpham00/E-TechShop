@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import { ArrowUpFromLine, FolderUp, Plus, RotateCcw, Search, X } from "lucide-react"
+import { ArrowUpFromLine, ArrowUpNarrowWide, FolderUp, Plus, RotateCcw, Search, X } from "lucide-react"
 import { Helmet } from "react-helmet-async"
 import { createSearchParams, useLocation, useNavigate, useParams } from "react-router-dom"
 import { adminAPI } from "src/Apis/admin.api"
@@ -28,7 +28,8 @@ import AddBrand from "./Components/AddBrand"
 import DatePicker from "src/Admin/Components/DatePickerRange"
 import useDownloadExcel from "src/Hook/useDownloadExcel"
 import { motion, AnimatePresence } from "framer-motion"
-import { Empty } from "antd"
+import { Empty, Select } from "antd"
+import "../ManageOrders/ManageOrders.css"
 
 type FormDataUpdate = Pick<SchemaAuthType, "name" | "id" | "created_at" | "updated_at">
 const formDataUpdate = schemaAuth.pick(["name", "id", "created_at", "updated_at"])
@@ -63,7 +64,9 @@ export default function ManageBrand() {
       created_at_start: queryParams.created_at_start,
       created_at_end: queryParams.created_at_end,
       updated_at_start: queryParams.updated_at_start,
-      updated_at_end: queryParams.updated_at_end
+      updated_at_end: queryParams.updated_at_end,
+
+      sortBy: queryParams.sortBy || "new" // mặc định sort mới nhất
     },
     isUndefined
   )
@@ -232,6 +235,7 @@ export default function ManageBrand() {
       const params = cleanObject({
         ...queryConfig,
         page: 1,
+        sortBy: "new",
         name: data.name,
         created_at_start: data.created_at_start?.toISOString(),
         created_at_end: data.created_at_end?.toISOString(),
@@ -283,6 +287,18 @@ export default function ManageBrand() {
   }
 
   const [addItem, setAddItem] = useState(false)
+
+  // xử lý sort ds
+  const handleChangeSortListOrder = (value: string) => {
+    const body = {
+      ...queryConfig,
+      sortBy: value
+    }
+    navigate({
+      pathname: `${path.AdminCategories}/${id}`,
+      search: createSearchParams(body).toString()
+    })
+  }
 
   return (
     <div>
@@ -411,6 +427,16 @@ export default function ManageBrand() {
                     icon={<FolderUp size={15} />}
                     nameButton="Export"
                     classNameButton="py-2 px-3 border border-[#E2E7FF] bg-[#E2E7FF] w-full text-[#3A5BFF] font-medium rounded-3xl hover:bg-blue-500/40 duration-200 text-[13px] flex items-center gap-1"
+                  />
+                  <Select
+                    defaultValue="Mới nhất"
+                    className="select-sort"
+                    onChange={handleChangeSortListOrder}
+                    suffixIcon={<ArrowUpNarrowWide />}
+                    options={[
+                      { value: "old", label: "Cũ nhất" },
+                      { value: "new", label: "Mới nhất" }
+                    ]}
                   />
                 </div>
                 <div className="flex items-center gap-2">

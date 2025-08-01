@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { yupResolver } from "@hookform/resolvers/yup"
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import { ArrowUpFromLine, FolderUp, Plus, RotateCcw, Search, X } from "lucide-react"
+import { ArrowUpFromLine, ArrowUpNarrowWide, FolderUp, Plus, RotateCcw, Search, X } from "lucide-react"
 import { Helmet } from "react-helmet-async"
 import { Controller, useForm } from "react-hook-form"
 import { adminAPI } from "src/Apis/admin.api"
@@ -35,7 +35,8 @@ import DatePicker from "../../Components/DatePickerRange"
 import useDownloadExcel from "src/Hook/useDownloadExcel"
 import { motion, AnimatePresence } from "framer-motion"
 import AddCustomer from "./Components/AddCustomer"
-import { Empty } from "antd"
+import { Empty, Select } from "antd"
+import "../ManageOrders/ManageOrders.css"
 
 const formDataUpdate = schemaAuth.pick([
   "id",
@@ -95,7 +96,9 @@ export default function ManageCustomers() {
       created_at_start: queryParams.created_at_start,
       created_at_end: queryParams.created_at_end,
       updated_at_start: queryParams.updated_at_start,
-      updated_at_end: queryParams.updated_at_end
+      updated_at_end: queryParams.updated_at_end,
+
+      sortBy: queryParams.sortBy || "new" // mặc định sort mới nhất
     },
     isUndefined
   )
@@ -327,6 +330,7 @@ export default function ManageCustomers() {
       const params = cleanObject({
         ...queryConfig,
         page: 1,
+        sortBy: "new",
         email: data.email,
         name: data.name,
         phone: data.numberPhone,
@@ -383,6 +387,18 @@ export default function ManageCustomers() {
   }
 
   const [addItem, setAddItem] = useState(false)
+
+  // xử lý sort ds
+  const handleChangeSortListOrder = (value: string) => {
+    const body = {
+      ...queryConfig,
+      sortBy: value
+    }
+    navigate({
+      pathname: `${path.AdminCustomers}`,
+      search: createSearchParams(body).toString()
+    })
+  }
 
   return (
     <div>
@@ -565,6 +581,16 @@ export default function ManageCustomers() {
                   icon={<FolderUp size={15} />}
                   nameButton="Export"
                   classNameButton="py-2 px-3 border border-[#E2E7FF] bg-[#E2E7FF] w-full text-[#3A5BFF] font-medium rounded-3xl hover:bg-blue-500/40 duration-200 text-[13px] flex items-center gap-1"
+                />
+                <Select
+                  defaultValue="Mới nhất"
+                  className="select-sort"
+                  onChange={handleChangeSortListOrder}
+                  suffixIcon={<ArrowUpNarrowWide />}
+                  options={[
+                    { value: "old", label: "Cũ nhất" },
+                    { value: "new", label: "Mới nhất" }
+                  ]}
                 />
               </div>
               <div className="flex gap-2">

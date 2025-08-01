@@ -210,42 +210,39 @@ export default function StatisticalSell() {
       {getStatisticalSell.isLoading && <Skeleton />}
       {!getStatisticalSell.isFetching ? (
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-          <div className="flex items-center justify-between">
-            <div className="text-base font-semibold tracking-wide">Quản lý bán hàng</div>
-            <div className="flex gap-1 items-center">
-              <Switch
-                checkedChildren="Theo tháng"
-                unCheckedChildren="Theo năm"
-                defaultChecked
-                onChange={(checked) => {
-                  setIsMonthly(checked)
+          <div className="flex gap-1 items-center my-3 justify-end">
+            <Switch
+              checkedChildren="Theo tháng"
+              unCheckedChildren="Theo năm"
+              defaultChecked
+              onChange={(checked) => {
+                setIsMonthly(checked)
+              }}
+            />
+            {isMonthly ? (
+              <DatePicker
+                value={selectedMonth}
+                onChange={(date) => {
+                  if (date) {
+                    setSelectedMonth(date)
+                  }
                 }}
+                picker="month"
+                format="MM/YYYY"
+                placeholder="Chọn tháng"
               />
-              {isMonthly ? (
-                <DatePicker
-                  value={selectedMonth}
-                  onChange={(date) => {
-                    if (date) {
-                      setSelectedMonth(date)
-                    }
-                  }}
-                  picker="month"
-                  format="MM/YYYY"
-                  placeholder="Chọn tháng"
-                />
-              ) : (
-                <DatePicker
-                  value={selectedMonth}
-                  // onChange={(value) => {
-                  //   const updated = selectDate.year(value.year()) // giữ nguyên tháng hiện tại
-                  //   setSelectDate(updated)
-                  // }}
-                  picker="year"
-                  format="YYYY"
-                  placeholder="Chọn năm"
-                />
-              )}
-            </div>
+            ) : (
+              <DatePicker
+                value={selectedMonth}
+                // onChange={(value) => {
+                //   const updated = selectDate.year(value.year()) // giữ nguyên tháng hiện tại
+                //   setSelectDate(updated)
+                // }}
+                picker="year"
+                format="YYYY"
+                placeholder="Chọn năm"
+              />
+            )}
           </div>
           <Row gutter={[24, 24]} className="mt-2">
             <Col span={6}>

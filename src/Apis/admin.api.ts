@@ -24,14 +24,14 @@ export const adminAPI = {
   statistical: {
     // lấy số liệu thống kê hệ thống
     getStatisticalSell: (signal: AbortSignal, params: { year: number; month: number }) => {
-      return Http.get("/admin/statistical_sell", {
+      return Http.get("/admin/statistical-sell", {
         params,
         signal
       })
     },
 
     getStatisticalProduct: (signal: AbortSignal) => {
-      return Http.get("/admin/statistical_product", {
+      return Http.get("/admin/statistical-product", {
         signal
       })
     }

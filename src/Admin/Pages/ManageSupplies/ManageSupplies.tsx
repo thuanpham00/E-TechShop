@@ -15,7 +15,7 @@ import { SupplyItemType } from "src/Types/product.type"
 import { queryParamConfigSupply } from "src/Types/queryParams.type"
 import { SuccessResponse } from "src/Types/utils.type"
 import SupplyItem from "./Components/SupplyItem"
-import { FolderUp, Plus, RotateCcw, Search } from "lucide-react"
+import { ArrowUpNarrowWide, FolderUp, Plus, RotateCcw, Search } from "lucide-react"
 import { toast } from "react-toastify"
 import { Controller, useForm } from "react-hook-form"
 import { yupResolver } from "@hookform/resolvers/yup"
@@ -28,7 +28,8 @@ import SupplyDetail from "./Components/SupplyDetail"
 import { queryClient } from "src/main"
 import DropdownSearch from "./Components/DropdownSearch"
 import { motion } from "framer-motion"
-import { Empty } from "antd"
+import { Empty, Select } from "antd"
+import "../ManageOrders/ManageOrders.css"
 
 type FormDataSearch = Pick<
   SchemaSupplyType,
@@ -58,7 +59,9 @@ export default function ManageSupplies() {
       created_at_start: queryParams.created_at_start,
       created_at_end: queryParams.created_at_end,
       updated_at_start: queryParams.updated_at_start,
-      updated_at_end: queryParams.updated_at_end
+      updated_at_end: queryParams.updated_at_end,
+
+      sortBy: queryParams.sortBy || "new" // mặc định sort mới nhất
     },
     isUndefined
   )
@@ -142,6 +145,7 @@ export default function ManageSupplies() {
       const params = cleanObject({
         ...queryConfig,
         page: 1,
+        sortBy: "new",
         name_product: data.name_product,
         name_supplier: data.name_supplier,
         created_at_start: data.created_at_start?.toISOString(),
@@ -219,6 +223,18 @@ export default function ManageSupplies() {
     if ((error as any)?.response?.status === HttpStatusCode.NotFound) {
       navigate(path.AdminNotFound, { replace: true })
     }
+  }
+
+  // xử lý sort ds
+  const handleChangeSortListOrder = (value: string) => {
+    const body = {
+      ...queryConfig,
+      sortBy: value
+    }
+    navigate({
+      pathname: `${path.AdminSupplies}`,
+      search: createSearchParams(body).toString()
+    })
   }
 
   return (
@@ -362,6 +378,16 @@ export default function ManageSupplies() {
                     icon={<FolderUp size={15} />}
                     nameButton="Export"
                     classNameButton="py-2 px-3 border border-[#E2E7FF] bg-[#E2E7FF] w-full text-[#3A5BFF] font-medium rounded-3xl hover:bg-blue-500/40 duration-200 text-[13px] flex items-center gap-1"
+                  />
+                  <Select
+                    defaultValue="Mới nhất"
+                    className="select-sort"
+                    onChange={handleChangeSortListOrder}
+                    suffixIcon={<ArrowUpNarrowWide />}
+                    options={[
+                      { value: "old", label: "Cũ nhất" },
+                      { value: "new", label: "Mới nhất" }
+                    ]}
                   />
                 </div>
                 <div className="flex items-center gap-2">

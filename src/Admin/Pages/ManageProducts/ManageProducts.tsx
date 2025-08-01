@@ -16,6 +16,7 @@ import { HttpStatusCode } from "src/Constants/httpStatus"
 import FilterProduct from "./Components/FilterProduct"
 import { motion } from "framer-motion"
 import { Empty } from "antd"
+import "../ManageOrders/ManageOrders.css"
 
 export default function ManageProducts() {
   const navigate = useNavigate()
@@ -33,7 +34,9 @@ export default function ManageProducts() {
       created_at_end: queryParams.created_at_end,
       updated_at_start: queryParams.updated_at_start,
       updated_at_end: queryParams.updated_at_end,
-      status: queryParams.status
+      status: queryParams.status,
+
+      sortBy: queryParams.sortBy || "new" // mặc định sort mới nhất
     },
     isUndefined
   )

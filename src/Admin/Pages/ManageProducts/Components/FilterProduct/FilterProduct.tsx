@@ -1,7 +1,8 @@
 import { yupResolver } from "@hookform/resolvers/yup"
 import { keepPreviousData, useQuery } from "@tanstack/react-query"
+import { Select } from "antd"
 import { omit } from "lodash"
-import { FolderUp, Plus, RotateCcw, Search } from "lucide-react"
+import { ArrowUpNarrowWide, FolderUp, Plus, RotateCcw, Search } from "lucide-react"
 import { Controller, useForm } from "react-hook-form"
 import { createSearchParams, Link, useNavigate } from "react-router-dom"
 import { toast } from "react-toastify"
@@ -100,6 +101,7 @@ export default function FilterProduct({ queryConfig, listProduct }: Props) {
       const params = cleanObject({
         ...queryConfig,
         page: 1,
+        sortBy: "new",
         name: data.name,
         category: data.category,
         brand: data.brand,
@@ -145,6 +147,18 @@ export default function FilterProduct({ queryConfig, listProduct }: Props) {
     ])
     resetFormSearch()
     navigate({ pathname: `${path.AdminProducts}`, search: createSearchParams(filteredSearch).toString() })
+  }
+
+  // xử lý sort ds
+  const handleChangeSortListOrder = (value: string) => {
+    const body = {
+      ...queryConfig,
+      sortBy: value
+    }
+    navigate({
+      pathname: `${path.AdminProducts}`,
+      search: createSearchParams(body).toString()
+    })
   }
 
   return (
@@ -409,6 +423,16 @@ export default function FilterProduct({ queryConfig, listProduct }: Props) {
                 icon={<FolderUp size={15} />}
                 nameButton="Export"
                 classNameButton="py-2 px-3 border border-[#E2E7FF] bg-[#E2E7FF] w-full text-[#3A5BFF] font-medium rounded-3xl hover:bg-blue-500/40 duration-200 text-[13px] flex items-center gap-1"
+              />
+              <Select
+                defaultValue="Mới nhất"
+                className="select-sort"
+                onChange={handleChangeSortListOrder}
+                suffixIcon={<ArrowUpNarrowWide />}
+                options={[
+                  { value: "old", label: "Cũ nhất" },
+                  { value: "new", label: "Mới nhất" }
+                ]}
               />
             </div>
           </div>

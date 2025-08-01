@@ -16,7 +16,7 @@ import { SupplierItemType, UpdateSupplierBodyReq } from "src/Types/product.type"
 import { HttpStatusCode } from "src/Constants/httpStatus"
 import Button from "src/Components/Button"
 import { useCallback, useEffect, useState } from "react"
-import { ArrowUpFromLine, FolderUp, Plus, RotateCcw, Search, X } from "lucide-react"
+import { ArrowUpFromLine, ArrowUpNarrowWide, FolderUp, Plus, RotateCcw, Search, X } from "lucide-react"
 import { toast } from "react-toastify"
 import { yupResolver } from "@hookform/resolvers/yup"
 import { Controller, useForm } from "react-hook-form"
@@ -34,7 +34,8 @@ import { isError400, isError422 } from "src/Helpers/utils"
 import AddSupplier from "./Components/AddSupplier"
 import useDownloadExcel from "src/Hook/useDownloadExcel"
 import { motion, AnimatePresence } from "framer-motion"
-import { Empty } from "antd"
+import { Empty, Select } from "antd"
+import "../ManageOrders/ManageOrders.css"
 
 type FormDataUpdate = Pick<
   SchemaSupplierUpdateType,
@@ -102,7 +103,9 @@ export default function ManageSuppliers() {
       created_at_start: queryParams.created_at_start,
       created_at_end: queryParams.created_at_end,
       updated_at_start: queryParams.updated_at_start,
-      updated_at_end: queryParams.updated_at_end
+      updated_at_end: queryParams.updated_at_end,
+
+      sortBy: queryParams.sortBy || "new" // mặc định sort mới nhất
     },
     isUndefined
   )
@@ -280,6 +283,7 @@ export default function ManageSuppliers() {
       const params = cleanObject({
         ...queryConfig,
         page: 1,
+        sortBy: "new",
         name: data.name,
         email: data.email,
         phone: data.phone,
@@ -327,6 +331,18 @@ export default function ManageSuppliers() {
   }
 
   const [addItem, setAddItem] = useState(false)
+
+  // xử lý sort ds
+  const handleChangeSortListOrder = (value: string) => {
+    const body = {
+      ...queryConfig,
+      sortBy: value
+    }
+    navigate({
+      pathname: `${path.AdminSuppliers}`,
+      search: createSearchParams(body).toString()
+    })
+  }
 
   return (
     <div>
@@ -503,6 +519,16 @@ export default function ManageSuppliers() {
                     icon={<FolderUp size={15} />}
                     nameButton="Export"
                     classNameButton="py-2 px-3 border border-[#E2E7FF] bg-[#E2E7FF] w-full text-[#3A5BFF] font-medium rounded-3xl hover:bg-blue-500/40 duration-200 text-[13px] flex items-center gap-1"
+                  />
+                  <Select
+                    defaultValue="Mới nhất"
+                    className="select-sort"
+                    onChange={handleChangeSortListOrder}
+                    suffixIcon={<ArrowUpNarrowWide />}
+                    options={[
+                      { value: "old", label: "Cũ nhất" },
+                      { value: "new", label: "Mới nhất" }
+                    ]}
                   />
                 </div>
                 <div className="flex items-center gap-2">

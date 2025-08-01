@@ -1,7 +1,7 @@
 import { yupResolver } from "@hookform/resolvers/yup"
 import { keepPreviousData, useQuery } from "@tanstack/react-query"
 import { isUndefined, omit, omitBy } from "lodash"
-import { FolderUp, Plus, RotateCcw, Search } from "lucide-react"
+import { ArrowUpNarrowWide, FolderUp, Plus, RotateCcw, Search } from "lucide-react"
 import { Helmet } from "react-helmet-async"
 import { Controller, useForm } from "react-hook-form"
 import { createSearchParams, Link, useNavigate } from "react-router-dom"
@@ -26,7 +26,8 @@ import { motion } from "framer-motion"
 import useDownloadExcel from "src/Hook/useDownloadExcel"
 import Input from "src/Components/Input"
 import InputNumber from "src/Components/InputNumber"
-import { Empty } from "antd"
+import { Empty, Select } from "antd"
+import "../ManageOrders/ManageOrders.css"
 
 type FormDataSearch = Pick<
   SchemaSupplyType,
@@ -70,7 +71,9 @@ export default function ManageReceipt() {
       created_at_start: queryParams.created_at_start,
       created_at_end: queryParams.created_at_end,
       updated_at_start: queryParams.updated_at_start,
-      updated_at_end: queryParams.updated_at_end
+      updated_at_end: queryParams.updated_at_end,
+
+      sortBy: queryParams.sortBy || "new" // mặc định sort mới nhất
     },
     isUndefined
   )
@@ -116,6 +119,7 @@ export default function ManageReceipt() {
       const params = cleanObject({
         ...queryConfig,
         page: 1,
+        sortBy: "new",
         name_product: data.name_product,
         name_supplier: data.name_supplier,
         quantity: data.quantity,
@@ -191,6 +195,18 @@ export default function ManageReceipt() {
     ])
     resetFormSearch()
     navigate({ pathname: path.AdminReceipts, search: createSearchParams(filteredSearch).toString() })
+  }
+
+  // xử lý sort ds
+  const handleChangeSortListOrder = (value: string) => {
+    const body = {
+      ...queryConfig,
+      sortBy: value
+    }
+    navigate({
+      pathname: `${path.AdminReceipts}`,
+      search: createSearchParams(body).toString()
+    })
   }
 
   return (
@@ -403,6 +419,16 @@ export default function ManageReceipt() {
                   icon={<FolderUp size={15} />}
                   nameButton="Export"
                   classNameButton="py-2 px-3 border border-[#E2E7FF] bg-[#E2E7FF] w-full text-[#3A5BFF] font-medium rounded-3xl hover:bg-blue-500/40 duration-200 text-[13px] flex items-center gap-1"
+                />
+                <Select
+                  defaultValue="Mới nhất"
+                  className="select-sort"
+                  onChange={handleChangeSortListOrder}
+                  suffixIcon={<ArrowUpNarrowWide />}
+                  options={[
+                    { value: "old", label: "Cũ nhất" },
+                    { value: "new", label: "Mới nhất" }
+                  ]}
                 />
               </div>
               <div className="flex items-center gap-2">

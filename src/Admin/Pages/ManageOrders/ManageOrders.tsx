@@ -111,7 +111,6 @@ export default function ManageOrders() {
       ...queryConfig,
       sortBy: value
     }
-    console.log(body)
     navigate({
       pathname: `${path.AdminOrders}`,
       search: createSearchParams(body).toString()
