@@ -48,6 +48,7 @@ type ProductRunningOutOfStock = {
   categoryInfo: string
   stock: number
 }
+
 export default function StatisticalProduct() {
   const { copiedId, handleCopyText } = useCopyText()
   const getStatisticalProduct = useQuery({
@@ -202,7 +203,7 @@ export default function StatisticalProduct() {
 
   const columns = [
     {
-      title: "Id",
+      title: "Mã sản phẩm",
       dataIndex: "_id",
       render: (_: any, record: ProductRunningOutOfStock) => {
         return (
@@ -262,7 +263,7 @@ export default function StatisticalProduct() {
             <Row gutter={[24, 24]} className="mt-2">
               <Col span={12}>
                 <div
-                  className="shadow-xl p-6"
+                  className="shadow-md p-6"
                   style={{
                     border: "1px solid #dadada",
                     borderRadius: "8px",
@@ -275,7 +276,7 @@ export default function StatisticalProduct() {
               </Col>
               <Col span={12}>
                 <div
-                  className="shadow-xl p-6"
+                  className="shadow-md p-6"
                   style={{
                     border: "1px solid #dadada",
                     borderRadius: "8px",
@@ -288,7 +289,7 @@ export default function StatisticalProduct() {
               </Col>
               <Col span={24}>
                 <div
-                  className="shadow-xl p-6"
+                  className="shadow-md p-6"
                   style={{
                     border: "1px solid #dadada",
                     borderRadius: "8px",
@@ -301,7 +302,7 @@ export default function StatisticalProduct() {
                     <Table
                       columns={columns}
                       dataSource={
-                        productRunningOutOfStock.value as {
+                        productRunningOutOfStock?.value as {
                           name: string
                           _id: string
                           categoryInfo: string

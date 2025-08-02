@@ -13,6 +13,7 @@ import { isError422 } from "src/Helpers/utils"
 import { ErrorResponse, SuccessResponse } from "src/Types/utils.type"
 import DropdownList from "../DropdownList"
 import { AnimatePresence, motion } from "framer-motion"
+import { formatCurrency } from "src/Helpers/common"
 
 interface Props {
   setAddItem: React.Dispatch<React.SetStateAction<boolean>>
@@ -91,7 +92,6 @@ export default function AddSupply({ setAddItem, addItem }: Props) {
   const listNameProduct = getNameProducts.data?.data as SuccessResponse<{
     result: string[]
   }>
-
   const listNameProductResult = listNameProduct?.result.result
 
   const getNameSuppliersBasedOnNameProduct = useQuery({
@@ -106,8 +106,17 @@ export default function AddSupply({ setAddItem, addItem }: Props) {
   const listNameSupplier = getNameSuppliersBasedOnNameProduct.data?.data as SuccessResponse<{
     result: string[]
   }>
-
   const listNameSupplierResult = listNameSupplier?.result.result
+
+  const getPriceProductSelected = useQuery({
+    queryKey: ["priceProductSelected", inputValueProduct],
+    queryFn: () => {
+      return adminAPI.supply.getPriceSellProduct({ name: inputValueProduct })
+    },
+    retry: 0, // số lần retry lại khi hủy request (dùng abort signal)
+    enabled: !!inputValueProduct // nó chỉ chạy khi có inputValueProduct
+  })
+  const sellPriceValue = getPriceProductSelected.data?.data?.result
 
   return (
     <AnimatePresence>
@@ -166,16 +175,24 @@ export default function AddSupply({ setAddItem, addItem }: Props) {
                     nameInput="Giá nhập"
                   />
                   <Input
-                    name="warrantyMonths"
-                    register={register}
-                    placeholder="Nhập thời gian bảo hành"
-                    messageErrorInput={errors.warrantyMonths?.message}
+                    name="sellPrice"
+                    value={formatCurrency(Number(sellPriceValue) || 0)}
                     classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-white dark:bg-darkPrimary focus:border-blue-500 focus:ring-2 outline-none rounded-md"
                     className="relative flex-1"
-                    nameInput="Thời gian bảo hành"
+                    nameInput="Giá bán hiện tại"
+                    readOnly
                   />
                 </div>
                 <div className="mt-4 flex items-center gap-4">
+                  <Input
+                    name="importPrice"
+                    register={register}
+                    placeholder="Nhập giá nhập"
+                    messageErrorInput={errors.importPrice?.message}
+                    classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#fff] dark:bg-darkPrimary focus:border-blue-500 focus:ring-2 outline-none rounded-md"
+                    className="relative flex-1"
+                    nameInput="Giá nhập"
+                  />
                   <Input
                     name="leadTimeDays"
                     register={register}

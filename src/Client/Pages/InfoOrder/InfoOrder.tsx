@@ -1,12 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useMutation } from "@tanstack/react-query"
 import { Button, Form, Image, Input, Steps, Table, Typography } from "antd"
-import { useEffect } from "react"
+import { useContext, useEffect, useRef } from "react"
 import { Helmet } from "react-helmet-async"
 import { Link, useLocation } from "react-router-dom"
 import { toast } from "react-toastify"
 import NavigateBack from "src/Admin/Components/NavigateBack"
 import { OrderApi } from "src/Apis/order.api"
+import { AppContext } from "src/Context/authContext"
 import { CalculateSalePrice, formatCurrency, slugify } from "src/Helpers/common"
 import Http from "src/Helpers/http"
 import { OrderType } from "src/Types/product.type"
@@ -15,6 +16,7 @@ const { Text } = Typography
 const { TextArea } = Input
 
 export default function InfoOrder() {
+  const { nameUser } = useContext(AppContext)
   const { state } = useLocation()
   const listCart = state.selectedProducts
   const totalPriceProducts = state.totalPriceProducts
@@ -81,12 +83,21 @@ export default function InfoOrder() {
     }
   ]
 
+  // xử lý đặt hàng
+  const [form] = Form.useForm()
+
+  const didInit = useRef(false)
+
+  useEffect(() => {
+    if (!didInit.current) {
+      form.setFieldValue("name", nameUser)
+      didInit.current = true
+    }
+  }, [form, nameUser])
+
   useEffect(() => {
     window.scroll(0, 0) // scroll mượt
   }, [])
-
-  // xử lý đặt hàng
-  const [form] = Form.useForm()
 
   const createOrderMutation = useMutation({
     mutationFn: (body: OrderType) => {

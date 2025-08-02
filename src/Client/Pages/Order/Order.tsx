@@ -245,7 +245,7 @@ export default function Order() {
             <span className="text-[14px] font-medium text-blue-500">Mua thêm sản phẩm khác</span>
           </Link>
 
-          <div className="p-4 bg-white rounded-md mt-4">
+          <div className="p-4 bg-white border border-gray-300 rounded-md mt-4">
             {lengthOrder > 0 ? (
               <div>
                 <h1 className="mb-2 ml-1 text-lg font-semibold">Danh sách đơn hàng ({listOrder.length}) của bạn</h1>

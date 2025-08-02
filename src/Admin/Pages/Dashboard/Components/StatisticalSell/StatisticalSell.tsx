@@ -48,20 +48,23 @@ const statusOrder = ["Chờ xác nhận", "Đang xử lý", "Đang vận chuyể
 
 export default function StatisticalSell() {
   const [selectedMonth, setSelectedMonth] = useState<Dayjs>(dayjs())
+  const [selectedYear, setSelectedYear] = useState<number>(dayjs().year())
   const [isMonthly, setIsMonthly] = useState(true) // true = theo tháng, false = theo năm
 
   const getStatisticalSell = useQuery({
-    queryKey: ["getStatisticalSell", selectedMonth.format("YYYY-MM")],
+    queryKey: isMonthly
+      ? ["getStatisticalSell", "month", selectedMonth.format("YYYY-MM")]
+      : ["getStatisticalSell", "year", selectedYear],
     queryFn: () => {
       const controller = new AbortController()
       setTimeout(() => {
         controller.abort()
       }, 10000) // quá 10 giây api chưa trả res về thì timeout sẽ hủy gọi api và api signal nhận tín hiệu hủy
       const month = selectedMonth.month() + 1
-      const year = selectedMonth.year()
+      const year = isMonthly ? selectedMonth.year() : selectedYear
 
       return adminAPI.statistical.getStatisticalSell(controller.signal, {
-        month: month,
+        ...(isMonthly ? { month } : {}),
         year: year
       })
     },
@@ -212,8 +215,8 @@ export default function StatisticalSell() {
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
           <div className="flex gap-1 items-center my-3 justify-end">
             <Switch
-              checkedChildren="Theo tháng"
-              unCheckedChildren="Theo năm"
+              checkedChildren="Theo năm"
+              unCheckedChildren="Theo tháng"
               defaultChecked
               onChange={(checked) => {
                 setIsMonthly(checked)
@@ -233,11 +236,10 @@ export default function StatisticalSell() {
               />
             ) : (
               <DatePicker
-                value={selectedMonth}
-                // onChange={(value) => {
-                //   const updated = selectDate.year(value.year()) // giữ nguyên tháng hiện tại
-                //   setSelectDate(updated)
-                // }}
+                value={dayjs().year(selectedYear)}
+                onChange={(value) => {
+                  setSelectedYear(value.year())
+                }}
                 picker="year"
                 format="YYYY"
                 placeholder="Chọn năm"
@@ -251,7 +253,7 @@ export default function StatisticalSell() {
                 className="border-gray-500 shadow-md rounded-xl bg-white p-6 flex flex-col justify-between"
               >
                 <div className="flex items-start justify-between">
-                  <div className="text-sm font-semibold tracking-wide mr-2">{totalCustomer?.title}</div>
+                  <div className="text-[15px] font-semibold tracking-wide mr-1">{totalCustomer?.title}</div>
                   <Wallet size={22} color="black" />
                 </div>
                 <div className={`text-2xl font-semibold mt-4`} style={{ color: totalCustomer?.color }}>
@@ -266,7 +268,7 @@ export default function StatisticalSell() {
                 className="border-gray-500 shadow-md rounded-xl bg-white p-6 flex flex-col justify-between"
               >
                 <div className="flex items-start justify-between">
-                  <div className="text-sm font-semibold tracking-wide mr-2">{avgOrderValue?.title}</div>
+                  <div className="text-[15px] font-semibold tracking-wide mr-1">{avgOrderValue?.title}</div>
                   <BarChart3 size={22} color="black" />
                 </div>
                 <div className={`text-2xl font-semibold mt-4`} style={{ color: avgOrderValue?.color }}>
@@ -281,7 +283,7 @@ export default function StatisticalSell() {
                 className="border-gray-500 shadow-md rounded-xl bg-white p-6 flex flex-col justify-between"
               >
                 <div className="flex items-start justify-between">
-                  <div className="text-sm font-semibold tracking-wide mr-2">{totalOrder?.title}</div>
+                  <div className="text-[15px] font-semibold tracking-wide mr-1">{totalOrder?.title}</div>
                   <PackageCheck size={22} color="black" />
                 </div>
                 <div className={`text-2xl font-semibold mt-4`} style={{ color: totalOrder?.color }}>
@@ -296,7 +298,7 @@ export default function StatisticalSell() {
                 className="border-gray-500 shadow-md rounded-xl bg-white p-6 flex flex-col justify-between"
               >
                 <div className="flex items-start justify-between">
-                  <div className="text-sm font-semibold tracking-wide mr-2">{totalProductSold?.title}</div>
+                  <div className="text-[15px] font-semibold tracking-wide mr-1">{totalProductSold?.title}</div>
                   <Boxes size={22} color="black" />
                 </div>
                 <div className={`text-2xl font-semibold mt-4`} style={{ color: totalProductSold?.color }}>

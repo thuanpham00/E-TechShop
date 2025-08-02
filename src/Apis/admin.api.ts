@@ -23,7 +23,7 @@ import {
 export const adminAPI = {
   statistical: {
     // lấy số liệu thống kê hệ thống
-    getStatisticalSell: (signal: AbortSignal, params: { year: number; month: number }) => {
+    getStatisticalSell: (signal: AbortSignal, params: { year: number; month?: number }) => {
       return Http.get("/admin/statistical-sell", {
         params,
         signal
@@ -34,8 +34,16 @@ export const adminAPI = {
       return Http.get("/admin/statistical-product", {
         signal
       })
+    },
+
+    getStatisticalUser: (signal: AbortSignal, params: { year: number; month?: number }) => {
+      return Http.get("/admin/statistical-user", {
+        params,
+        signal
+      })
     }
   },
+
   customer: {
     createCustomer: (body: CreateCustomerBodyReq) => {
       return Http.post("/admin/customers", body)
@@ -64,6 +72,7 @@ export const adminAPI = {
       return Http.delete(`/admin/customers/${id}`)
     }
   },
+
   category: {
     // tạo danh mục
     createCategory: (body: { name: string }) => {
@@ -232,6 +241,7 @@ export const adminAPI = {
       return Http.delete(`/admin/suppliers/${id}`)
     }
   },
+
   supply: {
     // lấy danh sách cung ứng
     getSupplies: (params: queryParamConfigSupply, signal: AbortSignal) => {
@@ -239,6 +249,11 @@ export const adminAPI = {
         params,
         signal
       })
+    },
+
+    // lấy giá bán sản phẩm
+    getPriceSellProduct: (params: { name: string }) => {
+      return Http.get(`/admin/supplies/price-product`, { params })
     },
 
     // lấy chi tiết cung ứng
