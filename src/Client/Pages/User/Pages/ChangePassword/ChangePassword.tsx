@@ -6,6 +6,7 @@ import { toast } from "react-toastify"
 import { userAPI } from "src/Apis/user.api"
 import { isError400, isError422 } from "src/Helpers/utils"
 import { ErrorResponse } from "src/Types/utils.type"
+import { motion } from "framer-motion"
 
 export default function ChangePassword() {
   const [form] = Form.useForm()
@@ -69,77 +70,79 @@ export default function ChangePassword() {
         <meta name="description" content="Hồ sơ của tôi | E-commerce shop" />
       </Helmet>
 
-      <div className="border-b border-b-gray-200 pb-6">
-        <h1 className={`text-black text-lg font-semibold capitalize`}>Hồ sơ của tôi</h1>
-        <span className="text-sm">Quản lý thông tin hồ sơ để bảo mật tài khoản</span>
-      </div>
+      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+        <div className="border-b border-b-gray-200 pb-6">
+          <h1 className={`text-black text-lg font-semibold capitalize`}>Hồ sơ của tôi</h1>
+          <span className="text-sm">Quản lý thông tin hồ sơ để bảo mật tài khoản</span>
+        </div>
 
-      <div className="mt-4 py-4 px-8">
-        <Form
-          form={form}
-          onFinish={onFinish}
-          labelCol={{
-            span: 8
-          }}
-          labelAlign="left"
-          layout="horizontal"
-        >
-          <Row gutter={16}>
-            <Col span={16}>
-              <Form.Item
-                label="Mật khẩu hiện tại"
-                name="old_password"
-                rules={[{ required: true, message: "Vui lòng nhập mật khẩu hiện tại" }]}
-              >
-                <Input.Password />
-              </Form.Item>
-              <Form.Item
-                label="Mật khẩu mới"
-                name="password"
-                hasFeedback
-                rules={[
-                  { required: true, message: "Vui lòng nhập mật khẩu mới" },
-                  { min: 6, message: "Mật khẩu phải có ít nhất 6 ký tự" }
-                ]}
-              >
-                <Input.Password />
-              </Form.Item>
+        <div className="mt-4 py-4 px-8">
+          <Form
+            form={form}
+            onFinish={onFinish}
+            labelCol={{
+              span: 8
+            }}
+            labelAlign="left"
+            layout="horizontal"
+          >
+            <Row gutter={16}>
+              <Col span={16}>
+                <Form.Item
+                  label="Mật khẩu hiện tại"
+                  name="old_password"
+                  rules={[{ required: true, message: "Vui lòng nhập mật khẩu hiện tại" }]}
+                >
+                  <Input.Password />
+                </Form.Item>
+                <Form.Item
+                  label="Mật khẩu mới"
+                  name="password"
+                  hasFeedback
+                  rules={[
+                    { required: true, message: "Vui lòng nhập mật khẩu mới" },
+                    { min: 6, message: "Mật khẩu phải có ít nhất 6 ký tự" }
+                  ]}
+                >
+                  <Input.Password />
+                </Form.Item>
 
-              <Form.Item
-                label="Xác nhận mật khẩu mới"
-                name="confirm_password"
-                dependencies={["password"]}
-                hasFeedback
-                rules={[
-                  { required: true, message: "Vui lòng xác nhận mật khẩu mới" },
-                  ({ getFieldValue }) => ({
-                    validator(_, value) {
-                      if (!value || getFieldValue("password") === value) {
-                        return Promise.resolve()
+                <Form.Item
+                  label="Xác nhận mật khẩu mới"
+                  name="confirm_password"
+                  dependencies={["password"]}
+                  hasFeedback
+                  rules={[
+                    { required: true, message: "Vui lòng xác nhận mật khẩu mới" },
+                    ({ getFieldValue }) => ({
+                      validator(_, value) {
+                        if (!value || getFieldValue("password") === value) {
+                          return Promise.resolve()
+                        }
+                        return Promise.reject(new Error("Mật khẩu xác nhận không khớp"))
                       }
-                      return Promise.reject(new Error("Mật khẩu xác nhận không khớp"))
-                    }
-                  })
-                ]}
-              >
-                <Input.Password />
-              </Form.Item>
+                    })
+                  ]}
+                >
+                  <Input.Password />
+                </Form.Item>
 
-              <Form.Item>
-                <div className="flex justify-end">
-                  <Button
-                    htmlType="submit"
-                    type="primary"
-                    className="p-2 px-4 bg-blue-500 w-[100px] text-white font-semibold rounded-sm hover:bg-blue-500/80 duration-200"
-                  >
-                    Cập nhật
-                  </Button>
-                </div>
-              </Form.Item>
-            </Col>
-          </Row>
-        </Form>
-      </div>
+                <Form.Item>
+                  <div className="flex justify-end">
+                    <Button
+                      htmlType="submit"
+                      type="primary"
+                      className="p-2 px-4 bg-blue-500 w-[100px] text-white font-semibold rounded-sm hover:bg-blue-500/80 duration-200"
+                    >
+                      Cập nhật
+                    </Button>
+                  </div>
+                </Form.Item>
+              </Col>
+            </Row>
+          </Form>
+        </div>
+      </motion.div>
     </div>
   )
 }

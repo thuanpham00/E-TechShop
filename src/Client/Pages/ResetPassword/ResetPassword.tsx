@@ -1,5 +1,5 @@
 import { Helmet } from "react-helmet-async"
-import { Link, useLocation } from "react-router-dom"
+import { Link, useLocation, useNavigate } from "react-router-dom"
 import { path } from "src/Constants/path"
 import Input from "src/Components/Input"
 import Button from "src/Components/Button"
@@ -17,6 +17,7 @@ const formData = schemaAuth.pick(["password", "confirm_password"])
 type FormData = Pick<SchemaAuthType, "password" | "confirm_password">
 
 export default function ResetPassword() {
+  const navigate = useNavigate()
   const { state } = useLocation()
   const {
     reset,
@@ -43,6 +44,7 @@ export default function ResetPassword() {
         onSuccess: () => {
           reset()
           toast.success("Đặt lại mật khẩu thành công!", { autoClose: 1500 })
+          navigate(path.Login)
         },
         onError: (error) => {
           // lỗi từ server trả về

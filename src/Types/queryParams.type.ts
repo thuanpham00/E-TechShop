@@ -81,3 +81,8 @@ export type queryParamsPricePerUnit = {
   name_product: string
   name_supplier: string
 }
+
+export type queryParamConfigEmail = {
+  page?: string
+  limit?: string
+}

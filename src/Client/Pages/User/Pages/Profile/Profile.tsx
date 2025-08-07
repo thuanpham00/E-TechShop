@@ -12,6 +12,8 @@ import { MediaAPI } from "src/Apis/media.api"
 import { toast } from "react-toastify"
 import { isError422 } from "src/Helpers/utils"
 import { ErrorResponse } from "src/Types/utils.type"
+import { motion } from "framer-motion"
+import avatarDefault from "src/Assets/img/avatarDefault.png"
 
 const days = Array.from({ length: 31 }, (_, i) => i + 1)
 const months = Array.from({ length: 12 }, (_, i) => i + 1)
@@ -148,97 +150,99 @@ export default function Profile() {
         <meta name="description" content="Hồ sơ của tôi | E-commerce shop" />
       </Helmet>
 
-      <div className="border-b border-b-gray-200 pb-6">
-        <h1 className={`text-black text-lg font-semibold capitalize`}>Hồ sơ của tôi</h1>
-        <span className="text-sm">Quản lý thông tin hồ sơ để bảo mật tài khoản</span>
-      </div>
+      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+        <div className="border-b border-b-gray-200 pb-6">
+          <h1 className={`text-black text-lg font-semibold capitalize`}>Hồ sơ của tôi</h1>
+          <span className="text-sm">Quản lý thông tin hồ sơ để bảo mật tài khoản</span>
+        </div>
 
-      <div className="mt-4 py-4 px-8">
-        <Form
-          form={form}
-          onFinish={onFinish}
-          labelCol={{
-            span: 6
-          }}
-          labelAlign="left"
-          layout="horizontal"
-        >
-          <Row gutter={16}>
-            <Col span={14}>
-              <Form.Item label="Email" name="email">
-                <Input disabled />
-              </Form.Item>
-              <Form.Item label="Tên" name="name">
-                <Input />
-              </Form.Item>
-              <Form.Item label="Trạng thái" name="verify">
-                <Input disabled />
-              </Form.Item>
-              <Form.Item label="Số điện thoại" name="numberPhone">
-                <Input />
-              </Form.Item>
-              <Form.Item label="Ngày sinh">
-                <Space>
-                  {/* Ngày */}
-                  <Select placeholder="Ngày" style={{ width: 120 }} onChange={(value) => setDay(value)} value={day}>
-                    {days.map((d) => (
-                      <Option key={d} value={d}>
-                        {d}
-                      </Option>
-                    ))}
-                  </Select>
+        <div className="mt-4 py-4 px-8">
+          <Form
+            form={form}
+            onFinish={onFinish}
+            labelCol={{
+              span: 6
+            }}
+            labelAlign="left"
+            layout="horizontal"
+          >
+            <Row gutter={16}>
+              <Col span={14}>
+                <Form.Item label="Email" name="email">
+                  <Input disabled />
+                </Form.Item>
+                <Form.Item label="Tên" name="name">
+                  <Input />
+                </Form.Item>
+                <Form.Item label="Trạng thái" name="verify">
+                  <Input disabled />
+                </Form.Item>
+                <Form.Item label="Số điện thoại" name="numberPhone">
+                  <Input />
+                </Form.Item>
+                <Form.Item label="Ngày sinh">
+                  <Space>
+                    {/* Ngày */}
+                    <Select placeholder="Ngày" style={{ width: 120 }} onChange={(value) => setDay(value)} value={day}>
+                      {days.map((d) => (
+                        <Option key={d} value={d}>
+                          {d}
+                        </Option>
+                      ))}
+                    </Select>
 
-                  {/* Tháng */}
-                  <Select
-                    placeholder="Tháng"
-                    style={{ width: 120 }}
-                    onChange={(value) => setMonth(value)}
-                    value={month}
-                  >
-                    {months.map((m, index) => (
-                      <Option key={index} value={m}>
-                        {m}
-                      </Option>
-                    ))}
-                  </Select>
+                    {/* Tháng */}
+                    <Select
+                      placeholder="Tháng"
+                      style={{ width: 120 }}
+                      onChange={(value) => setMonth(value)}
+                      value={month}
+                    >
+                      {months.map((m, index) => (
+                        <Option key={index} value={m}>
+                          {m}
+                        </Option>
+                      ))}
+                    </Select>
 
-                  {/* Năm */}
-                  <Select placeholder="Năm" style={{ width: 120 }} onChange={(value) => setYear(value)} value={year}>
-                    {years.map((y) => (
-                      <Option key={y} value={y}>
-                        {y}
-                      </Option>
-                    ))}
-                  </Select>
-                </Space>
-              </Form.Item>
-            </Col>
-            <Col span={10}>
-              <div className="text-center">
-                <div className="mb-2">Avatar</div>
-                <img
-                  src={previewImage || (avatar as string)}
-                  className="h-28 w-28 rounded-full mx-auto"
-                  alt="avatar default"
-                />
-                <InputFileImage onChange={handleChangeImage} />
+                    {/* Năm */}
+                    <Select placeholder="Năm" style={{ width: 120 }} onChange={(value) => setYear(value)} value={year}>
+                      {years.map((y) => (
+                        <Option key={y} value={y}>
+                          {y}
+                        </Option>
+                      ))}
+                    </Select>
+                  </Space>
+                </Form.Item>
+              </Col>
+              <Col span={10}>
+                <div className="text-center">
+                  <div className="mb-2">Avatar</div>
+                  <img
+                    src={previewImage || (avatar as string) || avatarDefault}
+                    className="h-28 w-28 rounded-full mx-auto"
+                    alt="avatar default"
+                  />
+                  <InputFileImage onChange={handleChangeImage} />
+                </div>
+              </Col>
+            </Row>
+
+            <Form.Item>
+              <div className="flex justify-end">
+                <Button
+                  htmlType="submit"
+                  type="primary"
+                  className="p-2 px-4 bg-blue-500 w-[100px] text-white font-semibold rounded-sm hover:bg-blue-500/80 duration-200"
+                >
+                  Cập nhật
+                </Button>
               </div>
-            </Col>
-          </Row>
-
-          <Form.Item>
-            <div className="flex justify-end">
-              <Button
-                htmlType="submit"
-                type="primary"
-                className="p-2 px-4 bg-blue-500 w-[100px] text-white font-semibold rounded-sm hover:bg-blue-500/80 duration-200"
-              >
-                Cập nhật
-              </Button>
-            </div>
-          </Form.Item>
-        </Form>
-      </div>
+            </Form.Item>
+          </Form>
+        </div>
+      </motion.div>
     </div>
   )
 }

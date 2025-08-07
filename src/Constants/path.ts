@@ -29,7 +29,8 @@ export const path = {
   AdminSupplies: "/admin/supplies",
   AdminSuppliers: "/admin/suppliers",
   AdminRole: "/admin/roles",
-  AdminRevenue: "/admin/revenues",
+  AdminEmail: "/admin/emails",
+  AdminChat: "/admin/chats",
   AdminNotFound: "/admin/not-found",
   AddProduct: "/admin/products/add",
   AddReceipt: "/admin/receipts/add"

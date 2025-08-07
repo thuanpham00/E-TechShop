@@ -5,6 +5,10 @@ export enum StatusProduct {
   "available" = "available"
 }
 
+type OrderStatus = "Chờ xác nhận" | "Đang xử lý" | "Đang vận chuyển" | "Đã giao hàng" | "Đã hủy"
+
+type EmailStatus = "Xác thực email" | "Gửi lại email xác thực" | "Quên mật khẩu" | "Xác nhận đơn hàng"
+
 export type CollectionItemType = {
   _id: string
   name: string
@@ -158,8 +162,6 @@ export type OrderItemType = {
   updated_at: string // hoặc Date nếu bạn muốn parse
 }
 
-type OrderStatus = "Chờ xác nhận" | "Đang xử lý" | "Đang vận chuyển" | "Đã giao hàng" | "Đã hủy"
-
 export type ProductItemType = {
   _id: string
   name: string
@@ -300,6 +302,7 @@ export type OrderType = {
     name: string // người nhận
     phone: string
     address: string
+    email: string
   }
   products: {
     product_id: string // ref tới bảng Product (để tra cứu thêm nếu cần)
@@ -311,4 +314,16 @@ export type OrderType = {
   }[]
   totalAmount: number
   note?: string
+}
+
+export type EmailLogItemType = {
+  _id: string
+  to: string
+  from: string
+  subject: string
+  type: EmailStatus
+  status: string
+  resend_id: string
+  created_at: string
+  updated_at: string
 }

@@ -92,7 +92,7 @@ export default function StatisticalUser() {
   const totalStaff = dataStatisticalUser?.result.totalStaff
   const top10CustomerBuyTheMost = dataStatisticalUser?.result.top10CustomerBuyTheMost
   const rateReturningCustomers = dataStatisticalUser?.result.rateReturningCustomers[0]
-  console.log(rateReturningCustomers)
+
   const columns = [
     {
       title: "Mã khách hàng",
@@ -145,18 +145,6 @@ export default function StatisticalUser() {
         font: { size: 16 },
         padding: { top: 10, bottom: 10 }
       },
-      tooltip: {
-        // callbacks: {
-        //   label: function (context: any) {
-        //     const find = rateStatusOrder.find((item) => item.name === context.label)
-        //     const total = find?.total ?? 0
-        //     const rate = find?.rate ?? 0
-        //     const status = find?.name ?? ""
-        //     // Hiển thị đầy đủ thông tin
-        //     return `${status}: ${total} đơn (${rate}%)`
-        //   }
-        // }
-      },
       datalabels: {
         formatter: (value: any) => `${value}%`, // custom cách hiển thị số
         color: "#fff", // màu chữ trắng
@@ -172,7 +160,10 @@ export default function StatisticalUser() {
     labels: ["Khách mua 1 lần", "Khách quay lại"],
     datasets: [
       {
-        data: [100 - rateReturningCustomers.retentionRate, rateReturningCustomers.retentionRate],
+        data: [
+          100 - rateReturningCustomers?.retentionRate.toFixed(2),
+          rateReturningCustomers?.retentionRate.toFixed(2)
+        ],
         backgroundColor: ["#cf1322", "#08979c"],
         borderWidth: 1
       }

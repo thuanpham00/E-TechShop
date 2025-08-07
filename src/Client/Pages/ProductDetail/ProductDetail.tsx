@@ -17,6 +17,7 @@ import { useEffect, useMemo, useRef, useState } from "react"
 import { toast } from "react-toastify"
 import { getAccessTokenFromLS } from "src/Helpers/auth"
 import InputNumberQuantity from "src/Client/Components/InputNumberQuantity"
+import { motion } from "framer-motion"
 
 export default function ProductDetail() {
   const queryClient = useQueryClient()
@@ -201,7 +202,7 @@ export default function ProductDetail() {
             />
           </Helmet>
           <Breadcrumb slug_1={nameCategory} slug_2={productDetail.name} />
-          <div>
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
             <div className="bg-white rounded-lg shadow-md my-4 grid grid-cols-6 gap-6 p-6 pt-4">
               <div className="col-span-2">
                 <div
@@ -400,7 +401,7 @@ export default function ProductDetail() {
 
               <div className="mt-4 prose max-w-none" dangerouslySetInnerHTML={{ __html: productDetail.description }} />
             </div>
-          </div>
+          </motion.div>
         </div>
       )}
     </div>

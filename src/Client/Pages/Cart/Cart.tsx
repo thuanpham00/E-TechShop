@@ -13,6 +13,7 @@ import { useEffect, useMemo, useState } from "react"
 import { CalculateSalePrice, formatCurrency, slugify } from "src/Helpers/common"
 import { debounce } from "lodash"
 import { toast } from "react-toastify"
+import { motion } from "framer-motion"
 
 const { Text } = Typography
 
@@ -299,115 +300,117 @@ export default function Cart() {
         <title>Giỏ hàng mua sắm</title>
         <meta name="description" content="Đây là trang giỏ hàng mua sắm của hệ thống" />
       </Helmet>
-      <div className="my-4">
-        <div className="container">
-          <Link to={"/home"} className="flex items-center gap-[2px] cursor-pointer">
-            <ChevronLeft size={16} color="blue" />
-            <span className="text-[14px] font-medium text-blue-500">Mua thêm sản phẩm khác</span>
-          </Link>
+      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+        <div className="my-4">
+          <div className="container">
+            <Link to={"/home"} className="flex items-center gap-[2px] cursor-pointer">
+              <ChevronLeft size={16} color="blue" />
+              <span className="text-[14px] font-medium text-blue-500">Mua thêm sản phẩm khác</span>
+            </Link>
 
-          <div className="p-4 bg-white rounded-md mt-4">
-            {lengthCart > 0 ? (
-              <div className="relative">
-                <div className="bg-red-50 px-4 py-6">
-                  <Steps
-                    size="small"
-                    current={0}
-                    type="default"
-                    items={[
-                      {
-                        title: <span style={{ color: "red", fontWeight: "500" }}>Giỏ hàng</span>
-                      },
-                      {
-                        title: <span className="text-gray-500">Thông tin đặt hàng</span>
-                      },
-                      {
-                        title: <span className="text-gray-500">Thanh toán</span>
-                      },
-                      {
-                        title: <span className="text-gray-500">Hoàn tất</span>
-                      }
-                    ]}
-                  />
-                </div>
+            <div className="p-4 bg-white rounded-md mt-4">
+              {lengthCart > 0 ? (
+                <div className="relative">
+                  <div className="bg-red-50 px-4 py-6">
+                    <Steps
+                      size="small"
+                      current={0}
+                      type="default"
+                      items={[
+                        {
+                          title: <span style={{ color: "red", fontWeight: "500" }}>Giỏ hàng</span>
+                        },
+                        {
+                          title: <span className="text-gray-500">Thông tin đặt hàng</span>
+                        },
+                        {
+                          title: <span className="text-gray-500">Thanh toán</span>
+                        },
+                        {
+                          title: <span className="text-gray-500">Hoàn tất</span>
+                        }
+                      ]}
+                    />
+                  </div>
 
-                <div className="mt-4">
-                  <Table columns={columns} dataSource={listCart} pagination={false} bordered />
-                </div>
+                  <div className="mt-4">
+                    <Table columns={columns} dataSource={listCart} pagination={false} bordered />
+                  </div>
 
-                <div
-                  style={{
-                    position: "sticky",
-                    bottom: "0"
-                  }}
-                >
                   <div
                     style={{
-                      border: "1px solid #f0f0f0",
-                      padding: "16px",
-                      display: "flex",
-                      justifyContent: "space-between",
-                      alignItems: "center",
-                      borderRadius: "4px",
-                      background: "#fff",
-                      boxShadow: "0 1px 2px rgba(0,0,0,0.05)",
-                      width: "100%"
+                      position: "sticky",
+                      bottom: "0"
                     }}
                   >
-                    {/* Left */}
-                    <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
-                      <Checkbox checked={isAllSelected} onClick={handleCheckAllProduct}>
-                        Chọn tất cả
-                      </Checkbox>
-                      <Text onClick={clearProductInCart} type="danger" strong className="cursor-pointer">
-                        Xóa tất cả
-                      </Text>
-                    </div>
-
-                    {/* Right */}
-                    <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
-                      <div style={{ textAlign: "right" }}>
-                        <div style={{ fontSize: "16px" }}>
-                          <span>Tổng tiền ({selectedProducts.length})</span>
-                          <span style={{ padding: "0 4px" }}>sản phẩm:</span>
-                          <span style={{ color: "#ff4d4f", fontSize: "18px", fontWeight: 500 }}>
-                            {formatCurrency(totalPriceProducts)}đ
-                          </span>
-                        </div>
-                        <div style={{ fontSize: "12px", color: "#888" }}>
-                          Tiết kiệm
-                          <span style={{ color: "#ff4d4f", marginLeft: 4 }}>
-                            {formatCurrency(saveMoneyProducts - totalPriceProducts)}đ
-                          </span>
-                        </div>
+                    <div
+                      style={{
+                        border: "1px solid #f0f0f0",
+                        padding: "16px",
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                        borderRadius: "4px",
+                        background: "#fff",
+                        boxShadow: "0 1px 2px rgba(0,0,0,0.05)",
+                        width: "100%"
+                      }}
+                    >
+                      {/* Left */}
+                      <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
+                        <Checkbox checked={isAllSelected} onClick={handleCheckAllProduct}>
+                          Chọn tất cả
+                        </Checkbox>
+                        <Text onClick={clearProductInCart} type="danger" strong className="cursor-pointer">
+                          Xóa tất cả
+                        </Text>
                       </div>
-                      <Button
-                        onClick={handleOrderProduct}
-                        type="primary"
-                        className="custom-button"
-                        style={{
-                          background: "red",
-                          border: "none",
-                          padding: "0 20px",
-                          height: "40px",
-                          fontWeight: "bold"
-                        }}
-                      >
-                        Đặt hàng ngay
-                      </Button>
+
+                      {/* Right */}
+                      <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
+                        <div style={{ textAlign: "right" }}>
+                          <div style={{ fontSize: "16px" }}>
+                            <span>Tổng tiền ({selectedProducts.length})</span>
+                            <span style={{ padding: "0 4px" }}>sản phẩm:</span>
+                            <span style={{ color: "#ff4d4f", fontSize: "18px", fontWeight: 500 }}>
+                              {formatCurrency(totalPriceProducts)}đ
+                            </span>
+                          </div>
+                          <div style={{ fontSize: "12px", color: "#888" }}>
+                            Tiết kiệm
+                            <span style={{ color: "#ff4d4f", marginLeft: 4 }}>
+                              {formatCurrency(saveMoneyProducts - totalPriceProducts)}đ
+                            </span>
+                          </div>
+                        </div>
+                        <Button
+                          onClick={handleOrderProduct}
+                          type="primary"
+                          className="custom-button"
+                          style={{
+                            background: "red",
+                            border: "none",
+                            padding: "0 20px",
+                            height: "40px",
+                            fontWeight: "bold"
+                          }}
+                        >
+                          Đặt hàng ngay
+                        </Button>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            ) : (
-              <div className="p-4 flex items-center justify-center flex-col">
-                <img src={cartImg} alt="ảnh lỗi" className="w-[150px]" />
-                <span className="text-sm">Chưa có sản phẩm!</span>
-              </div>
-            )}
+              ) : (
+                <div className="p-4 flex items-center justify-center flex-col">
+                  <img src={cartImg} alt="ảnh lỗi" className="w-[150px]" />
+                  <span className="text-sm">Chưa có sản phẩm!</span>
+                </div>
+              )}
+            </div>
           </div>
         </div>
-      </div>
+      </motion.div>
     </div>
   )
 }

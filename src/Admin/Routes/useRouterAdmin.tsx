@@ -1,9 +1,9 @@
 import { Navigate, Outlet, useRoutes } from "react-router-dom"
 import { lazy, Suspense, useContext } from "react"
 import MainLayoutAdmin from "../Layouts/MainLayoutAdmin"
+import MainLayoutAuth from "src/Client/Layout/MainLayoutAuth"
 import { path } from "src/Constants/path"
 import { AppContext } from "src/Context/authContext"
-import MainLayoutAuth from "src/Client/Layout/MainLayoutAuth"
 
 const Register = lazy(() => import("src/Client/Pages/Register"))
 const Login = lazy(() => import("src/Client/Pages/Login"))
@@ -24,6 +24,8 @@ const ManageProducts = lazy(() => import("src/Admin/Pages/ManageProducts"))
 const ManageBrand = lazy(() => import("src/Admin/Pages/ManageBrand"))
 const AddProduct = lazy(() => import("src/Admin/Pages/AddProduct"))
 const AddReceipt = lazy(() => import("src/Admin/Pages/AddReceipt"))
+const AdminEmail = lazy(() => import("src/Admin/Pages/AdminEmail"))
+const AdminChatting = lazy(() => import("src/Admin/Pages/AdminChatting"))
 
 const ProtectedRoute = () => {
   const { isAuthenticated } = useContext(AppContext)
@@ -150,6 +152,22 @@ export default function useRouterAdmin() {
               element: (
                 <Suspense>
                   <ManageRoles />
+                </Suspense>
+              )
+            },
+            {
+              path: path.AdminEmail,
+              element: (
+                <Suspense>
+                  <AdminEmail />
+                </Suspense>
+              )
+            },
+            {
+              path: path.AdminChat,
+              element: (
+                <Suspense>
+                  <AdminChatting />
                 </Suspense>
               )
             },

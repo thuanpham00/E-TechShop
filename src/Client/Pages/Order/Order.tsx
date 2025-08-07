@@ -12,6 +12,7 @@ import { convertDateTime, formatCurrency } from "src/Helpers/common"
 import Button from "src/Components/Button"
 import { toast } from "react-toastify"
 import { queryClient } from "src/main"
+import { motion } from "framer-motion"
 
 type OrderList = {
   key: string // mã đơn hàng
@@ -238,146 +239,149 @@ export default function Order() {
         <title>Đơn hàng mua sắm</title>
         <meta name="description" content="Đây là trang Đơn hàng mua sắm của hệ thống" />
       </Helmet>
-      <div className="my-4">
-        <div className="container">
-          <Link to={"/home"} className="flex items-center gap-[2px] cursor-pointer">
-            <ChevronLeft size={16} color="blue" />
-            <span className="text-[14px] font-medium text-blue-500">Mua thêm sản phẩm khác</span>
-          </Link>
 
-          <div className="p-4 bg-white border border-gray-300 rounded-md mt-4">
-            {lengthOrder > 0 ? (
-              <div>
-                <h1 className="mb-2 ml-1 text-lg font-semibold">Danh sách đơn hàng ({listOrder.length}) của bạn</h1>
-                <Tabs
-                  defaultActiveKey="1"
-                  items={items}
-                  centered={true}
-                  tabBarStyle={{ width: "100%" }}
-                  onChange={setActiveTabKey}
-                />
-                <Table
-                  columns={columns}
-                  dataSource={filterListOrder}
-                  pagination={{
-                    pageSize: 5,
-                    showSizeChanger: true,
-                    pageSizeOptions: ["10", "20", "50"],
-                    showTotal: (total, range) => `Hiển thị ${range[0]}-${range[1]} trong ${total} đơn hàng`
-                  }}
-                  expandable={{
-                    expandedRowRender: (record: any) => {
-                      let total = 0
-                      return (
-                        <div className="space-y-3">
-                          {record.products.map((item: any) => {
-                            total +=
-                              item.discount !== 0
-                                ? (item.price - item.price * (item.discount / 100)) * item.quantity
-                                : item.price * item.quantity
-                            return (
-                              <div
-                                key={item.product_id}
-                                className="flex items-center justify-between p-3 border border-gray-200 rounded-md shadow-sm bg-white"
-                              >
-                                <div className="flex items-center gap-4">
-                                  <img
-                                    src={item.image}
-                                    alt={item.name}
-                                    className="w-16 h-16 object-cover rounded-md border"
-                                  />
-                                  <div>
-                                    <p className="font-medium text-gray-800">{item.name}</p>
-                                    <p className="text-sm text-gray-500">Số lượng: {item.quantity}</p>
+      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+        <div className="my-4">
+          <div className="container">
+            <Link to={"/home"} className="flex items-center gap-[2px] cursor-pointer">
+              <ChevronLeft size={16} color="blue" />
+              <span className="text-[14px] font-medium text-blue-500">Mua thêm sản phẩm khác</span>
+            </Link>
+
+            <div className="p-4 bg-white border border-gray-300 rounded-md mt-4">
+              {lengthOrder > 0 ? (
+                <div>
+                  <h1 className="mb-2 ml-1 text-lg font-semibold">Danh sách đơn hàng ({listOrder.length}) của bạn</h1>
+                  <Tabs
+                    defaultActiveKey="1"
+                    items={items}
+                    centered={true}
+                    tabBarStyle={{ width: "100%" }}
+                    onChange={setActiveTabKey}
+                  />
+                  <Table
+                    columns={columns}
+                    dataSource={filterListOrder}
+                    pagination={{
+                      pageSize: 5,
+                      showSizeChanger: true,
+                      pageSizeOptions: ["10", "20", "50"],
+                      showTotal: (total, range) => `Hiển thị ${range[0]}-${range[1]} trong ${total} đơn hàng`
+                    }}
+                    expandable={{
+                      expandedRowRender: (record: any) => {
+                        let total = 0
+                        return (
+                          <div className="space-y-3">
+                            {record.products.map((item: any) => {
+                              total +=
+                                item.discount !== 0
+                                  ? (item.price - item.price * (item.discount / 100)) * item.quantity
+                                  : item.price * item.quantity
+                              return (
+                                <div
+                                  key={item.product_id}
+                                  className="flex items-center justify-between p-3 border border-gray-200 rounded-md shadow-sm bg-white"
+                                >
+                                  <div className="flex items-center gap-4">
+                                    <img
+                                      src={item.image}
+                                      alt={item.name}
+                                      className="w-16 h-16 object-cover rounded-md border"
+                                    />
+                                    <div>
+                                      <p className="font-medium text-gray-800">{item.name}</p>
+                                      <p className="text-sm text-gray-500">Số lượng: {item.quantity}</p>
+                                    </div>
+                                  </div>
+
+                                  {/* Giá tiền */}
+                                  <div className="text-right">
+                                    {item.discount !== 0 ? (
+                                      <div>
+                                        <p className="text-sm text-gray-600">
+                                          Đơn giá: {formatCurrency(item.price - item.price * (item.discount / 100))}đ
+                                        </p>
+                                        <p className="text-sm font-semibold text-gray-700">
+                                          Thành tiền:{" "}
+                                          {formatCurrency(
+                                            (item.price - item.price * (item.discount / 100)) * item.quantity
+                                          )}
+                                          đ
+                                        </p>
+                                      </div>
+                                    ) : (
+                                      <div>
+                                        <p className="text-sm text-gray-600">Đơn giá: {formatCurrency(item.price)} đ</p>
+                                        <p className="text-sm font-semibold text-gray-700">
+                                          Thành tiền: {formatCurrency(item.price * item.quantity)}đ
+                                        </p>
+                                      </div>
+                                    )}
                                   </div>
                                 </div>
+                              )
+                            })}
 
-                                {/* Giá tiền */}
-                                <div className="text-right">
-                                  {item.discount !== 0 ? (
+                            <div className="text-red-500 text-base text-right font-semibold">
+                              Tổng tiền: {formatCurrency(total)} đ
+                            </div>
+
+                            <div className="flex justify-between items-center gap-2">
+                              <span className="text-red-500">
+                                Bạn chỉ có thể hủy hàng nếu đơn hàng chưa được xác nhận
+                              </span>
+                              <div className="flex gap-2">
+                                <Button
+                                  classNameButton={`px-4 py-2 w-full text-white font-semibold rounded-lg duration-200 ${record.status === "Chờ xác nhận" ? "bg-red-500 hover:bg-red-500/80" : " bg-red-300 cursor-not-allowed"}`}
+                                  nameButton="Hủy đơn hàng"
+                                  onClick={showModal}
+                                  disabled={record.status !== "Chờ xác nhận"}
+                                />
+                                <Button
+                                  classNameButton={`px-4 py-2 w-full text-white font-semibold rounded-lg duration-200 ${record.status === "Đang vận chuyển" ? "bg-blue-500 hover:bg-blue-500/80" : " bg-blue-300 cursor-not-allowed"}`}
+                                  nameButton="Đã nhận hàng"
+                                  disabled={record.status !== "Đang vận chuyển"}
+                                />
+                                <Modal
+                                  title="Bạn có chắc chắn muốn hủy đơn hàng này không?"
+                                  open={open}
+                                  onOk={() => handleOk(record.key)}
+                                  confirmLoading={confirmLoading}
+                                  onCancel={handleCancel}
+                                  className="top-1/2 -translate-y-1/2"
+                                  okText={"Xác nhận hủy"}
+                                  cancelText={"Thoát"}
+                                  okButtonProps={{
+                                    className: "bg-red-500 hover:bg-red-600 text-white"
+                                  }}
+                                >
+                                  <Fragment>
                                     <div>
-                                      <p className="text-sm text-gray-600">
-                                        Đơn giá: {formatCurrency(item.price - item.price * (item.discount / 100))}đ
-                                      </p>
-                                      <p className="text-sm font-semibold text-gray-700">
-                                        Thành tiền:{" "}
-                                        {formatCurrency(
-                                          (item.price - item.price * (item.discount / 100)) * item.quantity
-                                        )}
-                                        đ
-                                      </p>
+                                      Hành động này không thể hoàn tác. Đơn hàng sau khi hủy sẽ không thể phục hồi và
+                                      các sản phẩm trong đơn sẽ được hoàn về kho (nếu áp dụng).
                                     </div>
-                                  ) : (
-                                    <div>
-                                      <p className="text-sm text-gray-600">Đơn giá: {formatCurrency(item.price)} đ</p>
-                                      <p className="text-sm font-semibold text-gray-700">
-                                        Thành tiền: {formatCurrency(item.price * item.quantity)}đ
-                                      </p>
-                                    </div>
-                                  )}
-                                </div>
+                                    <div className="mt-2">Vui lòng xác nhận để tiếp tục.</div>
+                                  </Fragment>
+                                </Modal>
                               </div>
-                            )
-                          })}
-
-                          <div className="text-red-500 text-base text-right font-semibold">
-                            Tổng tiền: {formatCurrency(total)} đ
-                          </div>
-
-                          <div className="flex justify-between items-center gap-2">
-                            <span className="text-red-500">
-                              Bạn chỉ có thể hủy hàng nếu đơn hàng chưa được xác nhận
-                            </span>
-                            <div className="flex gap-2">
-                              <Button
-                                classNameButton={`px-4 py-2 w-full text-white font-semibold rounded-lg duration-200 ${record.status === "Chờ xác nhận" ? "bg-red-500 hover:bg-red-500/80" : " bg-red-300 cursor-not-allowed"}`}
-                                nameButton="Hủy đơn hàng"
-                                onClick={showModal}
-                                disabled={record.status !== "Chờ xác nhận"}
-                              />
-                              <Button
-                                classNameButton={`px-4 py-2 w-full text-white font-semibold rounded-lg duration-200 ${record.status === "Đang vận chuyển" ? "bg-blue-500 hover:bg-blue-500/80" : " bg-blue-300 cursor-not-allowed"}`}
-                                nameButton="Đã nhận hàng"
-                                disabled={record.status !== "Đang vận chuyển"}
-                              />
-                              <Modal
-                                title="Bạn có chắc chắn muốn hủy đơn hàng này không?"
-                                open={open}
-                                onOk={() => handleOk(record.key)}
-                                confirmLoading={confirmLoading}
-                                onCancel={handleCancel}
-                                className="top-1/2 -translate-y-1/2"
-                                okText={"Xác nhận hủy"}
-                                cancelText={"Thoát"}
-                                okButtonProps={{
-                                  className: "bg-red-500 hover:bg-red-600 text-white"
-                                }}
-                              >
-                                <Fragment>
-                                  <div>
-                                    Hành động này không thể hoàn tác. Đơn hàng sau khi hủy sẽ không thể phục hồi và các
-                                    sản phẩm trong đơn sẽ được hoàn về kho (nếu áp dụng).
-                                  </div>
-                                  <div className="mt-2">Vui lòng xác nhận để tiếp tục.</div>
-                                </Fragment>
-                              </Modal>
                             </div>
                           </div>
-                        </div>
-                      )
-                    }
-                  }}
-                />
-              </div>
-            ) : (
-              <div className="p-4 flex items-center justify-center flex-col">
-                <img src={cartImg} alt="ảnh lỗi" className="w-[150px]" />
-                <span className="text-sm">Chưa có đơn hàng!</span>
-              </div>
-            )}
+                        )
+                      }
+                    }}
+                  />
+                </div>
+              ) : (
+                <div className="p-4 flex items-center justify-center flex-col">
+                  <img src={cartImg} alt="ảnh lỗi" className="w-[150px]" />
+                  <span className="text-sm">Chưa có đơn hàng!</span>
+                </div>
+              )}
+            </div>
           </div>
         </div>
-      </div>
+      </motion.div>
     </div>
   )
 }

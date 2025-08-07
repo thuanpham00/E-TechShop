@@ -16,7 +16,8 @@ export const permissions = {
   VIEW_SUPPLIERS: "view_suppliers",
   VIEW_SUPPLIES: "view_supplies",
   VIEW_ROLES: "view_roles",
-  VIEW_REVENUE: "view_revenue"
+  VIEW_EMAIL: "view_email",
+  VIEW_CHAT: "view_chat"
 }
 
 export const Roles_Permissions = {
@@ -31,6 +32,7 @@ export const Roles_Permissions = {
     permissions.VIEW_SUPPLIERS,
     permissions.VIEW_SUPPLIES,
     permissions.VIEW_ROLES,
-    permissions.VIEW_REVENUE
+    permissions.VIEW_EMAIL,
+    permissions.VIEW_CHAT
   ]
 }

@@ -7,6 +7,7 @@ import { UserType } from "src/Types/user.type"
 import {
   BrandItemType,
   CategoryItemType,
+  EmailLogItemType,
   OrderItemType,
   ProductItemType,
   ReceiptItemType,
@@ -28,6 +29,7 @@ interface Props {
       | SupplyItemType[]
       | ReceiptItemType[]
       | OrderItemType[]
+      | EmailLogItemType[]
     total: string
     page: string
     limit: string
