@@ -35,7 +35,7 @@ import DatePicker from "../../Components/DatePickerRange"
 import useDownloadExcel from "src/Hook/useDownloadExcel"
 import { motion, AnimatePresence } from "framer-motion"
 import AddCustomer from "./Components/AddCustomer"
-import { Empty, Select } from "antd"
+import { Collapse, CollapseProps, Empty, Select } from "antd"
 import "../ManageOrders/ManageOrders.css"
 
 const formDataUpdate = schemaAuth.pick([
@@ -400,22 +400,12 @@ export default function ManageCustomers() {
     })
   }
 
-  return (
-    <div>
-      <Helmet>
-        <title>Quản lý khách hàng</title>
-        <meta
-          name="description"
-          content="Đây là trang TECHZONE | Laptop, PC, Màn hình, điện thoại, linh kiện Chính Hãng"
-        />
-      </Helmet>
-      <NavigateBack />
-      <h1 className="text-2xl font-bold text-gray-800 bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600 my-2">
-        Khách hàng
-      </h1>
-      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-        <div className="p-4 bg-white dark:bg-darkPrimary mb-3 border border-gray-300 dark:border-darkBorder rounded-2xl shadow-xl">
-          <h1 className="text-[16px] font-semibold tracking-wide">Bộ lọc & Tìm kiếm</h1>
+  const items: CollapseProps["items"] = [
+    {
+      key: "1",
+      label: <h1 className="text-[16px] font-semibold tracking-wide">Bộ lọc & Tìm kiếm</h1>,
+      children: (
+        <section className="bg-white dark:bg-darkPrimary mb-3 dark:border-darkBorder rounded-2xl">
           <form onSubmit={handleSubmitSearch}>
             <div className="mt-1 grid grid-cols-2">
               <div className="col-span-1 flex items-center h-14 px-2 bg-[#ececec] dark:bg-darkBorder border border-[#dadada] rounded-tl-xl">
@@ -610,11 +600,19 @@ export default function ManageCustomers() {
               </div>
             </div>
           </form>
+        </section>
+      )
+    },
+    {
+      key: "2",
+      label: <h2 className="text-[16px] font-semibold tracking-wide">Danh sách Khách hàng</h2>,
+      children: (
+        <section className="bg-white dark:bg-darkPrimary mb-3 dark:border-darkBorder rounded-2xl">
           <div>
             {isLoading && <Skeleton />}
             {!isFetching && (
               <div>
-                <div className="mt-4">
+                <div>
                   <div className="bg-[#f2f2f2] dark:bg-darkPrimary grid grid-cols-12 items-center gap-2 py-3 border border-[#dedede] dark:border-darkBorder px-4 rounded-tl-xl rounded-tr-xl">
                     <div className="col-span-2 text-[14px] font-semibold tracking-wider uppercase">Mã khách hàng</div>
                     <div className="col-span-2 text-[14px] font-semibold tracking-wider uppercase">Họ Tên</div>
@@ -748,7 +746,6 @@ export default function ManageCustomers() {
                                     nameInput="Số điện thoại"
                                   />
                                 </div>
-
                                 <div className="col-span-6">
                                   {/* dùng <Controller/> khi và chỉ khi component không hỗ trợ register (register giúp theo dõi giá trị trong form) */}
                                   {/* control giúp theo dõi giá trị, validate và đồng bộ dữ liệu giữa form và component tùy chỉnh  */}
@@ -822,8 +819,26 @@ export default function ManageCustomers() {
               </div>
             )}
           </div>
-        </div>
-      </motion.div>
+        </section>
+      )
+    }
+  ]
+
+  return (
+    <div>
+      <Helmet>
+        <title>Quản lý khách hàng</title>
+        <meta
+          name="description"
+          content="Đây là trang TECHZONE | Laptop, PC, Màn hình, điện thoại, linh kiện Chính Hãng"
+        />
+      </Helmet>
+      <NavigateBack />
+      <h1 className="text-2xl font-bold text-gray-800 bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600 my-2">
+        Khách hàng
+      </h1>
+
+      <Collapse items={items} defaultActiveKey={["2"]} className="bg-white" />
     </div>
   )
 }

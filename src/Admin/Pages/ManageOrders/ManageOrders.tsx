@@ -17,7 +17,7 @@ import Skeleton from "src/Components/Skeleton"
 import Pagination from "src/Components/Pagination"
 import OrderItem from "./Components/OrderItem"
 import { useCallback, useEffect, useState } from "react"
-import { Select, Steps } from "antd"
+import { Collapse, CollapseProps, Select, Steps } from "antd"
 import "./ManageOrders.css"
 import { Controller, useForm } from "react-hook-form"
 import { yupResolver } from "@hookform/resolvers/yup"
@@ -247,23 +247,12 @@ export default function ManageOrders() {
     navigate({ pathname: `${path.AdminOrders}`, search: createSearchParams(filteredSearch).toString() })
   }
 
-  return (
-    <div>
-      <Helmet>
-        <title>Quản lý đơn hàng</title>
-        <meta
-          name="description"
-          content="Đây là trang TECHZONE | Laptop, PC, Màn hình, điện thoại, linh kiện Chính Hãng"
-        />
-      </Helmet>
-      <NavigateBack />
-      <h1 className="text-2xl font-bold text-gray-800 bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600 my-2">
-        Đơn hàng
-      </h1>
-
-      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-        <div className="p-4 bg-white dark:bg-darkPrimary mb-3 border border-gray-300 dark:border-darkBorder rounded-2xl shadow-xl">
-          <h1 className="text-[16px] font-semibold tracking-wide">Bộ lọc & Tìm kiếm</h1>
+  const items: CollapseProps["items"] = [
+    {
+      key: "1",
+      label: <h1 className="text-[16px] font-semibold tracking-wide">Bộ lọc & Tìm kiếm</h1>,
+      children: (
+        <section className="bg-white dark:bg-darkPrimary mb-3 dark:border-darkBorder rounded-2xl">
           <form onSubmit={handleSubmitSearch}>
             <div className="mt-1 grid grid-cols-2">
               <div className="col-span-1 flex items-center h-14 px-2 bg-[#ececec] dark:bg-darkBorder border border-[#dadada] rounded-tl-xl">
@@ -431,10 +420,18 @@ export default function ManageOrders() {
               </div>
             </div>
           </form>
+        </section>
+      )
+    },
+    {
+      key: "2",
+      label: <h2 className="text-[16px] font-semibold tracking-wide">Danh sách Đơn hàng</h2>,
+      children: (
+        <section className="bg-white dark:bg-darkPrimary mb-3 dark:border-darkBorder rounded-2xl">
           {isLoading && <Skeleton />}
           {!isFetching && (
             <div>
-              <div className="mt-4">
+              <div>
                 <div className="bg-[#f2f2f2] dark:bg-darkPrimary grid grid-cols-12 items-center gap-2 py-3 border border-[#dedede] dark:border-darkBorder px-4 rounded-tl-xl rounded-tr-xl">
                   <div className="col-span-1 text-[14px] font-semibold tracking-wider uppercase sticky top-0 left-0">
                     Mã đơn hàng
@@ -701,8 +698,26 @@ export default function ManageOrders() {
               </AnimatePresence>
             </div>
           )}
-        </div>
-      </motion.div>
+        </section>
+      )
+    }
+  ]
+
+  return (
+    <div>
+      <Helmet>
+        <title>Quản lý đơn hàng</title>
+        <meta
+          name="description"
+          content="Đây là trang TECHZONE | Laptop, PC, Màn hình, điện thoại, linh kiện Chính Hãng"
+        />
+      </Helmet>
+      <NavigateBack />
+      <h1 className="text-2xl font-bold text-gray-800 bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600 my-2">
+        Đơn hàng
+      </h1>
+
+      <Collapse items={items} defaultActiveKey={["2"]} className="bg-white" />
     </div>
   )
 }

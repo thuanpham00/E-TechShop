@@ -39,7 +39,7 @@ export default function Sidebar() {
     { name: "Quản lý Nhà cung cấp", icon: House, path: path.AdminSuppliers },
     { name: "Quản lý Vai trò", icon: IdCard, path: path.AdminRole },
     { name: "Thông báo Email", icon: Mail, path: path.AdminEmail },
-    { name: "Tin nhắn", icon: MessageCircle, path: path.AdminChat }
+    { name: "Hệ thống chat", icon: MessageCircle, path: path.AdminChat }
   ]
 
   const { theme } = useTheme() // Lấy theme hiện tại

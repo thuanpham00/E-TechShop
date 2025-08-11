@@ -34,7 +34,7 @@ import { isError400, isError422 } from "src/Helpers/utils"
 import AddSupplier from "./Components/AddSupplier"
 import useDownloadExcel from "src/Hook/useDownloadExcel"
 import { motion, AnimatePresence } from "framer-motion"
-import { Empty, Select } from "antd"
+import { Collapse, CollapseProps, Empty, Select } from "antd"
 import "../ManageOrders/ManageOrders.css"
 
 type FormDataUpdate = Pick<
@@ -344,23 +344,13 @@ export default function ManageSuppliers() {
     })
   }
 
-  return (
-    <div>
-      <Helmet>
-        <title>Quản lý nhà cung cấp</title>
-        <meta
-          name="description"
-          content="Đây là trang TECHZONE | Laptop, PC, Màn hình, điện thoại, linh kiện Chính Hãng"
-        />
-      </Helmet>
-      <NavigateBack />
-      <h1 className="text-2xl font-bold text-gray-800 bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600 my-2">
-        Nhà cung cấp
-      </h1>
-      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-        <div className="p-4 bg-white dark:bg-darkPrimary mb-3 border border-gray-300 dark:border-darkBorder rounded-2xl shadow-xl">
-          <h1 className="text-[16px] font-semibold tracking-wide">Bộ lọc & Tìm kiếm</h1>
-          <div>
+  const items: CollapseProps["items"] = [
+    {
+      key: "1",
+      label: <h1 className="text-[16px] font-semibold tracking-wide">Bộ lọc & Tìm kiếm</h1>,
+      children: (
+        <section>
+          <div className="bg-white dark:bg-darkPrimary mb-3 dark:border-darkBorder rounded-2xl">
             <form onSubmit={handleSubmitSearch}>
               <div className="mt-1 grid grid-cols-2">
                 <div className="col-span-1 flex items-center h-14 px-2 bg-[#fff] dark:bg-darkBorder border border-[#dadada] rounded-tl-xl">
@@ -550,200 +540,233 @@ export default function ManageSuppliers() {
               </div>
             </form>
           </div>
-          {isLoading && <Skeleton />}
-          {!isFetching && (
-            <div>
-              <div className="mt-4">
-                <div className="bg-[#f2f2f2] dark:bg-darkPrimary grid grid-cols-10 items-center gap-2 py-3 border border-[#dedede] dark:border-darkBorder px-4 rounded-tl-xl rounded-tr-xl">
-                  <div className="col-span-2 text-[14px] font-semibold tracking-wider uppercase">Mã nhà cung cấp</div>
-                  <div className="col-span-2 text-[14px] font-semibold tracking-wider uppercase">Tên nhà cung cấp</div>
-                  <div className="col-span-1 text-[14px] font-semibold tracking-wider uppercase">Người đại diện </div>
-                  <div className="col-span-1 text-[14px] font-semibold tracking-wider uppercase">Email</div>
-                  <div className="col-span-1 text-[14px] font-semibold tracking-wider uppercase">Số điện thoại</div>
-                  <div className="col-span-1 text-[14px] font-semibold tracking-wider uppercase">Ngày tạo</div>
-                  <div className="col-span-1 text-[14px] font-semibold tracking-wider uppercase">Ngày cập nhật</div>
-                  <div className="col-span-1 text-[14px] text-center font-semibold tracking-wider uppercase">
-                    Hành động
+        </section>
+      )
+    },
+    {
+      key: "2",
+      label: <h2 className="text-[16px] font-semibold tracking-wide">Danh sách Nhà cung cấp</h2>,
+      children: (
+        <section>
+          <div className="bg-white dark:bg-darkPrimary mb-3 dark:border-darkBorder rounded-2xl">
+            {isLoading && <Skeleton />}
+            {!isFetching && (
+              <div>
+                <div>
+                  <div className="bg-[#f2f2f2] dark:bg-darkPrimary grid grid-cols-10 items-center gap-2 py-3 border border-[#dedede] dark:border-darkBorder px-4 rounded-tl-xl rounded-tr-xl">
+                    <div className="col-span-2 text-[14px] font-semibold tracking-wider uppercase">Mã nhà cung cấp</div>
+                    <div className="col-span-2 text-[14px] font-semibold tracking-wider uppercase">
+                      Tên nhà cung cấp
+                    </div>
+                    <div className="col-span-1 text-[14px] font-semibold tracking-wider uppercase">Người đại diện </div>
+                    <div className="col-span-1 text-[14px] font-semibold tracking-wider uppercase">Email</div>
+                    <div className="col-span-1 text-[14px] font-semibold tracking-wider uppercase">Số điện thoại</div>
+                    <div className="col-span-1 text-[14px] font-semibold tracking-wider uppercase">Ngày tạo</div>
+                    <div className="col-span-1 text-[14px] font-semibold tracking-wider uppercase">Ngày cập nhật</div>
+                    <div className="col-span-1 text-[14px] text-center font-semibold tracking-wider uppercase">
+                      Hành động
+                    </div>
+                  </div>
+                  <div>
+                    {listSupplier.length > 0 ? (
+                      listSupplier.map((item, index) => (
+                        <motion.div
+                          key={item._id}
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: index * 0.1 }}
+                        >
+                          <SupplierItem
+                            onDelete={handleDeleteSupplier}
+                            handleEditItem={handleEditItem}
+                            item={item}
+                            maxIndex={listSupplier?.length}
+                            index={index}
+                          />
+                        </motion.div>
+                      ))
+                    ) : (
+                      <div className="text-center mt-4">
+                        <Empty />
+                      </div>
+                    )}
                   </div>
                 </div>
-                <div>
-                  {listSupplier.length > 0 ? (
-                    listSupplier.map((item, index) => (
-                      <motion.div
-                        key={item._id}
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: index * 0.1 }}
-                      >
-                        <SupplierItem
-                          onDelete={handleDeleteSupplier}
-                          handleEditItem={handleEditItem}
-                          item={item}
-                          maxIndex={listSupplier?.length}
-                          index={index}
-                        />
-                      </motion.div>
-                    ))
-                  ) : (
-                    <div className="text-center mt-4">
-                      <Empty />
-                    </div>
-                  )}
-                </div>
-              </div>
-              <Pagination
-                data={result}
-                queryConfig={queryConfig}
-                page_size={page_size}
-                pathNavigate={path.AdminSuppliers}
-              />
+                <Pagination
+                  data={result}
+                  queryConfig={queryConfig}
+                  page_size={page_size}
+                  pathNavigate={path.AdminSuppliers}
+                />
 
-              <AnimatePresence>
-                {idSupplier && (
-                  <motion.div
-                    initial={{ opacity: 0 }} // khởi tạo là 0
-                    animate={{ opacity: 1 }} // xuất hiện dần là 1
-                    exit={{ opacity: 0 }} // biến mất là 0
-                    className="fixed left-0 top-0 z-10 h-screen w-screen bg-black/60 flex items-center justify-center"
-                  >
+                <AnimatePresence>
+                  {idSupplier && (
                     <motion.div
-                      initial={{ opacity: 0, scale: 0.8 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      exit={{ opacity: 0, scale: 0.8 }}
-                      className="relative"
+                      initial={{ opacity: 0 }} // khởi tạo là 0
+                      animate={{ opacity: 1 }} // xuất hiện dần là 1
+                      exit={{ opacity: 0 }} // biến mất là 0
+                      className="fixed left-0 top-0 z-10 h-screen w-screen bg-black/60 flex items-center justify-center"
                     >
-                      <button onClick={handleExitsEditItem} className="absolute right-2 top-2">
-                        <X color="gray" size={22} />
-                      </button>
-                      <form onSubmit={handleSubmitUpdate} className="bg-white dark:bg-darkPrimary rounded-md w-[900px]">
-                        <h3 className="py-2 px-4 text-lg font-semibold tracking-wide rounded-md">
-                          Thông tin nhà cung cấp
-                        </h3>
-                        <div className="p-4 pt-0">
-                          <div className="mt-4 flex items-center gap-4">
-                            <Input
-                              name="id"
-                              register={register}
-                              placeholder="Nhập id"
-                              messageErrorInput={errors.id?.message}
-                              classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-darkSecond focus:border-blue-500 focus:ring-2 outline-none rounded-md"
-                              className="relative flex-1"
-                              nameInput="Mã nhà cung cấp"
-                              disabled
-                            />
-                            <Input
-                              name="taxCode"
-                              register={register}
-                              placeholder="Nhập tax-code"
-                              messageErrorInput={errors.taxCode?.message}
-                              classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-darkSecond focus:border-blue-500 focus:ring-2 outline-none rounded-md"
-                              className="relative flex-1"
-                              nameInput="Mã số thuế"
-                              disabled
-                            />
+                      <motion.div
+                        initial={{ opacity: 0, scale: 0.8 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.8 }}
+                        className="relative"
+                      >
+                        <button onClick={handleExitsEditItem} className="absolute right-2 top-2">
+                          <X color="gray" size={22} />
+                        </button>
+                        <form
+                          onSubmit={handleSubmitUpdate}
+                          className="bg-white dark:bg-darkPrimary rounded-md w-[900px]"
+                        >
+                          <h3 className="py-2 px-4 text-lg font-semibold tracking-wide rounded-md">
+                            Thông tin nhà cung cấp
+                          </h3>
+                          <div className="p-4 pt-0">
+                            <div className="mt-4 flex items-center gap-4">
+                              <Input
+                                name="id"
+                                register={register}
+                                placeholder="Nhập id"
+                                messageErrorInput={errors.id?.message}
+                                classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-darkSecond focus:border-blue-500 focus:ring-2 outline-none rounded-md"
+                                className="relative flex-1"
+                                nameInput="Mã nhà cung cấp"
+                                disabled
+                              />
+                              <Input
+                                name="taxCode"
+                                register={register}
+                                placeholder="Nhập tax-code"
+                                messageErrorInput={errors.taxCode?.message}
+                                classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-darkSecond focus:border-blue-500 focus:ring-2 outline-none rounded-md"
+                                className="relative flex-1"
+                                nameInput="Mã số thuế"
+                                disabled
+                              />
+                            </div>
+                            <div className="mt-4 flex items-center gap-4">
+                              <Input
+                                name="name"
+                                register={register}
+                                placeholder="Nhập tên nhà cung cấp"
+                                messageErrorInput={errors.name?.message}
+                                classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-white dark:bg-darkPrimary focus:border-blue-500 focus:ring-2 outline-none rounded-md"
+                                className="relative flex-1"
+                                nameInput="Tên nhà cung cấp"
+                              />
+                              <Input
+                                name="contactName"
+                                register={register}
+                                placeholder="Nhập họ tên"
+                                messageErrorInput={errors.contactName?.message}
+                                classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#fff] dark:bg-darkPrimary focus:border-blue-500 focus:ring-2 outline-none rounded-md"
+                                className="relative flex-1"
+                                nameInput="Tên người đại diện"
+                              />
+                            </div>
+                            <div className="mt-4 flex items-center gap-4">
+                              <Input
+                                name="email"
+                                register={register}
+                                placeholder="Nhập email"
+                                messageErrorInput={errors.email?.message}
+                                classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#fff] dark:bg-darkPrimary focus:border-blue-500 focus:ring-2 outline-none rounded-md"
+                                className="relative flex-1"
+                                nameInput="Email"
+                              />
+                              <Input
+                                name="phone"
+                                register={register}
+                                placeholder="Nhập số điện thoại"
+                                messageErrorInput={errors.phone?.message}
+                                classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-white dark:bg-darkPrimary focus:border-blue-500 focus:ring-2 outline-none rounded-md"
+                                className="relative flex-1"
+                                nameInput="Số điện thoại"
+                              />
+                            </div>
+                            <div className="mt-4 flex items-center gap-4">
+                              <Input
+                                name="address"
+                                register={register}
+                                placeholder="Nhập địa chỉ"
+                                messageErrorInput={errors.address?.message}
+                                classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-white dark:bg-darkPrimary focus:border-blue-500 focus:ring-2 outline-none rounded-md"
+                                className="relative flex-1"
+                                nameInput="Địa chỉ"
+                              />
+                              <Input
+                                name="description"
+                                register={register}
+                                placeholder="Nhập mô tả"
+                                messageErrorInput={errors.description?.message}
+                                classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-white dark:bg-darkPrimary focus:border-blue-500 focus:ring-2 outline-none rounded-md"
+                                className="relative flex-1"
+                                nameInput="Mô tả"
+                              />
+                            </div>
+                            <div className="mt-2 flex items-center gap-4">
+                              <Input
+                                name="created_at"
+                                register={register}
+                                placeholder="Nhập ngày tạo"
+                                messageErrorInput={errors.created_at?.message}
+                                classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-darkSecond focus:border-blue-500 focus:ring-2 outline-none rounded-md"
+                                className="relative flex-1"
+                                nameInput="Ngày tạo"
+                                disabled
+                              />
+                              <Input
+                                name="updated_at"
+                                register={register}
+                                placeholder="Nhập ngày tạo cập nhật"
+                                messageErrorInput={errors.updated_at?.message}
+                                classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-darkSecond focus:border-blue-500 focus:ring-2 outline-none rounded-md"
+                                className="relative flex-1"
+                                nameInput="Ngày cập nhật"
+                                disabled
+                              />
+                            </div>
+                            <div className="flex items-center justify-end">
+                              <Button
+                                type="submit"
+                                icon={<ArrowUpFromLine size={18} />}
+                                nameButton="Cập nhật"
+                                classNameButton="w-[120px] p-4 py-2 bg-blue-500 mt-2 w-full text-white font-semibold rounded-3xl hover:bg-blue-500/80 duration-200 flex items-center gap-1 shadow-xl"
+                              />
+                            </div>
                           </div>
-                          <div className="mt-4 flex items-center gap-4">
-                            <Input
-                              name="name"
-                              register={register}
-                              placeholder="Nhập tên nhà cung cấp"
-                              messageErrorInput={errors.name?.message}
-                              classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-white dark:bg-darkPrimary focus:border-blue-500 focus:ring-2 outline-none rounded-md"
-                              className="relative flex-1"
-                              nameInput="Tên nhà cung cấp"
-                            />
-                            <Input
-                              name="contactName"
-                              register={register}
-                              placeholder="Nhập họ tên"
-                              messageErrorInput={errors.contactName?.message}
-                              classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#fff] dark:bg-darkPrimary focus:border-blue-500 focus:ring-2 outline-none rounded-md"
-                              className="relative flex-1"
-                              nameInput="Tên người đại diện"
-                            />
-                          </div>
-                          <div className="mt-4 flex items-center gap-4">
-                            <Input
-                              name="email"
-                              register={register}
-                              placeholder="Nhập email"
-                              messageErrorInput={errors.email?.message}
-                              classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#fff] dark:bg-darkPrimary focus:border-blue-500 focus:ring-2 outline-none rounded-md"
-                              className="relative flex-1"
-                              nameInput="Email"
-                            />
-                            <Input
-                              name="phone"
-                              register={register}
-                              placeholder="Nhập số điện thoại"
-                              messageErrorInput={errors.phone?.message}
-                              classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-white dark:bg-darkPrimary focus:border-blue-500 focus:ring-2 outline-none rounded-md"
-                              className="relative flex-1"
-                              nameInput="Số điện thoại"
-                            />
-                          </div>
-                          <div className="mt-4 flex items-center gap-4">
-                            <Input
-                              name="address"
-                              register={register}
-                              placeholder="Nhập địa chỉ"
-                              messageErrorInput={errors.address?.message}
-                              classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-white dark:bg-darkPrimary focus:border-blue-500 focus:ring-2 outline-none rounded-md"
-                              className="relative flex-1"
-                              nameInput="Địa chỉ"
-                            />
-                            <Input
-                              name="description"
-                              register={register}
-                              placeholder="Nhập mô tả"
-                              messageErrorInput={errors.description?.message}
-                              classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-white dark:bg-darkPrimary focus:border-blue-500 focus:ring-2 outline-none rounded-md"
-                              className="relative flex-1"
-                              nameInput="Mô tả"
-                            />
-                          </div>
-                          <div className="mt-2 flex items-center gap-4">
-                            <Input
-                              name="created_at"
-                              register={register}
-                              placeholder="Nhập ngày tạo"
-                              messageErrorInput={errors.created_at?.message}
-                              classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-darkSecond focus:border-blue-500 focus:ring-2 outline-none rounded-md"
-                              className="relative flex-1"
-                              nameInput="Ngày tạo"
-                              disabled
-                            />
-                            <Input
-                              name="updated_at"
-                              register={register}
-                              placeholder="Nhập ngày tạo cập nhật"
-                              messageErrorInput={errors.updated_at?.message}
-                              classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-darkSecond focus:border-blue-500 focus:ring-2 outline-none rounded-md"
-                              className="relative flex-1"
-                              nameInput="Ngày cập nhật"
-                              disabled
-                            />
-                          </div>
-                          <div className="flex items-center justify-end">
-                            <Button
-                              type="submit"
-                              icon={<ArrowUpFromLine size={18} />}
-                              nameButton="Cập nhật"
-                              classNameButton="w-[120px] p-4 py-2 bg-blue-500 mt-2 w-full text-white font-semibold rounded-3xl hover:bg-blue-500/80 duration-200 flex items-center gap-1 shadow-xl"
-                            />
-                          </div>
-                        </div>
-                      </form>
+                        </form>
+                      </motion.div>
                     </motion.div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
+                  )}
+                </AnimatePresence>
 
-              <AddSupplier setAddItem={setAddItem} addItem={addItem} />
-            </div>
-          )}
-        </div>
-      </motion.div>
+                <AddSupplier setAddItem={setAddItem} addItem={addItem} />
+              </div>
+            )}
+          </div>
+        </section>
+      )
+    }
+  ]
+
+  return (
+    <div>
+      <Helmet>
+        <title>Quản lý nhà cung cấp</title>
+        <meta
+          name="description"
+          content="Đây là trang TECHZONE | Laptop, PC, Màn hình, điện thoại, linh kiện Chính Hãng"
+        />
+      </Helmet>
+      <NavigateBack />
+      <h1 className="text-2xl font-bold text-gray-800 bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600 my-2">
+        Nhà cung cấp
+      </h1>
+
+      <Collapse items={items} defaultActiveKey={["2"]} className="bg-white" />
     </div>
   )
 }

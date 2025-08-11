@@ -28,7 +28,7 @@ import SupplyDetail from "./Components/SupplyDetail"
 import { queryClient } from "src/main"
 import DropdownSearch from "./Components/DropdownSearch"
 import { motion } from "framer-motion"
-import { Empty, Select } from "antd"
+import { Collapse, CollapseProps, Empty, Select } from "antd"
 import "../ManageOrders/ManageOrders.css"
 
 type FormDataSearch = Pick<
@@ -237,23 +237,13 @@ export default function ManageSupplies() {
     })
   }
 
-  return (
-    <div>
-      <Helmet>
-        <title>Quản lý cung ứng</title>
-        <meta
-          name="description"
-          content="Đây là trang TECHZONE | Laptop, PC, Màn hình, điện thoại, linh kiện Chính Hãng"
-        />
-      </Helmet>
-      <NavigateBack />
-      <h1 className="text-2xl font-bold text-gray-800 bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600 my-2">
-        Cung ứng sản phẩm
-      </h1>
-      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-        <div className="p-4 bg-white dark:bg-darkPrimary mb-3 border border-gray-300 dark:border-darkBorder rounded-2xl shadow-xl">
-          <h1 className="text-[16px] font-semibold tracking-wide">Bộ lọc & Tìm kiếm</h1>
-          <div>
+  const items: CollapseProps["items"] = [
+    {
+      key: "1",
+      label: <h1 className="text-[16px] font-semibold tracking-wide">Bộ lọc & Tìm kiếm</h1>,
+      children: (
+        <section>
+          <div className="bg-white dark:bg-darkPrimary mb-3 dark:border-darkBorder rounded-2xl">
             <form onSubmit={handleSubmitSearch}>
               <div className="mt-1 grid grid-cols-2">
                 <div className="col-span-1 flex items-center h-14 px-2 bg-[#fff] dark:bg-darkBorder border border-[#dadada] rounded-tl-xl">
@@ -409,63 +399,93 @@ export default function ManageSupplies() {
               </div>
             </form>
           </div>
-          {isLoading && <Skeleton />}
-          {!isFetching && (
-            <div>
-              <div className="mt-4">
-                <div className="bg-[#f2f2f2] dark:bg-darkPrimary grid grid-cols-12 items-center gap-2 py-3 border border-[#dedede] dark:border-darkBorder px-4 rounded-tl-xl rounded-tr-xl">
-                  <div className="col-span-2 text-[14px] font-semibold tracking-wider uppercase">Mã cung ứng</div>
-                  <div className="col-span-3 text-[14px] font-semibold tracking-wider uppercase">Tên sản phẩm</div>
-                  <div className="col-span-2 text-[14px] font-semibold tracking-wider uppercase">Tên nhà cung cấp</div>
-                  <div className="col-span-1 text-[14px] font-semibold tracking-wider uppercase">Giá nhập</div>
-                  <div className="col-span-1 text-[14px] font-semibold tracking-wider uppercase">
-                    Thời gian cung ứng
-                  </div>
-                  <div className="col-span-1 text-[14px] font-semibold tracking-wider uppercase">Ngày tạo</div>
-                  <div className="col-span-1 text-[14px] font-semibold tracking-wider uppercase">Ngày cập nhật</div>
-                  <div className="col-span-1 text-[14px] text-center font-semibold tracking-wider uppercase">
-                    Hành động
-                  </div>
-                </div>
+        </section>
+      )
+    },
+    {
+      key: "2",
+      label: <h2 className="text-[16px] font-semibold tracking-wide">Danh sách Cung ứng</h2>,
+      children: (
+        <section>
+          <div className="bg-white dark:bg-darkPrimary mb-3 dark:border-darkBorder rounded-2xl">
+            {isLoading && <Skeleton />}
+            {!isFetching && (
+              <div>
                 <div>
-                  {listSupplier.length > 0 ? (
-                    listSupplier.map((item, index) => (
-                      <motion.div
-                        key={item._id}
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: index * 0.1 }}
-                      >
-                        <SupplyItem
-                          onDelete={handleDeleteSupply}
-                          handleEditItem={handleEditItem}
-                          item={item}
-                          maxIndex={listSupplier?.length}
-                          index={index}
-                        />
-                      </motion.div>
-                    ))
-                  ) : (
-                    <div className="text-center mt-4">
-                      <Empty />
+                  <div className="bg-[#f2f2f2] dark:bg-darkPrimary grid grid-cols-12 items-center gap-2 py-3 border border-[#dedede] dark:border-darkBorder px-4 rounded-tl-xl rounded-tr-xl">
+                    <div className="col-span-2 text-[14px] font-semibold tracking-wider uppercase">Mã cung ứng</div>
+                    <div className="col-span-3 text-[14px] font-semibold tracking-wider uppercase">Tên sản phẩm</div>
+                    <div className="col-span-2 text-[14px] font-semibold tracking-wider uppercase">
+                      Tên nhà cung cấp
                     </div>
-                  )}
+                    <div className="col-span-1 text-[14px] font-semibold tracking-wider uppercase">Giá nhập</div>
+                    <div className="col-span-1 text-[14px] font-semibold tracking-wider uppercase">
+                      Thời gian cung ứng
+                    </div>
+                    <div className="col-span-1 text-[14px] font-semibold tracking-wider uppercase">Ngày tạo</div>
+                    <div className="col-span-1 text-[14px] font-semibold tracking-wider uppercase">Ngày cập nhật</div>
+                    <div className="col-span-1 text-[14px] text-center font-semibold tracking-wider uppercase">
+                      Hành động
+                    </div>
+                  </div>
+                  <div>
+                    {listSupplier?.length > 0 ? (
+                      listSupplier.map((item, index) => (
+                        <motion.div
+                          key={item._id}
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: index * 0.1 }}
+                        >
+                          <SupplyItem
+                            onDelete={handleDeleteSupply}
+                            handleEditItem={handleEditItem}
+                            item={item}
+                            maxIndex={listSupplier?.length}
+                            index={index}
+                          />
+                        </motion.div>
+                      ))
+                    ) : (
+                      <div className="text-center mt-4">
+                        <Empty />
+                      </div>
+                    )}
+                  </div>
                 </div>
+                <Pagination
+                  data={result}
+                  queryConfig={queryConfig}
+                  page_size={page_size}
+                  pathNavigate={path.AdminSupplies}
+                />
+
+                <SupplyDetail idSupply={idSupply} setIdSupply={setIdSupply} queryConfig={queryConfig} />
+
+                <AddSupply setAddItem={setAddItem} addItem={addItem} />
               </div>
-              <Pagination
-                data={result}
-                queryConfig={queryConfig}
-                page_size={page_size}
-                pathNavigate={path.AdminSupplies}
-              />
+            )}
+          </div>
+        </section>
+      )
+    }
+  ]
 
-              <SupplyDetail idSupply={idSupply} setIdSupply={setIdSupply} queryConfig={queryConfig} />
+  return (
+    <div>
+      <Helmet>
+        <title>Quản lý cung ứng</title>
+        <meta
+          name="description"
+          content="Đây là trang TECHZONE | Laptop, PC, Màn hình, điện thoại, linh kiện Chính Hãng"
+        />
+      </Helmet>
+      <NavigateBack />
+      <h1 className="text-2xl font-bold text-gray-800 bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600 my-2">
+        Cung ứng sản phẩm
+      </h1>
 
-              <AddSupply setAddItem={setAddItem} addItem={addItem} />
-            </div>
-          )}
-        </div>
-      </motion.div>
+      <Collapse items={items} defaultActiveKey={["2"]} className="bg-white" />
     </div>
   )
 }
