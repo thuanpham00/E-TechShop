@@ -336,7 +336,7 @@ export default function ManageOrders() {
                   <span className="absolute inset-y-0 left-[-5%] w-[1px] bg-[#dadada] h-full"></span>
                 </div>
               </div>
-              <div className="col-span-1 flex items-center h-14 px-2 bg-[#fff] dark:bg-darkBorder border border-[#dadada] border-t-0 rounded-bl-xl">
+              <div className="col-span-1 flex items-center h-14 px-2 bg-[#ececec] dark:bg-darkBorder border border-[#dadada] border-t-0 rounded-bl-xl">
                 <span className="w-1/3">Ngày tạo</span>
                 <div className="w-2/3 relative h-full">
                   <div className="mt-2 w-full flex items-center gap-2">
@@ -407,7 +407,7 @@ export default function ManageOrders() {
                   onClick={handleResetFormSearch}
                   type="button"
                   icon={<RotateCcw size={15} />}
-                  nameButton="Xóa bộ lọc tìm kiếm"
+                  nameButton="Xóa bộ lọc"
                   classNameButton="py-2 px-3 bg-[#f2f2f2] border border-[#dedede] w-full text-black font-medium hover:bg-[#dedede]/80 rounded-3xl duration-200 text-[13px] flex items-center gap-1 h-[35px]"
                 />
                 <Button

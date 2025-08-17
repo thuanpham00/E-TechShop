@@ -38,7 +38,7 @@ export default function MenuCategory() {
             className={`grid grid-cols-12 gap-2 ${isHover && "top-[90px] z-40 fixed"}`}
           >
             <div className={`col-span-2 ${!isHover && "top-[90px] z-40 fixed"}`}>
-              <div className="flex flex-col justify-between bg-white rounded-[4px] h-[480px]">
+              <div className="flex flex-col justify-between bg-white rounded-[4px] h-[478px]">
                 {categories.map((category) => (
                   <div
                     onMouseEnter={() => handleCategory(category.index)}
@@ -52,7 +52,7 @@ export default function MenuCategory() {
             </div>
             {isHover && (
               <div className="col-span-10">
-                <div className="bg-white rounded-[4px] h-[480px] shadow p-4">
+                <div className="bg-white rounded-[4px] h-[478px] shadow p-4">
                   <CategoryDetail showDetail={showCategoryDetail} />
                 </div>
               </div>

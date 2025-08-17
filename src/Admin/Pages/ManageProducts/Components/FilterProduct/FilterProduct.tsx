@@ -1,10 +1,9 @@
 import { yupResolver } from "@hookform/resolvers/yup"
 import { keepPreviousData, useQuery } from "@tanstack/react-query"
-import { Select } from "antd"
 import { omit } from "lodash"
-import { ArrowUpNarrowWide, FolderUp, Plus, RotateCcw, Search } from "lucide-react"
+import { RotateCcw, Search } from "lucide-react"
 import { Controller, useForm } from "react-hook-form"
-import { createSearchParams, Link, useNavigate } from "react-router-dom"
+import { createSearchParams, useNavigate } from "react-router-dom"
 import { toast } from "react-toastify"
 import DatePicker from "src/Admin/Components/DatePickerRange"
 import { adminAPI } from "src/Apis/admin.api"
@@ -14,8 +13,6 @@ import Input from "src/Components/Input"
 import InputNumber from "src/Components/InputNumber"
 import { path } from "src/Constants/path"
 import { cleanObject } from "src/Helpers/common"
-import useDownloadExcel from "src/Hook/useDownloadExcel"
-import { ProductItemType } from "src/Types/product.type"
 import { queryParamConfigProduct } from "src/Types/queryParams.type"
 import { SuccessResponse } from "src/Types/utils.type"
 
@@ -45,14 +42,13 @@ const formDataSearch = schemaProduct.pick([
   "updated_at_end",
   "status"
 ])
+
 interface Props {
   queryConfig: queryParamConfigProduct
-  listProduct: ProductItemType[]
 }
 
-export default function FilterProduct({ queryConfig, listProduct }: Props) {
+export default function FilterProduct({ queryConfig }: Props) {
   const navigate = useNavigate()
-  const { downloadExcel } = useDownloadExcel()
 
   const getNameCategory = useQuery({
     queryKey: ["nameCategory"],
@@ -147,18 +143,6 @@ export default function FilterProduct({ queryConfig, listProduct }: Props) {
     ])
     resetFormSearch()
     navigate({ pathname: `${path.AdminProducts}`, search: createSearchParams(filteredSearch).toString() })
-  }
-
-  // xử lý sort ds
-  const handleChangeSortListOrder = (value: string) => {
-    const body = {
-      ...queryConfig,
-      sortBy: value
-    }
-    navigate({
-      pathname: `${path.AdminProducts}`,
-      search: createSearchParams(body).toString()
-    })
   }
 
   return (
@@ -408,49 +392,20 @@ export default function FilterProduct({ queryConfig, listProduct }: Props) {
             </div>
           </div>
         </div>
-        <div className="flex justify-between mt-4">
-          <div className="flex gap-2">
-            <div className="flex items-center justify-end gap-2">
-              <Link
-                to={path.AddProduct}
-                className="py-2 px-3 bg-blue-500 w-full text-white font-medium rounded-3xl hover:bg-blue-500/80 duration-200 text-[13px] flex items-center gap-1"
-              >
-                <Plus size={15} />
-                <span>Thêm mới</span>
-              </Link>
-              <Button
-                onClick={() => downloadExcel(listProduct)}
-                icon={<FolderUp size={15} />}
-                nameButton="Export"
-                classNameButton="py-2 px-3 border border-[#E2E7FF] bg-[#E2E7FF] w-full text-[#3A5BFF] font-medium rounded-3xl hover:bg-blue-500/40 duration-200 text-[13px] flex items-center gap-1"
-              />
-              <Select
-                defaultValue="Mới nhất"
-                className="select-sort"
-                onChange={handleChangeSortListOrder}
-                suffixIcon={<ArrowUpNarrowWide />}
-                options={[
-                  { value: "old", label: "Cũ nhất" },
-                  { value: "new", label: "Mới nhất" }
-                ]}
-              />
-            </div>
-          </div>
-          <div className="flex items-center gap-2">
-            <Button
-              onClick={handleResetFormSearch}
-              type="button"
-              icon={<RotateCcw size={15} />}
-              nameButton="Xóa bộ lọc tìm kiếm"
-              classNameButton="py-2 px-3 bg-[#f2f2f2] border border-[#dedede] w-full text-black font-medium hover:bg-[#dedede]/80 rounded-3xl duration-200 text-[13px] flex items-center gap-1 h-[35px]"
-            />
-            <Button
-              type="submit"
-              icon={<Search size={15} />}
-              nameButton="Tìm kiếm"
-              classNameButton="py-2 px-3 bg-blue-500 w-full text-white font-medium hover:bg-blue-500/80 rounded-3xl duration-200 text-[13px] flex items-center gap-1 h-[35px]"
-            />
-          </div>
+        <div className="flex justify-end gap-2 mt-4">
+          <Button
+            onClick={handleResetFormSearch}
+            type="button"
+            icon={<RotateCcw size={15} />}
+            nameButton="Xóa bộ lọc"
+            classNameButton="py-2 px-3 bg-[#f2f2f2] border border-[#dedede] w-full text-black font-medium hover:bg-[#dedede]/80 rounded-3xl duration-200 text-[13px] flex items-center gap-1 h-[35px]"
+          />
+          <Button
+            type="submit"
+            icon={<Search size={15} />}
+            nameButton="Tìm kiếm"
+            classNameButton="py-2 px-3 bg-blue-500 w-full text-white font-medium hover:bg-blue-500/80 rounded-3xl duration-200 text-[13px] flex items-center gap-1 h-[35px]"
+          />
         </div>
       </form>
     </div>

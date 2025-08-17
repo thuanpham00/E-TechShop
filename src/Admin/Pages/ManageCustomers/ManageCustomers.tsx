@@ -588,7 +588,7 @@ export default function ManageCustomers() {
                   onClick={handleResetFormSearch}
                   type="button"
                   icon={<RotateCcw size={15} />}
-                  nameButton="Xóa bộ lọc tìm kiếm"
+                  nameButton="Xóa bộ lọc"
                   classNameButton="py-2 px-3 bg-[#f2f2f2] border border-[#dedede] w-full text-black font-medium hover:bg-[#dedede]/80 rounded-3xl duration-200 text-[13px] flex items-center gap-1 h-[35px]"
                 />
                 <Button

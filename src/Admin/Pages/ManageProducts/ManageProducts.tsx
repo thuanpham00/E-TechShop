@@ -11,15 +11,19 @@ import NavigateBack from "src/Admin/Components/NavigateBack"
 import Skeleton from "src/Components/Skeleton"
 import Pagination from "src/Components/Pagination"
 import ProductItem from "./Components/ProductItem"
-import { useNavigate } from "react-router-dom"
+import { createSearchParams, Link, useNavigate } from "react-router-dom"
 import { HttpStatusCode } from "src/Constants/httpStatus"
 import FilterProduct from "./Components/FilterProduct"
 import { motion } from "framer-motion"
-import { Empty } from "antd"
+import { Collapse, CollapseProps, Empty, Select } from "antd"
 import "../ManageOrders/ManageOrders.css"
+import { ArrowUpNarrowWide, FolderUp, Plus } from "lucide-react"
+import Button from "src/Components/Button"
+import useDownloadExcel from "src/Hook/useDownloadExcel"
 
 export default function ManageProducts() {
   const navigate = useNavigate()
+  const { downloadExcel } = useDownloadExcel()
   const queryParams: queryParamConfigProduct = useQueryParams()
   const queryConfig: queryParamConfigProduct = omitBy(
     {
@@ -83,6 +87,124 @@ export default function ManageProducts() {
     }
   }
 
+  // xử lý sort ds
+  const handleChangeSortListOrder = (value: string) => {
+    const body = {
+      ...queryConfig,
+      sortBy: value
+    }
+    navigate({
+      pathname: `${path.AdminProducts}`,
+      search: createSearchParams(body).toString()
+    })
+  }
+
+  const items: CollapseProps["items"] = [
+    {
+      key: "1",
+      label: <h1 className="text-[16px] font-semibold tracking-wide">Bộ lọc & Tìm kiếm</h1>,
+      children: (
+        <section>
+          <FilterProduct queryConfig={queryConfig} />
+        </section>
+      )
+    },
+    {
+      key: "2",
+      label: <h2 className="text-[16px] font-semibold tracking-wide">Danh sách Sản phẩm</h2>,
+      children: (
+        <section>
+          {isLoading && <Skeleton />}
+          {!isFetching && (
+            <div>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Button
+                    onClick={() => downloadExcel(listProduct)}
+                    icon={<FolderUp size={15} />}
+                    nameButton="Export"
+                    classNameButton="py-2 px-3 border border-[#E2E7FF] bg-[#E2E7FF] w-full text-[#3A5BFF] font-medium rounded-3xl hover:bg-blue-500/40 duration-200 text-[13px] flex items-center gap-1"
+                  />
+                  <Select
+                    defaultValue="Mới nhất"
+                    className="select-sort"
+                    onChange={handleChangeSortListOrder}
+                    suffixIcon={<ArrowUpNarrowWide />}
+                    options={[
+                      { value: "old", label: "Cũ nhất" },
+                      { value: "new", label: "Mới nhất" }
+                    ]}
+                  />
+                </div>
+                <div>
+                  <Link
+                    to={path.AddProduct}
+                    className="py-2 px-3 bg-blue-500 w-full text-white font-medium rounded-3xl hover:bg-blue-500/80 duration-200 text-[13px] flex items-center gap-1"
+                  >
+                    <Plus size={15} />
+                    <span>Thêm mới</span>
+                  </Link>
+                </div>
+              </div>
+              <div className="mt-2">
+                <div className="bg-[#f2f2f2] dark:bg-darkPrimary grid grid-cols-12 items-center gap-2 py-3 border border-[#dedede] dark:border-darkBorder px-4 rounded-tl-xl rounded-tr-xl">
+                  <div className="col-span-2 text-[14px] font-semibold tracking-wider uppercase">Mã sản phẩm</div>
+                  <div className="col-span-1 text-[14px] font-semibold tracking-wider uppercase">Hình ảnh</div>
+                  <div className="col-span-2 text-[14px] font-semibold tracking-wider uppercase">Tên sản phẩm</div>
+                  <div className="col-span-1 text-[14px] font-semibold tracking-wider uppercase">Thương hiệu</div>
+                  <div className="col-span-1 text-[14px] font-semibold tracking-wider uppercase">Thể loại</div>
+                  <div className="col-span-1 text-[14px] font-semibold tracking-wider uppercase">Giá gốc</div>
+                  <div className="col-span-1 text-[14px] text-center font-semibold tracking-wider uppercase">
+                    Trạng thái
+                  </div>
+                  <div className="col-span-1 text-[14px] text-center font-semibold tracking-wider uppercase">
+                    Ngày tạo
+                  </div>
+                  <div className="col-span-1 text-[14px] text-center font-semibold tracking-wider uppercase">
+                    Ngày cập nhật
+                  </div>
+                  <div className="col-span-1 text-[14px] text-center font-semibold tracking-wider uppercase">
+                    Hành động
+                  </div>
+                </div>
+                <div>
+                  {listProduct?.length > 0 ? (
+                    listProduct?.map((item, index) => (
+                      <motion.div
+                        key={item._id}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: index * 0.1 }}
+                      >
+                        <ProductItem
+                          // onDelete={handleDeleteCategory}
+                          // handleEditItem={handleEditItem}
+                          item={item}
+                          maxIndex={listProduct?.length}
+                          index={index}
+                        />
+                      </motion.div>
+                    ))
+                  ) : (
+                    <div className="text-center mt-4">
+                      <Empty />
+                    </div>
+                  )}
+                </div>
+              </div>
+              <Pagination
+                data={result}
+                queryConfig={queryConfig}
+                page_size={page_size}
+                pathNavigate={path.AdminProducts}
+              />
+            </div>
+          )}
+        </section>
+      )
+    }
+  ]
+
   return (
     <div>
       <Helmet>
@@ -96,7 +218,7 @@ export default function ManageProducts() {
       <h1 className="text-2xl font-bold text-gray-800 bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600 my-2">
         Sản phẩm
       </h1>
-      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+      {/* <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
         <div className="p-4 bg-white dark:bg-darkPrimary mb-3 border border-gray-300 dark:border-darkBorder rounded-2xl shadow-xl">
           <h1 className="text-[16px] font-semibold tracking-wide">Bộ lọc & Tìm kiếm</h1>
           <FilterProduct queryConfig={queryConfig} listProduct={listProduct} />
@@ -156,77 +278,13 @@ export default function ManageProducts() {
                   page_size={page_size}
                   pathNavigate={path.AdminProducts}
                 />
-                {/* {idCategory !== null ? (
-              <Fragment>
-                <div className="fixed left-0 top-0 z-10 h-screen w-screen bg-black/60 "></div>
-                <div className="z-20 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
-                  <button onClick={handleExitsEditItem} className="absolute right-2 top-1">
-                    <X color="gray" size={22} />
-                  </button>
-                  <form onSubmit={handleSubmitUpdate} className="p-4 bg-white rounded-md">
-                    <h3 className="text-[15px] font-medium">Thông tin thể loại</h3>
-                    <div className="mt-4 flex items-center gap-4">
-                      <Input
-                        name="id"
-                        register={register}
-                        placeholder="Nhập họ tên"
-                        messageErrorInput={errors.id?.message}
-                        classNameInput="mt-1 p-2 w-full border border-[#dedede] bg-[#f2f2f2] focus:border-blue-500 focus:ring-2 outline-none rounded-md"
-                        className="relative flex-1"
-                        nameInput="Id"
-                        disabled
-                      />
-                      <Input
-                        name="name"
-                        register={register}
-                        placeholder="Nhập họ tên"
-                        messageErrorInput={errors.name?.message}
-                        classNameInput="mt-1 p-2 w-full border border-[#dedede] bg-white focus:border-blue-500 focus:ring-2 outline-none rounded-md"
-                        className="relative flex-1"
-                        nameInput="Tên thể loại"
-                      />
-                    </div>
-                    <div className="mt-2 flex items-center gap-4">
-                      <Input
-                        name="created_at"
-                        register={register}
-                        placeholder="Nhập ngày tạo"
-                        messageErrorInput={errors.created_at?.message}
-                        classNameInput="mt-1 p-2 w-full border border-[#dedede] bg-[#f2f2f2] focus:border-blue-500 focus:ring-2 outline-none rounded-md"
-                        className="relative flex-1"
-                        nameInput="Ngày tạo"
-                        disabled
-                      />
-                      <Input
-                        name="updated_at"
-                        register={register}
-                        placeholder="Nhập ngày tạo cập nhật"
-                        messageErrorInput={errors.updated_at?.message}
-                        classNameInput="mt-1 p-2 w-full border border-[#dedede] bg-[#f2f2f2] focus:border-blue-500 focus:ring-2 outline-none rounded-md"
-                        className="relative flex-1"
-                        nameInput="Ngày cập nhật"
-                        disabled
-                      />
-                    </div>
-
-                    <div className="flex items-center justify-end">
-                      <Button
-                        type="submit"
-                        nameButton="Cập nhật"
-                        classNameButton="w-[120px] p-4 py-2 bg-blue-500 mt-2 w-full text-white font-semibold rounded-sm hover:bg-blue-500/80 duration-200"
-                      />
-                    </div>
-                  </form>
-                </div>
-              </Fragment>
-            ) : (
-              ""
-            )} */}
               </div>
             )}
           </div>
         </div>
-      </motion.div>
+      </motion.div> */}
+
+      <Collapse items={items} defaultActiveKey={["2"]} className="bg-white" />
     </div>
   )
 }

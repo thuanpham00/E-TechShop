@@ -1,5 +1,6 @@
 import { memo } from "react"
 import { Outlet } from "react-router-dom"
+import ChatConsulting from "src/Client/Components/ChatConsulting"
 import Footer from "src/Client/Components/Footer"
 import Header from "src/Client/Components/Header"
 import MenuCategory from "src/Client/Components/MenuCategory"
@@ -10,6 +11,7 @@ function MainLayoutInner() {
       <Header />
       <MenuCategory />
       <Outlet />
+      <ChatConsulting />
       <Footer />
     </div>
   )

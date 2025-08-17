@@ -142,7 +142,8 @@ export default function AddProduct() {
     name: "specifications" // Quản lý trường specifications trong form.
   }) // thiết kế để quản lý các trường dạng mảng trong form. Nó giúp bạn dễ dàng thêm, xóa, cập nhật, hoặc thay thế các phần tử trong mảng mà không cần dùng useState thủ công.
 
-  const [selectedCategory, setSelectedCategory] = useState<CategoryType>("Laptop")
+  console.log(fields)
+  const [selectedCategory, setSelectedCategory] = useState<CategoryType | null>(null)
   // const [specifications, setSpecifications] = useState<{ name: string; value: string }[]>([])
 
   useEffect(() => {
@@ -155,11 +156,14 @@ export default function AddProduct() {
       //   })
       // })
       // setSpecifications(array)
+      console.log(selectedCategory)
       const array = listSpecificationForCategory[selectedCategory].map((item) => ({
         name: item,
         value: ""
       }))
       replace(array)
+    } else {
+      replace([])
     }
   }, [selectedCategory, replace])
 
@@ -279,6 +283,7 @@ export default function AddProduct() {
       medias: galleryFiles as File[],
       specifications: data.specifications
     }
+    console.log(body)
     addProductMutation.mutate(body, {
       onSuccess: () => {
         toast.success("Thêm sản phẩm thành công!", {
@@ -287,6 +292,8 @@ export default function AddProduct() {
         reset()
         setFile(null)
         setGalleryFiles([null, null, null, null])
+
+        setSelectedCategory(null)
       },
       onError: (error) => {
         if (isError400<ErrorResponse<FormData>>(error)) {
@@ -541,25 +548,31 @@ export default function AddProduct() {
               <div className="mt-4">
                 <h2 className="font-semibold">Thông số kỹ thuật sản phẩm</h2>
                 <div className="mt-2">
-                  {fields?.map((spec, index) => {
-                    return (
-                      <div key={index} className="mb-2 flex items-stretch">
-                        <span className="w-1/3 bg-[#f2f2f2] p-2 border border-[#dadada] rounded-tl-md rounded-bl-md border-l-4 border-l-gray-400">
-                          {spec.name}
-                        </span>
-                        <input
-                          type="text"
-                          className="w-2/3 p-2 border border-gray-300 rounded-tr-md rounded-br-md border-l-0"
-                          placeholder={`Nhập ${spec.name.toLowerCase()}`}
-                          {...register(`specifications.${index}.value`)}
-                          // onChange={handleChangeInput(index)}
-                        />
-                        {/* <div className="mt-2">
+                  {fields.length > 0 ? (
+                    fields?.map((spec, index) => {
+                      return (
+                        <div key={index} className="mb-2 flex items-stretch">
+                          <span className="w-1/3 bg-[#f2f2f2] p-2 border border-[#dadada] rounded-tl-md rounded-bl-md border-l-4 border-l-gray-400">
+                            {spec.name}
+                          </span>
+                          <input
+                            type="text"
+                            className="w-2/3 p-2 border border-gray-300 rounded-tr-md rounded-br-md border-l-0"
+                            placeholder={`Nhập ${spec.name.toLowerCase()}`}
+                            {...register(`specifications.${index}.value`)}
+                            // onChange={handleChangeInput(index)}
+                          />
+                          {/* <div className="mt-2">
                           <span>{errors.specifications[index]?.value?.message}</span>
                         </div> */}
-                      </div>
-                    )
-                  })}
+                        </div>
+                      )
+                    })
+                  ) : (
+                    <div className="w-full py-16 bg-[#e6e6e6] rounded-md flex justify-center font-medium">
+                      Danh sách thông số kĩ thuật
+                    </div>
+                  )}
                 </div>
               </div>
 

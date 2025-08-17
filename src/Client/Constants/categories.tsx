@@ -182,16 +182,37 @@ export const MenuCategoryDetail: MenuItem[][] = [
         { name: "Trên 20tr", path: "man-hinh-tren-20-trieu" }
       ]
     }
-    // {
-    //   heading: "Kích thước",
-    //   value: [
-    //     { name: "Intel Core i3", path: "laptop-asus-hoc-tap-va-lam-viec" },
-    //     { name: "Intel Core i5", path: "laptop-asus-hoc-tap-va-lam-viec" },
-    //     { name: "Intel Core i7", path: "laptop-asus-hoc-tap-va-lam-viec" },
-    //     { name: "AMD Ryzen", path: "laptop-asus-hoc-tap-va-lam-viec" },
-    //     { name: "DELL", path: "laptop-asus-hoc-tap-va-lam-viec" }
-    //   ]
-    // }
+  ],
+  // dành cho bàn phím
+  [
+    {
+      heading: "Thương hiệu",
+      value: [
+        { name: "AKKO", path: "ban-phim-akko" },
+        { name: "AULA", path: "ban-phim-aula" },
+        { name: "DARE-U", path: "ban-phim-dareu" },
+        { name: "KEYCHRON", path: "ban-phim-keychron" },
+        { name: "CORSAIR", path: "ban-phim-corsair" },
+        { name: "E-DRA", path: "ban-phim-edra" }
+      ]
+    },
+    {
+      heading: "Thương hiệu",
+      value: [
+        { name: "ASUS", path: "ban-phim-asus" },
+        { name: "LOGITECH", path: "ban-phim-logitech" },
+        { name: "RAZER", path: "ban-phim-razer" }
+      ]
+    },
+    {
+      heading: "Giá bán",
+      value: [
+        { name: "Dưới 1 triệu", path: "ban-phim-duoi-1-trieu" },
+        { name: "Từ 1 đến 2tr", path: "ban-phim-tu-1-den-2-trieu" },
+        { name: "Từ 2 đến 3tr", path: "ban-phim-tu-2-den-3-trieu" },
+        { name: "Trên 4tr", path: "ban-phim-tren-4-trieu" }
+      ]
+    }
   ]
 ]
 
@@ -203,6 +224,7 @@ import bannerPCGVN from "src/Assets/img/banner_category/thang_02_pc_gvn_banner_w
 import bannerMonitor from "src/Assets/img/banner_category/ips_banner_1920x680_801fccb12fa947bfb0eda431877d620e.webp"
 import bannerAsus from "src/Assets/img/banner_category/asus-monitor.webp"
 import bannerDell from "src/Assets/img/banner_category/dell-monitor.webp"
+import bannerManHinhViewSonic from "src/Assets/img/banner_category/banner-man-hinh-viewsonic.jpg"
 
 export const CategoryBanner = {
   "laptop-acer-hoc-tap-va-lam-viec": bannerLaptopAcer,
@@ -235,6 +257,8 @@ export const CategoryBanner = {
   "man-hinh-samsung": bannerMonitor,
   "man-hinh-asus": bannerAsus,
   "man-hinh-dell": bannerDell,
+  "man-hinh-viewsonic": bannerManHinhViewSonic,
+  "man-hinh-acer": bannerLaptopDuoi15trieu,
   "man-hinh-duoi-5-trieu": bannerMonitor,
   "man-hinh-tu-5-den-10-trieu": bannerLaptopDuoi15trieu,
   "man-hinh-tu-10-den-20-trieu": bannerMonitor,

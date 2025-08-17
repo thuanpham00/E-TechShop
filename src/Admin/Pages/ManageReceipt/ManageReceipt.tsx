@@ -396,15 +396,37 @@ export default function ManageReceipt() {
                   </div>
                 </div>
               </div>
-              <div className="flex justify-between mt-4">
+              <div className="flex justify-end gap-2 mt-4">
+                <Button
+                  onClick={handleResetFormSearch}
+                  type="button"
+                  icon={<RotateCcw size={15} />}
+                  nameButton="Xóa bộ lọc"
+                  classNameButton="py-2 px-3 bg-[#f2f2f2] border border-[#dedede] w-full text-black font-medium hover:bg-[#dedede]/80 rounded-3xl duration-200 text-[13px] flex items-center gap-1 h-[35px]"
+                />
+                <Button
+                  type="submit"
+                  icon={<Search size={15} />}
+                  nameButton="Tìm kiếm"
+                  classNameButton="py-2 px-3 bg-blue-500 w-full text-white font-medium rounded-3xl hover:bg-blue-500/80 duration-200 text-[13px] flex items-center gap-1 h-[35px]"
+                  className="flex-shrink-0"
+                />
+              </div>
+            </form>
+          </div>
+        </section>
+      )
+    },
+    {
+      key: "2",
+      label: <h2 className="text-[16px] font-semibold tracking-wide">Danh sách Đơn nhập hàng</h2>,
+      children: (
+        <section>
+          {isLoading && <Skeleton />}
+          {!isFetching && (
+            <div>
+              <div className="flex items-center justify-between gap-2 mb-2">
                 <div className="flex items-center gap-2">
-                  <Link
-                    to={path.AddReceipt}
-                    className="py-2 px-3 bg-blue-500 w-full text-white font-medium rounded-3xl hover:bg-blue-500/80 duration-200 text-[13px] flex items-center gap-1"
-                  >
-                    <Plus size={15} />
-                    <span>Thêm mới</span>
-                  </Link>
                   <Button
                     onClick={() => downloadExcel(listReceipt)}
                     icon={<FolderUp size={15} />}
@@ -422,36 +444,16 @@ export default function ManageReceipt() {
                     ]}
                   />
                 </div>
-                <div className="flex items-center gap-2">
-                  <Button
-                    onClick={handleResetFormSearch}
-                    type="button"
-                    icon={<RotateCcw size={15} />}
-                    nameButton="Xóa bộ lọc tìm kiếm"
-                    classNameButton="py-2 px-3 bg-[#f2f2f2] border border-[#dedede] w-full text-black font-medium hover:bg-[#dedede]/80 rounded-3xl duration-200 text-[13px] flex items-center gap-1 h-[35px]"
-                  />
-                  <Button
-                    type="submit"
-                    icon={<Search size={15} />}
-                    nameButton="Tìm kiếm"
-                    classNameButton="py-2 px-3 bg-blue-500 w-full text-white font-medium rounded-3xl hover:bg-blue-500/80 duration-200 text-[13px] flex items-center gap-1 h-[35px]"
-                    className="flex-shrink-0"
-                  />
+                <div>
+                  <Link
+                    to={path.AddReceipt}
+                    className="py-2 px-3 bg-blue-500 w-full text-white font-medium rounded-3xl hover:bg-blue-500/80 duration-200 text-[13px] flex items-center gap-1"
+                  >
+                    <Plus size={15} />
+                    <span>Thêm mới</span>
+                  </Link>
                 </div>
               </div>
-            </form>
-          </div>
-        </section>
-      )
-    },
-    {
-      key: "2",
-      label: <h2 className="text-[16px] font-semibold tracking-wide">Danh sách Đơn nhập hàng</h2>,
-      children: (
-        <section>
-          {isLoading && <Skeleton />}
-          {!isFetching && (
-            <div>
               {listReceipt?.length > 0 ? (
                 listReceipt.map((item, index) => (
                   <motion.div

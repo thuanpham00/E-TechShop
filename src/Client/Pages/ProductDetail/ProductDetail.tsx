@@ -214,7 +214,7 @@ export default function ProductDetail() {
                     ref={imgRef}
                     loading="lazy"
                     src={imageCurrent}
-                    alt={productDetail.name}
+                    alt={productDetail?.name}
                     className="absolute top-0 left-0 object-cover w-full h-auto pointer-events-none"
                   />
                 </div>
@@ -399,7 +399,17 @@ export default function ProductDetail() {
                 )}
               </div>
 
-              <div className="mt-4 prose max-w-none" dangerouslySetInnerHTML={{ __html: productDetail.description }} />
+              {productDetail.description === "<p>Đợi cập nhật</p>" ? (
+                <div
+                  className="mt-4 prose max-w-none text-center font-semibold"
+                  dangerouslySetInnerHTML={{ __html: productDetail.description }}
+                />
+              ) : (
+                <div
+                  className="mt-4 prose max-w-none"
+                  dangerouslySetInnerHTML={{ __html: productDetail.description }}
+                />
+              )}
             </div>
           </motion.div>
         </div>

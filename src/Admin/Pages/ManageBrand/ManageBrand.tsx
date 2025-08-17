@@ -53,6 +53,7 @@ export default function ManageBrand() {
 
   const { id } = useParams()
   const { state } = useLocation()
+  console.log(state)
   const queryClient = useQueryClient()
   const queryParams: queryParamConfigBrand = useQueryParams()
   const queryConfig: queryParamConfigBrand = omitBy(
@@ -403,47 +404,21 @@ export default function ManageBrand() {
                 </div>
               </div>
             </div>
-            <div className="flex justify-between mt-4">
-              <div className="flex items-center gap-2">
-                <Button
-                  onClick={() => setAddItem(true)}
-                  icon={<Plus size={15} />}
-                  nameButton="Thêm mới"
-                  classNameButton="py-2 px-3 bg-blue-500 w-full text-white font-medium rounded-3xl hover:bg-blue-500/80 duration-200 text-[13px] flex items-center gap-1"
-                />
-                <Button
-                  onClick={() => downloadExcel(listBrandOfCategory)}
-                  icon={<FolderUp size={15} />}
-                  nameButton="Export"
-                  classNameButton="py-2 px-3 border border-[#E2E7FF] bg-[#E2E7FF] w-full text-[#3A5BFF] font-medium rounded-3xl hover:bg-blue-500/40 duration-200 text-[13px] flex items-center gap-1"
-                />
-                <Select
-                  defaultValue="Mới nhất"
-                  className="select-sort"
-                  onChange={handleChangeSortListOrder}
-                  suffixIcon={<ArrowUpNarrowWide />}
-                  options={[
-                    { value: "old", label: "Cũ nhất" },
-                    { value: "new", label: "Mới nhất" }
-                  ]}
-                />
-              </div>
-              <div className="flex items-center gap-2">
-                <Button
-                  type="button"
-                  nameButton="Xóa bộ lọc tìm kiếm"
-                  onClick={handleResetFormSearch}
-                  icon={<RotateCcw size={15} color="#adb5bd" />}
-                  classNameButton="py-2 px-3 bg-[#f2f2f2] border border-[#dedede] w-full text-black font-medium hover:bg-[#dedede]/80 rounded-3xl duration-200 text-[13px] flex items-center gap-1 h-[35px]"
-                />
-                <Button
-                  type="submit"
-                  nameButton="Tìm kiếm"
-                  icon={<Search size={15} />}
-                  classNameButton="py-2 px-3 bg-blue-500 w-full text-white font-medium rounded-3xl hover:bg-blue-500/80 duration-200 text-[13px] flex items-center gap-1 h-[35px]"
-                  className="flex-shrink-0"
-                />
-              </div>
+            <div className="flex justify-end gap-2 mt-4">
+              <Button
+                type="button"
+                nameButton="Xóa bộ lọc"
+                onClick={handleResetFormSearch}
+                icon={<RotateCcw size={15} color="#adb5bd" />}
+                classNameButton="py-2 px-3 bg-[#f2f2f2] border border-[#dedede] w-full text-black font-medium hover:bg-[#dedede]/80 rounded-3xl duration-200 text-[13px] flex items-center gap-1 h-[35px]"
+              />
+              <Button
+                type="submit"
+                nameButton="Tìm kiếm"
+                icon={<Search size={15} />}
+                classNameButton="py-2 px-3 bg-blue-500 w-full text-white font-medium rounded-3xl hover:bg-blue-500/80 duration-200 text-[13px] flex items-center gap-1 h-[35px]"
+                className="flex-shrink-0"
+              />
             </div>
           </form>
         </div>
@@ -457,6 +432,34 @@ export default function ManageBrand() {
           {isLoading && <Skeleton />}
           {!isFetching && (
             <div>
+              <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center gap-2">
+                  <Button
+                    onClick={() => downloadExcel(listBrandOfCategory)}
+                    icon={<FolderUp size={15} />}
+                    nameButton="Export"
+                    classNameButton="py-2 px-3 border border-[#E2E7FF] bg-[#E2E7FF] w-full text-[#3A5BFF] font-medium rounded-3xl hover:bg-blue-500/40 duration-200 text-[13px] flex items-center gap-1"
+                  />
+                  <Select
+                    defaultValue="Mới nhất"
+                    className="select-sort"
+                    onChange={handleChangeSortListOrder}
+                    suffixIcon={<ArrowUpNarrowWide />}
+                    options={[
+                      { value: "old", label: "Cũ nhất" },
+                      { value: "new", label: "Mới nhất" }
+                    ]}
+                  />
+                </div>
+                <div>
+                  <Button
+                    onClick={() => setAddItem(true)}
+                    icon={<Plus size={15} />}
+                    nameButton="Thêm mới"
+                    classNameButton="py-2 px-3 bg-blue-500 w-full text-white font-medium rounded-3xl hover:bg-blue-500/80 duration-200 text-[13px] flex items-center gap-1"
+                  />
+                </div>
+              </div>
               <div>
                 <div className="bg-[#f2f2f2] dark:bg-darkPrimary grid grid-cols-12 items-center gap-2 py-3 border border-[#dedede] dark:border-darkBorder px-4 rounded-tl-xl rounded-tr-xl">
                   <div className="col-span-2 text-[14px] font-semibold tracking-wider uppercase">Mã thương hiệu</div>
@@ -603,7 +606,7 @@ export default function ManageBrand() {
       </Helmet>
       <NavigateBack />
       <h1 className="text-2xl font-bold text-gray-800 bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600 my-2">
-        Thương hiệu
+        Thương hiệu {state}
       </h1>
 
       <Collapse items={items} defaultActiveKey={["2"]} className="bg-white" />

@@ -6,5 +6,12 @@ export const conversationAPI = {
       params,
       signal
     })
+  },
+
+  getConversation: (signal: AbortSignal, receiverId: string, params: { limit: number; page: number }) => {
+    return Http.get(`/conversation/receiver/${receiverId}`, {
+      params,
+      signal
+    })
   }
 }

@@ -11,6 +11,7 @@ import Skeleton from "src/Components/Skeleton"
 import Breadcrumb from "src/Client/Components/Breadcrumb"
 import ProductItem from "./Components/ProductItem"
 import { getNameParams } from "src/Helpers/common"
+import { Empty } from "antd"
 
 export default function Collection() {
   const { slug } = useParams()
@@ -70,7 +71,9 @@ export default function Collection() {
                   )
                 })
               ) : (
-                <div className="text-center w-full col-span-5">Không có sản phẩm</div>
+                <div className="text-center w-full col-span-5">
+                  <Empty description={"Không có sản phẩm"} />
+                </div>
               )}
             </div>
           </div>

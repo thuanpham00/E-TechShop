@@ -135,3 +135,7 @@ a {
 .custom-button:hover {
   background: rgba(255, 0, 0, 0.6) !important;
 }
+
+.ant-collapse .ant-collapse-item .ant-collapse-content .ant-collapse-content-box {
+  padding-bottom: 4px !important;
+}

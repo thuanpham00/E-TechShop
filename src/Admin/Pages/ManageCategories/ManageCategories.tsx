@@ -380,47 +380,21 @@ export default function ManageCategories() {
                 </div>
               </div>
             </div>
-            <div className="flex justify-between mt-4">
-              <div className="flex items-center gap-2">
-                <Button
-                  onClick={() => setAddItem(true)}
-                  icon={<Plus size={15} />}
-                  nameButton="Thêm mới"
-                  classNameButton="py-2 px-3 bg-blue-500 w-full text-white font-medium rounded-3xl hover:bg-blue-500/80 duration-200 text-[13px] flex items-center gap-1"
-                />
-                <Button
-                  onClick={() => downloadExcel(listCategory)}
-                  icon={<FolderUp size={15} />}
-                  nameButton="Export"
-                  classNameButton="py-2 px-3 border border-[#E2E7FF] bg-[#E2E7FF] w-full text-[#3A5BFF] font-medium rounded-3xl hover:bg-blue-500/40 duration-200 text-[13px] flex items-center gap-1"
-                />
-                <Select
-                  defaultValue="Mới nhất"
-                  className="select-sort"
-                  onChange={handleChangeSortListOrder}
-                  suffixIcon={<ArrowUpNarrowWide />}
-                  options={[
-                    { value: "old", label: "Cũ nhất" },
-                    { value: "new", label: "Mới nhất" }
-                  ]}
-                />
-              </div>
-              <div className="flex items-center gap-2">
-                <Button
-                  onClick={handleResetFormSearch}
-                  type="button"
-                  icon={<RotateCcw size={15} />}
-                  nameButton="Xóa bộ lọc tìm kiếm"
-                  classNameButton="py-2 px-3 bg-[#f2f2f2] border border-[#dedede] w-full text-black font-medium hover:bg-[#dedede]/80 rounded-3xl duration-200 text-[13px] flex items-center gap-1 h-[35px]"
-                />
-                <Button
-                  type="submit"
-                  icon={<Search size={15} />}
-                  nameButton="Tìm kiếm"
-                  classNameButton="py-2 px-3 bg-blue-500 w-full text-white font-medium rounded-3xl hover:bg-blue-500/80 duration-200 text-[13px] flex items-center gap-1 h-[35px]"
-                  className="flex-shrink-0"
-                />
-              </div>
+            <div className="flex justify-end gap-2 mt-4">
+              <Button
+                onClick={handleResetFormSearch}
+                type="button"
+                icon={<RotateCcw size={15} />}
+                nameButton="Xóa bộ lọc"
+                classNameButton="py-2 px-3 bg-[#f2f2f2] border border-[#dedede] w-full text-black font-medium hover:bg-[#dedede]/80 rounded-3xl duration-200 text-[13px] flex items-center gap-1 h-[35px]"
+              />
+              <Button
+                type="submit"
+                icon={<Search size={15} />}
+                nameButton="Tìm kiếm"
+                classNameButton="py-2 px-3 bg-blue-500 w-full text-white font-medium rounded-3xl hover:bg-blue-500/80 duration-200 text-[13px] flex items-center gap-1 h-[35px]"
+                className="flex-shrink-0"
+              />
             </div>
           </form>
         </section>
@@ -434,6 +408,34 @@ export default function ManageCategories() {
           {isLoading && <Skeleton />}
           {!isFetching && (
             <div>
+              <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center gap-2">
+                  <Button
+                    onClick={() => downloadExcel(listCategory)}
+                    icon={<FolderUp size={15} />}
+                    nameButton="Export"
+                    classNameButton="py-2 px-3 border border-[#E2E7FF] bg-[#E2E7FF] w-full text-[#3A5BFF] font-medium rounded-3xl hover:bg-blue-500/40 duration-200 text-[13px] flex items-center gap-1"
+                  />
+                  <Select
+                    defaultValue="Mới nhất"
+                    className="select-sort"
+                    onChange={handleChangeSortListOrder}
+                    suffixIcon={<ArrowUpNarrowWide />}
+                    options={[
+                      { value: "old", label: "Cũ nhất" },
+                      { value: "new", label: "Mới nhất" }
+                    ]}
+                  />
+                </div>
+                <div>
+                  <Button
+                    onClick={() => setAddItem(true)}
+                    icon={<Plus size={15} />}
+                    nameButton="Thêm mới"
+                    classNameButton="py-2 px-3 bg-blue-500 w-full text-white font-medium rounded-3xl hover:bg-blue-500/80 duration-200 text-[13px] flex items-center gap-1"
+                  />
+                </div>
+              </div>
               <div>
                 <div className="bg-[#f2f2f2] dark:bg-darkPrimary grid grid-cols-12 items-center gap-2 py-3 border border-[#dedede] dark:border-darkBorder px-4 rounded-tl-xl rounded-tr-xl">
                   <div className="col-span-2 text-[14px] font-semibold tracking-wider uppercase">Mã danh mục</div>
