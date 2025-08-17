@@ -89,9 +89,13 @@ export default function Login() {
   return (
     <div>
       <Helmet>
-        <title>Đăng nhập tài khoản</title>
-        <meta name="description" content="Đây là trang đăng nhập người dùng của hệ thống" />
+        <title>Đăng nhập tài khoản - TechZone</title>
+        <meta
+          name="description"
+          content="Đăng nhập tài khoản TechZone để mua sắm nhanh chóng, quản lý đơn hàng và nhận nhiều ưu đãi dành riêng cho bạn."
+        />
       </Helmet>
+
       <div className="p-6">
         <Link to={path.Home} className="flex items-center justify-center">
           <Cpu />

@@ -392,7 +392,7 @@ export default function FilterProduct({ queryConfig }: Props) {
             </div>
           </div>
         </div>
-        <div className="flex justify-end gap-2 mt-4">
+        <div className="flex justify-end gap-2 mb-2">
           <Button
             onClick={handleResetFormSearch}
             type="button"

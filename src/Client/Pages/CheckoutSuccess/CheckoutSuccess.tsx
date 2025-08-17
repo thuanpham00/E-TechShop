@@ -14,7 +14,10 @@ export default function CheckoutSuccess() {
     <div>
       <Helmet>
         <title>Thanh toán thành công</title>
-        <meta name="description" content="Đây là trang giỏ hàng mua sắm của hệ thống" />
+        <meta
+          name="description"
+          content="Đơn hàng của bạn đã được thanh toán thành công tại TechZone. Chúng tôi sẽ xử lý và giao hàng trong thời gian sớm nhất."
+        />
       </Helmet>
 
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>

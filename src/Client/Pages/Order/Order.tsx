@@ -237,7 +237,10 @@ export default function Order() {
     <div>
       <Helmet>
         <title>Đơn hàng mua sắm</title>
-        <meta name="description" content="Đây là trang Đơn hàng mua sắm của hệ thống" />
+        <meta
+          name="description"
+          content="Quản lý đơn hàng mua sắm tại TechZone: kiểm tra trạng thái, chi tiết và lịch sử đơn hàng của bạn."
+        />
       </Helmet>
 
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>

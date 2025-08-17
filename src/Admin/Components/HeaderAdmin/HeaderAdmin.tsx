@@ -58,7 +58,7 @@ export default function HeaderAdmin({ handleSidebar, isShowSidebar }: Props) {
             <div className="bg-white dark:bg-darkPrimary shadow-md rounded-sm border border-gray-200 dark:border-darkBorder">
               <div className="flex flex-col">
                 <Link
-                  to={path.Profile}
+                  to={path.AdminProfile}
                   className="text-sm md:text-[13px] flex items-center gap-1 px-3 py-2 hover:text-primaryBlue hover:bg-slate-200 dark:hover:bg-darkSecond hover:underline hover:font-semibold"
                 >
                   Thông tin tài khoản

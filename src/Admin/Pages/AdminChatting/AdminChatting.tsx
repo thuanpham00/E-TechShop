@@ -11,6 +11,7 @@ import { ConversationType } from "src/Client/Components/ChatConsulting/ChatConsu
 import { AppContext } from "src/Context/authContext"
 import { Send } from "lucide-react"
 import InfiniteScroll from "react-infinite-scroll-component"
+import { queryClient } from "src/main"
 
 const MessageObject = {
   staff: "staff",
@@ -95,6 +96,10 @@ export default function AdminChatting() {
     })
     setConversations((prev) => [{ ...conversation, _id: new Date().getTime().toString() }, ...prev])
     setValueInput("")
+
+    queryClient.invalidateQueries({
+      queryKey: ["listUserType", activeTab]
+    })
   }
 
   const getDataConversation = useQuery({

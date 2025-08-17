@@ -15,6 +15,7 @@ interface DropDownListType {
   value?: string
   classNameWrapper?: string
   index?: number
+  placeholderName?: string
 }
 
 export default function DropdownList({
@@ -28,7 +29,8 @@ export default function DropdownList({
   setInputValueProductCPNFather_2,
   value,
   classNameWrapper = "mt-2 w-full relative",
-  index
+  index,
+  placeholderName = "Nhập tên sản phẩm"
 }: DropDownListType) {
   const { activeField, setActiveField, inputValue, setInputValue, filterList, inputRef, handleClickItemList } =
     useAutoComplete(listItem, value)
@@ -51,7 +53,7 @@ export default function DropdownList({
         <Input
           name={name}
           register={register}
-          placeholder="Nhập tên sản phẩm"
+          placeholder={placeholderName}
           classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-black focus:border-blue-500 focus:ring-1 outline-none rounded-md h-[35px]"
           className="relative flex-grow"
           classNameError="hidden"

@@ -53,7 +53,6 @@ export default function ManageBrand() {
 
   const { id } = useParams()
   const { state } = useLocation()
-  console.log(state)
   const queryClient = useQueryClient()
   const queryParams: queryParamConfigBrand = useQueryParams()
   const queryConfig: queryParamConfigBrand = omitBy(

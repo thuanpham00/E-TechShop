@@ -58,7 +58,8 @@ const listSpecificationForCategory = {
     "Tấm nền",
     "Kích thước",
     "Bảo hành"
-  ]
+  ],
+  "Bàn phím": ["Layout", "Cấu trúc", "Switch", "Pin", "Kết nối", "Led", "Key-cap", "Trọng lượng", "Bảo hành"]
 } as const
 
 type CategoryType = keyof typeof listSpecificationForCategory
@@ -142,7 +143,6 @@ export default function AddProduct() {
     name: "specifications" // Quản lý trường specifications trong form.
   }) // thiết kế để quản lý các trường dạng mảng trong form. Nó giúp bạn dễ dàng thêm, xóa, cập nhật, hoặc thay thế các phần tử trong mảng mà không cần dùng useState thủ công.
 
-  console.log(fields)
   const [selectedCategory, setSelectedCategory] = useState<CategoryType | null>(null)
   // const [specifications, setSpecifications] = useState<{ name: string; value: string }[]>([])
 
@@ -156,7 +156,6 @@ export default function AddProduct() {
       //   })
       // })
       // setSpecifications(array)
-      console.log(selectedCategory)
       const array = listSpecificationForCategory[selectedCategory].map((item) => ({
         name: item,
         value: ""
@@ -283,7 +282,6 @@ export default function AddProduct() {
       medias: galleryFiles as File[],
       specifications: data.specifications
     }
-    console.log(body)
     addProductMutation.mutate(body, {
       onSuccess: () => {
         toast.success("Thêm sản phẩm thành công!", {

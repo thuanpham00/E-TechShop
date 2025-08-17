@@ -56,11 +56,15 @@ export default function Collection() {
         {isLoading && <Skeleton />}
         {!isFetching && slug && (
           <div>
-            <img
-              className="rounded-lg shadow-md h-[300px] w-full"
-              src={(CategoryBanner as Record<string, string>)[slug]}
-              alt={`Banner ${slug}`}
-            />
+            {slug.includes("ban-phim") ? (
+              ""
+            ) : (
+              <img
+                className="rounded-lg shadow-md h-[300px] w-full"
+                src={(CategoryBanner as Record<string, string>)[slug]}
+                alt={`Banner ${slug}`}
+              />
+            )}
             <div className="bg-white rounded-lg shadow-md mb-4 mt-4 grid grid-cols-5 gap-2 p-4">
               {result?.result.length > 0 ? (
                 result?.result.map((item) => {

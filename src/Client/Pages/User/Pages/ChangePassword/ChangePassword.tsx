@@ -66,8 +66,11 @@ export default function ChangePassword() {
   return (
     <div>
       <Helmet>
-        <title>Hồ sơ của tôi</title>
-        <meta name="description" content="Hồ sơ của tôi | E-commerce shop" />
+        <title>Hồ sơ của tôi - TechZone</title>
+        <meta
+          name="description"
+          content="Xem và chỉnh sửa thông tin tài khoản, cập nhật mật khẩu để bảo mật tài khoản của bạn tại TechZone."
+        />
       </Helmet>
 
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>

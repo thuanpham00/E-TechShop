@@ -33,5 +33,7 @@ export const path = {
   AdminChat: "/admin/chats",
   AdminNotFound: "/admin/not-found",
   AddProduct: "/admin/products/add",
-  AddReceipt: "/admin/receipts/add"
+  AddReceipt: "/admin/receipts/add",
+
+  AdminProfile: "/admin/profile"
 }

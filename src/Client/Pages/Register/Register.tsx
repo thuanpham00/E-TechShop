@@ -75,8 +75,11 @@ export default function Register() {
   return (
     <div>
       <Helmet>
-        <title>Đăng ký tài khoản</title>
-        <meta name="description" content="Đây là trang đăng ký người dùng của hệ thống" />
+        <title>Đăng ký tài khoản - TechZone</title>
+        <meta
+          name="description"
+          content="Đăng ký tài khoản TechZone để mua sắm nhanh chóng, quản lý đơn hàng và nhận nhiều ưu đãi dành riêng cho bạn."
+        />
       </Helmet>
 
       <div className="p-6">

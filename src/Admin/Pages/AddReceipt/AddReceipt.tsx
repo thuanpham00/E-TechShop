@@ -48,7 +48,7 @@ export default function AddReceipt() {
 
   useEffect(() => {
     setValue("importDate", convertDateTime(new Date().toISOString()))
-  }, [])
+  }, [setValue])
 
   useEffect(() => {
     const newLength = Number(quantityProduct) // ban đầu là 2

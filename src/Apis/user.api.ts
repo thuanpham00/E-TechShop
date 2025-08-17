@@ -21,7 +21,7 @@ export const userAPI = {
   },
 
   updateMe: (body: UpdateBodyReq) => {
-    return Http.patch("/users/me", body)
+    return Http.put("/users/me", body)
   },
 
   verifyEmail: (email_verify_token: string) => {

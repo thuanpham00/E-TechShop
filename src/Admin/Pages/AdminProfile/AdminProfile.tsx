@@ -6,7 +6,7 @@ import { Helmet } from "react-helmet-async"
 import { userAPI } from "src/Apis/user.api"
 import InputFileImage from "src/Components/InputFileImage"
 import { AppContext } from "src/Context/authContext"
-import "./Profile.css"
+import "../../../Client/Pages/User/Pages/Profile/Profile.css"
 import { UpdateBodyReq } from "src/Types/product.type"
 import { MediaAPI } from "src/Apis/media.api"
 import { toast } from "react-toastify"
@@ -21,7 +21,7 @@ const years = Array.from({ length: 100 }, (_, i) => 2024 - i) // 1924 - 2024
 
 const { Option } = Select
 
-export default function Profile() {
+export default function AdminProfile() {
   const { avatar, userId } = useContext(AppContext)
   const queryClient = useQueryClient()
   const [day, setDay] = useState<number | null>(null)
@@ -117,7 +117,6 @@ export default function Profile() {
           onError: (error) => {
             if (isError422<ErrorResponse<{ name: string; numberPhone: string }>>(error)) {
               const formError = error.response?.data.errors
-              console.log(formError)
               const errorFields = []
               if (formError?.name) {
                 errorFields.push({
@@ -152,7 +151,7 @@ export default function Profile() {
         />
       </Helmet>
 
-      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="bg-white p-4 mt-2">
         <div className="border-b border-b-gray-200 pb-6">
           <h1 className={`text-black text-lg font-semibold capitalize`}>Hồ sơ của tôi</h1>
           <span className="text-sm">Quản lý thông tin hồ sơ để bảo mật tài khoản</span>

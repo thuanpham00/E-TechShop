@@ -64,7 +64,7 @@ export default function Home() {
         <title>TECHZONE | Laptop, PC, Màn hình, điện thoại, linh kiện Chính Hãng</title>
         <meta
           name="description"
-          content="Đây là trang TECHZONE | Laptop, PC, Màn hình, điện thoại, linh kiện Chính Hãng"
+          content="TechZone - Hệ thống bán lẻ laptop, PC, linh kiện, gaming gear và phụ kiện chính hãng. Giá tốt, khuyến mãi hấp dẫn, giao hàng toàn quốc."
         />
       </Helmet>
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>

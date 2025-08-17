@@ -57,25 +57,31 @@ export default function AddSupply({ setAddItem, addItem }: Props) {
     }
   })
 
-  const handleAddSupplySubmit = handleSubmit((data) => {
-    addSupplyMutation.mutate(data, {
-      onSuccess: () => {
-        toast.success("Thêm liên kết cung ứng thành công", { autoClose: 1500 })
-        setAddItem(false)
-        queryClient.invalidateQueries({ queryKey: ["listSupply"] }) // validate mọi trang liên quan -> sẽ gọi lại api
-      },
-      onError: (error) => {
-        // lỗi từ server trả về
-        if (isError422<ErrorResponse<FormData>>(error)) {
-          const formError = error.response?.data.errors
-          if (formError?.importPrice)
-            setError("importPrice", {
-              message: (formError.importPrice as any).msg // lỗi 422 từ server trả về
-            })
+  const handleAddSupplySubmit = handleSubmit(
+    (data) => {
+      console.log(data)
+      addSupplyMutation.mutate(data, {
+        onSuccess: () => {
+          toast.success("Thêm liên kết cung ứng thành công", { autoClose: 1500 })
+          setAddItem(false)
+          queryClient.invalidateQueries({ queryKey: ["listSupply"] }) // validate mọi trang liên quan -> sẽ gọi lại api
+        },
+        onError: (error) => {
+          // lỗi từ server trả về
+          if (isError422<ErrorResponse<FormData>>(error)) {
+            const formError = error.response?.data.errors
+            if (formError?.importPrice)
+              setError("importPrice", {
+                message: (formError.importPrice as any).msg // lỗi 422 từ server trả về
+              })
+          }
         }
-      }
-    })
-  })
+      })
+    },
+    (error) => {
+      console.log(error)
+    }
+  )
 
   const [inputValueProduct, setInputValueProduct] = useState("")
 
@@ -162,6 +168,7 @@ export default function AddSupply({ setAddItem, addItem }: Props) {
                     listItem={listNameSupplierResult}
                     onSelect={(item) => setValue("supplierId", item)}
                     nameInput="Chọn nhà cung cấp"
+                    placeholderName="Nhập tên nhà cung cấp"
                   />
                 </div>
                 <div className="mt-4 flex items-center gap-4">
@@ -175,7 +182,6 @@ export default function AddSupply({ setAddItem, addItem }: Props) {
                     nameInput="Giá nhập"
                   />
                   <Input
-                    name="sellPrice"
                     value={formatCurrency(Number(sellPriceValue) || 0)}
                     classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-white dark:bg-darkPrimary focus:border-blue-500 focus:ring-2 outline-none rounded-md"
                     className="relative flex-1"
@@ -185,15 +191,6 @@ export default function AddSupply({ setAddItem, addItem }: Props) {
                 </div>
                 <div className="mt-4 flex items-center gap-4">
                   <Input
-                    name="importPrice"
-                    register={register}
-                    placeholder="Nhập giá nhập"
-                    messageErrorInput={errors.importPrice?.message}
-                    classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#fff] dark:bg-darkPrimary focus:border-blue-500 focus:ring-2 outline-none rounded-md"
-                    className="relative flex-1"
-                    nameInput="Giá nhập"
-                  />
-                  <Input
                     name="leadTimeDays"
                     register={register}
                     placeholder="Nhập thời gian cung ứng"
@@ -201,6 +198,15 @@ export default function AddSupply({ setAddItem, addItem }: Props) {
                     classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-white dark:bg-darkPrimary focus:border-blue-500 focus:ring-2 outline-none rounded-md"
                     className="relative flex-1"
                     nameInput="Thời gian cung ứng"
+                  />
+                  <Input
+                    name="warrantyMonths"
+                    register={register}
+                    placeholder="Nhập thời gian bảo hành"
+                    messageErrorInput={errors.warrantyMonths?.message}
+                    classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-white dark:bg-darkPrimary focus:border-blue-500 focus:ring-2 outline-none rounded-md"
+                    className="relative flex-1"
+                    nameInput="Thời gian bảo hành (tháng)"
                   />
                 </div>
                 <div className="mt-4 flex items-center gap-4">

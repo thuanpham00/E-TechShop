@@ -213,7 +213,7 @@ export default function StatisticalSell() {
       {getStatisticalSell.isLoading && <Skeleton />}
       {!getStatisticalSell.isFetching ? (
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-          <div className="flex gap-1 items-center my-3 justify-end">
+          <div className="flex gap-1 items-center mb-3 justify-end">
             <Switch
               checkedChildren="Theo năm"
               unCheckedChildren="Theo tháng"

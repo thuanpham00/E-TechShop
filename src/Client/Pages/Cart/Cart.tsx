@@ -298,7 +298,10 @@ export default function Cart() {
     <div>
       <Helmet>
         <title>Giỏ hàng mua sắm</title>
-        <meta name="description" content="Đây là trang giỏ hàng mua sắm của hệ thống" />
+        <meta
+          name="description"
+          content="Giỏ hàng TechZone - Hoàn tất đơn hàng laptop, PC, linh kiện và phụ kiện công nghệ. Thanh toán nhanh, bảo mật, giao hàng toàn quốc."
+        />
       </Helmet>
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
         <div className="my-4">

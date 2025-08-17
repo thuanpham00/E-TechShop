@@ -37,6 +37,10 @@ export const MenuCategoryDetail: MenuItem[][] = [
         { name: "Từ 15 đến 20 triệu", path: "laptop-tu-15-den-20-trieu" },
         { name: "Trên 20 triệu", path: "laptop-tren-20-trieu" }
       ]
+    },
+    {
+      heading: "Khám phá",
+      value: [{ name: "Tất cả sản phẩm", path: "laptop" }]
     }
     // {
     //   heading: "CPU Intel - AMD",
@@ -66,6 +70,10 @@ export const MenuCategoryDetail: MenuItem[][] = [
         { name: "Từ 20 đến 25 triệu", path: "laptop-gaming-tu-20-den-25-trieu" },
         { name: "Trên 25 triệu", path: "laptop-gaming-tren-25-trieu" }
       ]
+    },
+    {
+      heading: "Khám phá",
+      value: [{ name: "Tất cả sản phẩm", path: "laptop-gaming" }]
     }
     // {
     //   heading: "Kích thước",
@@ -96,6 +104,10 @@ export const MenuCategoryDetail: MenuItem[][] = [
         { name: "I5 - 4060 - 17tr", path: "pc-gvn-rtx-4060" },
         { name: "I5 - 3060 - 15tr", path: "pc-gvn-rtx-3060" }
       ]
+    },
+    {
+      heading: "Khám phá",
+      value: [{ name: "Tất cả sản phẩm", path: "pc-gvn" }]
     }
   ],
   // dành cho Main-cpu-vga
@@ -181,6 +193,10 @@ export const MenuCategoryDetail: MenuItem[][] = [
         { name: "Từ 10 đến 20tr", path: "man-hinh-tu-10-den-20-trieu" },
         { name: "Trên 20tr", path: "man-hinh-tren-20-trieu" }
       ]
+    },
+    {
+      heading: "Khám phá",
+      value: [{ name: "Tất cả sản phẩm", path: "man-hinh" }]
     }
   ],
   // dành cho bàn phím
@@ -192,8 +208,7 @@ export const MenuCategoryDetail: MenuItem[][] = [
         { name: "AULA", path: "ban-phim-aula" },
         { name: "DARE-U", path: "ban-phim-dareu" },
         { name: "KEYCHRON", path: "ban-phim-keychron" },
-        { name: "CORSAIR", path: "ban-phim-corsair" },
-        { name: "E-DRA", path: "ban-phim-edra" }
+        { name: "CORSAIR", path: "ban-phim-corsair" }
       ]
     },
     {
@@ -210,8 +225,12 @@ export const MenuCategoryDetail: MenuItem[][] = [
         { name: "Dưới 1 triệu", path: "ban-phim-duoi-1-trieu" },
         { name: "Từ 1 đến 2tr", path: "ban-phim-tu-1-den-2-trieu" },
         { name: "Từ 2 đến 3tr", path: "ban-phim-tu-2-den-3-trieu" },
-        { name: "Trên 4tr", path: "ban-phim-tren-4-trieu" }
+        { name: "Trên 3tr", path: "ban-phim-tren-3-trieu" }
       ]
+    },
+    {
+      heading: "Khám phá",
+      value: [{ name: "Tất cả sản phẩm", path: "ban-phim" }]
     }
   ]
 ]
@@ -227,6 +246,7 @@ import bannerDell from "src/Assets/img/banner_category/dell-monitor.webp"
 import bannerManHinhViewSonic from "src/Assets/img/banner_category/banner-man-hinh-viewsonic.jpg"
 
 export const CategoryBanner = {
+  laptop: bannerLaptopAcer,
   "laptop-acer-hoc-tap-va-lam-viec": bannerLaptopAcer,
   "laptop-asus-hoc-tap-va-lam-viec": bannerLaptopAsus,
   "top-10-laptop-ban-chay": bannerLaptopDuoi15trieu,
@@ -236,6 +256,7 @@ export const CategoryBanner = {
   "laptop-lenovo-hoc-tap-va-lam-viec": bannerLaptopLenovo,
   "laptop-msi-hoc-tap-va-lam-viec": bannerLaptopDuoi15trieu,
 
+  "laptop-gaming": bannerLaptopLenovo,
   "top-10-laptop-gaming-ban-chay": bannerLaptopDuoi15trieu,
   "laptop-gaming-acer": bannerLaptopAcer,
   "laptop-gaming-asus": bannerLaptopAsus,
@@ -253,7 +274,9 @@ export const CategoryBanner = {
   "pc-gvn-rtx-5060": bannerPCGVN,
   "pc-gvn-rtx-4060": bannerPCGVN,
   "pc-gvn-rtx-3060": bannerPCGVN,
+  "pc-gvn": bannerPCGVN,
 
+  "man-hinh": bannerMonitor,
   "man-hinh-samsung": bannerMonitor,
   "man-hinh-asus": bannerAsus,
   "man-hinh-dell": bannerDell,

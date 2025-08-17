@@ -13,7 +13,7 @@ interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   classNameEye?: string
   classNameLabel?: string
   nameInput?: string
-  name: string
+  name?: string
   messageErrorInput?: string
   register?: UseFormRegister<any>
 }

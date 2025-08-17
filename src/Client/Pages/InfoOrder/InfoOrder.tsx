@@ -151,7 +151,10 @@ export default function InfoOrder() {
     <div>
       <Helmet>
         <title>Tiến hành đặt hàng</title>
-        <meta name="description" content="Đây là trang giỏ hàng mua sắm của hệ thống" />
+        <meta
+          name="description"
+          content="Hoàn tất đơn hàng của bạn tại TechZone. Nhập thông tin cá nhân, địa chỉ, phương thức thanh toán và đặt mua laptop, PC, linh kiện chính hãng ngay hôm nay."
+        />
       </Helmet>
       <div className="my-4">
         <div className="container">

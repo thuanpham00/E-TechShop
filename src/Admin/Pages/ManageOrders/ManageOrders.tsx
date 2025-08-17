@@ -662,11 +662,11 @@ export default function ManageOrders() {
                                     )
                                   })}
                                 </div>
-                                <div className="mt-2 text-red-500 text-base text-right font-semibold">
+                                <div className="mt-2 text-red-500 text-base font-semibold">
                                   Tổng tiền: {formatCurrency((order?.totalAmount as number) || 0)} đ
                                 </div>
                               </div>
-                              <div className="flex items-center justify-end">
+                              <div className="flex items-center justify-start">
                                 <Button
                                   type="submit"
                                   icon={<ArrowUpFromLine size={18} />}

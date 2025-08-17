@@ -11,13 +11,14 @@ import { CalculateSalePrice, formatCurrency, getNameFromNameId } from "src/Helpe
 import { CartType, CollectionItemType, FavouriteType, ProductDetailType, ProductItemType } from "src/Types/product.type"
 import { SuccessResponse } from "src/Types/utils.type"
 import star from "src/Assets/img/star.png"
-import { Heart } from "lucide-react"
+import { ChevronLeft, ChevronRight, Heart } from "lucide-react"
 import ProductItem from "../Collection/Components/ProductItem"
 import { useEffect, useMemo, useRef, useState } from "react"
 import { toast } from "react-toastify"
 import { getAccessTokenFromLS } from "src/Helpers/auth"
 import InputNumberQuantity from "src/Client/Components/InputNumberQuantity"
 import { motion } from "framer-motion"
+import { Modal } from "antd"
 
 export default function ProductDetail() {
   const queryClient = useQueryClient()
@@ -79,43 +80,22 @@ export default function ProductDetail() {
     }
   }
 
-  const handleZoom = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-    const rect = event.currentTarget.getBoundingClientRect() // lấy tọa độ
-    const image = imgRef.current as HTMLImageElement // lấy ảnh
-    const { naturalWidth, naturalHeight } = image // w và h ảnh gốc
-    const { offsetX, offsetY } = event.nativeEvent // lấy tọa độ chuột
-    if (image) {
-      image.style.width = naturalWidth + "px"
-      image.style.height = naturalHeight + "px"
-      image.style.maxWidth = "unset" // max-width mặc định
-      const top1 = offsetY * (1 - naturalHeight / rect.height) // kích thước gốc / kích thước pt
-      const left1 = offsetX * (1 - naturalWidth / rect.width) // kích thước gốc / kích thước pt
-      image.style.top = top1 + "px" // tọa độ chuột * (1 - kích thước gốc / kích thước pt)
-      image.style.left = left1 + "px" // tọa độ chuột * (1 - kích thước gốc / kích thước pt)
-    }
-  }
-
-  const handleResetZoom = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-    const image = imgRef.current as HTMLImageElement // lấy ảnh
-    const rect = event.currentTarget.getBoundingClientRect() // lấy tọa độ
-    image.style.top = 0 + "px" // tọa độ chuột * (1 - kích thước gốc / kích thước pt)
-    image.style.left = 0 + "px" // tọa độ chuột * (1 - kích thước gốc / kích thước pt)
-    if (image) {
-      image.style.width = rect.width + "px"
-      image.style.height = rect.height + "px"
-    }
-  }
-
-  const [imageCurrent, setImageCurrent] = useState<string>()
+  const [imageCurrent, setImageCurrent] = useState<number>()
 
   useEffect(() => {
     if (productDetail) {
-      setImageCurrent(productDetail.medias[0].url)
+      setImageCurrent(0)
     }
   }, [productDetail])
 
-  const chooseImage = (img: string) => {
-    setImageCurrent(img)
+  const chooseImage = (index: number) => {
+    if (index < 0) {
+      setImageCurrent(productDetail.medias.length - 1)
+    } else if (index > productDetail.medias.length - 1) {
+      setImageCurrent(0)
+    } else {
+      setImageCurrent(index)
+    }
   }
 
   const addFavouriteMutation = useMutation({
@@ -189,40 +169,70 @@ export default function ProductDetail() {
     }
   }, [productDetail?._id])
 
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [imgProductSelected, setImgProductSelected] = useState(0)
+
+  const showModal = (imgCurrent: number) => {
+    setImgProductSelected(imgCurrent)
+    setIsModalOpen(true)
+  }
+
+  const handleCancel = () => {
+    setIsModalOpen(false)
+  }
+
   return (
     <div className="container">
       {isLoading && <Skeleton />}
       {!isFetching && name && (
         <div>
           <Helmet>
-            <title>{productDetail.name}</title>
+            <title>{productDetail?.name}</title>
             <meta
               name="description"
-              content="Đây là trang TECHZONE | Laptop, PC, Màn hình, điện thoại, linh kiện Chính Hãng"
+              content={
+                productDetail
+                  ? `${productDetail.name} chính hãng tại TECHZONE. Giá chỉ ${formatCurrency(productDetail.price)}đ. Miễn phí ship, bảo hành chính hãng.`
+                  : "Chi tiết sản phẩm TECHZONE | Laptop, PC, Linh kiện..."
+              }
             />
           </Helmet>
-          <Breadcrumb slug_1={nameCategory} slug_2={productDetail.name} />
+          <Breadcrumb slug_1={nameCategory} slug_2={productDetail?.name} />
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
             <div className="bg-white rounded-lg shadow-md my-4 grid grid-cols-6 gap-6 p-6 pt-4">
-              <div className="col-span-2">
-                <div
-                  className="relative pt-[100%] cursor-zoom-in overflow-hidden"
-                  onMouseMove={handleZoom}
-                  onMouseLeave={handleResetZoom}
-                >
-                  <img
-                    ref={imgRef}
-                    loading="lazy"
-                    src={imageCurrent}
-                    alt={productDetail?.name}
-                    className="absolute top-0 left-0 object-cover w-full h-auto pointer-events-none"
-                  />
+              <div className="col-span-3">
+                <div className="flex items-center">
+                  <button
+                    className="hover:bg-gray-200 p-2 duration-200 transition-all ease-linear
+                   rounded-full"
+                    onClick={() => chooseImage((imageCurrent || 0) - 1)}
+                  >
+                    <ChevronLeft />
+                  </button>
+                  <button
+                    onClick={() => showModal(imageCurrent as number)}
+                    className="cursor-pointer flex justify-center w-full"
+                  >
+                    <img
+                      ref={imgRef}
+                      loading="lazy"
+                      src={productDetail?.medias[Number(imageCurrent)]?.url}
+                      alt={productDetail?.name}
+                      className="object-cover w-[60%] h-[300px] pointer-events-none"
+                    />
+                  </button>
+                  <button
+                    className="hover:bg-gray-200 p-2 duration-200 transition-all ease-linear
+                   rounded-full"
+                  >
+                    <ChevronRight onClick={() => chooseImage((imageCurrent || 0) + 1)} />
+                  </button>
                 </div>
-                <div className="grid grid-cols-4 gap-2">
-                  {productDetail.medias.map((item) => {
-                    const isActive = item.url === imageCurrent
+                <div className="mt-6 grid grid-cols-4 gap-4">
+                  {productDetail?.medias.map((item, index) => {
+                    const isActive = imageCurrent === index
                     return (
-                      <button key={item.url} onClick={() => chooseImage(item.url)} className="relative">
+                      <button key={item.url} onClick={() => chooseImage(index)} className="relative">
                         <img
                           loading="lazy"
                           src={item.url}
@@ -235,10 +245,10 @@ export default function ProductDetail() {
                   })}
                 </div>
               </div>
-              <div className="col-span-4">
+              <div className="col-span-3">
                 <div className="flex items-center gap-2">
-                  <h1 className="text-2xl font-semibold max-w-[500px]">{productDetail.name}</h1>
-                  {productDetail.isFeatured === "true" ? (
+                  <h1 className="text-2xl font-semibold max-w-[500px]">{productDetail?.name}</h1>
+                  {productDetail?.isFeatured === "true" ? (
                     <span className="bg-gradient-to-r from-orange-400 to-pink-500 text-white px-3 py-1 rounded-full text-sm font-semibold">
                       Nổi bật
                     </span>
@@ -248,13 +258,13 @@ export default function ProductDetail() {
                 </div>
 
                 <div className="mt-2 flex items-center gap-1">
-                  <span className="text-[14px] font-medium text-gray-500 block">Đã bán: {productDetail.sold} | </span>
+                  <span className="text-[14px] font-medium text-gray-500 block">Đã bán: {productDetail?.sold} | </span>
                   <h3 className="text-base text-yellow-500 font-semibold">0.0</h3>
                   <img src={star} alt="ngôi sao icon" className="w-3 h-3" />
                   <span className="ml-3 text-base text-blue-500">Xem đánh giá</span>
                 </div>
                 <div className="mt-2 ">
-                  {productDetail.discount > 0 && (
+                  {productDetail?.discount > 0 && (
                     <div className="flex items-center gap-3 my-4">
                       <h2 className="text-3xl font-semibold text-red-500">
                         {CalculateSalePrice(productDetail.price, productDetail.discount)}₫
@@ -267,13 +277,13 @@ export default function ProductDetail() {
                       </div>
                     </div>
                   )}
-                  {productDetail.discount === 0 && (
+                  {productDetail?.discount === 0 && (
                     <h2 className="text-3xl font-semibold text-red-500">{formatCurrency(productDetail.price)}₫</h2>
                   )}
                   <span className="text-[13px] text-gray-500">Giá đã bao gồm VAT</span>
                 </div>
 
-                {productDetail.status === "available" && (
+                {productDetail?.status === "available" && (
                   <div className="flex items-center gap-8 my-4">
                     <span className="text-gray-500">Số lượng</span>
                     <InputNumberQuantity
@@ -288,17 +298,17 @@ export default function ProductDetail() {
                 )}
 
                 <div className="flex items-center gap-2 mt-4">
-                  {productDetail.status === "out_of_stock" && (
+                  {productDetail?.status === "out_of_stock" && (
                     <button className="py-2 bg-[#bcbec2] rounded-md text-white w-[180px] text-[15px]">HẾT HÀNG</button>
                   )}
 
-                  {productDetail.status === "discontinued" && (
+                  {productDetail?.status === "discontinued" && (
                     <button className="py-2 bg-[#bcbec2] rounded-md text-white w-[180px] text-[15px]">
                       Ngừng sản xuất
                     </button>
                   )}
 
-                  {productDetail.status === "available" && (
+                  {productDetail?.status === "available" && (
                     <div className="flex items-center gap-2">
                       <button
                         type="button"
@@ -341,7 +351,7 @@ export default function ProductDetail() {
                     <div className="text-green-600 text-xl">🛡️</div>
                     <div>
                       <div className="text-sm font-semibold text-gray-800">Bảo hành chính hãng</div>
-                      {productDetail.specifications.map((item) => {
+                      {productDetail?.specifications.map((item) => {
                         if (item.name === "Bảo hành") {
                           return (
                             <span key={item.name} className="text-xs font-medium">
@@ -379,7 +389,7 @@ export default function ProductDetail() {
               <h4 className="text-xl font-medium">Thông tin sản phẩm</h4>
               <div className="mt-2 text-lg font-bold">Thông số kĩ thuật:</div>
               <div className="mt-2">
-                {productDetail.specifications.length > 0 ? (
+                {productDetail?.specifications.length > 0 ? (
                   <div>
                     {productDetail.specifications?.map((item) => {
                       return (
@@ -399,7 +409,7 @@ export default function ProductDetail() {
                 )}
               </div>
 
-              {productDetail.description === "<p>Đợi cập nhật</p>" ? (
+              {productDetail?.description === "<p>Đợi cập nhật</p>" ? (
                 <div
                   className="mt-4 prose max-w-none text-center font-semibold"
                   dangerouslySetInnerHTML={{ __html: productDetail.description }}
@@ -407,11 +417,23 @@ export default function ProductDetail() {
               ) : (
                 <div
                   className="mt-4 prose max-w-none"
-                  dangerouslySetInnerHTML={{ __html: productDetail.description }}
+                  dangerouslySetInnerHTML={{ __html: productDetail?.description }}
                 />
               )}
             </div>
           </motion.div>
+
+          <Modal
+            closable={{ "aria-label": "Custom Close Button" }}
+            open={isModalOpen}
+            onCancel={handleCancel}
+            footer={null}
+          >
+            <img
+              src={productDetail.medias[imgProductSelected].url}
+              alt={productDetail.medias[imgProductSelected].url}
+            />
+          </Modal>
         </div>
       )}
     </div>
