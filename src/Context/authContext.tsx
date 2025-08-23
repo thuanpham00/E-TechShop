@@ -54,7 +54,7 @@ export default function AppClientProvider({ children }: Props) {
   const [avatar, setAvatar] = useState<string | null>(initialStateContext.avatar)
   const [userId, setUserId] = useState<string | null>(initialStateContext.userId)
 
-  // nếu ko dùng state thì nó ko set lại giá trị context được vì ở đây tôi () => null đúng ko . 
+  // nếu ko dùng state thì nó ko set lại giá trị context được vì ở đây tôi () => null đúng ko .
   // nên dùng state để nó có thể trigger set lại giá trị đúng ko
   /**
    * Các biến trong context (như isAuthenticated, nameUser, isShowCategory, ...) phải khớp với các biến state trong AppClientProvider để đảm bảo rằng chúng phản ánh đúng dữ liệu toàn cục được quản lý bởi context.

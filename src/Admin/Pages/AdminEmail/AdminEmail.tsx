@@ -85,28 +85,32 @@ export default function AdminEmail() {
         <div>
           {getDomainResendQuery.isLoading && <Skeleton />}
           {!getDomainResendQuery.isFetching && (
-            <div className="mt-2 p-4 bg-white rounded-2xl shadow-md space-y-4 border border-gray-200">
-              <h2 className="text-xl font-semibold text-gray-800">Thông tin Domain</h2>
+            <div className="mt-2 p-4 bg-white dark:bg-darkPrimary dark:border-0 rounded-2xl shadow-md space-y-4 border border-gray-200">
+              <h2 className="text-xl font-semibold text-gray-800 dark:text-white">Thông tin Domain</h2>
               <div className="space-y-2">
                 <div className="flex justify-between">
-                  <span className="text-gray-500">Name:</span>
-                  <span className="text-gray-900 font-medium">{domainData?.name}</span>
+                  <span className="text-gray-500 dark:text-white">Name:</span>
+                  <span className="text-gray-900 font-medium dark:text-gray-300">{domainData?.name}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-500">Status:</span>
-                  <span className="text-green-600 font-semibold capitalize">{domainData?.status}</span>
+                  <span className="text-gray-500 dark:text-white">Status:</span>
+                  <span className="text-green-600 font-semibold capitalize dark:text-gray-300">
+                    {domainData?.status}
+                  </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-500">Region:</span>
-                  <span className="text-gray-700">{domainData?.region}</span>
+                  <span className="text-gray-500 dark:text-white">Region:</span>
+                  <span className="text-gray-700 dark:text-gray-300">{domainData?.region}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-500">Created at:</span>
-                  <span className="text-gray-700">{new Date(domainData?.created_at).toLocaleString()}</span>
+                  <span className="text-gray-500 dark:text-white">Created at:</span>
+                  <span className="text-gray-700 dark:text-gray-300">
+                    {new Date(domainData?.created_at).toLocaleString()}
+                  </span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-gray-500">ID:</span>
-                  <span className="text-gray-700  w-40 text-right">{domainData?.id}</span>
+                  <span className="text-gray-500 dark:text-white">ID:</span>
+                  <span className="text-gray-700 w-40 text-right dark:text-gray-300">{domainData?.id}</span>
                 </div>
               </div>
             </div>

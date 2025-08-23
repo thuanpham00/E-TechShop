@@ -45,14 +45,14 @@ export default function DateSelect({ onChange, errorMessage, value }: Props) {
 
   return (
     <div className="flex flex-wrap flex-col">
-      <div className="">Ngày sinh</div>
+      <div className="text-black dark:text-white">Ngày sinh</div>
       <div className="mt-1">
         <div className="flex items-center gap-2">
           <select
             onChange={handleChangeDate}
             value={value?.getDate() || date.day}
             name="day"
-            className="h-10 flex-1 bg-white dark:bg-darkPrimary rounded-sm border border-black/10 dark:border-darkBorder cursor-pointer text-[#000] dark:text-white"
+            className="h-10 flex-1 bg-white dark:bg-darkSecond rounded-sm border border-black/10 dark:border-darkBorder cursor-pointer text-[#000] dark:text-white"
           >
             <option disabled>Ngày</option>
             {range(1, 32).map((item) => (
@@ -66,7 +66,7 @@ export default function DateSelect({ onChange, errorMessage, value }: Props) {
             onChange={handleChangeDate}
             value={value?.getMonth() || date.month}
             name="month"
-            className="h-10 flex-1 bg-white dark:bg-darkPrimary rounded-sm border border-black/10 dark:border-darkBorder cursor-pointer text-[#000] dark:text-white"
+            className="h-10 flex-1 bg-white dark:bg-darkSecond rounded-sm border border-black/10 dark:border-darkBorder cursor-pointer text-[#000] dark:text-white"
           >
             <option disabled>Tháng</option>
             {range(0, 12).map((item) => (
@@ -80,7 +80,7 @@ export default function DateSelect({ onChange, errorMessage, value }: Props) {
             onChange={handleChangeDate}
             value={value?.getFullYear() || date.year}
             name="year"
-            className="h-10 flex-1 bg-white dark:bg-darkPrimary rounded-sm border border-black/10 dark:border-darkBorder cursor-pointer text-[#000] dark:text-white"
+            className="h-10 flex-1 bg-white dark:bg-darkSecond rounded-sm border border-black/10 dark:border-darkBorder cursor-pointer text-[#000] dark:text-white"
           >
             <option disabled>Năm</option>
             {range(1990, 2050).map((item) => (

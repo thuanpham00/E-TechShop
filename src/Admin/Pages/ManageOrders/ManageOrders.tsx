@@ -27,6 +27,7 @@ import { toast } from "react-toastify"
 import { queryClient } from "src/main"
 import DatePicker from "src/Admin/Components/DatePickerRange"
 import useDownloadExcel from "src/Hook/useDownloadExcel"
+import { useTheme } from "src/Admin/Components/Theme-provider/Theme-provider"
 
 type FormDataUpdate = Pick<
   SchemaOrderType,
@@ -60,6 +61,8 @@ const formDataSearch = schemaOrderSearch.pick([
 ])
 
 export default function ManageOrders() {
+  const { theme } = useTheme()
+  const isDark = theme === "dark" || theme === "system"
   const navigate = useNavigate()
   const { downloadExcel } = useDownloadExcel()
   const queryParams: queryParamConfigOrder = useQueryParams()
@@ -250,20 +253,20 @@ export default function ManageOrders() {
   const items: CollapseProps["items"] = [
     {
       key: "1",
-      label: <h1 className="text-[16px] font-semibold tracking-wide">Bộ lọc & Tìm kiếm</h1>,
+      label: <h1 className="text-[16px] font-semibold tracking-wide text-black dark:text-white">Bộ lọc & Tìm kiếm</h1>,
       children: (
         <section className="bg-white dark:bg-darkPrimary mb-3 dark:border-darkBorder rounded-2xl">
           <form onSubmit={handleSubmitSearch}>
             <div className="mt-1 grid grid-cols-2">
               <div className="col-span-1 flex items-center h-14 px-2 bg-[#ececec] dark:bg-darkBorder border border-[#dadada] rounded-tl-xl">
-                <span className="w-1/3">Tên người nhận</span>
+                <span className="w-1/3 dark:text-white">Tên người nhận</span>
                 <div className="w-2/3 relative h-full">
                   <div className="mt-2 w-full flex items-center gap-2">
                     <Input
                       name="name"
                       register={registerFormSearch}
                       placeholder="Nhập tên người nhận"
-                      classNameInput="p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#fff] dark:bg-black focus:border-blue-500 focus:ring-1 outline-none rounded-md h-[35px]"
+                      classNameInput="p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#fff] dark:bg-darkSecond focus:border-blue-500 focus:ring-1 outline-none rounded-md text-black dark:text-white"
                       className="relative flex-grow"
                       classNameError="hidden"
                     />
@@ -272,14 +275,14 @@ export default function ManageOrders() {
                 </div>
               </div>
               <div className="col-span-1 flex items-center h-14 px-2 bg-[#ececec] dark:bg-darkBorder border border-[#dadada] rounded-tr-xl">
-                <span className="w-1/3">Địa chỉ người nhận</span>
+                <span className="w-1/3 dark:text-white">Địa chỉ người nhận</span>
                 <div className="w-2/3 relative h-full">
                   <div className="mt-2 w-full flex items-center gap-2">
                     <Input
                       name="address"
                       register={registerFormSearch}
                       placeholder="Nhập địa chỉ"
-                      classNameInput="p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#fff] dark:bg-black focus:border-blue-500 focus:ring-1 outline-none rounded-md h-[35px]"
+                      classNameInput="p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#fff] dark:bg-darkSecond focus:border-blue-500 focus:ring-1 outline-none rounded-md text-black dark:text-white"
                       className="relative flex-grow"
                       classNameError="hidden"
                     />
@@ -288,14 +291,14 @@ export default function ManageOrders() {
                 </div>
               </div>
               <div className="col-span-1 flex items-center h-14 px-2 bg-[#fff] dark:bg-darkBorder border border-[#dadada] border-t-0">
-                <span className="w-1/3">Số điện thoại</span>
+                <span className="w-1/3 dark:text-white">Số điện thoại</span>
                 <div className="w-2/3 relative h-full">
                   <div className="mt-2 w-full flex items-center gap-2">
                     <Input
                       name="phone"
                       register={registerFormSearch}
                       placeholder="Nhập số điện thoại"
-                      classNameInput="p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-black focus:border-blue-500 focus:ring-1 outline-none rounded-md h-[35px]"
+                      classNameInput="p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-darkSecond focus:border-blue-500 focus:ring-1 outline-none rounded-md text-black dark:text-white"
                       className="relative flex-grow"
                       classNameError="hidden"
                     />
@@ -304,7 +307,7 @@ export default function ManageOrders() {
                 </div>
               </div>
               <div className="col-span-1 flex items-center h-14 px-2 bg-[#fff] dark:bg-darkBorder border border-[#dadada] border-t-0">
-                <span className="w-1/3">Trạng thái</span>
+                <span className="w-1/3 dark:text-white">Trạng thái</span>
                 <div className="w-2/3 relative h-full">
                   <Controller
                     name="status"
@@ -315,7 +318,7 @@ export default function ManageOrders() {
                           // {...field}
                           value={field.value ?? ""} // ✅ Giá trị từ form
                           onChange={(e) => field.onChange(e.target.value ? e.target.value : undefined)} // ✅ Cập nhật vào form
-                          className="p-2 border border-gray-300 dark:border-darkBorder bg-[#f2f2f2] dark:bg-black w-full mt-2 rounded-md"
+                          className="p-2 border border-gray-300 dark:border-darkBorder bg-[#f2f2f2] dark:bg-darkSecond w-full mt-2 rounded-md dark:text-white"
                         >
                           <option value="" disabled>
                             -- Chọn thể loại --
@@ -337,7 +340,7 @@ export default function ManageOrders() {
                 </div>
               </div>
               <div className="col-span-1 flex items-center h-14 px-2 bg-[#ececec] dark:bg-darkBorder border border-[#dadada] border-t-0 rounded-bl-xl">
-                <span className="w-1/3">Ngày tạo</span>
+                <span className="w-1/3 dark:text-white">Ngày tạo</span>
                 <div className="w-2/3 relative h-full">
                   <div className="mt-2 w-full flex items-center gap-2">
                     <Controller
@@ -395,7 +398,7 @@ export default function ManageOrders() {
                   defaultValue="Mới nhất"
                   className="select-sort"
                   onChange={handleChangeSortListOrder}
-                  suffixIcon={<ArrowUpNarrowWide />}
+                  suffixIcon={<ArrowUpNarrowWide color={isDark ? "white" : "black"} />}
                   options={[
                     { value: "old", label: "Cũ nhất" },
                     { value: "new", label: "Mới nhất" }
@@ -425,7 +428,7 @@ export default function ManageOrders() {
     },
     {
       key: "2",
-      label: <h2 className="text-[16px] font-semibold tracking-wide">Danh sách Đơn hàng</h2>,
+      label: <h2 className="text-[16px] font-semibold tracking-wide text-black dark:text-white">Danh sách Đơn hàng</h2>,
       children: (
         <section className="bg-white dark:bg-darkPrimary mb-3 dark:border-darkBorder rounded-2xl">
           {isLoading && <Skeleton />}
@@ -433,23 +436,31 @@ export default function ManageOrders() {
             <div>
               <div>
                 <div className="bg-[#f2f2f2] dark:bg-darkPrimary grid grid-cols-12 items-center gap-2 py-3 border border-[#dedede] dark:border-darkBorder px-4 rounded-tl-xl rounded-tr-xl">
-                  <div className="col-span-1 text-[14px] font-semibold tracking-wider uppercase sticky top-0 left-0">
+                  <div className="col-span-1 text-[14px] font-semibold tracking-wider uppercase sticky top-0 left-0 text-black dark:text-white">
                     Mã đơn hàng
                   </div>
-                  <div className="col-span-2 text-[14px] font-semibold tracking-wider uppercase">Người nhận hàng</div>
-                  <div className="col-span-1 text-[14px] font-semibold tracking-wider uppercase">Số điện thoại</div>
-                  <div className="col-span-2 text-[14px] text-center font-semibold tracking-wider uppercase">
+                  <div className="col-span-2 text-[14px] font-semibold tracking-wider uppercase text-black dark:text-white">
+                    Người nhận hàng
+                  </div>
+                  <div className="col-span-1 text-[14px] font-semibold tracking-wider uppercase  text-black dark:text-white">
+                    Số điện thoại
+                  </div>
+                  <div className="col-span-2 text-[14px] text-center font-semibold tracking-wider uppercase text-black dark:text-white">
                     Địa chỉ
                   </div>
-                  <div className="col-span-1 text-[14px] font-semibold tracking-wider uppercase">Tổng tiền</div>
-                  <div className="col-span-1 text-[14px] text-center font-semibold tracking-wider uppercase">
+                  <div className="col-span-1 text-[14px] font-semibold tracking-wider uppercase text-black dark:text-white">
+                    Tổng tiền
+                  </div>
+                  <div className="col-span-1 text-[14px] text-center font-semibold tracking-wider uppercase text-black dark:text-white">
                     Sản phẩm
                   </div>
-                  <div className="col-span-2 text-[14px] text-center font-semibold tracking-wider uppercase">
+                  <div className="col-span-2 text-[14px] text-center font-semibold tracking-wider uppercase text-black dark:text-white">
                     Trạng thái
                   </div>
-                  <div className="col-span-1 text-[14px] font-semibold tracking-wider uppercase">Ngày tạo</div>
-                  <div className="col-span-1 text-[14px] text-center font-semibold tracking-wider uppercase">
+                  <div className="col-span-1 text-[14px] font-semibold tracking-wider uppercase text-black dark:text-white">
+                    Ngày tạo
+                  </div>
+                  <div className="col-span-1 text-[14px] text-center font-semibold tracking-wider uppercase text-black dark:text-white">
                     Hành động
                   </div>
                 </div>
@@ -504,7 +515,7 @@ export default function ManageOrders() {
                         className="bg-white dark:bg-darkPrimary rounded-md w-[1100px] overflow-hidden"
                       >
                         <div className="max-h-[600px] overflow-y-auto">
-                          <h3 className="py-2 px-4 text-lg font-semibold tracking-wide rounded-md sticky top-0 left-0 bg-white dark:bg-darkPrimary z-20">
+                          <h3 className="py-2 px-4 text-lg font-semibold tracking-wide rounded-md sticky top-0 left-0 bg-white dark:bg-darkPrimary z-20 text-black dark:text-white">
                             Thông tin đơn hàng
                           </h3>
                           <div className="p-4 pt-0 flex items-start justify-between gap-4">
@@ -515,8 +526,9 @@ export default function ManageOrders() {
                                   register={register}
                                   placeholder="Nhập họ tên"
                                   messageErrorInput={errors.id?.message}
-                                  classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-darkSecond focus:border-blue-500 focus:ring-2 outline-none rounded-md"
+                                  classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-darkSecond focus:border-blue-500 focus:ring-2 outline-none rounded-md text-black dark:text-white"
                                   className="relative flex-1"
+                                  classNameLabel="text-black dark:text-white"
                                   nameInput="Mã đơn hàng"
                                   disabled
                                 />
@@ -525,8 +537,9 @@ export default function ManageOrders() {
                                   register={register}
                                   placeholder="Nhập họ tên"
                                   messageErrorInput={errors.customer_info?.name?.message}
-                                  classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-darkPrimary focus:border-blue-500 focus:ring-2 outline-none rounded-md"
+                                  classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-darkSecond focus:border-blue-500 focus:ring-2 outline-none rounded-md text-black dark:text-white"
                                   className="relative flex-1"
+                                  classNameLabel="text-black dark:text-white"
                                   nameInput="Tên người nhận"
                                   disabled
                                 />
@@ -535,8 +548,9 @@ export default function ManageOrders() {
                                   name="customer_info.phone"
                                   placeholder="Nhập số điện thoại"
                                   messageErrorInput={errors.customer_info?.phone?.message}
-                                  classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-darkSecond  focus:border-blue-500 focus:ring-2 outline-none rounded-md"
+                                  classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-darkSecond  focus:border-blue-500 focus:ring-2 outline-none rounded-md text-black dark:text-white"
                                   className="relative flex-1"
+                                  classNameLabel="text-black dark:text-white"
                                   nameInput="Số điện thoại"
                                   disabled
                                 />
@@ -547,8 +561,9 @@ export default function ManageOrders() {
                                   register={register}
                                   placeholder="Nhập địa chỉ"
                                   messageErrorInput={errors.customer_info?.address?.message}
-                                  classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-darkSecond focus:border-blue-500 focus:ring-2 outline-none rounded-md"
+                                  classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-darkSecond focus:border-blue-500 focus:ring-2 outline-none rounded-md text-black dark:text-white"
                                   className="relative flex-1"
+                                  classNameLabel="text-black dark:text-white"
                                   nameInput="Địa chỉ"
                                   disabled
                                 />
@@ -559,9 +574,10 @@ export default function ManageOrders() {
                                   name="note"
                                   placeholder="Nhập ghi chú"
                                   messageErrorInput={errors.customer_info?.phone?.message}
-                                  classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-darkSecond  focus:border-blue-500 focus:ring-2 outline-none rounded-md"
+                                  classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-darkSecond focus:border-blue-500 focus:ring-2 outline-none rounded-md text-black dark:text-white"
                                   className="relative flex-1"
                                   nameInput="Ghi chú (Optional)"
+                                  classNameLabel="text-black dark:text-white"
                                   disabled
                                 />
                               </div>
@@ -571,8 +587,9 @@ export default function ManageOrders() {
                                   register={register}
                                   placeholder="Nhập ngày tạo"
                                   messageErrorInput={errors.created_at?.message}
-                                  classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-darkSecond focus:border-blue-500 focus:ring-2 outline-none rounded-md"
+                                  classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-darkSecond focus:border-blue-500 focus:ring-2 outline-none rounded-md text-black dark:text-white"
                                   className="relative flex-1"
+                                  classNameLabel="text-black dark:text-white"
                                   nameInput="Ngày tạo"
                                   disabled
                                 />
@@ -581,14 +598,15 @@ export default function ManageOrders() {
                                   register={register}
                                   placeholder="Nhập ngày tạo cập nhật"
                                   messageErrorInput={errors.updated_at?.message}
-                                  classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-darkSecond  focus:border-blue-500 focus:ring-2 outline-none rounded-md"
+                                  classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-darkSecond  focus:border-blue-500 focus:ring-2 outline-none rounded-md text-black dark:text-white"
                                   className="relative flex-1"
+                                  classNameLabel="text-black dark:text-white"
                                   nameInput="Ngày cập nhật"
                                   disabled
                                 />
                               </div>
                               <div className="mt-1">
-                                <span>Trạng thái</span>
+                                <span className="text-black dark:text-white">Trạng thái</span>
                                 <Controller
                                   name="status"
                                   control={control}
@@ -609,7 +627,7 @@ export default function ManageOrders() {
                                 />
                               </div>
                               <div className="mt-2">
-                                <div className="text-lg text-center font-semibold mb-2 tracking-wide">
+                                <div className="text-lg text-center font-semibold mb-2 tracking-wide text-black dark:text-white">
                                   Danh sách sản phẩm ({order?.products.length})
                                 </div>
                                 <div className="space-y-3">
@@ -617,7 +635,7 @@ export default function ManageOrders() {
                                     return (
                                       <div
                                         key={item.product_id}
-                                        className="flex items-center justify-between p-3 border border-gray-200 rounded-md shadow-sm bg-white"
+                                        className="flex items-center justify-between p-3 border border-gray-200 rounded-md shadow-sm bg-white dark:bg-darkPrimary"
                                       >
                                         <div className="flex items-center gap-4">
                                           <img
@@ -626,8 +644,10 @@ export default function ManageOrders() {
                                             className="w-16 h-16 object-cover rounded-md border"
                                           />
                                           <div>
-                                            <p className="font-medium text-gray-800">{item.name}</p>
-                                            <p className="text-sm text-gray-500">Số lượng: {item.quantity}</p>
+                                            <p className="font-medium text-gray-800 dark:text-white">{item.name}</p>
+                                            <p className="text-sm text-gray-500 dark:text-gray-300">
+                                              Số lượng: {item.quantity}
+                                            </p>
                                           </div>
                                         </div>
 
@@ -635,11 +655,11 @@ export default function ManageOrders() {
                                         <div className="text-right">
                                           {item.discount !== 0 ? (
                                             <div>
-                                              <p className="text-sm text-gray-600">
+                                              <p className="text-sm text-gray-600 dark:text-gray-300">
                                                 Đơn giá:{" "}
                                                 {formatCurrency(item.price - item.price * (item.discount / 100))}đ
                                               </p>
-                                              <p className="text-sm font-semibold text-gray-700">
+                                              <p className="text-sm font-semibold text-gray-700 dark:text-gray-300">
                                                 Thành tiền:{" "}
                                                 {formatCurrency(
                                                   (item.price - item.price * (item.discount / 100)) * item.quantity
@@ -649,7 +669,7 @@ export default function ManageOrders() {
                                             </div>
                                           ) : (
                                             <div>
-                                              <p className="text-sm text-gray-600">
+                                              <p className="text-sm text-gray-600 dark:text-gray-300">
                                                 Đơn giá: {formatCurrency(item.price)} đ
                                               </p>
                                               <p className="text-sm font-semibold text-gray-700">
@@ -676,7 +696,9 @@ export default function ManageOrders() {
                               </div>
                             </div>
                             <div className="w-1/3">
-                              <div className="text-base font-semibold tracking-wide">Lịch sử đơn hàng</div>
+                              <div className="text-base font-semibold tracking-wide text-black dark:text-white">
+                                Lịch sử đơn hàng
+                              </div>
                               <div className="ml-2">
                                 <Steps
                                   progressDot
@@ -717,7 +739,7 @@ export default function ManageOrders() {
         Đơn hàng
       </h1>
 
-      <Collapse items={items} defaultActiveKey={["2"]} className="bg-white" />
+      <Collapse items={items} defaultActiveKey={["2"]} className="bg-white dark:bg-darkPrimary dark:border-none" />
     </div>
   )
 }

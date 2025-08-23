@@ -9,3 +9,17 @@
 .select-status {
   width: 100%;
 }
+
+.dark .ant-select .ant-select-selector {
+  background-color: #26282c !important;
+}
+.dark .ant-select .ant-select-selection-item {
+  color: #fff !important;
+}
+
+.dark .ant-steps-item-content .ant-steps-item-title {
+  color: #fff !important;
+}
+.dark .ant-steps-item-content .ant-steps-item-description {
+  color: #fff !important;
+}

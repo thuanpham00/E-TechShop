@@ -44,12 +44,12 @@ export default function CategoryItem({
           {copiedId === item._id ? <ClipboardCheck color="#8d99ae" size={12} /> : <Copy color="#8d99ae" size={12} />}
         </button>
       </div>
-      <div className="col-span-2">{item.name}</div>
-      <div className="col-span-1 break-words">{item.contactName}</div>
-      <div className="col-span-1 break-words">{item.email}</div>
-      <div className="col-span-1">{item.phone}</div>
-      <div className="col-span-1 break-words">{convertDateTime(item.created_at)}</div>
-      <div className="col-span-1 break-words">{convertDateTime(item.updated_at)}</div>
+      <div className="col-span-2 text-black dark:text-white">{item.name}</div>
+      <div className="col-span-1 break-words text-black dark:text-white">{item.contactName}</div>
+      <div className="col-span-1 break-words text-black dark:text-white">{item.email}</div>
+      <div className="col-span-1 text-black dark:text-white">{item.phone}</div>
+      <div className="col-span-1 break-words text-black dark:text-white">{convertDateTime(item.created_at)}</div>
+      <div className="col-span-1 break-words text-black dark:text-white">{convertDateTime(item.updated_at)}</div>
       <div className="col-span-1 flex items-center justify-center gap-2">
         <button onClick={() => handleEditSupplierItem(item._id)}>
           <Pencil color="orange" size={18} />
@@ -58,7 +58,7 @@ export default function CategoryItem({
           <AlertDialogTrigger>
             <Trash2 color="red" size={18} />
           </AlertDialogTrigger>
-          <AlertDialogContent className="w-[350px]">
+          <AlertDialogContent className="w-[350px] dark:bg-darkPrimary">
             <AlertDialogHeader>
               <AlertDialogTitle className="text-base">Bạn có chắc chắn muốn xóa?</AlertDialogTitle>
               <AlertDialogDescription className="text-sm">
@@ -66,8 +66,11 @@ export default function CategoryItem({
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
-              <AlertDialogCancel className="text-sm">Hủy</AlertDialogCancel>
-              <AlertDialogAction onClick={() => onDelete(item._id)} className="bg-red-500 hover:bg-red-600 text-sm">
+              <AlertDialogCancel className="text-sm dark:bg-darkPrimary">Hủy</AlertDialogCancel>
+              <AlertDialogAction
+                onClick={() => onDelete(item._id)}
+                className="bg-red-500 hover:bg-red-600 text-sm text-white"
+              >
                 Xóa
               </AlertDialogAction>
             </AlertDialogFooter>

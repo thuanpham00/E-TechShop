@@ -170,16 +170,19 @@ export default function SupplyDetail({
               <X color="gray" size={22} />
             </button>
             <form onSubmit={handleSubmitUpdate} className="bg-white dark:bg-darkPrimary rounded-md w-[700px]">
-              <h3 className="py-2 px-4 text-lg font-semibold tracking-wide rounded-md">Thông tin cung ứng</h3>
+              <h3 className="py-2 px-4 text-lg font-semibold tracking-wide rounded-md text-black dark:text-white">
+                Thông tin cung ứng
+              </h3>
               <div className="p-4 pt-0">
-                <div className="mt-4 bg-[#fff] dark:bg-darkBorder">
+                <div className="mt-4 bg-[#fff] dark:bg-darkPrimary">
                   <Input
                     name="id"
                     register={register}
                     placeholder="Nhập mã cung ứng"
                     messageErrorInput={errors.importPrice?.message}
-                    classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-darkPrimary focus:border-blue-500 focus:ring-2 outline-none rounded-md"
+                    classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-darkSecond focus:border-blue-500 focus:ring-2 outline-none rounded-md text-black dark:text-white"
                     className="relative flex-1"
+                    classNameLabel="text-black dark:text-white"
                     nameInput="Mã cung ứng"
                     disabled
                   />
@@ -195,7 +198,7 @@ export default function SupplyDetail({
                   />
                 </div>
 
-                <div className="mt-4 bg-[#fff] dark:bg-darkBorder">
+                <div className="mt-4 bg-[#fff] dark:bg-darkPrimary">
                   <DropdownList
                     name="supplierId"
                     isAddItem={true}
@@ -213,8 +216,9 @@ export default function SupplyDetail({
                     register={register}
                     placeholder="Nhập giá nhập"
                     messageErrorInput={errors.importPrice?.message}
-                    classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#fff] dark:bg-darkPrimary focus:border-blue-500 focus:ring-2 outline-none rounded-md"
+                    classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#fff] dark:bg-darkSecond focus:border-blue-500 focus:ring-2 outline-none rounded-md text-black dark:text-white"
                     className="relative flex-1"
+                    classNameLabel="text-black dark:text-white"
                     nameInput="Giá nhập"
                   />
                   <Input
@@ -222,8 +226,9 @@ export default function SupplyDetail({
                     register={register}
                     placeholder="Nhập thời gian bảo hành"
                     messageErrorInput={errors.warrantyMonths?.message}
-                    classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-white dark:bg-darkPrimary focus:border-blue-500 focus:ring-2 outline-none rounded-md"
+                    classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-white dark:bg-darkSecond focus:border-blue-500 focus:ring-2 outline-none rounded-md text-black dark:text-white"
                     className="relative flex-1"
+                    classNameLabel="text-black dark:text-white"
                     nameInput="Thời gian bảo hành"
                   />
                   <Input
@@ -231,8 +236,9 @@ export default function SupplyDetail({
                     register={register}
                     placeholder="Nhập thời gian cung ứng"
                     messageErrorInput={errors.leadTimeDays?.message}
-                    classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-white dark:bg-darkPrimary focus:border-blue-500 focus:ring-2 outline-none rounded-md"
+                    classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-white dark:bg-darkSecond focus:border-blue-500 focus:ring-2 outline-none rounded-md text-black dark:text-white"
                     className="relative flex-1"
+                    classNameLabel="text-black dark:text-white"
                     nameInput="Thời gian cung ứng"
                   />
                 </div>
@@ -242,8 +248,9 @@ export default function SupplyDetail({
                     register={register}
                     placeholder="Nhập mô tả"
                     messageErrorInput={errors.description?.message}
-                    classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-white dark:bg-darkPrimary focus:border-blue-500 focus:ring-2 outline-none rounded-md"
+                    classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-white dark:bg-darkSecond focus:border-blue-500 focus:ring-2 outline-none rounded-md text-black dark:text-white"
                     className="relative flex-1"
+                    classNameLabel="text-black dark:text-white"
                     nameInput="Ghi chú (Optional)"
                   />
                 </div>
@@ -253,8 +260,9 @@ export default function SupplyDetail({
                     register={register}
                     placeholder="Nhập ngày tạo"
                     messageErrorInput={errors.created_at?.message}
-                    classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-darkSecond focus:border-blue-500 focus:ring-2 outline-none rounded-md"
+                    classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-darkSecond focus:border-blue-500 focus:ring-2 outline-none rounded-md text-black dark:text-white"
                     className="relative flex-1"
+                    classNameLabel="text-black dark:text-white"
                     nameInput="Ngày tạo"
                     disabled
                   />
@@ -263,8 +271,9 @@ export default function SupplyDetail({
                     register={register}
                     placeholder="Nhập ngày tạo cập nhật"
                     messageErrorInput={errors.updated_at?.message}
-                    classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-darkSecond focus:border-blue-500 focus:ring-2 outline-none rounded-md"
+                    classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-darkSecond focus:border-blue-500 focus:ring-2 outline-none rounded-md text-black dark:text-white"
                     className="relative flex-1"
+                    classNameLabel="text-black dark:text-white"
                     nameInput="Ngày cập nhật"
                     disabled
                   />

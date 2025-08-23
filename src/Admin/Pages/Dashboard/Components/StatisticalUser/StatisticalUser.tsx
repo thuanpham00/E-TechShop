@@ -25,6 +25,7 @@ import { ClipboardCheck, Copy, User, Users } from "lucide-react"
 import useCopyText from "src/Hook/useCopyText"
 import { formatCurrency } from "src/Helpers/common"
 import { Pie } from "react-chartjs-2"
+import { useTheme } from "src/Admin/Components/Theme-provider/Theme-provider"
 
 type TypeStatistical = {
   title: string
@@ -53,6 +54,9 @@ type StatisticalUser = {
 }
 
 export default function StatisticalUser() {
+  const { theme } = useTheme()
+  const isDarkMode = theme === "dark" || theme === "system"
+
   const { copiedId, handleCopyText } = useCopyText()
 
   const [selectedMonth, setSelectedMonth] = useState<Dayjs>(dayjs())
@@ -137,13 +141,18 @@ export default function StatisticalUser() {
     plugins: {
       legend: {
         display: true,
-        position: "top" as const
+        position: "top" as const,
+        labels: {
+          color: isDarkMode ? "white" : "black", // đổi màu chữ tag
+          font: { size: 13 }
+        }
       },
       title: {
         display: true,
         text: "Tỷ lệ khách hàng (3 tháng gần nhất)",
         font: { size: 16 },
-        padding: { top: 10, bottom: 10 }
+        padding: { top: 10, bottom: 10 },
+        color: isDarkMode ? "white" : "dark"
       },
       datalabels: {
         formatter: (value: any) => `${value}%`, // custom cách hiển thị số
@@ -181,26 +190,29 @@ export default function StatisticalUser() {
                 <Col span={12}>
                   <div
                     style={{ height: "100%" }}
-                    className="border-gray-500 shadow-md rounded-xl bg-white p-6 flex flex-col justify-between"
+                    className="border-gray-500 shadow-md rounded-xl bg-white dark:bg-darkPrimary p-6 flex flex-col justify-between"
                   >
                     <div className="flex items-start justify-between">
-                      <div className="text-[15px] font-semibold tracking-wide mr-2">{totalStaff?.title}</div>
-                      <Users size={22} color="black" />
+                      <div className="text-[16px] font-semibold tracking-wide mr-2 text-black dark:text-white">
+                        {totalStaff?.title}
+                      </div>
+                      <Users size={22} color={isDarkMode ? "white" : "black"} />
                     </div>
                     <div className={`text-2xl font-semibold mt-4`} style={{ color: totalStaff?.color }}>
                       {totalStaff.value || 0}
                     </div>
                   </div>
                 </Col>
-
                 <Col span={12}>
                   <div
                     style={{ height: "100%" }}
-                    className="border-gray-500 shadow-md rounded-xl bg-white p-6 flex flex-col justify-between"
+                    className="border-gray-500 shadow-md rounded-xl bg-white dark:bg-darkPrimary p-6 flex flex-col justify-between"
                   >
                     <div className="flex items-start justify-between">
-                      <div className="text-[15px] font-semibold tracking-wide mr-2">{totalCustomer?.title}</div>
-                      <User size={22} color="black" />
+                      <div className="text-[16px] font-semibold tracking-wide mr-2 text-black dark:text-white">
+                        {totalCustomer?.title}
+                      </div>
+                      <User size={22} color={isDarkMode ? "white" : "black"} />
                     </div>
                     <div className={`text-2xl font-semibold mt-4`} style={{ color: totalCustomer?.color }}>
                       {totalCustomer?.value || 0}
@@ -210,11 +222,13 @@ export default function StatisticalUser() {
                 <Col span={12}>
                   <div
                     style={{ height: "100%" }}
-                    className="border-gray-500 shadow-md rounded-xl bg-white p-6 flex flex-col justify-between"
+                    className="border-gray-500 shadow-md rounded-xl bg-white dark:bg-darkPrimary p-6 flex flex-col justify-between"
                   >
                     <div className="flex items-start justify-between">
-                      <div className="text-[15px] font-semibold tracking-wide mr-2">{totalStaff?.title}</div>
-                      <Users size={22} color="black" />
+                      <div className="text-[16px] font-semibold tracking-wide mr-2 text-black dark:text-white">
+                        {totalStaff?.title}
+                      </div>
+                      <Users size={22} color={isDarkMode ? "white" : "black"} />
                     </div>
                     <div className={`text-2xl font-semibold mt-4`} style={{ color: totalStaff?.color }}>
                       {totalStaff.value || 0}
@@ -224,11 +238,13 @@ export default function StatisticalUser() {
                 <Col span={12}>
                   <div
                     style={{ height: "100%" }}
-                    className="border-gray-500 shadow-md rounded-xl bg-white p-6 flex flex-col justify-between"
+                    className="border-gray-500 shadow-md rounded-xl bg-white dark:bg-darkPrimary p-6 flex flex-col justify-between"
                   >
                     <div className="flex items-start justify-between">
-                      <div className="text-[15px] font-semibold tracking-wide mr-2">{totalCustomer?.title}</div>
-                      <User size={22} color="black" />
+                      <div className="text-[16px] font-semibold tracking-wide mr-2 text-black dark:text-white">
+                        {totalCustomer?.title}
+                      </div>
+                      <User size={22} color={isDarkMode ? "white" : "black"} />
                     </div>
                     <div className={`text-2xl font-semibold mt-4`} style={{ color: totalCustomer?.color }}>
                       {totalCustomer?.value || 0}
@@ -240,15 +256,13 @@ export default function StatisticalUser() {
             <Col span={12} style={{ height: "100%" }}>
               <div
                 style={{
-                  backgroundColor: "white",
-                  border: "1px solid #dadada",
                   height: "100%",
                   padding: 12,
                   display: "flex",
                   justifyContent: "center",
                   borderRadius: "12px"
                 }}
-                className="shadow-md"
+                className="shadow-md bg-white border border-[#dadada] dark:bg-darkPrimary dark:border-darkBorder"
               >
                 <Pie data={pieData} options={pieOptions} />
               </div>
@@ -258,11 +272,9 @@ export default function StatisticalUser() {
           <Row gutter={[24, 24]} className="mt-4">
             <Col span={24}>
               <div
-                className="shadow-md p-6"
+                className="shadow-md p-6 bg-white border border-[#dadada] dark:bg-darkPrimary dark:border-darkBorder"
                 style={{
-                  border: "1px solid #dadada",
                   borderRadius: "8px",
-                  backgroundColor: "white",
                   position: "relative"
                 }}
               >
@@ -297,7 +309,9 @@ export default function StatisticalUser() {
                     />
                   )}
                 </div>
-                <div className="text-base font-semibold text-center mb-2">Top 10 Khách hàng mua sắm cao nhất</div>
+                <div className="text-base font-semibold text-center mb-2 text-black dark:text-white">
+                  Top 10 Khách hàng mua sắm cao nhất
+                </div>
 
                 <div style={{ minHeight: "100px", overflowY: "auto" }}>
                   <Table

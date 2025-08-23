@@ -12,6 +12,7 @@ import { AppContext } from "src/Context/authContext"
 import { Send } from "lucide-react"
 import InfiniteScroll from "react-infinite-scroll-component"
 import { queryClient } from "src/main"
+import "./AdminChatting.css"
 
 const MessageObject = {
   staff: "staff",
@@ -157,7 +158,7 @@ export default function AdminChatting() {
 
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
         <section className="mt-2 flex">
-          <div className="w-1/4 p-4 bg-white border border-gray-300">
+          <div className="w-1/4 p-4 border bg-white border-gray-300 dark:bg-darkPrimary dark:border-darkBorder">
             <NavigateBack />
 
             <div className="mt-2 flex items-center justify-center">
@@ -168,7 +169,7 @@ export default function AdminChatting() {
                 Khách hàng
               </button>
               <button
-                className={`flex-1 py-2 border ${activeTab === MessageObject.staff ? "border-blue-500  bg-blue-500 text-white" : ""}`}
+                className={`flex-1 py-2 border ${activeTab === MessageObject.staff ? "border-blue-500  bg-blue-500 text-white" : "border-gray-300"}`}
                 onClick={() => setActiveTab(MessageObject.staff)}
               >
                 Nhân viên
@@ -181,6 +182,7 @@ export default function AdminChatting() {
                 allowClear
                 style={{ width: "100%" }}
                 onChange={(e) => setSearchTerm(e.target.value)}
+                className="dark:bg-darkSecond dark:text-white"
               />
             </Space>
 
@@ -191,7 +193,7 @@ export default function AdminChatting() {
                   {filteredList.map((item) => (
                     <button
                       key={item._id}
-                      className={`flex items-center gap-2 p-2 w-full duration-100 ease-linear ${userSelected?._id === item._id ? "bg-gray-300 rounded-md" : "bg-white"}`}
+                      className={`flex items-center gap-2 p-2 w-full duration-100 ease-linear ${userSelected?._id === item._id ? "bg-gray-300 rounded-md dark:bg-gray-600" : "bg-white dark:bg-darkSecond"}`}
                       onClick={() => {
                         const checkUser = userSelected?._id === item._id
                         if (!checkUser) {
@@ -220,9 +222,9 @@ export default function AdminChatting() {
                 <Empty />
               ))}
           </div>
-          <div className="w-2/4 bg-[#f2f2f2] border border-gray-300 border-l-0">
-            <div className="bg-white relative h-[calc(100vh-95px)]">
-              <div className="flex items-center gap-2 border-b border-b-gray-300 py-2 px-4 mb-2">
+          <div className="w-2/4 border border-gray-300 dark:border-darkBorder border-l-0">
+            <div className="bg-white dark:bg-darkPrimary relative h-[calc(100vh-95px)]">
+              <div className="flex items-center gap-2 border-b border-b-gray-300 dark:border-darkBorder py-2 px-4 mb-2">
                 <img
                   src={userSelected?.avatar || avatarDefault}
                   alt={userSelected?.name}
@@ -282,7 +284,7 @@ export default function AdminChatting() {
                   type="text"
                   value={valueInput}
                   onChange={(e) => setValueInput(e.target.value)}
-                  className="flex-grow border border-gray-300 border-l-0 border-b-0 px-4 outline-none"
+                  className="flex-grow border border-gray-300 border-l-0 border-b-0 px-4 outline-none dark:bg-darkPrimary dark:border-darkBorder"
                   placeholder="Nhập tin nhắn..."
                 />
                 <button
@@ -295,7 +297,7 @@ export default function AdminChatting() {
               </form>
             </div>
           </div>
-          <div className="w-1/4 p-2 bg-white border border-gray-300 border-l-0">
+          <div className="w-1/4 p-2 bg-white dark:bg-darkPrimary border border-gray-300 dark:border-darkBorder border-l-0">
             <div className="flex flex-col items-center">
               <div className="mt-4">
                 <img
@@ -308,7 +310,7 @@ export default function AdminChatting() {
               <span className="text-gray-400 text-sm">
                 {userSelected?.role === "User" ? "Khách hàng" : "Quản trị viên"}
               </span>
-              <div className="mt-4 bg-[#f2f2f2] rounded-md p-2">
+              <div className="mt-4 bg-[#f2f2f2] dark:bg-darkPrimary rounded-md p-2">
                 <div className="flex items-center flex-wrap gap-x-2">
                   <strong>Email:</strong>
                   <span className="break-words whitespace-normal text-[14px]">{userSelected?.email}</span>

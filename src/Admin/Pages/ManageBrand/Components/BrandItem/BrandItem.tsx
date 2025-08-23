@@ -59,9 +59,9 @@ export default function BrandItem({
           {copiedId === item._id ? <ClipboardCheck color="#8d99ae" size={12} /> : <Copy color="#8d99ae" size={12} />}
         </button>
       </div>
-      <div className="col-span-2">{item.name}</div>
-      <div className="col-span-2 break-words">{convertDateTime(item.created_at)}</div>
-      <div className="col-span-2 break-words">{convertDateTime(item.updated_at)}</div>
+      <div className="col-span-2 text-black dark:text-white">{item.name}</div>
+      <div className="col-span-2 break-words text-black dark:text-white">{convertDateTime(item.created_at)}</div>
+      <div className="col-span-2 break-words text-black dark:text-white">{convertDateTime(item.updated_at)}</div>
       <div className="col-span-2">
         <div className="flex-1 flex justify-center items-center gap-1">
           <button onClick={() => handleEditCustomerItem(item._id)}>

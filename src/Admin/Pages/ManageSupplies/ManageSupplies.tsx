@@ -30,6 +30,7 @@ import DropdownSearch from "./Components/DropdownSearch"
 import { motion } from "framer-motion"
 import { Collapse, CollapseProps, Empty, Select } from "antd"
 import "../ManageOrders/ManageOrders.css"
+import { useTheme } from "src/Admin/Components/Theme-provider/Theme-provider"
 
 type FormDataSearch = Pick<
   SchemaSupplyType,
@@ -46,6 +47,9 @@ const formDataSearch = schemaSupply.pick([
 ])
 
 export default function ManageSupplies() {
+  const { theme } = useTheme()
+  const isDarkMode = theme === "dark" || theme === "system"
+
   const navigate = useNavigate()
   const { downloadExcel } = useDownloadExcel()
 
@@ -240,14 +244,14 @@ export default function ManageSupplies() {
   const items: CollapseProps["items"] = [
     {
       key: "1",
-      label: <h1 className="text-[16px] font-semibold tracking-wide">Bộ lọc & Tìm kiếm</h1>,
+      label: <h1 className="text-[16px] font-semibold tracking-wide text-black dark:text-white">Bộ lọc & Tìm kiếm</h1>,
       children: (
         <section>
           <div className="bg-white dark:bg-darkPrimary mb-3 dark:border-darkBorder rounded-2xl">
             <form onSubmit={handleSubmitSearch}>
               <div className="mt-1 grid grid-cols-2">
                 <div className="col-span-1 flex items-center h-14 px-2 bg-[#fff] dark:bg-darkBorder border border-[#dadada] rounded-tl-xl">
-                  <span className="w-1/3">Tên sản phẩm</span>
+                  <span className="w-1/3 dark:text-white">Tên sản phẩm</span>
                   <div className="w-2/3 relative h-full">
                     <DropdownSearch
                       name="name_product"
@@ -262,7 +266,7 @@ export default function ManageSupplies() {
                   </div>
                 </div>
                 <div className="col-span-1 flex items-center h-14 px-2 bg-[#fff] dark:bg-darkBorder border border-[#dadada] rounded-tr-xl">
-                  <span className="w-1/3">Tên nhà cung cấp</span>
+                  <span className="w-1/3 dark:text-white">Tên nhà cung cấp</span>
                   <div className="w-2/3 relative h-full">
                     <DropdownSearch
                       name="name_supplier"
@@ -277,7 +281,7 @@ export default function ManageSupplies() {
                   </div>
                 </div>
                 <div className="col-span-1 flex items-center h-14 px-2 bg-[#fff] dark:bg-darkBorder border border-[#dadada] border-t-0 rounded-bl-xl">
-                  <span className="w-1/3">Ngày tạo</span>
+                  <span className="w-1/3 dark:text-white">Ngày tạo</span>
                   <div className="w-2/3 relative h-full">
                     <div className="mt-2 w-full flex items-center gap-2">
                       <Controller
@@ -295,7 +299,7 @@ export default function ManageSupplies() {
                           )
                         }}
                       />
-                      <span>-</span>
+                      <span className="text-black dark:text-white">-</span>
                       <Controller
                         name="created_at_end"
                         control={controlFormSearch}
@@ -316,7 +320,7 @@ export default function ManageSupplies() {
                   </div>
                 </div>
                 <div className="col-span-1 flex items-center h-14 px-2 bg-[#fff] dark:bg-darkBorder border border-[#dadada] border-t-0 rounded-br-xl">
-                  <span className="w-1/3">Ngày cập nhật</span>
+                  <span className="w-1/3 dark:text-white">Ngày cập nhật</span>
                   <div className="w-2/3 relative h-full">
                     <div className="mt-2 w-full flex items-center gap-2">
                       <Controller
@@ -334,7 +338,7 @@ export default function ManageSupplies() {
                           )
                         }}
                       />
-                      <span>-</span>
+                      <span className="text-black dark:text-white">-</span>
                       <Controller
                         name="updated_at_end"
                         control={controlFormSearch}
@@ -378,7 +382,7 @@ export default function ManageSupplies() {
     },
     {
       key: "2",
-      label: <h2 className="text-[16px] font-semibold tracking-wide">Danh sách Cung ứng</h2>,
+      label: <h2 className="text-[16px] font-semibold tracking-wide text-black dark:text-white">Danh sách Cung ứng</h2>,
       children: (
         <section>
           <div className="bg-white dark:bg-darkPrimary mb-3 dark:border-darkBorder rounded-2xl">
@@ -397,7 +401,7 @@ export default function ManageSupplies() {
                       defaultValue="Mới nhất"
                       className="select-sort"
                       onChange={handleChangeSortListOrder}
-                      suffixIcon={<ArrowUpNarrowWide />}
+                      suffixIcon={<ArrowUpNarrowWide color={isDarkMode ? "white" : "black"} />}
                       options={[
                         { value: "old", label: "Cũ nhất" },
                         { value: "new", label: "Mới nhất" }
@@ -415,18 +419,28 @@ export default function ManageSupplies() {
                 </div>
                 <div>
                   <div className="bg-[#f2f2f2] dark:bg-darkPrimary grid grid-cols-12 items-center gap-2 py-3 border border-[#dedede] dark:border-darkBorder px-4 rounded-tl-xl rounded-tr-xl">
-                    <div className="col-span-2 text-[14px] font-semibold tracking-wider uppercase">Mã cung ứng</div>
-                    <div className="col-span-3 text-[14px] font-semibold tracking-wider uppercase">Tên sản phẩm</div>
-                    <div className="col-span-2 text-[14px] font-semibold tracking-wider uppercase">
+                    <div className="col-span-2 text-[14px] font-semibold tracking-wider uppercase text-black dark:text-white">
+                      Mã cung ứng
+                    </div>
+                    <div className="col-span-3 text-[14px] font-semibold tracking-wider uppercase text-black dark:text-white">
+                      Tên sản phẩm
+                    </div>
+                    <div className="col-span-2 text-[14px] font-semibold tracking-wider uppercase text-black dark:text-white">
                       Tên nhà cung cấp
                     </div>
-                    <div className="col-span-1 text-[14px] font-semibold tracking-wider uppercase">Giá nhập</div>
-                    <div className="col-span-1 text-[14px] font-semibold tracking-wider uppercase">
+                    <div className="col-span-1 text-[14px] font-semibold tracking-wider uppercase text-black dark:text-white">
+                      Giá nhập
+                    </div>
+                    <div className="col-span-1 text-[14px] font-semibold tracking-wider uppercase text-black dark:text-white">
                       Thời gian cung ứng
                     </div>
-                    <div className="col-span-1 text-[14px] font-semibold tracking-wider uppercase">Ngày tạo</div>
-                    <div className="col-span-1 text-[14px] font-semibold tracking-wider uppercase">Ngày cập nhật</div>
-                    <div className="col-span-1 text-[14px] text-center font-semibold tracking-wider uppercase">
+                    <div className="col-span-1 text-[14px] font-semibold tracking-wider uppercase text-black dark:text-white">
+                      Ngày tạo
+                    </div>
+                    <div className="col-span-1 text-[14px] font-semibold tracking-wider uppercase text-black dark:text-white">
+                      Ngày cập nhật
+                    </div>
+                    <div className="col-span-1 text-[14px] text-center font-semibold tracking-wider uppercase text-black dark:text-white">
                       Hành động
                     </div>
                   </div>
@@ -487,7 +501,7 @@ export default function ManageSupplies() {
         Cung ứng sản phẩm
       </h1>
 
-      <Collapse items={items} defaultActiveKey={["2"]} className="bg-white" />
+      <Collapse items={items} defaultActiveKey={["2"]} className="bg-white dark:bg-darkPrimary dark:border-none" />
     </div>
   )
 }

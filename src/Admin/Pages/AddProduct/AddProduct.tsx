@@ -419,7 +419,7 @@ export default function AddProduct() {
                 placeholder="Nhập tên sản phẩm"
                 messageErrorInput={errors.name?.message}
                 nameInput="Tên sản phẩm"
-                classNameInput="mt-1 p-2 w-full border border-[#dedede] rounded-sm focus:border-blue-500 focus:ring-2 outline-none text-black dark:text-black"
+                classNameInput="mt-1 p-2 w-full border border-[#dedede] rounded-sm focus:border-blue-500 focus:ring-2 outline-none text-black dark:text-white dark:bg-darkSecond dark:border-0"
               />
 
               <div className="flex items-center gap-4">
@@ -439,7 +439,7 @@ export default function AddProduct() {
                               field.onChange(selected)
                               setSelectedCategory(selected as "Laptop" | "Laptop Gaming" | "PC GVN" | "Màn hình") // set state danh mục đã chọn
                             }} // ✅ Cập nhật vào form
-                            className="p-2 border border-gray-300 dark:border-darkBorder bg-[#f2f2f2] dark:bg-black w-full mt-2 rounded-md"
+                            className="p-2 border border-gray-300 dark:border-darkBorder bg-[#f2f2f2] dark:bg-darkSecond w-full mt-2 rounded-md"
                           >
                             <option value="" disabled>
                               -- Chọn danh mục --
@@ -476,7 +476,7 @@ export default function AddProduct() {
                             // {...field}
                             value={field.value ?? ""} // ✅ Giá trị từ form
                             onChange={(e) => field.onChange(e.target.value ? e.target.value : undefined)} // ✅ Cập nhật vào form
-                            className="p-2 border border-gray-300 dark:border-darkBorder bg-[#f2f2f2] dark:bg-black w-full mt-2 rounded-md"
+                            className="p-2 border border-gray-300 dark:border-darkBorder bg-[#f2f2f2] dark:bg-darkSecond w-full mt-2 rounded-md"
                           >
                             <option value="" disabled>
                               -- Chọn thương hiệu --
@@ -512,7 +512,7 @@ export default function AddProduct() {
                     placeholder="Nhập giá sản phẩm (đ)"
                     messageErrorInput={errors.price?.message}
                     nameInput="Giá sản phẩm (đ)"
-                    classNameInput="mt-1 p-2 w-full border border-[#dedede] rounded-sm focus:border-blue-500 focus:ring-2 outline-none text-black dark:text-black"
+                    classNameInput="mt-1 p-2 w-full border border-[#dedede] rounded-sm focus:border-blue-500 focus:ring-2 outline-none text-black dark:text-white dark:bg-darkSecond dark:border-0"
                   />
                 </div>
                 <div className="flex-1">
@@ -523,7 +523,7 @@ export default function AddProduct() {
                     placeholder="Nhập % khuyến mãi (nếu có)"
                     messageErrorInput={errors.discount?.message}
                     nameInput="Giảm giá (%)"
-                    classNameInput="mt-1 p-2 w-full border border-[#dedede] rounded-sm focus:border-blue-500 focus:ring-2 outline-none text-black dark:text-black"
+                    classNameInput="mt-1 p-2 w-full border border-[#dedede] rounded-sm focus:border-blue-500 focus:ring-2 outline-none text-black dark:text-white dark:bg-darkSecond dark:border-0"
                   />
                 </div>
               </div>
@@ -534,7 +534,7 @@ export default function AddProduct() {
                 register={register}
                 placeholder="Nhập số lượng sản phẩm"
                 nameInput="Số lượng"
-                classNameInput="mt-1 p-2 w-full border border-[#dedede] rounded-sm focus:border-blue-500 focus:ring-2 outline-none text-black dark:text-black bg-[#f2f2f2]"
+                classNameInput="mt-1 p-2 w-full border border-[#dedede] rounded-sm focus:border-blue-500 focus:ring-2 outline-none text-black dark:text-white bg-[#f2f2f2] dark:bg-darkSecond dark:border-0"
                 value="0"
                 disabled
               />
@@ -550,12 +550,12 @@ export default function AddProduct() {
                     fields?.map((spec, index) => {
                       return (
                         <div key={index} className="mb-2 flex items-stretch">
-                          <span className="w-1/3 bg-[#f2f2f2] p-2 border border-[#dadada] rounded-tl-md rounded-bl-md border-l-4 border-l-gray-400">
+                          <span className="w-1/3 bg-[#f2f2f2] dark:bg-darkPrimary p-2 border border-[#dadada] rounded-tl-md rounded-bl-md border-l-4 border-l-gray-400">
                             {spec.name}
                           </span>
                           <input
                             type="text"
-                            className="w-2/3 p-2 border border-gray-300 rounded-tr-md rounded-br-md border-l-0"
+                            className="w-2/3 p-2 border border-gray-300 dark:bg-darkPrimary rounded-tr-md rounded-br-md border-l-0"
                             placeholder={`Nhập ${spec.name.toLowerCase()}`}
                             {...register(`specifications.${index}.value`)}
                             // onChange={handleChangeInput(index)}
@@ -567,7 +567,7 @@ export default function AddProduct() {
                       )
                     })
                   ) : (
-                    <div className="w-full py-16 bg-[#e6e6e6] rounded-md flex justify-center font-medium">
+                    <div className="w-full py-16 bg-[#e6e6e6] dark:bg-darkSecond rounded-md flex justify-center font-medium">
                       Danh sách thông số kĩ thuật
                     </div>
                   )}

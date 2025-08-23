@@ -103,7 +103,9 @@ export default function AddSupplier({ setAddItem, addItem }: Props) {
               <X color="gray" size={22} />
             </button>
             <form onSubmit={handleAddSupplierSubmit} className="bg-white dark:bg-darkPrimary rounded-md w-[900px]">
-              <h3 className="py-2 px-4 text-lg font-semibold tracking-wide rounded-md">Thông tin nhà cung cấp</h3>
+              <h3 className="py-2 px-4 text-lg font-semibold tracking-wide rounded-md text-black dark:text-white">
+                Thông tin nhà cung cấp
+              </h3>
               <div className="p-4 pt-0">
                 <div className="mt-4 flex items-center gap-4">
                   <Input
@@ -111,8 +113,9 @@ export default function AddSupplier({ setAddItem, addItem }: Props) {
                     register={register}
                     placeholder="Nhập tên nhà cung cấp"
                     messageErrorInput={errors.name?.message}
-                    classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-white dark:bg-darkPrimary focus:border-blue-500 focus:ring-2 outline-none rounded-md"
+                    classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-white dark:bg-darkSecond focus:border-blue-500 focus:ring-2 outline-none rounded-md text-black dark:text-white"
                     className="relative flex-1"
+                    classNameLabel="text-black dark:text-white"
                     nameInput="Tên nhà cung cấp"
                   />
                   <Input
@@ -120,8 +123,9 @@ export default function AddSupplier({ setAddItem, addItem }: Props) {
                     register={register}
                     placeholder="Nhập họ tên"
                     messageErrorInput={errors.contactName?.message}
-                    classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#fff] dark:bg-darkPrimary focus:border-blue-500 focus:ring-2 outline-none rounded-md"
+                    classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#fff] dark:bg-darkSecond focus:border-blue-500 focus:ring-2 outline-none rounded-md text-black dark:text-white"
                     className="relative flex-1"
+                    classNameLabel="text-black dark:text-white"
                     nameInput="Tên người đại diện"
                   />
                 </div>
@@ -131,8 +135,9 @@ export default function AddSupplier({ setAddItem, addItem }: Props) {
                     register={register}
                     placeholder="Nhập email"
                     messageErrorInput={errors.email?.message}
-                    classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#fff] dark:bg-darkPrimary focus:border-blue-500 focus:ring-2 outline-none rounded-md"
+                    classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#fff] dark:bg-darkSecond focus:border-blue-500 focus:ring-2 outline-none rounded-md text-black dark:text-white"
                     className="relative flex-1"
+                    classNameLabel="text-black dark:text-white"
                     nameInput="Email"
                   />
                   <Input
@@ -140,8 +145,9 @@ export default function AddSupplier({ setAddItem, addItem }: Props) {
                     register={register}
                     placeholder="Nhập số điện thoại"
                     messageErrorInput={errors.phone?.message}
-                    classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-white dark:bg-darkPrimary focus:border-blue-500 focus:ring-2 outline-none rounded-md"
+                    classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-white dark:bg-darkSecond focus:border-blue-500 focus:ring-2 outline-none rounded-md text-black dark:text-white"
                     className="relative flex-1"
+                    classNameLabel="text-black dark:text-white"
                     nameInput="Số điện thoại"
                   />
                 </div>
@@ -151,8 +157,9 @@ export default function AddSupplier({ setAddItem, addItem }: Props) {
                     register={register}
                     placeholder="Nhập mã số thuế"
                     messageErrorInput={errors.taxCode?.message}
-                    classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-white dark:bg-darkPrimary focus:border-blue-500 focus:ring-2 outline-none rounded-md"
+                    classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-white dark:bg-darkSecond focus:border-blue-500 focus:ring-2 outline-none rounded-md text-black dark:text-white"
                     className="relative flex-1"
+                    classNameLabel="text-black dark:text-white"
                     nameInput="Mã số thuế"
                   />
                   <Input
@@ -160,8 +167,9 @@ export default function AddSupplier({ setAddItem, addItem }: Props) {
                     register={register}
                     placeholder="Nhập địa chỉ"
                     messageErrorInput={errors.address?.message}
-                    classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-white dark:bg-darkPrimary focus:border-blue-500 focus:ring-2 outline-none rounded-md"
+                    classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-white dark:bg-darkSecond focus:border-blue-500 focus:ring-2 outline-none rounded-md text-black dark:text-white"
                     className="relative flex-1"
+                    classNameLabel="text-black dark:text-white"
                     nameInput="Địa chỉ"
                   />
                 </div>
@@ -171,8 +179,9 @@ export default function AddSupplier({ setAddItem, addItem }: Props) {
                     register={register}
                     placeholder="Nhập mô tả"
                     messageErrorInput={errors.description?.message}
-                    classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-white dark:bg-darkPrimary focus:border-blue-500 focus:ring-2 outline-none rounded-md"
+                    classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-white dark:bg-darkSecond focus:border-blue-500 focus:ring-2 outline-none rounded-md text-black dark:text-white"
                     className="relative flex-1"
+                    classNameLabel="text-black dark:text-white"
                     nameInput="Ghi chú (Optional)"
                   />
                 </div>

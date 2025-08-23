@@ -1,0 +1,4 @@
+.dark .ant-input::placeholder {
+  color: #aaa !important; /* hoặc màu bạn muốn */
+  opacity: 1; /* đảm bảo không bị mờ */
+}

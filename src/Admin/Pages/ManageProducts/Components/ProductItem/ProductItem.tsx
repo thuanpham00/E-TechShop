@@ -54,9 +54,9 @@ export default function ProductItem({
       <div className="col-span-2">
         <img src={item.banner.url} loading="lazy" alt={item._id} className="h-auto w-full object-cover" />
       </div>
-      <div className="col-span-2 font-semibold">{item.name}</div>
-      <div className="col-span-1">{item.brand[0].name}</div>
-      <div className="col-span-1">{item.category[0].name}</div>
+      <div className="col-span-2 font-semibold text-black dark:text-white">{item.name}</div>
+      <div className="col-span-1 text-black dark:text-white">{item.brand[0].name}</div>
+      <div className="col-span-1 text-black dark:text-white">{item.category[0].name}</div>
       <div className="col-span-1 text-red-600 font-semibold">{formatCurrency(item.price)}đ</div>
       <div className="col-span-1">
         {item.status === "out_of_stock" && (
@@ -75,8 +75,8 @@ export default function ProductItem({
           </div>
         )}
       </div>
-      <div className="col-span-1 break-words ml-4">{convertDateTime(item.created_at)}</div>
-      <div className="col-span-1 break-words ml-4">{convertDateTime(item.updated_at)}</div>
+      <div className="col-span-1 break-words ml-4 text-black dark:text-white">{convertDateTime(item.created_at)}</div>
+      <div className="col-span-1 break-words ml-4 text-black dark:text-white">{convertDateTime(item.updated_at)}</div>
       <div className="col-span-1 flex items-center justify-center gap-2">
         <button>
           <Pencil color="orange" size={18} />

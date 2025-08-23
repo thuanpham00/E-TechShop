@@ -30,6 +30,7 @@ import useDownloadExcel from "src/Hook/useDownloadExcel"
 import { motion, AnimatePresence } from "framer-motion"
 import { Collapse, CollapseProps, Empty, Select } from "antd"
 import "../ManageOrders/ManageOrders.css"
+import { useTheme } from "src/Admin/Components/Theme-provider/Theme-provider"
 
 type FormDataUpdate = Pick<SchemaAuthType, "name" | "id" | "created_at" | "updated_at">
 const formDataUpdate = schemaAuth.pick(["name", "id", "created_at", "updated_at"])
@@ -48,6 +49,9 @@ type FormDataSearch = Pick<
 >
 
 export default function ManageBrand() {
+  const { theme } = useTheme()
+  const isDark = theme === "dark" || theme === "system"
+
   const navigate = useNavigate()
   const { downloadExcel } = useDownloadExcel()
 
@@ -303,13 +307,13 @@ export default function ManageBrand() {
   const items: CollapseProps["items"] = [
     {
       key: "1",
-      label: <h1 className="text-[16px] font-semibold tracking-wide">Bộ lọc & Tìm kiếm</h1>,
+      label: <h1 className="text-[16px] font-semibold tracking-wide text-black dark:text-white">Bộ lọc & Tìm kiếm</h1>,
       children: (
         <div className="bg-white dark:bg-darkPrimary mb-3 dark:border-darkBorder rounded-2xl">
           <form onSubmit={handleSubmitSearch}>
             <div className="mt-1 grid grid-cols-2">
               <div className="col-span-1 flex items-center h-14 px-2 bg-[#ececec] dark:bg-darkBorder border border-[#dadada] rounded-tl-xl">
-                <span className="w-1/3">Ngày đăng</span>
+                <span className="w-1/3 dark:text-white">Ngày đăng</span>
                 <div className="w-2/3 relative h-full">
                   <div className="mt-2 w-full flex items-center gap-2">
                     <Controller
@@ -327,7 +331,7 @@ export default function ManageBrand() {
                         )
                       }}
                     />
-                    <span>-</span>
+                    <span className="text-black dark:text-white">-</span>
                     <Controller
                       name="created_at_end"
                       control={controlFormSearch}
@@ -348,7 +352,7 @@ export default function ManageBrand() {
                 </div>
               </div>
               <div className="col-span-1 flex items-center h-14 px-2 bg-[#ececec] dark:bg-darkBorder border border-[#dadada] rounded-tr-xl">
-                <span className="w-1/3">Ngày cập nhật</span>
+                <span className="w-1/3 dark:text-white">Ngày cập nhật</span>
                 <div className="w-2/3 relative h-full">
                   <div className="mt-2 w-full flex items-center gap-2">
                     <Controller
@@ -366,7 +370,7 @@ export default function ManageBrand() {
                         )
                       }}
                     />
-                    <span>-</span>
+                    <span className="text-black dark:text-white">-</span>
                     <Controller
                       name="updated_at_end"
                       control={controlFormSearch}
@@ -387,14 +391,14 @@ export default function ManageBrand() {
                 </div>
               </div>
               <div className="col-span-1 flex items-center h-14 px-2 bg-[#fff] dark:bg-darkBorder border border-[#dadada] border-t-0 rounded-bl-xl">
-                <span className="w-1/3">Tên thể loại</span>
+                <span className="w-1/3 dark:text-white">Tên thể loại</span>
                 <div className="w-2/3 relative h-full">
                   <div className="mt-2 w-full flex items-center gap-2">
                     <Input
                       name="name"
                       register={registerFormSearch}
                       placeholder="Nhập tên thương hiệu"
-                      classNameInput="p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-black focus:border-blue-500 focus:ring-1 outline-none rounded-md h-[35px]"
+                      classNameInput="p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-darkSecond focus:border-blue-500 focus:ring-1 outline-none rounded-md text-black dark:text-white"
                       className="relative flex-grow"
                       classNameError="hidden"
                     />
@@ -425,7 +429,7 @@ export default function ManageBrand() {
     },
     {
       key: "2",
-      label: <h2 className="text-[16px] font-semibold tracking-wide">Danh sách Danh mục</h2>,
+      label: <h2 className="text-[16px] font-semibold tracking-wide text-black dark:text-white">Danh sách Danh mục</h2>,
       children: (
         <div className="bg-white dark:bg-darkPrimary mb-3 dark:border-darkBorder rounded-2xl">
           {isLoading && <Skeleton />}
@@ -443,7 +447,7 @@ export default function ManageBrand() {
                     defaultValue="Mới nhất"
                     className="select-sort"
                     onChange={handleChangeSortListOrder}
-                    suffixIcon={<ArrowUpNarrowWide />}
+                    suffixIcon={<ArrowUpNarrowWide color={isDark ? "white" : "black"} />}
                     options={[
                       { value: "old", label: "Cũ nhất" },
                       { value: "new", label: "Mới nhất" }
@@ -461,14 +465,22 @@ export default function ManageBrand() {
               </div>
               <div>
                 <div className="bg-[#f2f2f2] dark:bg-darkPrimary grid grid-cols-12 items-center gap-2 py-3 border border-[#dedede] dark:border-darkBorder px-4 rounded-tl-xl rounded-tr-xl">
-                  <div className="col-span-2 text-[14px] font-semibold tracking-wider uppercase">Mã thương hiệu</div>
-                  <div className="col-span-2 text-[14px] font-semibold tracking-wider uppercase">Tên thương hiệu</div>
-                  <div className="col-span-2 text-[14px] font-semibold tracking-wider uppercase">Ngày tạo</div>
-                  <div className="col-span-2 text-[14px] font-semibold tracking-wider uppercase">Ngày cập nhật</div>
-                  <div className="col-span-2 text-[14px] text-center font-semibold tracking-wider uppercase">
+                  <div className="col-span-2 text-[14px] font-semibold tracking-wider uppercase text-black dark:text-white">
+                    Mã thương hiệu
+                  </div>
+                  <div className="col-span-2 text-[14px] font-semibold tracking-wider uppercase text-black dark:text-white">
+                    Tên thương hiệu
+                  </div>
+                  <div className="col-span-2 text-[14px] font-semibold tracking-wider uppercase text-black dark:text-white">
+                    Ngày tạo
+                  </div>
+                  <div className="col-span-2 text-[14px] font-semibold tracking-wider uppercase text-black dark:text-white">
+                    Ngày cập nhật
+                  </div>
+                  <div className="col-span-2 text-[14px] text-center font-semibold tracking-wider uppercase text-black dark:text-white">
                     Hành động
                   </div>
-                  <div className="col-span-2 text-[14px] text-center font-semibold tracking-wider uppercase">
+                  <div className="col-span-2 text-[14px] text-center font-semibold tracking-wider uppercase text-black dark:text-white">
                     Sản phẩm
                   </div>
                 </div>
@@ -524,7 +536,7 @@ export default function ManageBrand() {
                         <X color="gray" size={22} />
                       </button>
                       <form onSubmit={handleSubmitUpdate} className="bg-white dark:bg-darkPrimary rounded-md">
-                        <h3 className="py-2 px-4 text-lg font-semibold tracking-wide rounded-md">
+                        <h3 className="py-2 px-4 text-lg font-semibold tracking-wide rounded-md text-black dark:text-white">
                           Thông tin thương hiệu
                         </h3>
                         <div className="p-4 pt-0">
@@ -534,8 +546,9 @@ export default function ManageBrand() {
                               register={register}
                               placeholder="Nhập họ tên"
                               messageErrorInput={errors.id?.message}
-                              classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-darkSecond focus:border-blue-500 focus:ring-2 outline-none rounded-md"
+                              classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-darkSecond focus:border-blue-500 focus:ring-2 outline-none rounded-md text-black dark:text-white"
                               className="relative flex-1"
+                              classNameLabel="text-black dark:text-white"
                               nameInput="Mã thương hiệu"
                               disabled
                             />
@@ -544,8 +557,9 @@ export default function ManageBrand() {
                               register={register}
                               placeholder="Nhập họ tên"
                               messageErrorInput={errors.name?.message}
-                              classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-white dark:bg-darkPrimary focus:border-blue-500 focus:ring-2 outline-none rounded-md"
+                              classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-white dark:bg-darkSecond focus:border-blue-500 focus:ring-2 outline-none rounded-md text-black dark:text-white"
                               className="relative flex-1"
+                              classNameLabel="text-black dark:text-white"
                               nameInput="Tên thương hiệu"
                             />
                           </div>
@@ -555,8 +569,9 @@ export default function ManageBrand() {
                               register={register}
                               placeholder="Nhập ngày tạo"
                               messageErrorInput={errors.created_at?.message}
-                              classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-darkSecond focus:border-blue-500 focus:ring-2 outline-none rounded-md"
+                              classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-darkSecond focus:border-blue-500 focus:ring-2 outline-none rounded-md text-black dark:text-white"
                               className="relative flex-1"
+                              classNameLabel="text-black dark:text-white"
                               nameInput="Ngày tạo"
                               disabled
                             />
@@ -565,8 +580,9 @@ export default function ManageBrand() {
                               register={register}
                               placeholder="Nhập ngày tạo cập nhật"
                               messageErrorInput={errors.updated_at?.message}
-                              classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-darkSecond  focus:border-blue-500 focus:ring-2 outline-none rounded-md"
+                              classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-darkSecond  focus:border-blue-500 focus:ring-2 outline-none rounded-md text-black dark:text-white"
                               className="relative flex-1"
+                              classNameLabel="text-black dark:text-white"
                               nameInput="Ngày cập nhật"
                               disabled
                             />
@@ -608,7 +624,7 @@ export default function ManageBrand() {
         Thương hiệu {state}
       </h1>
 
-      <Collapse items={items} defaultActiveKey={["2"]} className="bg-white" />
+      <Collapse items={items} defaultActiveKey={["2"]} className="bg-white dark:bg-darkPrimary dark:border-none" />
     </div>
   )
 }

@@ -37,7 +37,7 @@ export default function DropdownSearch({
         name={name}
         register={register}
         placeholder={namePlaceholder}
-        classNameInput="p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-black focus:border-blue-500 focus:ring-1 outline-none rounded-md h-[35px]"
+        classNameInput="p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-darkSecond focus:border-blue-500 focus:ring-1 outline-none rounded-md text-black dark:text-white"
         className="relative flex-grow"
         classNameError="hidden"
         value={inputValue}

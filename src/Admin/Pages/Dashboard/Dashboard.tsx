@@ -9,7 +9,7 @@ export default function Dashboard() {
   const items: TabsProps["items"] = [
     {
       key: "1",
-      label: "Quản lý bán hàng",
+      label: <div>Quản lý bán hàng</div>,
       children: <StatisticalSell />
     },
     {

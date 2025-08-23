@@ -44,9 +44,9 @@ export default function CustomerItem({
           {copiedId === item._id ? <ClipboardCheck color="#8d99ae" size={12} /> : <Copy color="#8d99ae" size={12} />}
         </button>
       </div>
-      <div className="col-span-2">{item.name}</div>
-      <div className="col-span-2 break-words">{item.email}</div>
-      <div className="col-span-1 text-center">{item.numberPhone}</div>
+      <div className="col-span-2 text-black dark:text-white">{item.name}</div>
+      <div className="col-span-2 break-words text-black dark:text-white">{item.email}</div>
+      <div className="col-span-1 text-center text-black dark:text-white">{item.numberPhone}</div>
       <div className="col-span-2 flex justify-center">
         {item.verify === 1 ? (
           <div className=" text-[13px] font-medium py-1 px-2 border border-[#b2ffb4] bg-[#b2ffb4] text-[#04710c] text-center rounded-full flex gap-1 justify-center items-center">
@@ -58,8 +58,8 @@ export default function CustomerItem({
           </div>
         )}
       </div>
-      <div className="col-span-1">{convertDateTime(item.created_at)}</div>
-      <div className="col-span-1">{convertDateTime(item.updated_at)}</div>
+      <div className="col-span-1 text-black dark:text-white">{convertDateTime(item.created_at)}</div>
+      <div className="col-span-1 text-black dark:text-white">{convertDateTime(item.updated_at)}</div>
       <div className="col-span-1 flex items-center justify-center gap-2">
         <button onClick={() => handleEditCustomerItem(item._id)}>
           <Pencil color="orange" size={18} />
@@ -68,7 +68,7 @@ export default function CustomerItem({
           <AlertDialogTrigger>
             <Trash2 color="red" size={18} />
           </AlertDialogTrigger>
-          <AlertDialogContent>
+          <AlertDialogContent className="dark:bg-darkPrimary">
             <AlertDialogHeader>
               <AlertDialogTitle>Bạn có chắc chắn muốn xóa?</AlertDialogTitle>
               <AlertDialogDescription>
@@ -76,8 +76,8 @@ export default function CustomerItem({
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
-              <AlertDialogCancel>Hủy</AlertDialogCancel>
-              <AlertDialogAction onClick={() => onDelete(item._id)} className="bg-red-500 hover:bg-red-600">
+              <AlertDialogCancel className="dark:bg-darkPrimary">Hủy</AlertDialogCancel>
+              <AlertDialogAction onClick={() => onDelete(item._id)} className="bg-red-500 hover:bg-red-600 text-white">
                 Xóa
               </AlertDialogAction>
             </AlertDialogFooter>

@@ -150,13 +150,13 @@ export default function FilterProduct({ queryConfig }: Props) {
       <form onSubmit={handleSubmitSearch}>
         <div className="mt-1 grid grid-cols-2">
           <div className="col-span-1 flex items-center h-14 px-2 bg-[#ececec] dark:bg-darkBorder border border-[#dadada] rounded-tl-xl">
-            <span className="w-1/3">Tên sản phẩm</span>
+            <span className="w-1/3 dark:text-white">Tên sản phẩm</span>
             <div className="w-2/3 relative h-full">
               <Input
                 name="name"
                 register={registerFormSearch}
                 placeholder="Nhập tên sản phẩm"
-                classNameInput="p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#fff] dark:bg-black focus:border-blue-500 focus:ring-1 outline-none rounded-md h-[35px]"
+                classNameInput="p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#fff] dark:bg-darkSecond focus:border-blue-500 focus:ring-1 outline-none rounded-md text-black dark:text-white"
                 className="relative mt-2"
                 classNameError="hidden"
               />
@@ -164,7 +164,7 @@ export default function FilterProduct({ queryConfig }: Props) {
             </div>
           </div>
           <div className="col-span-1 flex items-center h-14 px-2 bg-[#ececec] dark:bg-darkBorder border border-[#dadada] rounded-tr-xl">
-            <span className="w-1/3">Thương hiệu</span>
+            <span className="w-1/3 dark:text-white">Thương hiệu</span>
             <div className="w-2/3 relative h-full">
               <Controller
                 name="brand"
@@ -175,7 +175,7 @@ export default function FilterProduct({ queryConfig }: Props) {
                       // {...field}
                       value={field.value ?? ""} // ✅ Giá trị từ form
                       onChange={(e) => field.onChange(e.target.value ? e.target.value : undefined)} // ✅ Cập nhật vào form
-                      className="p-2 border border-gray-300 dark:border-darkBorder bg-[#fff] dark:bg-black w-full mt-2 rounded-md "
+                      className="p-2 border border-gray-300 dark:border-darkBorder bg-[#fff] dark:bg-darkSecond w-full mt-2 rounded-md text-black dark:text-white"
                     >
                       <option value="" disabled>
                         -- Chọn thương hiệu --
@@ -195,7 +195,7 @@ export default function FilterProduct({ queryConfig }: Props) {
             </div>
           </div>
           <div className="col-span-1 flex items-center h-14 px-2 bg-[#fff] dark:bg-darkBorder border border-[#dadada] border-t-0">
-            <span className="w-1/3">Thể loại</span>
+            <span className="w-1/3 dark:text-white">Thể loại</span>
             <div className="w-2/3 relative h-full">
               <Controller
                 name="category"
@@ -206,7 +206,7 @@ export default function FilterProduct({ queryConfig }: Props) {
                       // {...field}
                       value={field.value ?? ""} // ✅ Giá trị từ form
                       onChange={(e) => field.onChange(e.target.value ? e.target.value : undefined)} // ✅ Cập nhật vào form
-                      className="p-2 border border-gray-300 dark:border-darkBorder bg-[#f2f2f2] dark:bg-black w-full mt-2 rounded-md"
+                      className="p-2 border border-gray-300 dark:border-darkBorder bg-[#f2f2f2] dark:bg-darkSecond w-full mt-2 rounded-md text-black dark:text-white"
                     >
                       <option value="" disabled>
                         -- Chọn thể loại --
@@ -226,7 +226,7 @@ export default function FilterProduct({ queryConfig }: Props) {
             </div>
           </div>
           <div className="col-span-1 flex items-center h-14 px-2 bg-[#fff] dark:bg-darkBorder border border-[#dadada] border-t-0 rounded-tr-md">
-            <span className="w-1/3">Lọc theo giá</span>
+            <span className="w-1/3 dark:text-white">Lọc theo giá</span>
             <div className="w-2/3 relative h-full">
               <div className="flex items-center justify-between gap-2">
                 <Controller
@@ -238,7 +238,7 @@ export default function FilterProduct({ queryConfig }: Props) {
                         type="text"
                         placeholder="đ Từ"
                         autoComplete="on"
-                        classNameInput="p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-black focus:border-blue-500 focus:ring-1 outline-none rounded-md h-[35px]"
+                        classNameInput="p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-darkSecond focus:border-blue-500 focus:ring-1 outline-none rounded-md text-black dark:text-white"
                         className="relative mt-2 flex-grow"
                         value={field.value}
                         ref={field.ref}
@@ -265,7 +265,7 @@ export default function FilterProduct({ queryConfig }: Props) {
                         type="text"
                         placeholder="đ Đến"
                         autoComplete="on"
-                        classNameInput="p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-black focus:border-blue-500 focus:ring-1 outline-none rounded-md h-[35px]"
+                        classNameInput="p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-darkSecond focus:border-blue-500 focus:ring-1 outline-none rounded-md text-black dark:text-white"
                         className="relative mt-2 flex-grow"
                         value={field.value}
                         ref={field.ref}
@@ -287,7 +287,7 @@ export default function FilterProduct({ queryConfig }: Props) {
             </div>
           </div>
           <div className="col-span-1 flex items-center h-14 px-2 bg-[#ececec] dark:bg-darkBorder border border-[#dadada] border-t-0">
-            <span className="w-1/3">Ngày tạo</span>
+            <span className="w-1/3 dark:text-white">Ngày tạo</span>
             <div className="w-2/3 relative h-full">
               <div className="mt-2 w-full flex items-center gap-2">
                 <Controller
@@ -326,7 +326,7 @@ export default function FilterProduct({ queryConfig }: Props) {
             </div>
           </div>
           <div className="col-span-1 flex items-center h-14 px-2 bg-[#ececec] dark:bg-darkBorder  border border-[#dadada] border-t-0 rounded-br-xl">
-            <span className="w-1/3">Ngày cập nhật</span>
+            <span className="w-1/3 dark:text-white">Ngày cập nhật</span>
             <div className="w-2/3 relative h-full">
               <div className="mt-2 w-full flex items-center gap-2">
                 <Controller
@@ -365,7 +365,7 @@ export default function FilterProduct({ queryConfig }: Props) {
             </div>
           </div>
           <div className="col-span-1 flex items-center h-14 px-2 bg-[#fff] dark:bg-darkBorder border border-[#dadada] border-t-0 rounded-bl-xl">
-            <span className="w-1/3">Trạng thái</span>
+            <span className="w-1/3 dark:text-white">Trạng thái</span>
             <div className="w-2/3 relative h-full">
               <Controller
                 name="status"
@@ -376,7 +376,7 @@ export default function FilterProduct({ queryConfig }: Props) {
                       // {...field}
                       value={field.value ?? ""} // ✅ Giá trị từ form
                       onChange={(e) => field.onChange(e.target.value ? e.target.value : undefined)} // ✅ Cập nhật vào form
-                      className="p-2 border border-gray-300 dark:border-darkBorder bg-[#f2f2f2] dark:bg-black w-full mt-2 rounded-md"
+                      className="p-2 border border-gray-300 dark:border-darkBorder bg-[#f2f2f2] dark:bg-darkSecond w-full mt-2 rounded-md text-black dark:text-white"
                     >
                       <option value="" disabled>
                         -- Chọn trạng thái --

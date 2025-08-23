@@ -61,9 +61,13 @@ export default function OrderItem({
             {copiedId === item._id ? <ClipboardCheck color="#8d99ae" size={12} /> : <Copy color="#8d99ae" size={12} />}
           </button>
         </div>
-        <div className="col-span-2">{item.customer_info ? item.customer_info.name : ""}</div>
-        <div className="col-span-1 break-words">{item.customer_info ? item.customer_info.phone : ""}</div>
-        <div className="col-span-2 text-center">{item.customer_info ? item.customer_info.address : ""}</div>
+        <div className="col-span-2 text-black dark:text-white">{item.customer_info ? item.customer_info.name : ""}</div>
+        <div className="col-span-1 break-words text-black dark:text-white">
+          {item.customer_info ? item.customer_info.phone : ""}
+        </div>
+        <div className="col-span-2 text-center text-black dark:text-white">
+          {item.customer_info ? item.customer_info.address : ""}
+        </div>
         <div className="col-span-1 text-red-500 font-semibold">
           {item.totalAmount ? formatCurrency(item.totalAmount) + "đ" : ""}
         </div>
@@ -75,7 +79,7 @@ export default function OrderItem({
             {status}
           </Tag>
         </div>
-        <div className="col-span-1">{convertDateTime(item.created_at)}</div>
+        <div className="col-span-1 text-black dark:text-white">{convertDateTime(item.created_at)}</div>
         <div className="col-span-1 flex items-center justify-center gap-2">
           <button onClick={() => handleEditCustomerItem(item._id)}>
             <Pencil color="orange" size={18} />

@@ -36,6 +36,7 @@ import useDownloadExcel from "src/Hook/useDownloadExcel"
 import { motion, AnimatePresence } from "framer-motion"
 import { Collapse, CollapseProps, Empty, Select } from "antd"
 import "../ManageOrders/ManageOrders.css"
+import { useTheme } from "src/Admin/Components/Theme-provider/Theme-provider"
 
 type FormDataUpdate = Pick<
   SchemaSupplierUpdateType,
@@ -88,6 +89,8 @@ const formDataSearch = schemaSupplier.pick([
 ])
 
 export default function ManageSuppliers() {
+  const { theme } = useTheme()
+  const isDarkMode = theme === "dark" || theme === "system"
   const navigate = useNavigate()
   const { downloadExcel } = useDownloadExcel()
   // const queryClient = useQueryClient()
@@ -347,21 +350,21 @@ export default function ManageSuppliers() {
   const items: CollapseProps["items"] = [
     {
       key: "1",
-      label: <h1 className="text-[16px] font-semibold tracking-wide">Bộ lọc & Tìm kiếm</h1>,
+      label: <h1 className="text-[16px] font-semibold tracking-wide text-black dark:text-white">Bộ lọc & Tìm kiếm</h1>,
       children: (
         <section>
           <div className="bg-white dark:bg-darkPrimary mb-3 dark:border-darkBorder rounded-2xl">
             <form onSubmit={handleSubmitSearch}>
               <div className="mt-1 grid grid-cols-2">
                 <div className="col-span-1 flex items-center h-14 px-2 bg-[#fff] dark:bg-darkBorder border border-[#dadada] rounded-tl-xl">
-                  <span className="w-1/3">Tên nhà cung cấp</span>
+                  <span className="w-1/3 dark:text-white">Tên nhà cung cấp</span>
                   <div className="w-2/3 relative h-full">
                     <div className="mt-2 w-full flex items-center gap-2">
                       <Input
                         name="name"
                         register={registerFormSearch}
                         placeholder="Nhập tên nhà cung cấp"
-                        classNameInput="p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-black focus:border-blue-500 focus:ring-1 outline-none rounded-md h-[35px]"
+                        classNameInput="p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-darkSecond focus:border-blue-500 focus:ring-1 outline-none rounded-md text-black dark:text-white"
                         className="relative flex-grow"
                         classNameError="hidden"
                       />
@@ -370,14 +373,14 @@ export default function ManageSuppliers() {
                   </div>
                 </div>
                 <div className="col-span-1 flex items-center h-14 px-2 bg-[#fff] dark:bg-darkBorder border border-[#dadada] rounded-tr-xl">
-                  <span className="w-1/3">Tên người đại diện</span>
+                  <span className="w-1/3 dark:text-white">Tên người đại diện</span>
                   <div className="w-2/3 relative h-full">
                     <div className="mt-2 w-full flex items-center gap-2">
                       <Input
                         name="contactName"
                         register={registerFormSearch}
                         placeholder="Nhập tên người đại diện"
-                        classNameInput="p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-black focus:border-blue-500 focus:ring-1 outline-none rounded-md h-[35px]"
+                        classNameInput="p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-darkSecond focus:border-blue-500 focus:ring-1 outline-none rounded-md text-black dark:text-white"
                         className="relative flex-grow"
                         classNameError="hidden"
                       />
@@ -386,14 +389,14 @@ export default function ManageSuppliers() {
                   </div>
                 </div>
                 <div className="col-span-1 flex items-center h-14 px-2 bg-[#ececec] dark:bg-darkBorder border border-[#dadada] border-t-0">
-                  <span className="w-1/3">Email</span>
+                  <span className="w-1/3 dark:text-white">Email</span>
                   <div className="w-2/3 relative h-full">
                     <div className="mt-2 w-full flex items-center gap-2">
                       <Input
                         name="email"
                         register={registerFormSearch}
                         placeholder="Nhập email"
-                        classNameInput="p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#fff] dark:bg-black focus:border-blue-500 focus:ring-1 outline-none rounded-md h-[35px]"
+                        classNameInput="p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#fff] dark:bg-darkSecond focus:border-blue-500 focus:ring-1 outline-none rounded-md text-black dark:text-white"
                         className="relative flex-grow"
                         classNameError="hidden"
                       />
@@ -402,14 +405,14 @@ export default function ManageSuppliers() {
                   </div>
                 </div>
                 <div className="col-span-1 flex items-center h-14 px-2 bg-[#ececec] dark:bg-darkBorder border border-[#dadada] border-t-0">
-                  <span className="w-1/3">Số điện thoại</span>
+                  <span className="w-1/3 dark:text-white">Số điện thoại</span>
                   <div className="w-2/3 relative h-full">
                     <div className="mt-2 w-full flex items-center gap-2">
                       <Input
                         name="phone"
                         register={registerFormSearch}
                         placeholder="Nhập số điện thoại"
-                        classNameInput="p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#fff] dark:bg-black focus:border-blue-500 focus:ring-1 outline-none rounded-md h-[35px]"
+                        classNameInput="p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#fff] dark:bg-darkSecond focus:border-blue-500 focus:ring-1 outline-none rounded-md text-black dark:text-white"
                         className="relative flex-grow"
                         classNameError="hidden"
                       />
@@ -418,7 +421,7 @@ export default function ManageSuppliers() {
                   </div>
                 </div>
                 <div className="col-span-1 flex items-center h-14 px-2 bg-[#fff] dark:bg-darkBorder border border-[#dadada] border-t-0 rounded-bl-xl">
-                  <span className="w-1/3">Ngày tạo</span>
+                  <span className="w-1/3 dark:text-white">Ngày tạo</span>
                   <div className="w-2/3 relative h-full">
                     <div className="mt-2 w-full flex items-center gap-2">
                       <Controller
@@ -436,7 +439,7 @@ export default function ManageSuppliers() {
                           )
                         }}
                       />
-                      <span>-</span>
+                      <span className="text-black dark:text-white">-</span>
                       <Controller
                         name="created_at_end"
                         control={controlFormSearch}
@@ -475,7 +478,7 @@ export default function ManageSuppliers() {
                           )
                         }}
                       />
-                      <span>-</span>
+                      <span className="text-black dark:text-white">-</span>
                       <Controller
                         name="updated_at_end"
                         control={controlFormSearch}
@@ -519,7 +522,9 @@ export default function ManageSuppliers() {
     },
     {
       key: "2",
-      label: <h2 className="text-[16px] font-semibold tracking-wide">Danh sách Nhà cung cấp</h2>,
+      label: (
+        <h2 className="text-[16px] font-semibold tracking-wide text-black dark:text-white">Danh sách Nhà cung cấp</h2>
+      ),
       children: (
         <section>
           <div className="bg-white dark:bg-darkPrimary mb-3 dark:border-darkBorder rounded-2xl">
@@ -538,7 +543,7 @@ export default function ManageSuppliers() {
                       defaultValue="Mới nhất"
                       className="select-sort"
                       onChange={handleChangeSortListOrder}
-                      suffixIcon={<ArrowUpNarrowWide />}
+                      suffixIcon={<ArrowUpNarrowWide color={isDarkMode ? "white" : "black"} />}
                       options={[
                         { value: "old", label: "Cũ nhất" },
                         { value: "new", label: "Mới nhất" }
@@ -556,16 +561,28 @@ export default function ManageSuppliers() {
                 </div>
                 <div>
                   <div className="bg-[#f2f2f2] dark:bg-darkPrimary grid grid-cols-10 items-center gap-2 py-3 border border-[#dedede] dark:border-darkBorder px-4 rounded-tl-xl rounded-tr-xl">
-                    <div className="col-span-2 text-[14px] font-semibold tracking-wider uppercase">Mã nhà cung cấp</div>
-                    <div className="col-span-2 text-[14px] font-semibold tracking-wider uppercase">
+                    <div className="col-span-2 text-[14px] font-semibold tracking-wider uppercase text-black dark:text-white">
+                      Mã nhà cung cấp
+                    </div>
+                    <div className="col-span-2 text-[14px] font-semibold tracking-wider uppercase text-black dark:text-white">
                       Tên nhà cung cấp
                     </div>
-                    <div className="col-span-1 text-[14px] font-semibold tracking-wider uppercase">Người đại diện </div>
-                    <div className="col-span-1 text-[14px] font-semibold tracking-wider uppercase">Email</div>
-                    <div className="col-span-1 text-[14px] font-semibold tracking-wider uppercase">Số điện thoại</div>
-                    <div className="col-span-1 text-[14px] font-semibold tracking-wider uppercase">Ngày tạo</div>
-                    <div className="col-span-1 text-[14px] font-semibold tracking-wider uppercase">Ngày cập nhật</div>
-                    <div className="col-span-1 text-[14px] text-center font-semibold tracking-wider uppercase">
+                    <div className="col-span-1 text-[14px] font-semibold tracking-wider uppercase text-black dark:text-white">
+                      Người đại diện{" "}
+                    </div>
+                    <div className="col-span-1 text-[14px] font-semibold tracking-wider uppercase text-black dark:text-white">
+                      Email
+                    </div>
+                    <div className="col-span-1 text-[14px] font-semibold tracking-wider uppercase text-black dark:text-white">
+                      Số điện thoại
+                    </div>
+                    <div className="col-span-1 text-[14px] font-semibold tracking-wider uppercase text-black dark:text-white">
+                      Ngày tạo
+                    </div>
+                    <div className="col-span-1 text-[14px] font-semibold tracking-wider uppercase text-black dark:text-white">
+                      Ngày cập nhật
+                    </div>
+                    <div className="col-span-1 text-[14px] text-center font-semibold tracking-wider uppercase text-black dark:text-white">
                       Hành động
                     </div>
                   </div>
@@ -622,7 +639,7 @@ export default function ManageSuppliers() {
                           onSubmit={handleSubmitUpdate}
                           className="bg-white dark:bg-darkPrimary rounded-md w-[900px]"
                         >
-                          <h3 className="py-2 px-4 text-lg font-semibold tracking-wide rounded-md">
+                          <h3 className="py-2 px-4 text-lg font-semibold tracking-wide rounded-md text-black dark:text-white">
                             Thông tin nhà cung cấp
                           </h3>
                           <div className="p-4 pt-0">
@@ -632,8 +649,9 @@ export default function ManageSuppliers() {
                                 register={register}
                                 placeholder="Nhập id"
                                 messageErrorInput={errors.id?.message}
-                                classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-darkSecond focus:border-blue-500 focus:ring-2 outline-none rounded-md"
+                                classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-darkSecond focus:border-blue-500 focus:ring-2 outline-none rounded-md text-black dark:text-white"
                                 className="relative flex-1"
+                                classNameLabel="text-black dark:text-white"
                                 nameInput="Mã nhà cung cấp"
                                 disabled
                               />
@@ -642,8 +660,9 @@ export default function ManageSuppliers() {
                                 register={register}
                                 placeholder="Nhập tax-code"
                                 messageErrorInput={errors.taxCode?.message}
-                                classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-darkSecond focus:border-blue-500 focus:ring-2 outline-none rounded-md"
+                                classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-darkSecond focus:border-blue-500 focus:ring-2 outline-none rounded-md text-black dark:text-white"
                                 className="relative flex-1"
+                                classNameLabel="text-black dark:text-white"
                                 nameInput="Mã số thuế"
                                 disabled
                               />
@@ -654,8 +673,9 @@ export default function ManageSuppliers() {
                                 register={register}
                                 placeholder="Nhập tên nhà cung cấp"
                                 messageErrorInput={errors.name?.message}
-                                classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-white dark:bg-darkPrimary focus:border-blue-500 focus:ring-2 outline-none rounded-md"
+                                classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-white dark:bg-darkSecond focus:border-blue-500 focus:ring-2 outline-none rounded-md text-black dark:text-white"
                                 className="relative flex-1"
+                                classNameLabel="text-black dark:text-white"
                                 nameInput="Tên nhà cung cấp"
                               />
                               <Input
@@ -663,8 +683,9 @@ export default function ManageSuppliers() {
                                 register={register}
                                 placeholder="Nhập họ tên"
                                 messageErrorInput={errors.contactName?.message}
-                                classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#fff] dark:bg-darkPrimary focus:border-blue-500 focus:ring-2 outline-none rounded-md"
+                                classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#fff] dark:bg-darkSecond focus:border-blue-500 focus:ring-2 outline-none rounded-md text-black dark:text-white"
                                 className="relative flex-1"
+                                classNameLabel="text-black dark:text-white"
                                 nameInput="Tên người đại diện"
                               />
                             </div>
@@ -674,8 +695,9 @@ export default function ManageSuppliers() {
                                 register={register}
                                 placeholder="Nhập email"
                                 messageErrorInput={errors.email?.message}
-                                classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#fff] dark:bg-darkPrimary focus:border-blue-500 focus:ring-2 outline-none rounded-md"
+                                classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#fff] dark:bg-darkSecond focus:border-blue-500 focus:ring-2 outline-none rounded-md text-black dark:text-white"
                                 className="relative flex-1"
+                                classNameLabel="text-black dark:text-white"
                                 nameInput="Email"
                               />
                               <Input
@@ -683,8 +705,9 @@ export default function ManageSuppliers() {
                                 register={register}
                                 placeholder="Nhập số điện thoại"
                                 messageErrorInput={errors.phone?.message}
-                                classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-white dark:bg-darkPrimary focus:border-blue-500 focus:ring-2 outline-none rounded-md"
+                                classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-white dark:bg-darkSecond focus:border-blue-500 focus:ring-2 outline-none rounded-md text-black dark:text-white"
                                 className="relative flex-1"
+                                classNameLabel="text-black dark:text-white"
                                 nameInput="Số điện thoại"
                               />
                             </div>
@@ -694,8 +717,9 @@ export default function ManageSuppliers() {
                                 register={register}
                                 placeholder="Nhập địa chỉ"
                                 messageErrorInput={errors.address?.message}
-                                classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-white dark:bg-darkPrimary focus:border-blue-500 focus:ring-2 outline-none rounded-md"
+                                classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-white dark:bg-darkSecond focus:border-blue-500 focus:ring-2 outline-none rounded-md text-black dark:text-white"
                                 className="relative flex-1"
+                                classNameLabel="text-black dark:text-white"
                                 nameInput="Địa chỉ"
                               />
                               <Input
@@ -703,8 +727,9 @@ export default function ManageSuppliers() {
                                 register={register}
                                 placeholder="Nhập mô tả"
                                 messageErrorInput={errors.description?.message}
-                                classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-white dark:bg-darkPrimary focus:border-blue-500 focus:ring-2 outline-none rounded-md"
+                                classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-white dark:bg-darkSecond focus:border-blue-500 focus:ring-2 outline-none rounded-md text-black dark:text-white"
                                 className="relative flex-1"
+                                classNameLabel="text-black dark:text-white"
                                 nameInput="Mô tả"
                               />
                             </div>
@@ -714,8 +739,9 @@ export default function ManageSuppliers() {
                                 register={register}
                                 placeholder="Nhập ngày tạo"
                                 messageErrorInput={errors.created_at?.message}
-                                classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-darkSecond focus:border-blue-500 focus:ring-2 outline-none rounded-md"
+                                classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-darkSecond focus:border-blue-500 focus:ring-2 outline-none rounded-md text-black dark:text-white"
                                 className="relative flex-1"
+                                classNameLabel="text-black dark:text-white"
                                 nameInput="Ngày tạo"
                                 disabled
                               />
@@ -724,8 +750,9 @@ export default function ManageSuppliers() {
                                 register={register}
                                 placeholder="Nhập ngày tạo cập nhật"
                                 messageErrorInput={errors.updated_at?.message}
-                                classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-darkSecond focus:border-blue-500 focus:ring-2 outline-none rounded-md"
+                                classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-darkSecond focus:border-blue-500 focus:ring-2 outline-none rounded-md text-black dark:text-white"
                                 className="relative flex-1"
+                                classNameLabel="text-black dark:text-white"
                                 nameInput="Ngày cập nhật"
                                 disabled
                               />
@@ -768,7 +795,7 @@ export default function ManageSuppliers() {
         Nhà cung cấp
       </h1>
 
-      <Collapse items={items} defaultActiveKey={["2"]} className="bg-white" />
+      <Collapse items={items} defaultActiveKey={["2"]} className="bg-white dark:bg-darkPrimary dark:border-none" />
     </div>
   )
 }

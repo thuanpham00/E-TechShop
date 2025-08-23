@@ -11,7 +11,10 @@ export function DatePicker({ value, onChange }: { value: Date; onChange: (value:
       <PopoverTrigger asChild>
         <Button
           variant={"outline"}
-          className={cn("w-[240px] justify-start text-left font-normal", !value && "text-muted-foreground")}
+          className={cn(
+            "w-[240px] justify-start text-left font-normal text-black dark:text-white bg-white dark:bg-darkSecond",
+            !value && "text-muted-foreground"
+          )}
         >
           <CalendarIcon />
           {value ? format(value, "PPP") : <span>dd/MM/yyyy</span>}

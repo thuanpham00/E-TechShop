@@ -24,6 +24,7 @@ import {
 } from "chart.js"
 import dayjs, { Dayjs } from "dayjs"
 import { useState } from "react"
+import { useTheme } from "src/Admin/Components/Theme-provider/Theme-provider"
 
 type TypeStatistical = {
   title: string
@@ -47,6 +48,8 @@ ChartJS.register(
 const statusOrder = ["Chờ xác nhận", "Đang xử lý", "Đang vận chuyển", "Đã giao hàng", "Đã hủy"]
 
 export default function StatisticalSell() {
+  const { theme } = useTheme()
+  const isDarkMode = theme === "dark" || theme === "system"
   const [selectedMonth, setSelectedMonth] = useState<Dayjs>(dayjs())
   const [selectedYear, setSelectedYear] = useState<number>(dayjs().year())
   const [isMonthly, setIsMonthly] = useState(true) // true = theo tháng, false = theo năm
@@ -107,13 +110,18 @@ export default function StatisticalSell() {
     plugins: {
       legend: {
         display: true,
-        position: "top" as const
+        position: "top" as const,
+        labels: {
+          color: isDarkMode ? "white" : "black", // đổi màu chữ tag
+          font: { size: 13 }
+        }
       },
       title: {
         display: true,
         text: "Tỷ lệ trạng thái đơn hàng",
         font: { size: 16 },
-        padding: { top: 10, bottom: 10 }
+        padding: { top: 10, bottom: 10 },
+        color: isDarkMode ? "white" : "dark"
       },
       tooltip: {
         callbacks: {
@@ -129,7 +137,7 @@ export default function StatisticalSell() {
       },
       datalabels: {
         formatter: (value: any) => `${value}%`, // custom cách hiển thị số
-        color: "#fff", // màu chữ trắng
+        color: "white",
         font: {
           weight: "normal",
           size: 15
@@ -143,7 +151,13 @@ export default function StatisticalSell() {
     datasets: [
       {
         data: data_rateStatusOrder,
-        backgroundColor: ["#d46b08", "#0958d9", "#08979c", "#389e0d", "#cf1322"],
+        backgroundColor: [
+          "#e63946", // hồng nhạt
+          "#293241", // xanh mint
+          "#3a86ff", // xanh dương nhạt
+          "#fca311", // cam nhạt
+          "#38b000" // xanh lá nhạt
+        ],
         borderWidth: 1
       }
     ]
@@ -152,12 +166,19 @@ export default function StatisticalSell() {
   const options3: ChartOptions<"bar" | "line"> = {
     responsive: true,
     plugins: {
-      legend: { position: "top" as const },
+      legend: {
+        position: "top" as const,
+        labels: {
+          color: isDarkMode ? "white" : "black", // đổi màu chữ tag
+          font: { size: 13 }
+        }
+      },
       title: {
         display: true,
         text: "Doanh thu 6 tháng gần nhất",
         font: { size: 16, weight: 500 },
-        padding: { top: 10, bottom: 10 }
+        padding: { top: 10, bottom: 10 },
+        color: isDarkMode ? "white" : "dark"
       },
       datalabels: {
         formatter: function (value: number) {
@@ -166,7 +187,7 @@ export default function StatisticalSell() {
         font: {
           weight: "normal"
         },
-        color: "#000" // màu chữ
+        color: isDarkMode ? "white" : "dark"
       }
     },
     interaction: {
@@ -178,7 +199,16 @@ export default function StatisticalSell() {
         beginAtZero: true,
         title: {
           display: true,
-          text: "Triệu đồng"
+          text: "Triệu đồng",
+          color: isDarkMode ? "white" : "black"
+        },
+        ticks: {
+          color: isDarkMode ? "white" : "black" // đổi màu số trục Y
+        }
+      },
+      x: {
+        ticks: {
+          color: isDarkMode ? "white" : "black" // đổi màu label trục X
         }
       }
     }
@@ -250,11 +280,13 @@ export default function StatisticalSell() {
             <Col span={6}>
               <div
                 style={{ height: "100%" }}
-                className="border-gray-500 shadow-md rounded-xl bg-white p-6 flex flex-col justify-between"
+                className="border-gray-500 shadow-md rounded-xl bg-white dark:bg-darkPrimary p-6 flex flex-col justify-between"
               >
                 <div className="flex items-start justify-between">
-                  <div className="text-[15px] font-semibold tracking-wide mr-1">{totalCustomer?.title}</div>
-                  <Wallet size={22} color="black" />
+                  <div className="text-[16px] font-semibold tracking-wide mr-1 text-black dark:text-white">
+                    {totalCustomer?.title}
+                  </div>
+                  <Wallet size={22} color={theme === "dark" || theme === "system" ? "white" : "black"} />
                 </div>
                 <div className={`text-2xl font-semibold mt-4`} style={{ color: totalCustomer?.color }}>
                   {formatCurrency((totalCustomer?.value as number) || 0)}đ
@@ -265,11 +297,13 @@ export default function StatisticalSell() {
             <Col span={6}>
               <div
                 style={{ height: "100%" }}
-                className="border-gray-500 shadow-md rounded-xl bg-white p-6 flex flex-col justify-between"
+                className="border-gray-500 shadow-md rounded-xl bg-white dark:bg-darkPrimary p-6 flex flex-col justify-between"
               >
                 <div className="flex items-start justify-between">
-                  <div className="text-[15px] font-semibold tracking-wide mr-1">{avgOrderValue?.title}</div>
-                  <BarChart3 size={22} color="black" />
+                  <div className="text-[16px] font-semibold tracking-wide mr-1 text-black dark:text-white">
+                    {avgOrderValue?.title}
+                  </div>
+                  <BarChart3 size={22} color={theme === "dark" || theme === "system" ? "white" : "black"} />
                 </div>
                 <div className={`text-2xl font-semibold mt-4`} style={{ color: avgOrderValue?.color }}>
                   {formatCurrency((avgOrderValue?.value as number) || 0)}đ
@@ -280,11 +314,13 @@ export default function StatisticalSell() {
             <Col span={6}>
               <div
                 style={{ height: "100%" }}
-                className="border-gray-500 shadow-md rounded-xl bg-white p-6 flex flex-col justify-between"
+                className="border-gray-500 shadow-md rounded-xl bg-white dark:bg-darkPrimary p-6 flex flex-col justify-between"
               >
                 <div className="flex items-start justify-between">
-                  <div className="text-[15px] font-semibold tracking-wide mr-1">{totalOrder?.title}</div>
-                  <PackageCheck size={22} color="black" />
+                  <div className="text-[16px] font-semibold tracking-wide mr-1 text-black dark:text-white">
+                    {totalOrder?.title}
+                  </div>
+                  <PackageCheck size={22} color={theme === "dark" || theme === "system" ? "white" : "black"} />
                 </div>
                 <div className={`text-2xl font-semibold mt-4`} style={{ color: totalOrder?.color }}>
                   {totalOrder?.value || 0}
@@ -295,11 +331,13 @@ export default function StatisticalSell() {
             <Col span={6}>
               <div
                 style={{ height: "100%" }}
-                className="border-gray-500 shadow-md rounded-xl bg-white p-6 flex flex-col justify-between"
+                className="border-gray-500 shadow-md rounded-xl bg-white dark:bg-darkPrimary p-6 flex flex-col justify-between"
               >
                 <div className="flex items-start justify-between">
-                  <div className="text-[15px] font-semibold tracking-wide mr-1">{totalProductSold?.title}</div>
-                  <Boxes size={22} color="black" />
+                  <div className="text-[16px] font-semibold tracking-wide mr-1 text-black dark:text-white">
+                    {totalProductSold?.title}
+                  </div>
+                  <Boxes size={22} color={theme === "dark" || theme === "system" ? "white" : "black"} />
                 </div>
                 <div className={`text-2xl font-semibold mt-4`} style={{ color: totalProductSold?.color }}>
                   {totalProductSold?.value || 0}
@@ -309,9 +347,8 @@ export default function StatisticalSell() {
 
             <Col span={12}>
               <div
+                className="bg-white border border-[#dadada] dark:bg-darkPrimary dark:border-darkBorder"
                 style={{
-                  backgroundColor: "white",
-                  border: "1px solid #dadada",
                   height: 350,
                   padding: 12,
                   display: "flex",
@@ -325,9 +362,8 @@ export default function StatisticalSell() {
 
             <Col span={12}>
               <div
+                className="bg-white border border-[#dadada] dark:bg-darkPrimary dark:border-darkBorder"
                 style={{
-                  backgroundColor: "white",
-                  border: "1px solid #dadada",
                   height: 350,
                   padding: 12,
                   display: "flex",

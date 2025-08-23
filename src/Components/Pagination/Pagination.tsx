@@ -14,6 +14,7 @@ import {
   SupplierItemType,
   SupplyItemType
 } from "src/Types/product.type"
+import { useTheme } from "src/Admin/Components/Theme-provider/Theme-provider"
 
 interface Props {
   queryConfig: queryParamConfig
@@ -41,6 +42,9 @@ interface Props {
 const range = 2
 
 export default function Pagination({ queryConfig, page_size, pathNavigate, scroll, data }: Props) {
+  const { theme } = useTheme() // Lấy theme hiện tại
+  const iconColor = theme === "dark" || theme === "system"
+
   const page = Number(queryConfig.page) // lấy từ url xuống và url nhận vào các params
   const renderPagination = () => {
     let dotAfter = false
@@ -50,7 +54,10 @@ export default function Pagination({ queryConfig, page_size, pathNavigate, scrol
       if (!dotBefore) {
         dotBefore = true
         return (
-          <span key={index} className="hover:bg-slate-200 duration-300 rounded px-3 py-2 shadow-sm mx-2 cursor-pointer">
+          <span
+            key={index}
+            className="hover:bg-slate-200 duration-300 rounded px-3 py-2 shadow-sm mx-2 cursor-pointer text-black dark:text-white"
+          >
             ...
           </span>
         )
@@ -62,7 +69,10 @@ export default function Pagination({ queryConfig, page_size, pathNavigate, scrol
       if (!dotAfter) {
         dotAfter = true
         return (
-          <span key={index} className="hover:bg-slate-200 duration-300 rounded px-3 py-2 shadow-sm mx-2 cursor-pointer">
+          <span
+            key={index}
+            className="hover:bg-slate-200 duration-300 rounded px-3 py-2 shadow-sm mx-2 cursor-pointer text-black dark:text-white"
+          >
             ...
           </span>
         )
@@ -98,7 +108,7 @@ export default function Pagination({ queryConfig, page_size, pathNavigate, scrol
               }).toString()
             }}
             className={classNames(
-              "text-xs md:test-base py-2 px-3 flex items-center justify-center border border-primaryColor rounded-md hover:bg-gray-300",
+              "text-xs md:test-base py-2 px-3 flex items-center justify-center border border-primaryColor rounded-md hover:bg-gray-200 dark:hover:bg-gray-700 text-black dark:text-white",
               {
                 "border border-[#0077b6] text-[#0077b6]": isActive,
                 "border border-[#dedede]": !isActive
@@ -112,7 +122,7 @@ export default function Pagination({ queryConfig, page_size, pathNavigate, scrol
   }
   return (
     <div className="mt-4 flex gap-2 items-center justify-end">
-      <div>
+      <div className="text-black dark:text-white">
         {queryConfig.page !== "1" ? Number(queryConfig.limit) * (Number(queryConfig.page) - 1) + 1 : 1} -{" "}
         {Number(data?.result?.limit) * (Number(data?.result?.page) - 1) + Number(data?.result?.totalOfPage)} trên{" "}
         {data?.result?.total} dòng
@@ -120,9 +130,9 @@ export default function Pagination({ queryConfig, page_size, pathNavigate, scrol
       <div className="flex items-center justify-center gap-2">
         {page === 1 ? (
           <span
-            className={`cursor-not-allowed text-xs md:test-base p-2 border border-[#dedede] rounded-md hover:bg-gray-300 duration-200`}
+            className={`cursor-not-allowed text-xs md:test-base p-2 border border-[#dedede] rounded-md dark:hover:bg-gray-700  hover:bg-gray-200 duration-200`}
           >
-            <ChevronLeft size={15} />
+            <ChevronLeft size={15} color={iconColor ? "white" : "black"} />
           </span>
         ) : (
           <Link
@@ -133,9 +143,9 @@ export default function Pagination({ queryConfig, page_size, pathNavigate, scrol
                 page: (page - 1).toString()
               }).toString()
             }}
-            className={`text-xs md:test-base p-2  border border-[#dedede] rounded-md hover:bg-gray-300 duration-200`}
+            className={`text-xs md:test-base p-2  border border-[#dedede] rounded-md dark:hover:bg-gray-700  hover:bg-gray-200 duration-200`}
           >
-            <ChevronLeft size={15} />
+            <ChevronLeft size={15} color={iconColor ? "white" : "black"} />
           </Link>
         )}
 
@@ -143,9 +153,9 @@ export default function Pagination({ queryConfig, page_size, pathNavigate, scrol
 
         {page === page_size ? (
           <span
-            className={`cursor-not-allowed text-xs md:test-base p-2 border border-[#dedede] rounded-md hover:bg-gray-300 duration-200`}
+            className={`cursor-not-allowed text-xs md:test-base p-2 border border-[#dedede] rounded-md dark:hover:bg-gray-700  hover:bg-gray-200 duration-200`}
           >
-            <ChevronRight size={15} />
+            <ChevronRight size={15} color={iconColor ? "white" : "black"} />
           </span>
         ) : (
           <Link
@@ -156,9 +166,9 @@ export default function Pagination({ queryConfig, page_size, pathNavigate, scrol
                 page: (page + 1).toString()
               }).toString()
             }}
-            className={`text-xs md:test-base p-2 border border-[#dedede]  rounded-md hover:bg-gray-300 duration-200`}
+            className={`text-xs md:test-base p-2 border border-[#dedede] rounded-md dark:hover:bg-gray-700 hover:bg-gray-200 duration-200`}
           >
-            <ChevronRight size={15} />
+            <ChevronRight size={15} color={iconColor ? "white" : "black"} />
           </Link>
         )}
       </div>

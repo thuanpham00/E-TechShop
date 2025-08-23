@@ -139,3 +139,47 @@ a {
 .ant-collapse .ant-collapse-item .ant-collapse-content .ant-collapse-content-box {
   padding-bottom: 4px !important;
 }
+
+.ant-collapse .ant-collapse-arrow {
+  color: #000 !important; /* hoặc màu bạn muốn */
+}
+
+/* dark mode */
+.dark .ant-collapse .ant-collapse-arrow {
+  color: #fff !important; /* đổi màu trắng trong dark */
+}
+
+.dark .ant-menu-submenu-arrow {
+  color: #fff !important; /* hoặc màu bạn muốn */
+}
+
+.ant-collapse .ant-collapse-item .ant-collapse-content {
+  background-color: white !important; /* đổi màu trắng trong dark */
+}
+
+/* dark mode */
+.dark .ant-collapse .ant-collapse-item .ant-collapse-content {
+  background-color: #26282c !important; /* đổi màu trắng trong dark */
+}
+
+.dark .ant-table .ant-table-content {
+  background: #26282c;
+}
+
+.dark .ant-table .ant-table-row .ant-table-cell {
+  color: #fff;
+}
+
+.dark .ant-table .ant-table-thead > tr > th {
+  background: #26282c !important;
+  color: #fff; /* nếu muốn chữ sáng hơn */
+}
+
+.dark .ant-table-tbody > tr.ant-table-row:hover > td {
+  background: #26282c !important; /* màu nền khi hover */
+  color: #fff; /* đổi chữ sáng hơn nếu cần */
+}
+
+.dark .ant-tabs-tab-btn {
+  color: #fff;
+}

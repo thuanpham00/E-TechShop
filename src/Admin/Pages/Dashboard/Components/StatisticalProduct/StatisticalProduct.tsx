@@ -22,6 +22,7 @@ import {
   ChartOptions
 } from "chart.js"
 import useCopyText from "src/Hook/useCopyText"
+import { useTheme } from "src/Admin/Components/Theme-provider/Theme-provider"
 
 type TypeStatistical = {
   title: string
@@ -50,6 +51,8 @@ type ProductRunningOutOfStock = {
 }
 
 export default function StatisticalProduct() {
+  const { theme } = useTheme()
+  const isDarkMode = theme === "dark" || theme === "system"
   const { copiedId, handleCopyText } = useCopyText()
   const getStatisticalProduct = useQuery({
     queryKey: ["getStatisticalProduct"],
@@ -95,12 +98,19 @@ export default function StatisticalProduct() {
     },
     maintainAspectRatio: false, // giúp biểu đồ co dãn tốt
     plugins: {
-      legend: { display: true },
+      legend: {
+        display: true,
+        labels: {
+          color: isDarkMode ? "white" : "black", // đổi màu chữ tag
+          font: { size: 13 }
+        }
+      },
       title: {
         display: true,
         text: "Thống kê sản phẩm theo danh mục",
         font: { size: 16, weight: 500 },
-        padding: { top: 10, bottom: 10 }
+        padding: { top: 10, bottom: 10 },
+        color: isDarkMode ? "white" : "dark"
       },
       tooltip: {
         mode: "index",
@@ -113,7 +123,7 @@ export default function StatisticalProduct() {
         font: {
           weight: "normal"
         },
-        color: "#000" // màu chữ
+        color: isDarkMode ? "white" : "black"
       }
     },
     scales: {
@@ -121,13 +131,21 @@ export default function StatisticalProduct() {
         beginAtZero: true,
         title: {
           display: true,
-          text: "Số lượng sản phẩm"
+          text: "Số lượng sản phẩm",
+          color: isDarkMode ? "white" : "black"
+        },
+        ticks: {
+          color: isDarkMode ? "white" : "black" // đổi màu label trục X
         }
       },
       y: {
         title: {
           display: true,
-          text: "Danh mục"
+          text: "Danh mục",
+          color: isDarkMode ? "white" : "black"
+        },
+        ticks: {
+          color: isDarkMode ? "white" : "black" // đổi màu label trục X
         }
       }
     }
@@ -143,12 +161,19 @@ export default function StatisticalProduct() {
     },
     maintainAspectRatio: false, // giúp biểu đồ co dãn tốt
     plugins: {
-      legend: { display: true },
+      legend: {
+        display: true,
+        labels: {
+          color: isDarkMode ? "white" : "black", // đổi màu chữ tag
+          font: { size: 13 }
+        }
+      },
       title: {
         display: true,
         text: "Top 10 sản phẩm bán chạy nhất thời đại",
         font: { size: 16, weight: 500 },
-        padding: { top: 10, bottom: 10 }
+        padding: { top: 10, bottom: 10 },
+        color: isDarkMode ? "white" : "dark"
       },
       tooltip: {
         mode: "index",
@@ -161,7 +186,7 @@ export default function StatisticalProduct() {
         font: {
           weight: "normal"
         },
-        color: "#000" // màu chữ
+        color: isDarkMode ? "white" : "black"
       }
     },
     scales: {
@@ -169,7 +194,16 @@ export default function StatisticalProduct() {
         beginAtZero: true,
         title: {
           display: true,
-          text: "Số lượt bán"
+          text: "Số lượt bán",
+          color: isDarkMode ? "white" : "black"
+        },
+        ticks: {
+          color: isDarkMode ? "white" : "black" // đổi màu số trục Y
+        }
+      },
+      y: {
+        ticks: {
+          color: isDarkMode ? "white" : "black" // đổi màu số trục Y
         }
       }
     }
@@ -263,11 +297,9 @@ export default function StatisticalProduct() {
             <Row gutter={[24, 24]} className="mt-2">
               <Col span={12}>
                 <div
-                  className="shadow-md p-6"
+                  className="shadow-md p-6 bg-white border border-[#dadada] dark:bg-darkPrimary dark:border-darkBorder"
                   style={{
-                    border: "1px solid #dadada",
                     borderRadius: "8px",
-                    backgroundColor: "white",
                     height: "350px"
                   }}
                 >
@@ -276,11 +308,9 @@ export default function StatisticalProduct() {
               </Col>
               <Col span={12}>
                 <div
-                  className="shadow-md p-6"
+                  className="shadow-md p-6 bg-white border border-[#dadada] dark:bg-darkPrimary dark:border-darkBorder"
                   style={{
-                    border: "1px solid #dadada",
                     borderRadius: "8px",
-                    backgroundColor: "white",
                     height: "350px"
                   }}
                 >
@@ -289,14 +319,14 @@ export default function StatisticalProduct() {
               </Col>
               <Col span={24}>
                 <div
-                  className="shadow-md p-6"
+                  className="shadow-md p-6 bg-white border border-[#dadada] dark:bg-darkPrimary dark:border-darkBorder"
                   style={{
-                    border: "1px solid #dadada",
-                    borderRadius: "8px",
-                    backgroundColor: "white"
+                    borderRadius: "8px"
                   }}
                 >
-                  <div className="text-base font-semibold text-center mb-2">Danh sách các sản phẩm sắp hết hàng</div>
+                  <div className="text-base font-semibold text-center mb-2 text-black dark:text-white">
+                    Danh sách các sản phẩm sắp hết hàng
+                  </div>
 
                   <div style={{ height: "350px", overflowY: "auto" }}>
                     <Table

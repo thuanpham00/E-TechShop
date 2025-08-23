@@ -37,7 +37,7 @@ export default function ReceiptItem({ item }: Props) {
   }, [])
 
   return (
-    <div className="py-4 mb-2 bg-white/80 dark:bg-darkPrimary border border-[#dedede] dark:border-darkBorder px-3 rounded-xl cursor-pointer shadow-lg">
+    <div className="py-4 mb-2 bg-white/80 dark:bg-darkBorder border border-[#dedede] dark:border-darkBorder px-3 rounded-xl cursor-pointer shadow-lg">
       <div className="flex items-center justify-between">
         <div className="text-base py-1 px-2 flex items-center gap-2 bg-[#e5e5e5] border border-[#dadada] rounded-md">
           <span>Đơn nhập hàng: </span>
@@ -46,7 +46,7 @@ export default function ReceiptItem({ item }: Props) {
             {copiedId === item._id ? <ClipboardCheck color="#8d99ae" size={12} /> : <Copy color="#8d99ae" size={12} />}
           </button>
         </div>
-        <div className="text-base flex items-center gap-1">
+        <div className="text-base flex items-center gap-1 text-black dark:text-white">
           <span>Ngày nhập hàng: </span>
           <span className="font-semibold">{convertDateTime(item.importDate)}</span>
         </div>
@@ -54,36 +54,36 @@ export default function ReceiptItem({ item }: Props) {
       <div className="grid grid-cols-2 items-center gap-2 pt-2 px-1" key={item._id}>
         <div className="col-span-1">
           <div className="flex items-center gap-1">
-            <span>Số lượng sản phẩm:</span>
+            <span className="text-black dark:text-white">Số lượng sản phẩm:</span>
             <span className="text-red-500 font-semibold">{item.totalItem}</span>
           </div>
         </div>
         <div className="col-span-1 ml-auto">
           <div className="flex items-center gap-1">
-            <span>Tổng giá trị đơn:</span>
+            <span className="text-black dark:text-white">Tổng giá trị đơn:</span>
             <span className="text-red-500 font-semibold px-2 py-1 bg-red-100 rounded-md border border-red-500">
               {formatCurrency(item.totalAmount)}đ
             </span>
           </div>
         </div>
         <div className="col-span-1">
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-1 text-black dark:text-white">
             <span>Ngày tạo:</span>
             <span className="font-semibold">{convertDateTime(item.created_at)}</span>
           </div>
         </div>
         <div className="col-span-1 ml-auto">
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-1 text-black dark:text-white">
             <span>Ngày cập nhật:</span>
             <span className="font-semibold">{convertDateTime(item.updated_at)}</span>
           </div>
         </div>
         <div className="col-span-2">
-          <span>Ghi chú:</span>
+          <span className="text-black dark:text-white">Ghi chú:</span>
           <textarea
             rows={3}
             disabled
-            className="mt-1 block border border-[#dadada] p-2 w-full rounded-md dark:bg-darkPrimary"
+            className="mt-1 block border border-[#dadada] p-2 w-full rounded-md dark:bg-darkPrimary text-black dark:text-white"
             value={item.note ? item.note : "Không có ghi chú"}
           />
         </div>
@@ -122,9 +122,9 @@ export default function ReceiptItem({ item }: Props) {
         <div className="transition-all ease-in-out duration-500 w-screen h-screen bg-black/20 fixed right-0 top-0 z-10 opacity-100">
           <div
             ref={listProductInReceipt}
-            className="fixed right-4 top-0 z-20 bg-white w-[600px] h-screen overflow-y-scroll p-2"
+            className="fixed right-4 top-0 z-20 bg-white dark:bg-darkPrimary w-[600px] h-screen overflow-y-scroll p-2"
           >
-            <div className="text-lg text-center font-semibold mb-2 tracking-wide">
+            <div className="text-lg text-center font-semibold mb-2 tracking-wide text-black dark:text-white">
               Danh sách sản phẩm ({item.items.length})
             </div>
             {item?.items?.map((product, index) => (
@@ -132,11 +132,11 @@ export default function ReceiptItem({ item }: Props) {
                 <div className="w-[10%] p-2 rounded-tl-lg rounded-bl-lg text-black text-lg flex items-center justify-center tracking-wide text-[15px] font-semibold px-3 bg-blue-200">
                   #{index + 1}
                 </div>
-                <div className="w-[90%] grid grid-cols-2 gap-4 px-4 py-2 bg-white/80 rounded-tr-lg rounded-br-lg border border-gray-300">
+                <div className="w-[90%] grid grid-cols-2 gap-4 px-4 py-2 bg-white/80 dark:bg-darkPrimary rounded-tr-lg rounded-br-lg border border-gray-300">
                   <div className="col-span-2 flex items-center justify-between gap-1">
-                    <span className="w-1/4 font-semibold">Mã sản phẩm: </span>
+                    <span className="w-1/4 font-semibold dark:text-white">Mã sản phẩm: </span>
                     <div className="flex-grow">
-                      <span className="w-full flex items-center justify-between border border-gray-300 p-2 rounded-md">
+                      <span className="w-full flex items-center justify-between border border-gray-300 p-2 rounded-md dark:bg-darkSecond dark:text-white">
                         <span>{product.productId._id}</span>
                         <button
                           onClick={() => handleCopyText(product.productId._id)}
@@ -153,9 +153,9 @@ export default function ReceiptItem({ item }: Props) {
                   </div>
 
                   <div className="col-span-2 flex items-center gap-1">
-                    <span className="w-1/4 font-semibold">Mã nhà cung cấp: </span>
+                    <span className="w-1/4 font-semibold dark:text-white">Mã nhà cung cấp: </span>
                     <div className="w-3/4">
-                      <span className="w-full flex items-center justify-between border border-gray-300 p-2 rounded-md">
+                      <span className="w-full flex items-center justify-between border border-gray-300 p-2 rounded-md dark:bg-darkSecond dark:text-white">
                         <span>{product.supplierId._id}</span>
                         <button
                           onClick={() => handleCopyText(product.supplierId._id)}
@@ -172,52 +172,52 @@ export default function ReceiptItem({ item }: Props) {
                   </div>
 
                   <div className="col-span-2 flex items-center gap-1">
-                    <span className="w-1/4 font-semibold">Tên sản phẩm: </span>
+                    <span className="w-1/4 font-semibold dark:text-white">Tên sản phẩm: </span>
                     <div className="w-3/4">
-                      <span className="w-full flex items-center justify-between border border-gray-300 p-2 rounded-md">
-                        <span>{product.productId.name}</span>
+                      <span className="w-full flex items-center justify-between border border-gray-300 p-2 rounded-md dark:bg-darkSecond">
+                        <span className="dark:text-white">{product.productId.name}</span>
                       </span>
                     </div>
                   </div>
 
                   <div className="col-span-2 flex items-center gap-1">
-                    <span className="w-1/4 font-semibold">Nhà sản xuất: </span>
+                    <span className="w-1/4 font-semibold dark:text-white">Nhà sản xuất: </span>
                     <div className="w-3/4">
-                      <span className="w-full flex items-center justify-between border border-gray-300 p-2 rounded-md">
-                        <span>{product.supplierId.name}</span>
+                      <span className="w-full flex items-center justify-between border border-gray-300 p-2 rounded-md dark:bg-darkSecond">
+                        <span className="dark:text-white">{product.supplierId.name}</span>
                       </span>
                     </div>
                   </div>
 
                   <div className="col-span-2 flex items-center gap-1">
-                    <span className="w-1/4 font-semibold">Số lượng: </span>
+                    <span className="w-1/4 font-semibold dark:text-white">Số lượng: </span>
                     <div className="w-3/4">
-                      <span className="w-full flex items-center justify-between border border-gray-300 p-2 rounded-md">
-                        <span>{product.quantity}</span>
+                      <span className="w-full flex items-center justify-between border border-gray-300 p-2 rounded-md dark:bg-darkSecond">
+                        <span className="dark:text-white">{product.quantity}</span>
                       </span>
                     </div>
                   </div>
 
                   <div className="col-span-2 flex items-center gap-1">
-                    <span className="w-1/4 font-semibold">Giá nhập: </span>
+                    <span className="w-1/4 font-semibold dark:text-white">Giá nhập: </span>
                     <div className="w-3/4">
-                      <span className="w-full flex items-center justify-between border border-gray-300 p-2 rounded-md">
+                      <span className="w-full flex items-center justify-between border border-gray-300 p-2 rounded-md dark:bg-darkSecond">
                         <span className="text-red-500 font-semibold">{formatCurrency(product.pricePerUnit)}đ</span>
                       </span>
                     </div>
                   </div>
 
                   <div className="col-span-2 flex items-center gap-1">
-                    <span className="w-1/4 font-semibold">Tổng tiền sản phẩm: </span>
+                    <span className="w-1/4 font-semibold dark:text-white">Tổng tiền sản phẩm: </span>
                     <div className="w-3/4">
-                      <span className="w-full block font-semibold border border-gray-300 p-2 rounded-md text-red-500">
+                      <span className="w-full block font-semibold border border-gray-300 p-2 rounded-md text-red-500 dark:bg-darkSecond">
                         {formatCurrency(product.totalPrice)}đ
                       </span>
                     </div>
                   </div>
 
                   <div className="col-span-2 flex items-center gap-2">
-                    <span className="w-1/4 font-semibold">Hình ảnh: </span>
+                    <span className="w-1/4 font-semibold dark:text-white">Hình ảnh: </span>
                     <div className="w-3/4">
                       <img
                         src={product.productId.banner.url}

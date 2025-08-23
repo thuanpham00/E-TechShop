@@ -54,10 +54,11 @@ export default function DropdownList({
           name={name}
           register={register}
           placeholder={placeholderName}
-          classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-black focus:border-blue-500 focus:ring-1 outline-none rounded-md h-[35px]"
+          classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-darkSecond focus:border-blue-500 focus:ring-1 outline-none rounded-md h-[35px] text-black dark:text-white"
           className="relative flex-grow"
           classNameError="hidden"
           nameInput={nameInput}
+          classNameLabel="text-black dark:text-white"
           value={inputValue}
           onFocus={() => setActiveField(true)}
           onChange={(event) => {
@@ -69,7 +70,7 @@ export default function DropdownList({
           name={name}
           register={register}
           placeholder="Nhập tên sản phẩm"
-          classNameInput="p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-black focus:border-blue-500 focus:ring-1 outline-none rounded-md h-[35px]"
+          classNameInput="p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-darkSecond focus:border-blue-500 focus:ring-1 outline-none rounded-md h-[35px] text-black dark:text-white"
           className="relative flex-grow"
           classNameError="hidden"
           value={inputValue}
@@ -86,7 +87,7 @@ export default function DropdownList({
             <button
               type="button"
               key={item}
-              className="p-2 border border-[#f2f2f2] w-full text-left text-[13px] first:rounded-tl-md first:rounded-tr-md last:rounded-bl-md last:rounded-br-md hover:bg-[#dadada] duration-200"
+              className="p-2 border border-[#f2f2f2] w-full text-left text-[13px] first:rounded-tl-md first:rounded-tr-md last:rounded-bl-md last:rounded-br-md hover:bg-[#dadada] duration-200 dark:bg-darkSecond dark:text-white"
               onClick={() => handleClickSelect(item)}
             >
               {item}

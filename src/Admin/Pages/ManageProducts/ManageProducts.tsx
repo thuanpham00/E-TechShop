@@ -20,8 +20,12 @@ import "../ManageOrders/ManageOrders.css"
 import { ArrowUpNarrowWide, FolderUp, Plus } from "lucide-react"
 import Button from "src/Components/Button"
 import useDownloadExcel from "src/Hook/useDownloadExcel"
+import { useTheme } from "src/Admin/Components/Theme-provider/Theme-provider"
 
 export default function ManageProducts() {
+  const { theme } = useTheme()
+  const isDarkMode = theme === "dark" || theme === "system"
+
   const navigate = useNavigate()
   const { downloadExcel } = useDownloadExcel()
   const queryParams: queryParamConfigProduct = useQueryParams()
@@ -102,7 +106,7 @@ export default function ManageProducts() {
   const items: CollapseProps["items"] = [
     {
       key: "1",
-      label: <h1 className="text-[16px] font-semibold tracking-wide">Bộ lọc & Tìm kiếm</h1>,
+      label: <h1 className="text-[16px] font-semibold tracking-wide text-black dark:text-white">Bộ lọc & Tìm kiếm</h1>,
       children: (
         <section>
           <FilterProduct queryConfig={queryConfig} />
@@ -111,7 +115,7 @@ export default function ManageProducts() {
     },
     {
       key: "2",
-      label: <h2 className="text-[16px] font-semibold tracking-wide">Danh sách Sản phẩm</h2>,
+      label: <h2 className="text-[16px] font-semibold tracking-wide text-black dark:text-white">Danh sách Sản phẩm</h2>,
       children: (
         <section>
           {isLoading && <Skeleton />}
@@ -129,7 +133,7 @@ export default function ManageProducts() {
                     defaultValue="Mới nhất"
                     className="select-sort"
                     onChange={handleChangeSortListOrder}
-                    suffixIcon={<ArrowUpNarrowWide />}
+                    suffixIcon={<ArrowUpNarrowWide color={isDarkMode ? "white" : "black"} />}
                     options={[
                       { value: "old", label: "Cũ nhất" },
                       { value: "new", label: "Mới nhất" }
@@ -148,22 +152,34 @@ export default function ManageProducts() {
               </div>
               <div className="mt-2">
                 <div className="bg-[#f2f2f2] dark:bg-darkPrimary grid grid-cols-12 items-center gap-2 py-3 border border-[#dedede] dark:border-darkBorder px-4 rounded-tl-xl rounded-tr-xl">
-                  <div className="col-span-2 text-[14px] font-semibold tracking-wider uppercase">Mã sản phẩm</div>
-                  <div className="col-span-1 text-[14px] font-semibold tracking-wider uppercase">Hình ảnh</div>
-                  <div className="col-span-2 text-[14px] font-semibold tracking-wider uppercase">Tên sản phẩm</div>
-                  <div className="col-span-1 text-[14px] font-semibold tracking-wider uppercase">Thương hiệu</div>
-                  <div className="col-span-1 text-[14px] font-semibold tracking-wider uppercase">Thể loại</div>
-                  <div className="col-span-1 text-[14px] font-semibold tracking-wider uppercase">Giá gốc</div>
-                  <div className="col-span-1 text-[14px] text-center font-semibold tracking-wider uppercase">
+                  <div className="col-span-2 text-[14px] font-semibold tracking-wider uppercase text-black dark:text-white">
+                    Mã sản phẩm
+                  </div>
+                  <div className="col-span-1 text-[14px] font-semibold tracking-wider uppercase text-black dark:text-white">
+                    Hình ảnh
+                  </div>
+                  <div className="col-span-2 text-[14px] font-semibold tracking-wider uppercase text-black dark:text-white">
+                    Tên sản phẩm
+                  </div>
+                  <div className="col-span-1 text-[14px] font-semibold tracking-wider uppercase text-black dark:text-white">
+                    Thương hiệu
+                  </div>
+                  <div className="col-span-1 text-[14px] font-semibold tracking-wider uppercase text-black dark:text-white">
+                    Thể loại
+                  </div>
+                  <div className="col-span-1 text-[14px] font-semibold tracking-wider uppercase text-black dark:text-white">
+                    Giá gốc
+                  </div>
+                  <div className="col-span-1 text-[14px] text-center font-semibold tracking-wider uppercase text-black dark:text-white">
                     Trạng thái
                   </div>
-                  <div className="col-span-1 text-[14px] text-center font-semibold tracking-wider uppercase">
+                  <div className="col-span-1 text-[14px] text-center font-semibold tracking-wider uppercase text-black dark:text-white">
                     Ngày tạo
                   </div>
-                  <div className="col-span-1 text-[14px] text-center font-semibold tracking-wider uppercase">
+                  <div className="col-span-1 text-[14px] text-center font-semibold tracking-wider uppercase text-black dark:text-white">
                     Ngày cập nhật
                   </div>
-                  <div className="col-span-1 text-[14px] text-center font-semibold tracking-wider uppercase">
+                  <div className="col-span-1 text-[14px] text-center font-semibold tracking-wider uppercase text-black dark:text-white">
                     Hành động
                   </div>
                 </div>
@@ -284,7 +300,7 @@ export default function ManageProducts() {
         </div>
       </motion.div> */}
 
-      <Collapse items={items} defaultActiveKey={["2"]} className="bg-white" />
+      <Collapse items={items} defaultActiveKey={["2"]} className="bg-white dark:bg-darkPrimary dark:border-none" />
     </div>
   )
 }
