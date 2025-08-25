@@ -183,3 +183,7 @@ a {
 .dark .ant-tabs-tab-btn {
   color: #fff;
 }
+
+.dark .ant-empty-description {
+  color: #fff;
+}

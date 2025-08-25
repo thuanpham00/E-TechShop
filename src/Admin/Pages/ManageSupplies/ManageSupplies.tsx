@@ -1,6 +1,7 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { keepPreviousData, useMutation, useQuery } from "@tanstack/react-query"
 import { isUndefined, omit, omitBy } from "lodash"
-import { useCallback, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 import { Helmet } from "react-helmet-async"
 import { createSearchParams, useNavigate } from "react-router-dom"
 import NavigateBack from "src/Admin/Components/NavigateBack"
@@ -221,13 +222,6 @@ export default function ManageSupplies() {
   }
 
   const [addItem, setAddItem] = useState(false)
-
-  if (isError) {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    if ((error as any)?.response?.status === HttpStatusCode.NotFound) {
-      navigate(path.AdminNotFound, { replace: true })
-    }
-  }
 
   // xử lý sort ds
   const handleChangeSortListOrder = (value: string) => {
@@ -486,6 +480,20 @@ export default function ManageSupplies() {
       )
     }
   ]
+
+  useEffect(() => {
+    if (isError) {
+      const message = (error as any).response?.data?.message
+      const status = (error as any)?.response?.status
+      if (message === "Không có quyền truy cập") {
+        toast.error(message, { autoClose: 1500 })
+      }
+
+      if (status === HttpStatusCode.NotFound) {
+        navigate(path.AdminNotFound, { replace: true })
+      }
+    }
+  }, [isError, error, navigate])
 
   return (
     <div>

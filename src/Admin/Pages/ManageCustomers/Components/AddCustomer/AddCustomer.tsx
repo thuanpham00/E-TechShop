@@ -17,6 +17,7 @@ import { MediaAPI } from "src/Apis/media.api"
 import { ObjectId } from "bson"
 import { isError422 } from "src/Helpers/utils"
 import { ErrorResponse } from "src/Types/utils.type"
+import { roles } from "src/Helpers/role_permission"
 
 interface Props {
   setAddItem: React.Dispatch<React.SetStateAction<boolean>>
@@ -31,12 +32,13 @@ const formDataAdd = schemaAuth.pick([
   "avatar",
   "password",
   "confirm_password",
-  "id"
+  "id",
+  "role"
 ])
 
 type FormDataAdd = Pick<
   SchemaAuthType,
-  "name" | "email" | "phone" | "date_of_birth" | "avatar" | "password" | "confirm_password" | "id"
+  "name" | "email" | "phone" | "date_of_birth" | "avatar" | "password" | "confirm_password" | "id" | "role"
 >
 
 export default function AddCustomer({ setAddItem, addItem }: Props) {
@@ -99,7 +101,8 @@ export default function AddCustomer({ setAddItem, addItem }: Props) {
       phone: data.phone,
       date_of_birth: data.date_of_birth as Date,
       avatar: avatarName,
-      id: data.id as string
+      id: idUser.toString(),
+      role: roles.CUSTOMER
     }
     addCustomerMutation.mutate(body, {
       onSuccess: () => {
@@ -140,7 +143,9 @@ export default function AddCustomer({ setAddItem, addItem }: Props) {
               <X color="gray" size={22} />
             </button>
             <form onSubmit={handleAddCustomerSubmit} className="bg-white dark:bg-darkPrimary rounded-xl w-[900px]">
-              <h3 className="py-2 px-4 text-lg font-semibold tracking-wide rounded-md">Thông tin khách hàng</h3>
+              <h3 className="py-2 px-4 text-lg font-semibold tracking-wide rounded-md text-black dark:text-white">
+                Thông tin khách hàng
+              </h3>
               <div className="p-4 pt-0">
                 <div className="mt-4 flex justify-between gap-16">
                   <div className="grid grid-cols-12 flex-wrap gap-4">
@@ -150,8 +155,9 @@ export default function AddCustomer({ setAddItem, addItem }: Props) {
                         register={register}
                         placeholder="Nhập họ tên"
                         messageErrorInput={errors.name?.message}
-                        classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-white dark:bg-darkPrimary focus:border-blue-500 focus:ring-2 outline-none rounded-md"
+                        classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-white dark:bg-darkSecond focus:border-blue-500 focus:ring-2 outline-none rounded-md text-black dark:text-white"
                         className="relative flex-1"
+                        classNameLabel="text-black dark:text-white"
                         nameInput="Họ tên"
                       />
                     </div>
@@ -161,8 +167,9 @@ export default function AddCustomer({ setAddItem, addItem }: Props) {
                         register={register}
                         placeholder="Nhập email"
                         messageErrorInput={errors.email?.message}
-                        classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#fff] dark:bg-darkSecond focus:border-blue-500 focus:ring-2 outline-none rounded-md"
+                        classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#fff] dark:bg-darkSecond focus:border-blue-500 focus:ring-2 outline-none rounded-md text-black dark:text-white"
                         className="relative flex-1"
+                        classNameLabel="text-black dark:text-white"
                         nameInput="Email"
                       />
                     </div>
@@ -172,8 +179,9 @@ export default function AddCustomer({ setAddItem, addItem }: Props) {
                         register={register}
                         placeholder="Nhập mật khẩu"
                         messageErrorInput={errors.password?.message}
-                        classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-white dark:bg-darkPrimary focus:border-blue-500 focus:ring-2 outline-none rounded-md"
+                        classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-white dark:bg-darkSecond focus:border-blue-500 focus:ring-2 outline-none rounded-md text-black dark:text-white"
                         className="relative flex-1"
+                        classNameLabel="text-black dark:text-white"
                         nameInput="Mật khẩu"
                       />
                     </div>
@@ -183,8 +191,9 @@ export default function AddCustomer({ setAddItem, addItem }: Props) {
                         register={register}
                         placeholder="Nhập mật khẩu"
                         messageErrorInput={errors.confirm_password?.message}
-                        classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#fff] dark:bg-darkSecond focus:border-blue-500 focus:ring-2 outline-none rounded-md"
+                        classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#fff] dark:bg-darkSecond focus:border-blue-500 focus:ring-2 outline-none rounded-md text-black dark:text-white"
                         className="relative flex-1"
+                        classNameLabel="text-black dark:text-white"
                         nameInput="Xác nhận mật khẩu"
                       />
                     </div>
@@ -194,8 +203,9 @@ export default function AddCustomer({ setAddItem, addItem }: Props) {
                         register={register}
                         placeholder="Nhập số điện thoại"
                         messageErrorInput={errors.phone?.message}
-                        classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-white dark:bg-darkPrimary focus:border-blue-500 focus:ring-2 outline-none rounded-md"
+                        classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-white dark:bg-darkSecond focus:border-blue-500 focus:ring-2 outline-none rounded-md text-black dark:text-white"
                         className="relative flex-1"
+                        classNameLabel="text-black dark:text-white"
                         nameInput="Số điện thoại"
                       />
                     </div>
@@ -218,7 +228,7 @@ export default function AddCustomer({ setAddItem, addItem }: Props) {
                     </div>
                   </div>
                   <div className="text-center">
-                    <div className="mb-2">Avatar</div>
+                    <div className="mb-2 text-black dark:text-white">Ảnh đại diện</div>
                     <img
                       src={previewImage || avatarWatch}
                       className="h-28 w-28 rounded-full mx-auto"

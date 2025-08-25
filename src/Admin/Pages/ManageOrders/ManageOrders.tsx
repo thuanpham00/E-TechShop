@@ -17,7 +17,7 @@ import Skeleton from "src/Components/Skeleton"
 import Pagination from "src/Components/Pagination"
 import OrderItem from "./Components/OrderItem"
 import { useCallback, useEffect, useState } from "react"
-import { Collapse, CollapseProps, Select, Steps } from "antd"
+import { Collapse, CollapseProps, Empty, Select, Steps } from "antd"
 import "./ManageOrders.css"
 import { Controller, useForm } from "react-hook-form"
 import { yupResolver } from "@hookform/resolvers/yup"
@@ -84,7 +84,7 @@ export default function ManageOrders() {
     isUndefined
   )
 
-  const { data, isFetching, isLoading } = useQuery({
+  const { data, isFetching, isLoading, isError, error } = useQuery({
     queryKey: ["listOrder", queryConfig],
     queryFn: () => {
       const controller = new AbortController()
@@ -482,7 +482,9 @@ export default function ManageOrders() {
                       </motion.div>
                     ))
                   ) : (
-                    <div className="text-center mt-4">Không tìm thấy kết quả</div>
+                    <div className="text-center mt-4">
+                      <Empty />
+                    </div>
                   )}
                 </div>
               </div>
@@ -724,6 +726,13 @@ export default function ManageOrders() {
       )
     }
   ]
+
+  useEffect(() => {
+    if (isError) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      toast.error((error as any).response?.data?.message, { autoClose: 1500 })
+    }
+  }, [isError, error])
 
   return (
     <div>

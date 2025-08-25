@@ -22,7 +22,7 @@ import { AppContext } from "src/Context/authContext"
 import useRolePermissions from "src/Hook/useRolePermissions"
 import { permissions } from "src/Helpers/role_permission"
 import { useTheme } from "../Theme-provider/Theme-provider"
-import { Menu } from "antd"
+import { Menu, MenuProps } from "antd"
 import "./Sidebar.css"
 import { useMutation } from "@tanstack/react-query"
 import { userAPI } from "src/Apis/user.api"
@@ -75,6 +75,220 @@ export default function Sidebar() {
     })
   }
 
+  const items: MenuProps["items"] = [
+    {
+      key: "sub1",
+      label: <div className="font-semibold text-[15px] text-black dark:text-white">Quản lý Bán hàng</div>,
+      children: [
+        {
+          key: "1",
+          label: hasPermission(permissions.VIEW_DASHBOARD) && (
+            <SidebarItem
+              className={`${location.pathname.startsWith(sideBarList[0].path) ? "text-[14px] text-[#3b82f6] font-semibold" : "text-[14px] text-black dark:text-white/80 font-normal hover:text-[#495057] duration-200 ease-in"}`}
+              classNameWrapper={`flex items-center gap-2 cursor-pointer`}
+              icon={React.createElement(sideBarList[0].icon, {
+                color: location.pathname.startsWith(sideBarList[0].path) ? "#3b82f6" : iconColor ? "white" : "black"
+              })}
+              nameSideBar={sideBarList[0].name}
+              path={sideBarList[0].path}
+            />
+          )
+        },
+        {
+          key: "2",
+          label: hasPermission(permissions.VIEW_CUSTOMER) && (
+            <SidebarItem
+              className={`${location.pathname.startsWith(sideBarList[1].path) ? "text-[14px] text-[#3b82f6] font-semibold" : "text-[14px] text-black dark:text-white/80 font-normal hover:text-[#495057] duration-200 ease-in"}`}
+              classNameWrapper={`flex items-center gap-2 cursor-pointer`}
+              icon={React.createElement(sideBarList[1].icon, {
+                color: location.pathname.startsWith(sideBarList[1].path) ? "#3b82f6" : iconColor ? "white" : "black"
+              })}
+              nameSideBar={sideBarList[1].name}
+              path={sideBarList[1].path}
+            />
+          )
+        },
+        {
+          key: "3",
+          label: hasPermission(permissions.VIEW_ORDERS) && (
+            <SidebarItem
+              className={`${location.pathname.startsWith(sideBarList[5].path) ? "text-[14px] text-[#3b82f6] font-semibold" : "text-[14px] text-black dark:text-white/80 font-normal hover:text-[#495057] duration-200 ease-in"}`}
+              classNameWrapper={`flex items-center gap-2 cursor-pointer`}
+              icon={React.createElement(sideBarList[5].icon, {
+                color: location.pathname.startsWith(sideBarList[5].path) ? "#3b82f6" : iconColor ? "white" : "black"
+              })}
+              nameSideBar={sideBarList[5].name}
+              path={sideBarList[5].path}
+            />
+          )
+        }
+      ]
+    },
+    {
+      type: "divider"
+    },
+    {
+      key: "sub2",
+      label: <div className="font-semibold text-[15px] text-black dark:text-white">Quản lý Bán hàng</div>,
+      children: [
+        {
+          key: "4",
+          label: hasPermission(permissions.VIEW_CATEGORY) && (
+            <SidebarItem
+              className={`${location.pathname.startsWith(sideBarList[3].path) ? "text-[14px] text-[#3b82f6] font-semibold" : "text-[14px] text-black dark:text-white/80 font-normal hover:text-[#495057] duration-200 ease-in"}`}
+              classNameWrapper={`flex items-center gap-2 cursor-pointer`}
+              icon={React.createElement(sideBarList[3].icon, {
+                color: location.pathname.startsWith(sideBarList[3].path) ? "#3b82f6" : iconColor ? "white" : "black"
+              })}
+              nameSideBar={sideBarList[3].name}
+              path={sideBarList[3].path}
+            />
+          )
+        },
+        {
+          key: "5",
+          label: hasPermission(permissions.VIEW_PRODUCT) && (
+            <SidebarItem
+              className={`${location.pathname.startsWith(sideBarList[4].path) ? "text-[14px] text-[#3b82f6] font-semibold" : "text-[14px] text-black dark:text-white/80 font-normal hover:text-[#495057] duration-200 ease-in"}`}
+              classNameWrapper={`flex items-center gap-2 cursor-pointer`}
+              icon={React.createElement(sideBarList[4].icon, {
+                color: location.pathname.startsWith(sideBarList[4].path) ? "#3b82f6" : iconColor ? "white" : "black"
+              })}
+              nameSideBar={sideBarList[4].name}
+              path={sideBarList[4].path}
+            />
+          )
+        }
+      ]
+    },
+    {
+      type: "divider"
+    },
+    {
+      key: "sub3",
+      label: <div className="font-semibold text-[15px] text-black dark:text-white">Quản lý Giao tiếp</div>,
+      children: [
+        {
+          key: "6",
+          label: hasPermission(permissions.VIEW_EMAIL) && (
+            <SidebarItem
+              className={`${location.pathname.startsWith(sideBarList[10].path) ? "text-[14px] text-[#3b82f6] font-semibold" : "text-[14px] text-black dark:text-white/80 font-normal hover:text-[#495057] duration-200 ease-in"}`}
+              classNameWrapper={`flex items-center gap-2 cursor-pointer`}
+              icon={React.createElement(sideBarList[10].icon, {
+                color: location.pathname.startsWith(sideBarList[10].path) ? "#3b82f6" : iconColor ? "white" : "black"
+              })}
+              nameSideBar={sideBarList[10].name}
+              path={sideBarList[10].path}
+            />
+          )
+        },
+        {
+          key: "7",
+          label: hasPermission(permissions.VIEW_CHAT) && (
+            <SidebarItem
+              className={`${location.pathname.startsWith(sideBarList[11].path) ? "text-[14px] text-[#3b82f6] font-semibold" : "text-[14px] text-black dark:text-white/80 font-normal hover:text-[#495057] duration-200 ease-in"}`}
+              classNameWrapper={`flex items-center gap-2 cursor-pointer`}
+              icon={React.createElement(sideBarList[11].icon, {
+                color: location.pathname.startsWith(sideBarList[11].path) ? "#3b82f6" : iconColor ? "white" : "black"
+              })}
+              nameSideBar={sideBarList[11].name}
+              path={sideBarList[11].path}
+            />
+          )
+        }
+      ]
+    },
+    {
+      type: "divider"
+    },
+    {
+      key: "sub4",
+      label: <div className="font-semibold text-[15px] text-black dark:text-white">Quản lý Nhập hàng và Cung ứng</div>,
+      children: [
+        {
+          key: "8",
+          label: hasPermission(permissions.VIEW_RECEIPT) && (
+            <SidebarItem
+              className={`${location.pathname.startsWith(sideBarList[6].path) ? "text-[14px] text-[#3b82f6] font-semibold" : "text-[14px] text-black dark:text-white/80 font-normal hover:text-[#495057] duration-200 ease-in"}`}
+              classNameWrapper={`flex items-center gap-2 cursor-pointer`}
+              icon={React.createElement(sideBarList[6].icon, {
+                color: location.pathname.startsWith(sideBarList[6].path) ? "#3b82f6" : iconColor ? "white" : "black"
+              })}
+              nameSideBar={sideBarList[6].name}
+              path={sideBarList[6].path}
+            />
+          )
+        },
+        {
+          key: "9",
+          label: hasPermission(permissions.VIEW_SUPPLIERS) && (
+            <SidebarItem
+              className={`${location.pathname.startsWith(sideBarList[7].path) ? "text-[14px] text-[#3b82f6] font-semibold" : "text-[14px] text-black dark:text-white/80 font-normal hover:text-[#495057] duration-200 ease-in"}`}
+              classNameWrapper={`flex items-center gap-2 cursor-pointer`}
+              icon={React.createElement(sideBarList[7].icon, {
+                color: location.pathname.startsWith(sideBarList[7].path) ? "#3b82f6" : iconColor ? "white" : "black"
+              })}
+              nameSideBar={sideBarList[7].name}
+              path={sideBarList[7].path}
+            />
+          )
+        },
+        {
+          key: "10",
+          label: hasPermission(permissions.VIEW_SUPPLIES) && (
+            <SidebarItem
+              className={`${location.pathname.startsWith(sideBarList[8].path) ? "text-[14px] text-[#3b82f6] font-semibold" : "text-[14px] text-black dark:text-white/80 font-normal hover:text-[#495057] duration-200 ease-in"}`}
+              classNameWrapper={`flex items-center gap-2 cursor-pointer`}
+              icon={React.createElement(sideBarList[8].icon, {
+                color: location.pathname.startsWith(sideBarList[8].path) ? "#3b82f6" : iconColor ? "white" : "black"
+              })}
+              nameSideBar={sideBarList[8].name}
+              path={sideBarList[8].path}
+            />
+          )
+        }
+      ]
+    },
+
+    {
+      type: "divider"
+    },
+    {
+      key: "sub5",
+      label: <div className="font-semibold text-[15px] text-black dark:text-white">Quản lý Nhân sự</div>,
+      children: [
+        {
+          key: "11",
+          label: hasPermission(permissions.VIEW_EMPLOYEE) && (
+            <SidebarItem
+              className={`${location.pathname.startsWith(sideBarList[2].path) ? "text-[14px] text-[#3b82f6] font-semibold" : "text-[14px] text-black dark:text-white/80 font-normal hover:text-[#495057] duration-200 ease-in"}`}
+              classNameWrapper={`flex items-center gap-2 cursor-pointer`}
+              icon={React.createElement(sideBarList[2].icon, {
+                color: location.pathname.startsWith(sideBarList[2].path) ? "#3b82f6" : iconColor ? "white" : "black"
+              })}
+              nameSideBar={sideBarList[2].name}
+              path={sideBarList[2].path}
+            />
+          )
+        },
+        {
+          key: "12",
+          label: hasPermission(permissions.VIEW_ROLES) && (
+            <SidebarItem
+              className={`${location.pathname.startsWith(sideBarList[9].path) ? "text-[14px] text-[#3b82f6] font-semibold" : "text-[14px] text-black dark:text-white/80 font-normal hover:text-[#495057] duration-200 ease-in"}`}
+              classNameWrapper={`flex items-center gap-2 cursor-pointer`}
+              icon={React.createElement(sideBarList[9].icon, {
+                color: location.pathname.startsWith(sideBarList[9].path) ? "#3b82f6" : iconColor ? "white" : "black"
+              })}
+              nameSideBar={sideBarList[9].name}
+              path={sideBarList[9].path}
+            />
+          )
+        }
+      ]
+    }
+  ]
+
   return (
     <div className="sticky top-0 left-0 py-4 bg-white dark:bg-darkPrimary h-screen border-r border-[#dedede] dark:border-darkBorder shadow-xl">
       <div>
@@ -92,253 +306,8 @@ export default function Sidebar() {
             }}
             defaultOpenKeys={["sub1"]}
             className="bg-white dark:bg-darkPrimary"
-          >
-            <Menu.SubMenu
-              key="sub1"
-              title={<div className="font-semibold text-[15px] text-black dark:text-white">Quản lý Bán hàng</div>}
-            >
-              <Menu.Item key="1">
-                {hasPermission(permissions.VIEW_DASHBOARD) && (
-                  <SidebarItem
-                    className={`${location.pathname.startsWith(sideBarList[0].path) ? "text-[14px] text-[#3b82f6] font-semibold" : "text-[14px] text-black dark:text-white/80 font-normal hover:text-[#495057] duration-200 ease-in"}`}
-                    classNameWrapper={`flex items-center gap-2 cursor-pointer`}
-                    icon={React.createElement(sideBarList[0].icon, {
-                      color: location.pathname.startsWith(sideBarList[0].path)
-                        ? "#3b82f6"
-                        : iconColor
-                          ? "white"
-                          : "black"
-                    })}
-                    nameSideBar={sideBarList[0].name}
-                    path={sideBarList[0].path}
-                  />
-                )}
-              </Menu.Item>
-              <Menu.Item key="2">
-                {hasPermission(permissions.VIEW_CUSTOMER) && (
-                  <SidebarItem
-                    className={`${location.pathname.startsWith(sideBarList[1].path) ? "text-[14px] text-[#3b82f6] font-semibold" : "text-[14px] text-black dark:text-white/80 font-normal hover:text-[#495057] duration-200 ease-in"}`}
-                    classNameWrapper={`flex items-center gap-2 cursor-pointer`}
-                    icon={React.createElement(sideBarList[1].icon, {
-                      color: location.pathname.startsWith(sideBarList[1].path)
-                        ? "#3b82f6"
-                        : iconColor
-                          ? "white"
-                          : "black"
-                    })}
-                    nameSideBar={sideBarList[1].name}
-                    path={sideBarList[1].path}
-                  />
-                )}
-              </Menu.Item>
-              <Menu.Item key="3">
-                {hasPermission(permissions.VIEW_ORDERS) && (
-                  <SidebarItem
-                    className={`${location.pathname.startsWith(sideBarList[5].path) ? "text-[14px] text-[#3b82f6] font-semibold" : "text-[14px] text-black dark:text-white/80 font-normal hover:text-[#495057] duration-200 ease-in"}`}
-                    classNameWrapper={`flex items-center gap-2 cursor-pointer`}
-                    icon={React.createElement(sideBarList[5].icon, {
-                      color: location.pathname.startsWith(sideBarList[5].path)
-                        ? "#3b82f6"
-                        : iconColor
-                          ? "white"
-                          : "black"
-                    })}
-                    nameSideBar={sideBarList[5].name}
-                    path={sideBarList[5].path}
-                  />
-                )}
-              </Menu.Item>
-            </Menu.SubMenu>
-
-            <Menu.Divider />
-
-            <Menu.SubMenu
-              key="sub2"
-              title={<div className="font-semibold text-[15px] text-black dark:text-white">Quản lý Sản phẩm</div>}
-            >
-              <Menu.Item key="4">
-                {hasPermission(permissions.VIEW_CATEGORY) && (
-                  <SidebarItem
-                    className={`${location.pathname.startsWith(sideBarList[3].path) ? "text-[14px] text-[#3b82f6] font-semibold" : "text-[14px] text-black dark:text-white/80 font-normal hover:text-[#495057] duration-200 ease-in"}`}
-                    classNameWrapper={`flex items-center gap-2 cursor-pointer`}
-                    icon={React.createElement(sideBarList[3].icon, {
-                      color: location.pathname.startsWith(sideBarList[3].path)
-                        ? "#3b82f6"
-                        : iconColor
-                          ? "white"
-                          : "black"
-                    })}
-                    nameSideBar={sideBarList[3].name}
-                    path={sideBarList[3].path}
-                  />
-                )}
-              </Menu.Item>
-              <Menu.Item key="5">
-                {hasPermission(permissions.VIEW_PRODUCT) && (
-                  <SidebarItem
-                    className={`${location.pathname.startsWith(sideBarList[4].path) ? "text-[14px] text-[#3b82f6] font-semibold" : "text-[14px] text-black dark:text-white/80 font-normal hover:text-[#495057] duration-200 ease-in"}`}
-                    classNameWrapper={`flex items-center gap-2 cursor-pointer`}
-                    icon={React.createElement(sideBarList[4].icon, {
-                      color: location.pathname.startsWith(sideBarList[4].path)
-                        ? "#3b82f6"
-                        : iconColor
-                          ? "white"
-                          : "black"
-                    })}
-                    nameSideBar={sideBarList[4].name}
-                    path={sideBarList[4].path}
-                  />
-                )}
-              </Menu.Item>
-            </Menu.SubMenu>
-
-            <Menu.Divider />
-
-            <Menu.SubMenu
-              key="sub3"
-              title={<div className="font-semibold text-[15px] text-black dark:text-white">Quản lý Giao tiếp</div>}
-            >
-              <Menu.Item key="6">
-                {hasPermission(permissions.VIEW_EMAIL) && (
-                  <SidebarItem
-                    className={`${location.pathname.startsWith(sideBarList[10].path) ? "text-[14px] text-[#3b82f6] font-semibold" : "text-[14px] text-black dark:text-white/80 font-normal hover:text-[#495057] duration-200 ease-in"}`}
-                    classNameWrapper={`flex items-center gap-2 cursor-pointer`}
-                    icon={React.createElement(sideBarList[10].icon, {
-                      color: location.pathname.startsWith(sideBarList[10].path)
-                        ? "#3b82f6"
-                        : iconColor
-                          ? "white"
-                          : "black"
-                    })}
-                    nameSideBar={sideBarList[10].name}
-                    path={sideBarList[10].path}
-                  />
-                )}
-              </Menu.Item>
-              <Menu.Item key="7">
-                {hasPermission(permissions.VIEW_CHAT) && (
-                  <SidebarItem
-                    className={`${location.pathname.startsWith(sideBarList[11].path) ? "text-[14px] text-[#3b82f6] font-semibold" : "text-[14px] text-black dark:text-white/80 font-normal hover:text-[#495057] duration-200 ease-in"}`}
-                    classNameWrapper={`flex items-center gap-2 cursor-pointer`}
-                    icon={React.createElement(sideBarList[11].icon, {
-                      color: location.pathname.startsWith(sideBarList[11].path)
-                        ? "#3b82f6"
-                        : iconColor
-                          ? "white"
-                          : "black"
-                    })}
-                    nameSideBar={sideBarList[11].name}
-                    path={sideBarList[11].path}
-                  />
-                )}
-              </Menu.Item>
-            </Menu.SubMenu>
-
-            <Menu.Divider />
-
-            <Menu.SubMenu
-              key="sub4"
-              title={
-                <div className="font-semibold text-[15px] text-black dark:text-white">
-                  Quản lý Nhập hàng và Cung ứng
-                </div>
-              }
-            >
-              <Menu.Item key="8">
-                {hasPermission(permissions.VIEW_RECEIPT) && (
-                  <SidebarItem
-                    className={`${location.pathname.startsWith(sideBarList[6].path) ? "text-[14px] text-[#3b82f6] font-semibold" : "text-[14px] text-black dark:text-white/80 font-normal hover:text-[#495057] duration-200 ease-in"}`}
-                    classNameWrapper={`flex items-center gap-2 cursor-pointer`}
-                    icon={React.createElement(sideBarList[6].icon, {
-                      color: location.pathname.startsWith(sideBarList[6].path)
-                        ? "#3b82f6"
-                        : iconColor
-                          ? "white"
-                          : "black"
-                    })}
-                    nameSideBar={sideBarList[6].name}
-                    path={sideBarList[6].path}
-                  />
-                )}
-              </Menu.Item>
-              <Menu.Item key="9">
-                {hasPermission(permissions.VIEW_SUPPLIERS) && (
-                  <SidebarItem
-                    className={`${location.pathname.startsWith(sideBarList[7].path) ? "text-[14px] text-[#3b82f6] font-semibold" : "text-[14px] text-black dark:text-white/80 font-normal hover:text-[#495057] duration-200 ease-in"}`}
-                    classNameWrapper={`flex items-center gap-2 cursor-pointer`}
-                    icon={React.createElement(sideBarList[7].icon, {
-                      color: location.pathname.startsWith(sideBarList[7].path)
-                        ? "#3b82f6"
-                        : iconColor
-                          ? "white"
-                          : "black"
-                    })}
-                    nameSideBar={sideBarList[7].name}
-                    path={sideBarList[7].path}
-                  />
-                )}
-              </Menu.Item>
-              <Menu.Item key="10">
-                {hasPermission(permissions.VIEW_SUPPLIES) && (
-                  <SidebarItem
-                    className={`${location.pathname.startsWith(sideBarList[8].path) ? "text-[14px] text-[#3b82f6] font-semibold" : "text-[14px] text-black dark:text-white/80 font-normal hover:text-[#495057] duration-200 ease-in"}`}
-                    classNameWrapper={`flex items-center gap-2 cursor-pointer`}
-                    icon={React.createElement(sideBarList[8].icon, {
-                      color: location.pathname.startsWith(sideBarList[8].path)
-                        ? "#3b82f6"
-                        : iconColor
-                          ? "white"
-                          : "black"
-                    })}
-                    nameSideBar={sideBarList[8].name}
-                    path={sideBarList[8].path}
-                  />
-                )}
-              </Menu.Item>
-            </Menu.SubMenu>
-
-            <Menu.Divider />
-
-            <Menu.SubMenu
-              key="sub5"
-              title={<div className="font-semibold text-[15px] text-black dark:text-white">Quản lý Nhân sự</div>}
-            >
-              <Menu.Item key="11">
-                {hasPermission(permissions.VIEW_EMPLOYEE) && (
-                  <SidebarItem
-                    className={`${location.pathname.startsWith(sideBarList[2].path) ? "text-[14px] text-[#3b82f6] font-semibold" : "text-[14px] text-black dark:text-white/80 font-normal hover:text-[#495057] duration-200 ease-in"}`}
-                    classNameWrapper={`flex items-center gap-2 cursor-pointer`}
-                    icon={React.createElement(sideBarList[2].icon, {
-                      color: location.pathname.startsWith(sideBarList[2].path)
-                        ? "#3b82f6"
-                        : iconColor
-                          ? "white"
-                          : "black"
-                    })}
-                    nameSideBar={sideBarList[2].name}
-                    path={sideBarList[2].path}
-                  />
-                )}
-              </Menu.Item>
-              <Menu.Item key="12">
-                {hasPermission(permissions.VIEW_ROLES) && (
-                  <SidebarItem
-                    className={`${location.pathname.startsWith(sideBarList[9].path) ? "text-[14px] text-[#3b82f6] font-semibold" : "text-[14px] text-black dark:text-white/80 font-normal hover:text-[#495057] duration-200 ease-in"}`}
-                    classNameWrapper={`flex items-center gap-2 cursor-pointer`}
-                    icon={React.createElement(sideBarList[9].icon, {
-                      color: location.pathname.startsWith(sideBarList[9].path)
-                        ? "#3b82f6"
-                        : iconColor
-                          ? "white"
-                          : "black"
-                    })}
-                    nameSideBar={sideBarList[9].name}
-                    path={sideBarList[9].path}
-                  />
-                )}
-              </Menu.Item>
-            </Menu.SubMenu>
-          </Menu>
+            items={items}
+          />
         </div>
 
         <div className="absolute bottom-0 left-0 w-full bg-white dark:bg-darkPrimary">

@@ -2,7 +2,7 @@ export const roles = {
   ADMIN: "Admin", // quản trị viên cấp cao, có toàn quyền
   SALES_STAFF: "Sales Staff", // nhân viên bán hàng (bao gồm thu ngân)
   INVENTORY_STAFF: "Inventory Staff", // nhân viên kho
-  CLIENT: "Client" // khách hàng, người dùng cuối
+  CUSTOMER: "Customer" // khách hàng, người dùng cuối
 }
 
 export const permissions = {

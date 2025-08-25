@@ -226,8 +226,8 @@ export default function AddReceipt() {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: index * 0.1 }}
                   >
-                    <div className="p-4 bg-white rounded-md mb-2 shadow-md">
-                      <span className="tracking-wide text-[15px] font-semibold p-1 px-3 mb-2 inline-block bg-blue-200 rounded-md">
+                    <div className="p-4 bg-white dark:bg-darkPrimary rounded-md mb-2 shadow-md">
+                      <span className="tracking-wide text-[15px] font-semibold p-1 px-3 mb-2 inline-block bg-blue-200 rounded-md text-white dark:text-black">
                         {index + 1}
                       </span>
                       <div className="grid grid-cols-3 gap-4">
@@ -278,7 +278,7 @@ export default function AddReceipt() {
                           name={`items.${index}.pricePerUnit`}
                           register={register}
                           nameInput="Giá nhập (đ)"
-                          classNameInput="p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#fff] dark:bg-black focus:border-blue-500 focus:ring-1 outline-none rounded-md h-[35px]"
+                          classNameInput="p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#fff] dark:bg-darkSecond focus:border-blue-500 focus:ring-1 outline-none rounded-md h-[35px]"
                           className="relative flex-grow"
                           classNameLabel="font-semibold mb-1 block"
                           classNameError="hidden"
@@ -288,7 +288,7 @@ export default function AddReceipt() {
                           name={`items.${index}.quantity`}
                           register={register}
                           nameInput="Số lượng"
-                          classNameInput="p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#fff] dark:bg-black focus:border-blue-500 focus:ring-1 outline-none rounded-md h-[35px]"
+                          classNameInput="p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#fff] dark:bg-darkSecond focus:border-blue-500 focus:ring-1 outline-none rounded-md h-[35px]"
                           className="relative flex-grow"
                           classNameLabel="font-semibold mb-1 block"
                           classNameError="hidden"
@@ -297,7 +297,7 @@ export default function AddReceipt() {
                           name={`items.${index}.totalPrice`}
                           register={register}
                           nameInput="Giá tiền (đ)"
-                          classNameInput="p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#fff] dark:bg-black focus:border-blue-500 focus:ring-1 outline-none rounded-md h-[35px] text-red-500 font-semibold"
+                          classNameInput="p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#fff] dark:bg-darkSecond focus:border-blue-500 focus:ring-1 outline-none rounded-md h-[35px] text-red-500 font-semibold"
                           className="relative flex-grow"
                           classNameLabel="font-semibold mb-1 block"
                           classNameError="hidden"

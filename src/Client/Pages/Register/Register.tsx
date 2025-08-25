@@ -13,9 +13,10 @@ import { ErrorResponse } from "src/Types/utils.type"
 import Input from "src/Components/Input"
 import Button from "src/Components/Button"
 import { Cpu } from "lucide-react"
+import { roles } from "src/Helpers/role_permission"
 
-type FormData = Pick<SchemaAuthType, "email" | "password" | "confirm_password" | "name" | "phone">
-const formData = schemaAuth.pick(["email", "password", "confirm_password", "name", "phone"])
+type FormData = Pick<SchemaAuthType, "email" | "password" | "confirm_password" | "name" | "phone" | "role">
+const formData = schemaAuth.pick(["email", "password", "confirm_password", "name", "phone", "role"])
 
 export default function Register() {
   const navigate = useNavigate()
@@ -33,7 +34,11 @@ export default function Register() {
   })
 
   const handleSubmitForm = handleSubmit((data) => {
-    registerMutation.mutate(data, {
+    const body = {
+      ...data,
+      role: roles.CUSTOMER // đăng ký dành cho customer
+    }
+    registerMutation.mutate(body, {
       onSuccess: (response) => {
         toast.success(response.data.message, { autoClose: 1000 })
         navigate(path.Login)

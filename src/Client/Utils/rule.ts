@@ -76,7 +76,9 @@ export const schemaAuth = yup
         const updated_at_end = value
         return new Date(updated_at_end) > new Date(updated_at_start)
       }
-    })
+    }),
+
+    role: yup.string()
   })
   .required()
 

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { keepPreviousData, useQuery } from "@tanstack/react-query"
 import { isUndefined, omitBy } from "lodash"
 import { Helmet } from "react-helmet-async"
@@ -21,6 +22,8 @@ import { ArrowUpNarrowWide, FolderUp, Plus } from "lucide-react"
 import Button from "src/Components/Button"
 import useDownloadExcel from "src/Hook/useDownloadExcel"
 import { useTheme } from "src/Admin/Components/Theme-provider/Theme-provider"
+import { toast } from "react-toastify"
+import { useEffect } from "react"
 
 export default function ManageProducts() {
   const { theme } = useTheme()
@@ -83,13 +86,6 @@ export default function ManageProducts() {
   // const handleExitsEditItem = () => {
   //   setIdBrand(null)
   // }
-
-  if (isError) {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    if ((error as any)?.response?.status === HttpStatusCode.NotFound) {
-      navigate(path.AdminNotFound, { replace: true })
-    }
-  }
 
   // xử lý sort ds
   const handleChangeSortListOrder = (value: string) => {
@@ -220,6 +216,19 @@ export default function ManageProducts() {
       )
     }
   ]
+
+  useEffect(() => {
+    if (isError) {
+      const message = (error as any).response?.data?.message
+      const status = (error as any)?.response?.status
+      if (message === "Không có quyền truy cập") {
+        toast.error(message, { autoClose: 1500 })
+      }
+      if (status === HttpStatusCode.NotFound) {
+        navigate(path.AdminNotFound, { replace: true })
+      }
+    }
+  }, [isError, error, navigate])
 
   return (
     <div>

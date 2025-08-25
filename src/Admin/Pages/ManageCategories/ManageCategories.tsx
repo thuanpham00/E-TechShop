@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { yupResolver } from "@hookform/resolvers/yup"
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { ArrowUpFromLine, ArrowUpNarrowWide, FolderUp, Plus, RotateCcw, Search, X } from "lucide-react"
@@ -258,13 +259,6 @@ export default function ManageCategories() {
     ])
     resetFormSearch()
     navigate({ pathname: path.AdminCategories, search: createSearchParams(filteredSearch).toString() })
-  }
-
-  if (isError) {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    if ((error as any)?.response?.status === HttpStatusCode.NotFound) {
-      navigate(path.AdminNotFound, { replace: true })
-    }
   }
 
   const [addItem, setAddItem] = useState(false)
@@ -582,6 +576,19 @@ export default function ManageCategories() {
       )
     }
   ]
+
+  useEffect(() => {
+    if (isError) {
+      const message = (error as any).response?.data?.message
+      const status = (error as any)?.response?.status
+      if (message === "Không có quyền truy cập") {
+        toast.error(message, { autoClose: 1500 })
+      }
+      if (status === HttpStatusCode.NotFound) {
+        navigate(path.AdminNotFound, { replace: true })
+      }
+    }
+  }, [isError, error, navigate])
 
   return (
     <div>

@@ -326,13 +326,6 @@ export default function ManageSuppliers() {
     navigate({ pathname: path.AdminSuppliers, search: createSearchParams(filteredSearch).toString() })
   }
 
-  if (isError) {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    if ((error as any)?.response?.status === HttpStatusCode.NotFound) {
-      navigate(path.AdminNotFound, { replace: true })
-    }
-  }
-
   const [addItem, setAddItem] = useState(false)
 
   // xử lý sort ds
@@ -460,7 +453,7 @@ export default function ManageSuppliers() {
                   </div>
                 </div>
                 <div className="col-span-1 flex items-center h-14 px-2 bg-[#fff] dark:bg-darkBorder border border-[#dadada] border-t-0 rounded-br-xl">
-                  <span className="w-1/3">Ngày cập nhật</span>
+                  <span className="w-1/3 dark:text-white">Ngày cập nhật</span>
                   <div className="w-2/3 relative h-full">
                     <div className="mt-2 w-full flex items-center gap-2">
                       <Controller
@@ -780,6 +773,20 @@ export default function ManageSuppliers() {
       )
     }
   ]
+
+  useEffect(() => {
+    if (isError) {
+      const message = (error as any).response?.data?.message
+      const status = (error as any)?.response?.status
+      if (message === "Không có quyền truy cập") {
+        toast.error(message, { autoClose: 1500 })
+      }
+
+      if (status === HttpStatusCode.NotFound) {
+        navigate(path.AdminNotFound, { replace: true })
+      }
+    }
+  }, [isError, error, navigate])
 
   return (
     <div>

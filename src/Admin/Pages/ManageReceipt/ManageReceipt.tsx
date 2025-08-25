@@ -19,7 +19,7 @@ import { queryParamConfigReceipt } from "src/Types/queryParams.type"
 import { SuccessResponse } from "src/Types/utils.type"
 import ReceiptItem from "./Components/ReceiptItem"
 import DropdownSearch from "../ManageSupplies/Components/DropdownSearch"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { cleanObject } from "src/Helpers/common"
 import { toast } from "react-toastify"
 import { motion } from "framer-motion"
@@ -82,7 +82,7 @@ export default function ManageReceipt() {
     isUndefined
   )
 
-  const { data, isFetching, isLoading } = useQuery({
+  const { data, isFetching, isLoading, isError, error } = useQuery({
     queryKey: ["listReceipt", queryConfig],
     queryFn: () => {
       const controller = new AbortController()
@@ -119,7 +119,6 @@ export default function ManageReceipt() {
 
   const handleSubmitSearch = handleSubmitFormSearch(
     (data) => {
-      console.log(data)
       const params = cleanObject({
         ...queryConfig,
         page: 1,
@@ -494,6 +493,13 @@ export default function ManageReceipt() {
       )
     }
   ]
+
+  useEffect(() => {
+    if (isError) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      toast.error((error as any).response?.data?.message, { autoClose: 1500 })
+    }
+  }, [isError, error])
 
   return (
     <div>

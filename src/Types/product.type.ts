@@ -284,6 +284,7 @@ export type CreateCustomerBodyReq = {
   password: string
   confirm_password: string
   avatar: string
+  role: string
 }
 
 export type FavouriteType = {

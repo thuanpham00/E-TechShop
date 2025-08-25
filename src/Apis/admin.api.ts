@@ -319,5 +319,19 @@ export const adminAPI = {
     updateOrderStatus: (idOrder: string, status: string) => {
       return Http.put(`/admin/orders/${idOrder}`, { status })
     }
+  },
+
+  role: {
+    getRoles: (signal: AbortSignal) => {
+      return Http.get("/admin/roles", {
+        signal
+      })
+    },
+
+    getPermissions: (signal: AbortSignal) => {
+      return Http.get("/admin/permissions", {
+        signal
+      })
+    }
   }
 }

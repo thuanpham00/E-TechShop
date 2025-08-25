@@ -15,8 +15,8 @@ import { queryClient } from "src/main"
 import "./AdminChatting.css"
 
 const MessageObject = {
-  staff: "staff",
-  customer: "customer"
+  staff: "Staff",
+  customer: "Customer"
 }
 
 type UserTypeItem = {

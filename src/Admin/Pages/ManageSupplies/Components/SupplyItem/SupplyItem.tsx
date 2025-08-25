@@ -58,7 +58,7 @@ export default function SupplyItem({
           <AlertDialogTrigger>
             <Trash2 color="red" size={18} />
           </AlertDialogTrigger>
-          <AlertDialogContent className="w-[350px]">
+          <AlertDialogContent className="w-[350px] dark:bg-darkPrimary">
             <AlertDialogHeader>
               <AlertDialogTitle className="text-base">Bạn có chắc chắn muốn xóa?</AlertDialogTitle>
               <AlertDialogDescription className="text-sm">
@@ -66,8 +66,11 @@ export default function SupplyItem({
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
-              <AlertDialogCancel className="text-sm">Hủy</AlertDialogCancel>
-              <AlertDialogAction onClick={() => onDelete(item._id)} className="bg-red-500 hover:bg-red-600 text-sm">
+              <AlertDialogCancel className="text-sm dark:bg-darkPrimary">Hủy</AlertDialogCancel>
+              <AlertDialogAction
+                onClick={() => onDelete(item._id)}
+                className="bg-red-500 hover:bg-red-600 text-sm text-white"
+              >
                 Xóa
               </AlertDialogAction>
             </AlertDialogFooter>

@@ -71,7 +71,7 @@ export default function BrandItem({
             <AlertDialogTrigger>
               <Trash2 color="red" size={18} />
             </AlertDialogTrigger>
-            <AlertDialogContent className="w-[350px]">
+            <AlertDialogContent className="w-[350px] dark:bg-darkPrimary">
               <AlertDialogHeader>
                 <AlertDialogHeader>
                   <AlertDialogTitle className="text-base">Bạn có chắc chắn muốn xóa?</AlertDialogTitle>
@@ -81,8 +81,11 @@ export default function BrandItem({
                 </AlertDialogHeader>
               </AlertDialogHeader>
               <AlertDialogFooter>
-                <AlertDialogCancel className="text-sm">Hủy</AlertDialogCancel>
-                <AlertDialogAction onClick={() => onDelete(item._id)} className="bg-red-500 hover:bg-red-600 text-sm">
+                <AlertDialogCancel className="text-sm dark:bg-darkPrimary">Hủy</AlertDialogCancel>
+                <AlertDialogAction
+                  onClick={() => onDelete(item._id)}
+                  className="bg-red-500 hover:bg-red-600 text-sm text-white"
+                >
                   Xóa
                 </AlertDialogAction>
               </AlertDialogFooter>
@@ -96,7 +99,7 @@ export default function BrandItem({
             return (
               <div key={itemTotal.brand} className="flex justify-center items-center gap-2">
                 <span className="font-semibold text-[#3b82f6]">{itemTotal.total}</span>
-                <span>|</span>
+                <span className="text-black dark:text-white">|</span>
                 <button onClick={() => handleNavigateProductList(item.name, nameCategory)}>
                   <Eye color="#3b82f6" size={18} />
                 </button>

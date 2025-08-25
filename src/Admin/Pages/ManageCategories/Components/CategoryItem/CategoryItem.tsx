@@ -86,7 +86,7 @@ export default function CategoryItem({
       <div className="col-span-2 break-words">
         <div className="flex justify-center items-center gap-2">
           <span className="font-semibold text-[#3b82f6]">{item.brand_ids.length}</span>
-          <span>|</span>
+          <span className="text-black dark:text-white">|</span>
           <button onClick={() => handleNavigateCategoryDetail(item._id, item.name)}>
             <Eye color="#3b82f6" size={18} />
           </button>

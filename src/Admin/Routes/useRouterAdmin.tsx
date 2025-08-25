@@ -22,6 +22,7 @@ const ManageReceipt = lazy(() => import("src/Admin/Pages/ManageReceipt"))
 const ManageOrders = lazy(() => import("src/Admin/Pages/ManageOrders"))
 const ManageProducts = lazy(() => import("src/Admin/Pages/ManageProducts"))
 const ManageBrand = lazy(() => import("src/Admin/Pages/ManageBrand"))
+const ManagePermissions = lazy(() => import("src/Admin/Pages/ManagePermissions"))
 const AddProduct = lazy(() => import("src/Admin/Pages/AddProduct"))
 const AddReceipt = lazy(() => import("src/Admin/Pages/AddReceipt"))
 const AdminEmail = lazy(() => import("src/Admin/Pages/AdminEmail"))
@@ -153,6 +154,14 @@ export default function useRouterAdmin() {
               element: (
                 <Suspense>
                   <ManageRoles />
+                </Suspense>
+              )
+            },
+            {
+              path: path.AdminPermission,
+              element: (
+                <Suspense>
+                  <ManagePermissions />
                 </Suspense>
               )
             },

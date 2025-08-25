@@ -29,6 +29,7 @@ export const path = {
   AdminSupplies: "/admin/supplies",
   AdminSuppliers: "/admin/suppliers",
   AdminRole: "/admin/roles",
+  AdminPermission: "/admin/permissions",
   AdminEmail: "/admin/emails",
   AdminChat: "/admin/chats",
   AdminNotFound: "/admin/not-found",

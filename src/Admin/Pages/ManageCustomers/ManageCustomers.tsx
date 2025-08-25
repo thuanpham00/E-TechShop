@@ -382,13 +382,6 @@ export default function ManageCustomers() {
     navigate({ pathname: path.AdminCustomers, search: createSearchParams(filteredSearch).toString() })
   }
 
-  if (isError) {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    if ((error as any)?.response?.status === HttpStatusCode.NotFound) {
-      navigate(path.AdminNotFound, { replace: true })
-    }
-  }
-
   const [addItem, setAddItem] = useState(false)
 
   // xử lý sort ds
@@ -845,6 +838,20 @@ export default function ManageCustomers() {
       )
     }
   ]
+
+  useEffect(() => {
+    if (isError) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const message = (error as any).response?.data?.message
+      const status = (error as any)?.response?.status
+      if (message === "Không có quyền truy cập") {
+        toast.error(message, { autoClose: 1500 })
+      }
+      if (status === HttpStatusCode.NotFound) {
+        navigate(path.AdminNotFound, { replace: true })
+      }
+    }
+  }, [isError, error, navigate])
 
   return (
     <div>
