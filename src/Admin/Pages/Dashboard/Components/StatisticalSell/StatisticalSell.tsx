@@ -23,8 +23,9 @@ import {
   ChartOptions
 } from "chart.js"
 import dayjs, { Dayjs } from "dayjs"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useTheme } from "src/Admin/Components/Theme-provider/Theme-provider"
+import { toast } from "react-toastify"
 
 type TypeStatistical = {
   title: string
@@ -237,6 +238,13 @@ export default function StatisticalSell() {
       }
     ]
   }
+
+  useEffect(() => {
+    if (getStatisticalSell.isError) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      toast.error((getStatisticalSell.error as any).response?.data?.message, { autoClose: 1500 })
+    }
+  }, [getStatisticalSell.isError, getStatisticalSell.error])
 
   return (
     <>

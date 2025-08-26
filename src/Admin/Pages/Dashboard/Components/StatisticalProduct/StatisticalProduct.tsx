@@ -23,6 +23,8 @@ import {
 } from "chart.js"
 import useCopyText from "src/Hook/useCopyText"
 import { useTheme } from "src/Admin/Components/Theme-provider/Theme-provider"
+import { useEffect } from "react"
+import { toast } from "react-toastify"
 
 type TypeStatistical = {
   title: string
@@ -54,6 +56,7 @@ export default function StatisticalProduct() {
   const { theme } = useTheme()
   const isDarkMode = theme === "dark" || theme === "system"
   const { copiedId, handleCopyText } = useCopyText()
+
   const getStatisticalProduct = useQuery({
     queryKey: ["getStatisticalProduct"],
     queryFn: () => {
@@ -287,6 +290,13 @@ export default function StatisticalProduct() {
       render: () => <Button type="primary">Nhập hàng</Button>
     }
   ]
+
+  useEffect(() => {
+    if (getStatisticalProduct.isError) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      toast.error((getStatisticalProduct.error as any).response?.data?.message, { autoClose: 1500 })
+    }
+  }, [getStatisticalProduct.isError, getStatisticalProduct.error])
 
   return (
     <>

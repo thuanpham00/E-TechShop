@@ -1,11 +1,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { keepPreviousData, useQuery } from "@tanstack/react-query"
 import { Button, Table, Tag } from "antd"
+import { useContext, useEffect } from "react"
 import { Helmet } from "react-helmet-async"
 import { useNavigate } from "react-router-dom"
+import { toast } from "react-toastify"
 import NavigateBack from "src/Admin/Components/NavigateBack"
 import { adminAPI } from "src/Apis/admin.api"
 import { path } from "src/Constants/path"
+import { AppContext } from "src/Context/authContext"
 import { SuccessResponse } from "src/Types/utils.type"
 
 interface Role {
@@ -16,9 +19,10 @@ interface Role {
 }
 
 export default function ManageRoles() {
+  const { userId } = useContext(AppContext)
   const navigate = useNavigate()
-  const { data } = useQuery({
-    queryKey: ["listRoles"],
+  const { data, isError, error } = useQuery({
+    queryKey: ["listRoles", userId],
     queryFn: () => {
       const controller = new AbortController()
       setTimeout(() => {
@@ -61,7 +65,10 @@ export default function ManageRoles() {
           type="default"
           onClick={() => {
             navigate(path.AdminPermission, {
-              state: record._id
+              state: {
+                name: record.name,
+                idRole: record._id
+              }
             })
           }}
         >
@@ -70,6 +77,14 @@ export default function ManageRoles() {
       )
     }
   ]
+
+  useEffect(() => {
+    if (isError) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      toast.error((error as any).response?.data?.message, { autoClose: 1500 })
+    }
+  }, [isError, error])
+
   return (
     <div>
       <Helmet>
@@ -88,36 +103,6 @@ export default function ManageRoles() {
       <div className="mt-6">
         <Table rowKey="_id" dataSource={listRole} columns={columns} />
       </div>
-
-      {/* <Modal
-        open={open}
-        onCancel={() => setOpen(false)}
-        title={`Chi tiết quyền - ${selectedRole?.name}`}
-        footer={null}
-        width={600}
-      >
-        {selectedRole && (
-          <div>
-            <p>
-              <strong>Mô tả:</strong> {selectedRole.description}
-            </p>
-            <p>
-              <strong>Ngày tạo:</strong> {selectedRole.created_at}
-            </p>
-            <p>
-              <strong>Ngày cập nhật:</strong> {selectedRole.updated_at}
-            </p>
-            <p>
-              <strong>Danh sách quyền:</strong>
-            </p>
-            <ul>
-              {selectedRole.permissions.map((perm, idx) => (
-                <li key={idx}>{perm}</li>
-              ))}
-            </ul>
-          </div>
-        )}
-      </Modal> */}
     </div>
   )
 }

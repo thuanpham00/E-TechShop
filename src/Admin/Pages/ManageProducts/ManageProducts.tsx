@@ -221,7 +221,7 @@ export default function ManageProducts() {
     if (isError) {
       const message = (error as any).response?.data?.message
       const status = (error as any)?.response?.status
-      if (message === "Không có quyền truy cập") {
+      if (message === "Không có quyền truy cập!") {
         toast.error(message, { autoClose: 1500 })
       }
       if (status === HttpStatusCode.NotFound) {

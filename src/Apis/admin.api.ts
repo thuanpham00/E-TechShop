@@ -1,3 +1,4 @@
+import { Key } from "react"
 import Http from "src/Helpers/http"
 import {
   CreateCustomerBodyReq,
@@ -331,6 +332,19 @@ export const adminAPI = {
     getPermissions: (signal: AbortSignal) => {
       return Http.get("/admin/permissions", {
         signal
+      })
+    },
+
+    getPermissionsBasedOnId: (idRole: string, signal: AbortSignal) => {
+      return Http.get(`/admin/permissions/${idRole}`, {
+        signal
+      })
+    },
+
+    updatePermissionsBasedOnId: (idRole: string, listPermissions: Key[], type: string) => {
+      return Http.put(`/admin/permissions/${idRole}`, {
+        listPermissions,
+        type
       })
     }
   }

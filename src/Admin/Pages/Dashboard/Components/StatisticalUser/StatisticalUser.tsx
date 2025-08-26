@@ -20,12 +20,13 @@ import {
   ChartOptions
 } from "chart.js"
 import dayjs, { Dayjs } from "dayjs"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { ClipboardCheck, Copy, User, Users } from "lucide-react"
 import useCopyText from "src/Hook/useCopyText"
 import { formatCurrency } from "src/Helpers/common"
 import { Pie } from "react-chartjs-2"
 import { useTheme } from "src/Admin/Components/Theme-provider/Theme-provider"
+import { toast } from "react-toastify"
 
 type TypeStatistical = {
   title: string
@@ -178,6 +179,13 @@ export default function StatisticalUser() {
       }
     ]
   }
+
+  useEffect(() => {
+    if (getStatisticalUser.isError) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      toast.error((getStatisticalUser.error as any).response?.data?.message, { autoClose: 1500 })
+    }
+  }, [getStatisticalUser.isError, getStatisticalUser.error])
 
   return (
     <>
