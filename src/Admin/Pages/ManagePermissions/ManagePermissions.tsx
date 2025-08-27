@@ -35,7 +35,7 @@ export default function ManagePermissions() {
       return adminAPI.role.getPermissions(controller.signal)
     },
     retry: 0, // số lần retry lại khi hủy request (dùng abort signal)
-    staleTime: 3 * 60 * 1000, // dưới 3 phút nó không gọi lại api
+    staleTime: 1 * 60 * 1000, // dưới 3 phút nó không gọi lại api
     placeholderData: keepPreviousData
   })
 
@@ -57,7 +57,7 @@ export default function ManagePermissions() {
       return adminAPI.role.getPermissionsBasedOnId(idRole, controller.signal)
     },
     retry: 0, // số lần retry lại khi hủy request (dùng abort signal)
-    staleTime: 3 * 60 * 1000, // dưới 3 phút nó không gọi lại api
+    staleTime: 1 * 60 * 1000, // dưới 3 phút nó không gọi lại api
     placeholderData: keepPreviousData,
     enabled: !!idRole
   })
@@ -209,12 +209,13 @@ export default function ManagePermissions() {
 }
 
 /**
-  hiện tại gom được 43 quyền - admin có đủ 43 quyền - và các api (quyền nhỏ) bỏ qua chỉ lấy api lớn - ví dụ api lấy giá bán bỏ qua vì cần có quyền tạo cung ứng sản phẩm trước rồi mới pass qua quyền này mới vào api trong được -> lấy những cái api chính (xử lý chính)
+  hiện tại gom được 45 quyền - admin có đủ 45 quyền - và các api (quyền nhỏ) bỏ qua chỉ lấy api lớn - ví dụ api lấy giá bán bỏ qua vì cần có quyền tạo cung ứng sản phẩm trước rồi mới pass qua quyền này mới vào api trong được -> lấy những cái api chính (xử lý chính)
 
   còn coi bổ sung thêm các quyền bên users
 
-  sau đó thêm role
- * Product: 2
+  sau đó thêm role 
+
+Product: 2
 Customer: 5
 Category: 5
 Brand: 5
@@ -225,5 +226,5 @@ order: 3
 Statistical: 3
 email: 2
 chat: 2
-role & permissions: 4
+role & permissions: 6
  */

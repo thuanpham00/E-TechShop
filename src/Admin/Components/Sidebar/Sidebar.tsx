@@ -255,7 +255,7 @@ export default function Sidebar() {
     },
     {
       key: "sub5",
-      label: <div className="font-semibold text-[15px] text-black dark:text-white">Quản lý Nhân sự</div>,
+      label: <div className="font-semibold text-[15px] text-black dark:text-white">Quản lý Hệ thống</div>,
       children: [
         {
           key: "11",

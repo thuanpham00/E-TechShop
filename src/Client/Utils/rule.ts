@@ -268,6 +268,12 @@ export const schemaOrderSearch = schemaSupply
     phone: yup.string()
   })
 
+export const schemaRole = schemaAuth.pick(["updated_at", "created_at"]).shape({
+  _id: yup.string(),
+  name: yup.string().required("Tên vai trò bắt buộc!"),
+  description: yup.string().required("Mô tả vai trò bắt buộc!")
+})
+
 export type SchemaAuthType = yup.InferType<typeof schemaAuth>
 
 export type SchemaProductType = SchemaAuthType & yup.InferType<typeof schemaProduct>
@@ -289,3 +295,5 @@ export type SchemaAddReceiptType = yup.InferType<typeof schemaAddReceipt>
 export type SchemaOrderType = yup.InferType<typeof schemaOrder>
 
 export type SchemaOrderSearchType = yup.InferType<typeof schemaOrderSearch>
+
+export type SchemaRoleType = yup.InferType<typeof schemaRole>

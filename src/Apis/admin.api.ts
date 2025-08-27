@@ -329,6 +329,18 @@ export const adminAPI = {
       })
     },
 
+    createRole: (body: { name: string; description: string }) => {
+      return Http.post("/admin/roles", body)
+    },
+
+    updateRole: (idRole: string, body: { name: string; description: string }) => {
+      return Http.put(`/admin/roles/${idRole}`, body)
+    },
+
+    deleteRole: (idRole: string) => {
+      return Http.delete(`/admin/roles/${idRole}`)
+    },
+
     getPermissions: (signal: AbortSignal) => {
       return Http.get("/admin/permissions", {
         signal
