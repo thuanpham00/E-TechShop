@@ -129,7 +129,7 @@ export default function Sidebar() {
     },
     {
       key: "sub2",
-      label: <div className="font-semibold text-[15px] text-black dark:text-white">Quản lý Bán hàng</div>,
+      label: <div className="font-semibold text-[15px] text-black dark:text-white">Quản lý Sản phẩm</div>,
       children: [
         {
           key: "4",

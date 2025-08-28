@@ -221,7 +221,7 @@ export default function ManageReceipt() {
           <div className="bg-white dark:bg-darkPrimary mb-3 dark:border-darkBorder rounded-2xl">
             <form onSubmit={handleSubmitSearch}>
               <div className="mt-1 grid grid-cols-2">
-                <div className="col-span-1 flex items-center h-14 px-2 bg-[#ececec] dark:bg-darkBorder border border-[#dadada] rounded-tl-xl">
+                <div className="col-span-1 flex items-center h-14 px-2 bg-[#ececec] dark:bg-darkPrimary border border-[#dadada] rounded-tl-xl">
                   <span className="w-1/3 dark:text-white">Tên sản phẩm</span>
                   <div className="w-2/3 relative h-full">
                     <DropdownSearch
@@ -236,7 +236,7 @@ export default function ManageReceipt() {
                     <span className="absolute inset-y-0 left-[-5%] w-[1px] bg-[#dadada] h-full"></span>
                   </div>
                 </div>
-                <div className="col-span-1 flex items-center h-14 px-2 bg-[#ececec] dark:bg-darkBorder border border-[#dadada] rounded-tr-xl">
+                <div className="col-span-1 flex items-center h-14 px-2 bg-[#ececec] dark:bg-darkPrimary border border-[#dadada] rounded-tr-xl">
                   <span className="w-1/3 dark:text-white">Tên nhà cung cấp</span>
                   <div className="w-2/3 relative h-full">
                     <DropdownSearch
@@ -251,7 +251,7 @@ export default function ManageReceipt() {
                     <span className="absolute inset-y-0 left-[-5%] w-[1px] bg-[#dadada] h-full"></span>
                   </div>
                 </div>
-                <div className="col-span-1 flex items-center h-14 px-2 bg-[#fff] dark:bg-darkBorder border border-[#dadada] border-t-0">
+                <div className="col-span-1 flex items-center h-14 px-2 bg-[#fff] dark:bg-darkPrimary border border-[#dadada] border-t-0">
                   <span className="w-1/3 dark:text-white">Số lượng sản phẩm</span>
                   <div className="w-2/3 relative h-full">
                     <div className="mt-2 w-full flex items-center gap-2">
@@ -267,7 +267,7 @@ export default function ManageReceipt() {
                     <span className="absolute inset-y-0 left-[-5%] w-[1px] bg-[#dadada] h-full"></span>
                   </div>
                 </div>
-                <div className="col-span-1 flex items-center h-14 px-2 bg-[#fff] dark:bg-darkBorder border border-[#dadada] border-t-0">
+                <div className="col-span-1 flex items-center h-14 px-2 bg-[#fff] dark:bg-darkPrimary border border-[#dadada] border-t-0">
                   <span className="w-1/3 dark:text-white">Lọc theo giá</span>
                   <div className="w-2/3 relative h-full">
                     <div className="flex items-center justify-between gap-2">
@@ -320,7 +320,7 @@ export default function ManageReceipt() {
                     <span className="absolute inset-y-0 left-[-5%] w-[1px] bg-[#dadada] h-full"></span>
                   </div>
                 </div>
-                <div className="col-span-1 flex items-center h-14 px-2 bg-[#ececec] dark:bg-darkBorder border border-[#dadada] border-t-0 rounded-bl-xl">
+                <div className="col-span-1 flex items-center h-14 px-2 bg-[#ececec] dark:bg-darkPrimary border border-[#dadada] border-t-0 rounded-bl-xl">
                   <span className="w-1/3 dark:text-white">Ngày tạo</span>
                   <div className="w-2/3 relative h-full">
                     <div className="mt-2 w-full flex items-center gap-2">
@@ -359,7 +359,7 @@ export default function ManageReceipt() {
                     <span className="absolute inset-y-0 left-[-5%] w-[1px] bg-[#dadada] h-full"></span>
                   </div>
                 </div>
-                <div className="col-span-1 flex items-center h-14 px-2 bg-[#ececec] dark:bg-darkBorder border border-[#dadada] border-t-0 rounded-br-xl">
+                <div className="col-span-1 flex items-center h-14 px-2 bg-[#ececec] dark:bg-darkPrimary border border-[#dadada] border-t-0 rounded-br-xl">
                   <span className="w-1/3 dark:text-white">Ngày cập nhật</span>
                   <div className="w-2/3 relative h-full">
                     <div className="mt-2 w-full flex items-center gap-2">

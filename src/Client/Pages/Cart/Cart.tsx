@@ -30,7 +30,6 @@ export default function Cart() {
   const navigate = useNavigate()
   const { state } = useLocation()
   const productSelectedBuyNow = state?.productId
-  console.log(productSelectedBuyNow)
 
   const queryClient = useQueryClient()
   const token = getAccessTokenFromLS()

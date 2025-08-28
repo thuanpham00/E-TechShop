@@ -5,10 +5,11 @@ interface Props {
   value?: Date
   onChange?: (value: Date) => void
   errorMessage?: string
+  nameInputSelect?: string
 }
 
 // Schema xác định kiểu dữ liệu (ở đây là Date) → field.onChange mong chờ kiểu Date.
-export default function DateSelect({ onChange, errorMessage, value }: Props) {
+export default function DateSelect({ onChange, errorMessage, value, nameInputSelect = "Ngày sinh" }: Props) {
   const [date, setDate] = useState({
     day: value?.getDate(),
     month: value?.getMonth(),
@@ -45,7 +46,7 @@ export default function DateSelect({ onChange, errorMessage, value }: Props) {
 
   return (
     <div className="flex flex-wrap flex-col">
-      <div className="text-black dark:text-white">Ngày sinh</div>
+      <div className="text-black dark:text-white">{nameInputSelect}</div>
       <div className="mt-1">
         <div className="flex items-center gap-2">
           <select

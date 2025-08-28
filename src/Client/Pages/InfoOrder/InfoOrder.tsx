@@ -16,6 +16,8 @@ import { motion } from "framer-motion"
 const { Text } = Typography
 const { TextArea } = Input
 
+const shipping_fee = 30000
+
 export default function InfoOrder() {
   const { nameUser } = useContext(AppContext)
   const { state } = useLocation()
@@ -125,7 +127,9 @@ export default function InfoOrder() {
         email: values.email
       },
       products: orderList,
-      totalAmount: totalPriceProducts,
+      subtotal: totalPriceProducts, // tiền tạm tính
+      shipping_fee,
+      totalAmount: totalPriceProducts + shipping_fee,
       note: values.note !== undefined ? values.note : ""
     }
 
@@ -272,11 +276,41 @@ export default function InfoOrder() {
                         }}
                       >
                         <div>
-                          <span>Tổng tiền ({listCart?.length})</span>
+                          <span>Tạm tính ({listCart?.length})</span>
                           <span style={{ padding: "0 4px" }}>sản phẩm:</span>
                         </div>
-                        <span style={{ color: "#ff4d4f", fontWeight: 500, fontSize: "18px" }}>
+                        <span style={{ color: "#ff4d4f", fontWeight: 500, fontSize: "16px" }}>
                           {formatCurrency(totalPriceProducts)}đ
+                        </span>
+                      </div>
+                      <div
+                        style={{
+                          display: "flex",
+                          justifyContent: "flex-end",
+                          alignItems: "center",
+                          gap: "4px"
+                        }}
+                      >
+                        <div>
+                          <span>Phí vận chuyển</span>
+                        </div>
+                        <span style={{ color: "#ff4d4f", fontWeight: 500, fontSize: "16px" }}>
+                          {formatCurrency(shipping_fee)}đ
+                        </span>
+                      </div>
+                      <div
+                        style={{
+                          display: "flex",
+                          justifyContent: "flex-end",
+                          alignItems: "center",
+                          gap: "4px"
+                        }}
+                      >
+                        <div>
+                          <span>Tổng tiền </span>
+                        </div>
+                        <span style={{ color: "#ff4d4f", fontWeight: 500, fontSize: "16px" }}>
+                          {formatCurrency(totalPriceProducts + shipping_fee)}đ
                         </span>
                       </div>
 

@@ -120,7 +120,7 @@ export default function Order() {
       title: "Đơn giá",
       render: (_: any, record: any) => (
         <Text strong className="text-red-500">
-          {formatCurrency(record.total)} đ
+          {formatCurrency(record.totalAmount)} đ
         </Text>
       ),
       width: 120
@@ -166,7 +166,9 @@ export default function Order() {
         return {
           key: item._id,
           time: item.created_at,
-          total: item.totalAmount,
+          subTotal: item.subTotal,
+          shipping_fee: item.shipping_fee,
+          totalAmount: item.totalAmount,
           status: item.status,
           name: item.customer_info.name,
           address: item.customer_info.address,
@@ -273,14 +275,9 @@ export default function Order() {
                     }}
                     expandable={{
                       expandedRowRender: (record: any) => {
-                        let total = 0
                         return (
-                          <div className="space-y-3">
+                          <div>
                             {record.products.map((item: any) => {
-                              total +=
-                                item.discount !== 0
-                                  ? (item.price - item.price * (item.discount / 100)) * item.quantity
-                                  : item.price * item.quantity
                               return (
                                 <div
                                   key={item.product_id}
@@ -326,13 +323,21 @@ export default function Order() {
                               )
                             })}
 
-                            <div className="text-red-500 text-base text-right font-semibold">
-                              Tổng tiền: {formatCurrency(total)} đ
+                            <div className="mt-2">
+                              <div className="text-[15px] text-right font-normal">
+                                Tạm tính: {formatCurrency(record.subTotal)} đ
+                              </div>
+                              <div className="text-[15px] text-right font-normal">
+                                Phí vận chuyển: {formatCurrency(record.shipping_fee)} đ
+                              </div>
+                              <div className="text-red-500 text-base text-right font-semibold mb-2">
+                                Tổng tiền: {formatCurrency(record.totalAmount)} đ
+                              </div>
                             </div>
 
                             <div className="flex justify-between items-center gap-2">
                               <span className="text-red-500">
-                                Bạn chỉ có thể hủy hàng nếu đơn hàng chưa được xác nhận
+                                *Bạn chỉ có thể hủy hàng nếu đơn hàng chưa được xác nhận
                               </span>
                               <div className="flex gap-2">
                                 <Button

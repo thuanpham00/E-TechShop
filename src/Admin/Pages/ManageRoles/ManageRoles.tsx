@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { keepPreviousData, useQuery } from "@tanstack/react-query"
+import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { Button, Table, Tag } from "antd"
 import { useContext, useEffect, useState } from "react"
 import { Helmet } from "react-helmet-async"
@@ -9,10 +9,23 @@ import NavigateBack from "src/Admin/Components/NavigateBack"
 import { adminAPI } from "src/Apis/admin.api"
 import { path } from "src/Constants/path"
 import { AppContext } from "src/Context/authContext"
-import { SuccessResponse } from "src/Types/utils.type"
+import { ErrorResponse, MessageResponse, SuccessResponse } from "src/Types/utils.type"
 import "./ManageRoles.css"
 import AddRole from "./Components/AddRole"
 import RoleDetail from "./Components/RoleDetail/RoleDetail"
+import { isError400 } from "src/Helpers/utils"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger
+} from "src/Components/ui/alert-dialog"
+import { Pencil, Trash2 } from "lucide-react"
 
 interface Role {
   _id: string
@@ -22,6 +35,8 @@ interface Role {
 }
 
 export default function ManageRoles() {
+  const queryClient = useQueryClient()
+
   const { userId } = useContext(AppContext)
   const navigate = useNavigate()
   const { data, isError, error } = useQuery({
@@ -43,6 +58,27 @@ export default function ManageRoles() {
   }>
   const listRole = result?.result?.result
 
+  const deleteRoleMutation = useMutation({
+    mutationFn: (id: string) => {
+      return adminAPI.role.deleteRole(id)
+    }
+  })
+
+  const handleDeleteCategory = (id: string) => {
+    deleteRoleMutation.mutate(id, {
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: ["listRoles", userId] })
+        toast.success("Xóa thành công!", { autoClose: 1500 })
+      },
+      onError: (error) => {
+        if (isError400<ErrorResponse<MessageResponse>>(error)) {
+          toast.error(error.response?.data.message, {
+            autoClose: 1500
+          })
+        }
+      }
+    })
+  }
   const columns = [
     {
       title: "Tên Role",
@@ -87,17 +123,37 @@ export default function ManageRoles() {
       key: "action",
       render: (_: any, record: Role) => (
         <div className="flex justify-center gap-2">
-          <Button
-            type="default"
+          <button
             onClick={() => {
               setAddItem(record)
             }}
           >
-            Chỉnh sửa
-          </Button>
-          <Button danger onClick={() => {}}>
-            Xóa
-          </Button>
+            <Pencil color="orange" size={18} />
+          </button>
+          <AlertDialog>
+            <AlertDialogTrigger>
+              <Trash2 color="red" size={18} />
+            </AlertDialogTrigger>
+            <AlertDialogContent className="w-[350px] dark:bg-darkPrimary">
+              <AlertDialogHeader>
+                <AlertDialogHeader>
+                  <AlertDialogTitle className="text-base">Bạn có chắc chắn muốn xóa?</AlertDialogTitle>
+                  <AlertDialogDescription className="text-sm">
+                    Không thể hoàn tác hành động này. Thao tác này sẽ xóa vĩnh viễn dữ liệu của bạn.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel className="text-sm dark:bg-darkPrimary">Hủy</AlertDialogCancel>
+                <AlertDialogAction
+                  onClick={() => handleDeleteCategory(record._id)}
+                  className="bg-red-500 hover:bg-red-600 text-sm text-white"
+                >
+                  Xóa
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         </div>
       )
     }

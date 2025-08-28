@@ -151,6 +151,8 @@ export type OrderItemType = {
     image: string
     discount: number // phần trăm giảm giá, ví dụ: 5 = 5%
   }[]
+  subTotal: number
+  shipping_fee: number
   totalAmount: number
   status: OrderStatus
   status_history: {
@@ -313,6 +315,8 @@ export type OrderType = {
     image: string
     discount?: number
   }[]
+  subtotal: number // tiền tạm tính
+  shipping_fee: number
   totalAmount: number
   note?: string
 }

@@ -37,7 +37,7 @@ export default function ReceiptItem({ item }: Props) {
   }, [])
 
   return (
-    <div className="py-4 mb-2 bg-white/80 dark:bg-darkBorder border border-[#dedede] dark:border-darkBorder px-3 rounded-xl cursor-pointer shadow-lg">
+    <div className="py-4 mb-2 bg-white/80 dark:bg-darkPrimary border border-[#dedede] dark:border-gray-700 px-3 rounded-xl cursor-pointer shadow-lg">
       <div className="flex items-center justify-between">
         <div className="text-base py-1 px-2 flex items-center gap-2 bg-[#e5e5e5] border border-[#dadada] rounded-md">
           <span>Đơn nhập hàng: </span>

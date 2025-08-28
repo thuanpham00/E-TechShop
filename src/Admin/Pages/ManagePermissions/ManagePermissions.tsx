@@ -158,7 +158,7 @@ export default function ManagePermissions() {
           }}
           operations={["to right", "to left"]}
           onChange={handleChange}
-          titles={["Danh sách", "Đã chọn"]}
+          titles={["Danh sách quyền hệ thống", "Đã chọn"]}
           render={(item) => {
             let colorTag = "blue" // default
             switch (item.api_endpoints?.method) {
@@ -209,7 +209,7 @@ export default function ManagePermissions() {
 }
 
 /**
-  hiện tại gom được 45 quyền - admin có đủ 45 quyền - và các api (quyền nhỏ) bỏ qua chỉ lấy api lớn - ví dụ api lấy giá bán bỏ qua vì cần có quyền tạo cung ứng sản phẩm trước rồi mới pass qua quyền này mới vào api trong được -> lấy những cái api chính (xử lý chính)
+  hiện tại gom được 47 quyền - admin có đủ 47 quyền - và các api (quyền nhỏ) bỏ qua chỉ lấy api lớn - ví dụ api lấy giá bán bỏ qua vì cần có quyền tạo cung ứng sản phẩm trước rồi mới pass qua quyền này mới vào api trong được -> lấy những cái api chính (xử lý chính)
 
   còn coi bổ sung thêm các quyền bên users
 
@@ -226,5 +226,6 @@ order: 3
 Statistical: 3
 email: 2
 chat: 2
-role & permissions: 6
+role & permissions: 7
+employees : 1
  */

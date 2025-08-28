@@ -149,7 +149,7 @@ export default function FilterProduct({ queryConfig }: Props) {
     <div>
       <form onSubmit={handleSubmitSearch}>
         <div className="mt-1 grid grid-cols-2">
-          <div className="col-span-1 flex items-center h-14 px-2 bg-[#ececec] dark:bg-darkBorder border border-[#dadada] rounded-tl-xl">
+          <div className="col-span-1 flex items-center h-14 px-2 bg-[#ececec] dark:bg-darkPrimary border border-[#dadada] rounded-tl-xl">
             <span className="w-1/3 dark:text-white">Tên sản phẩm</span>
             <div className="w-2/3 relative h-full">
               <Input
@@ -163,7 +163,7 @@ export default function FilterProduct({ queryConfig }: Props) {
               <span className="absolute inset-y-0 left-[-5%] w-[1px] bg-[#dadada] h-full"></span>
             </div>
           </div>
-          <div className="col-span-1 flex items-center h-14 px-2 bg-[#ececec] dark:bg-darkBorder border border-[#dadada] rounded-tr-xl">
+          <div className="col-span-1 flex items-center h-14 px-2 bg-[#ececec] dark:bg-darkPrimary border border-[#dadada] rounded-tr-xl">
             <span className="w-1/3 dark:text-white">Thương hiệu</span>
             <div className="w-2/3 relative h-full">
               <Controller
@@ -194,7 +194,7 @@ export default function FilterProduct({ queryConfig }: Props) {
               <span className="absolute inset-y-0 left-[-5%] w-[1px] bg-[#dadada] h-full"></span>
             </div>
           </div>
-          <div className="col-span-1 flex items-center h-14 px-2 bg-[#fff] dark:bg-darkBorder border border-[#dadada] border-t-0">
+          <div className="col-span-1 flex items-center h-14 px-2 bg-[#fff] dark:bg-darkPrimary border border-[#dadada] border-t-0">
             <span className="w-1/3 dark:text-white">Thể loại</span>
             <div className="w-2/3 relative h-full">
               <Controller
@@ -225,7 +225,7 @@ export default function FilterProduct({ queryConfig }: Props) {
               <span className="absolute inset-y-0 left-[-5%] w-[1px] bg-[#dadada] h-full"></span>
             </div>
           </div>
-          <div className="col-span-1 flex items-center h-14 px-2 bg-[#fff] dark:bg-darkBorder border border-[#dadada] border-t-0 rounded-tr-md">
+          <div className="col-span-1 flex items-center h-14 px-2 bg-[#fff] dark:bg-darkPrimary border border-[#dadada] border-t-0 rounded-tr-md">
             <span className="w-1/3 dark:text-white">Lọc theo giá</span>
             <div className="w-2/3 relative h-full">
               <div className="flex items-center justify-between gap-2">
@@ -286,7 +286,7 @@ export default function FilterProduct({ queryConfig }: Props) {
               <span className="absolute inset-y-0 left-[-5%] w-[1px] bg-[#dadada] h-full"></span>
             </div>
           </div>
-          <div className="col-span-1 flex items-center h-14 px-2 bg-[#ececec] dark:bg-darkBorder border border-[#dadada] border-t-0">
+          <div className="col-span-1 flex items-center h-14 px-2 bg-[#ececec] dark:bg-darkPrimary border border-[#dadada] border-t-0">
             <span className="w-1/3 dark:text-white">Ngày tạo</span>
             <div className="w-2/3 relative h-full">
               <div className="mt-2 w-full flex items-center gap-2">
@@ -325,7 +325,7 @@ export default function FilterProduct({ queryConfig }: Props) {
               <span className="absolute inset-y-0 left-[-5%] w-[1px] bg-[#dadada] h-full"></span>
             </div>
           </div>
-          <div className="col-span-1 flex items-center h-14 px-2 bg-[#ececec] dark:bg-darkBorder  border border-[#dadada] border-t-0 rounded-br-xl">
+          <div className="col-span-1 flex items-center h-14 px-2 bg-[#ececec] dark:bg-darkPrimary  border border-[#dadada] border-t-0 rounded-br-xl">
             <span className="w-1/3 dark:text-white">Ngày cập nhật</span>
             <div className="w-2/3 relative h-full">
               <div className="mt-2 w-full flex items-center gap-2">
@@ -364,7 +364,7 @@ export default function FilterProduct({ queryConfig }: Props) {
               <span className="absolute inset-y-0 left-[-5%] w-[1px] bg-[#dadada] h-full"></span>
             </div>
           </div>
-          <div className="col-span-1 flex items-center h-14 px-2 bg-[#fff] dark:bg-darkBorder border border-[#dadada] border-t-0 rounded-bl-xl">
+          <div className="col-span-1 flex items-center h-14 px-2 bg-[#fff] dark:bg-darkPrimary border border-[#dadada] border-t-0 rounded-bl-xl">
             <span className="w-1/3 dark:text-white">Trạng thái</span>
             <div className="w-2/3 relative h-full">
               <Controller

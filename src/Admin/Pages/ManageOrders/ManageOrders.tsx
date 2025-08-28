@@ -1,7 +1,7 @@
 import { Helmet } from "react-helmet-async"
 import NavigateBack from "src/Admin/Components/NavigateBack"
-import { ArrowUpFromLine, ArrowUpNarrowWide, FolderUp, Plus, RotateCcw, Search, X } from "lucide-react"
-import { createSearchParams, Link, useNavigate } from "react-router-dom"
+import { ArrowUpFromLine, ArrowUpNarrowWide, FolderUp, RotateCcw, Search, X } from "lucide-react"
+import { createSearchParams, useNavigate } from "react-router-dom"
 import Button from "src/Components/Button"
 import { AnimatePresence, motion } from "framer-motion"
 import Input from "src/Components/Input"
@@ -258,7 +258,7 @@ export default function ManageOrders() {
         <section className="bg-white dark:bg-darkPrimary mb-3 dark:border-darkBorder rounded-2xl">
           <form onSubmit={handleSubmitSearch}>
             <div className="mt-1 grid grid-cols-2">
-              <div className="col-span-1 flex items-center h-14 px-2 bg-[#ececec] dark:bg-darkBorder border border-[#dadada] rounded-tl-xl">
+              <div className="col-span-1 flex items-center h-14 px-2 bg-[#ececec] dark:bg-darkPrimary border border-[#dadada] rounded-tl-xl">
                 <span className="w-1/3 dark:text-white">Tên người nhận</span>
                 <div className="w-2/3 relative h-full">
                   <div className="mt-2 w-full flex items-center gap-2">
@@ -274,7 +274,7 @@ export default function ManageOrders() {
                   <span className="absolute inset-y-0 left-[-5%] w-[1px] bg-[#dadada] h-full"></span>
                 </div>
               </div>
-              <div className="col-span-1 flex items-center h-14 px-2 bg-[#ececec] dark:bg-darkBorder border border-[#dadada] rounded-tr-xl">
+              <div className="col-span-1 flex items-center h-14 px-2 bg-[#ececec] dark:bg-darkPrimary border border-[#dadada] rounded-tr-xl">
                 <span className="w-1/3 dark:text-white">Địa chỉ người nhận</span>
                 <div className="w-2/3 relative h-full">
                   <div className="mt-2 w-full flex items-center gap-2">
@@ -290,7 +290,7 @@ export default function ManageOrders() {
                   <span className="absolute inset-y-0 left-[-5%] w-[1px] bg-[#dadada] h-full"></span>
                 </div>
               </div>
-              <div className="col-span-1 flex items-center h-14 px-2 bg-[#fff] dark:bg-darkBorder border border-[#dadada] border-t-0">
+              <div className="col-span-1 flex items-center h-14 px-2 bg-[#fff] dark:bg-darkPrimary border border-[#dadada] border-t-0">
                 <span className="w-1/3 dark:text-white">Số điện thoại</span>
                 <div className="w-2/3 relative h-full">
                   <div className="mt-2 w-full flex items-center gap-2">
@@ -306,7 +306,7 @@ export default function ManageOrders() {
                   <span className="absolute inset-y-0 left-[-5%] w-[1px] bg-[#dadada] h-full"></span>
                 </div>
               </div>
-              <div className="col-span-1 flex items-center h-14 px-2 bg-[#fff] dark:bg-darkBorder border border-[#dadada] border-t-0">
+              <div className="col-span-1 flex items-center h-14 px-2 bg-[#fff] dark:bg-darkPrimary border border-[#dadada] border-t-0">
                 <span className="w-1/3 dark:text-white">Trạng thái</span>
                 <div className="w-2/3 relative h-full">
                   <Controller
@@ -339,7 +339,7 @@ export default function ManageOrders() {
                   <span className="absolute inset-y-0 left-[-5%] w-[1px] bg-[#dadada] h-full"></span>
                 </div>
               </div>
-              <div className="col-span-1 flex items-center h-14 px-2 bg-[#ececec] dark:bg-darkBorder border border-[#dadada] border-t-0 rounded-bl-xl">
+              <div className="col-span-1 flex items-center h-14 px-2 bg-[#ececec] dark:bg-darkPrimary border border-[#dadada] border-t-0 rounded-bl-xl">
                 <span className="w-1/3 dark:text-white">Ngày tạo</span>
                 <div className="w-2/3 relative h-full">
                   <div className="mt-2 w-full flex items-center gap-2">
@@ -379,15 +379,36 @@ export default function ManageOrders() {
                 </div>
               </div>
             </div>
-            <div className="flex justify-between mt-4">
+
+            <div className="flex items-center justify-end gap-2 mb-2">
+              <Button
+                onClick={handleResetFormSearch}
+                type="button"
+                icon={<RotateCcw size={15} />}
+                nameButton="Xóa bộ lọc"
+                classNameButton="py-2 px-3 bg-[#f2f2f2] border border-[#dedede] w-full text-black font-medium hover:bg-[#dedede]/80 rounded-3xl duration-200 text-[13px] flex items-center gap-1 h-[35px]"
+              />
+              <Button
+                type="submit"
+                icon={<Search size={15} />}
+                nameButton="Tìm kiếm"
+                classNameButton="py-2 px-3 bg-blue-500 w-full text-white font-medium rounded-3xl hover:bg-blue-500/80 duration-200 text-[13px] flex items-center gap-1 h-[35px]"
+                className="flex-shrink-0"
+              />
+            </div>
+          </form>
+        </section>
+      )
+    },
+    {
+      key: "2",
+      label: <h2 className="text-[16px] font-semibold tracking-wide text-black dark:text-white">Danh sách Đơn hàng</h2>,
+      children: (
+        <section className="bg-white dark:bg-darkPrimary mb-3 dark:border-darkBorder rounded-2xl">
+          {isLoading && <Skeleton />}
+          {!isFetching && (
+            <div>
               <div className="flex items-center gap-2">
-                <Link
-                  to={path.AddReceipt}
-                  className="py-2 px-3 bg-blue-500 w-full text-white font-medium rounded-3xl hover:bg-blue-500/80 duration-200 text-[13px] flex items-center gap-1"
-                >
-                  <Plus size={15} />
-                  <span>Thêm mới</span>
-                </Link>
                 <Button
                   onClick={() => downloadExcel(listOrder)}
                   icon={<FolderUp size={15} />}
@@ -405,36 +426,7 @@ export default function ManageOrders() {
                   ]}
                 />
               </div>
-              <div className="flex items-center gap-2">
-                <Button
-                  onClick={handleResetFormSearch}
-                  type="button"
-                  icon={<RotateCcw size={15} />}
-                  nameButton="Xóa bộ lọc"
-                  classNameButton="py-2 px-3 bg-[#f2f2f2] border border-[#dedede] w-full text-black font-medium hover:bg-[#dedede]/80 rounded-3xl duration-200 text-[13px] flex items-center gap-1 h-[35px]"
-                />
-                <Button
-                  type="submit"
-                  icon={<Search size={15} />}
-                  nameButton="Tìm kiếm"
-                  classNameButton="py-2 px-3 bg-blue-500 w-full text-white font-medium rounded-3xl hover:bg-blue-500/80 duration-200 text-[13px] flex items-center gap-1 h-[35px]"
-                  className="flex-shrink-0"
-                />
-              </div>
-            </div>
-          </form>
-        </section>
-      )
-    },
-    {
-      key: "2",
-      label: <h2 className="text-[16px] font-semibold tracking-wide text-black dark:text-white">Danh sách Đơn hàng</h2>,
-      children: (
-        <section className="bg-white dark:bg-darkPrimary mb-3 dark:border-darkBorder rounded-2xl">
-          {isLoading && <Skeleton />}
-          {!isFetching && (
-            <div>
-              <div>
+              <div className="mt-2">
                 <div className="bg-[#f2f2f2] dark:bg-darkPrimary grid grid-cols-12 items-center gap-2 py-3 border border-[#dedede] dark:border-darkBorder px-4 rounded-tl-xl rounded-tr-xl">
                   <div className="col-span-1 text-[14px] font-semibold tracking-wider uppercase sticky top-0 left-0 text-black dark:text-white">
                     Mã đơn hàng
@@ -684,17 +676,15 @@ export default function ManageOrders() {
                                     )
                                   })}
                                 </div>
-                                <div className="mt-2 text-red-500 text-base font-semibold">
+                                <div className="mt-2 text-[15px]">
+                                  Tạm tính : {formatCurrency((order?.subTotal as number) || 0)} đ
+                                </div>
+                                <div className="text-[15px]">
+                                  Phí vận chuyển: {formatCurrency((order?.shipping_fee as number) || 0)} đ
+                                </div>
+                                <div className="text-red-500 text-base font-semibold">
                                   Tổng tiền: {formatCurrency((order?.totalAmount as number) || 0)} đ
                                 </div>
-                              </div>
-                              <div className="flex items-center justify-start">
-                                <Button
-                                  type="submit"
-                                  icon={<ArrowUpFromLine size={18} />}
-                                  nameButton="Cập nhật"
-                                  classNameButton="w-[120px] p-4 py-2 bg-blue-500 mt-2 w-full text-white font-semibold rounded-3xl hover:bg-blue-500/80 duration-200 flex items-center gap-1"
-                                />
                               </div>
                             </div>
                             <div className="w-1/3">
@@ -713,6 +703,14 @@ export default function ManageOrders() {
                                 />
                               </div>
                             </div>
+                          </div>
+                          <div className="flex items-center justify-end mr-2 mb-2">
+                            <Button
+                              type="submit"
+                              icon={<ArrowUpFromLine size={18} />}
+                              nameButton="Cập nhật"
+                              classNameButton="w-[120px] p-4 py-2 bg-blue-500 mt-2 w-full text-white font-semibold rounded-3xl hover:bg-blue-500/80 duration-200 flex items-center gap-1"
+                            />
                           </div>
                         </div>
                       </form>

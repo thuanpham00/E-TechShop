@@ -359,5 +359,15 @@ export const adminAPI = {
         type
       })
     }
+  },
+
+  employees: {
+    // lấy danh sách nhân viên (nhân viên bán hàng, thủ kho, ..)
+    getStaffs: (params: queryParamConfigCustomer, signal: AbortSignal) => {
+      return Http.get("/admin/staffs", {
+        params,
+        signal
+      })
+    }
   }
 }
