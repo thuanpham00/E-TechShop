@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { yupResolver } from "@hookform/resolvers/yup"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { AnimatePresence, motion } from "framer-motion"
@@ -12,8 +13,8 @@ import { isError400 } from "src/Helpers/utils"
 import { ErrorResponse, MessageResponse } from "src/Types/utils.type"
 
 interface Props {
-  setAddItem: React.Dispatch<React.SetStateAction<boolean>>
-  addItem: boolean
+  setAddItem: React.Dispatch<any>
+  addItem: any
   categoryId: string | undefined
 }
 
@@ -41,7 +42,7 @@ export default function AddBrand({ setAddItem, addItem, categoryId }: Props) {
       {
         onSuccess: () => {
           toast.success("Thêm thương hiệu thành công", { autoClose: 1500 })
-          setAddItem(false)
+          setAddItem(null)
           queryClient.invalidateQueries({ queryKey: ["listBrand"] }) // validate mọi trang liên quan -> sẽ gọi lại api
         },
         onError: (error) => {
@@ -72,7 +73,7 @@ export default function AddBrand({ setAddItem, addItem, categoryId }: Props) {
             exit={{ opacity: 0, scale: 0.8 }}
             className="relative"
           >
-            <button onClick={() => setAddItem(false)} className="absolute right-2 top-1">
+            <button onClick={() => setAddItem(null)} className="absolute right-2 top-1">
               <X color="gray" size={22} />
             </button>
             <form onSubmit={handleAddBrandSubmit} className="bg-white dark:bg-darkPrimary rounded-md">

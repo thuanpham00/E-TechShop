@@ -23,15 +23,11 @@ export default function SupplyItem({
 }: {
   item: SupplyItemType
   onDelete: (id: string) => void
-  handleEditItem: (id: string) => void
+  handleEditItem: (item: SupplyItemType) => void
   maxIndex: number
   index: number
 }) {
   const { copiedId, handleCopyText } = useCopyText()
-
-  const handleEditSupplierItem = (id: string) => {
-    handleEditItem(id)
-  }
 
   return (
     <div
@@ -51,7 +47,7 @@ export default function SupplyItem({
       <div className="col-span-1 break-words text-black dark:text-white">{convertDateTime(item.created_at)}</div>
       <div className="col-span-1 break-words text-black dark:text-white">{convertDateTime(item.updated_at)}</div>
       <div className="col-span-1 flex items-center justify-center gap-2">
-        <button onClick={() => handleEditSupplierItem(item._id)}>
+        <button onClick={() => handleEditItem(item)}>
           <Pencil color="orange" size={18} />
         </button>
         <AlertDialog>

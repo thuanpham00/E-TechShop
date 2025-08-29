@@ -14,7 +14,7 @@ export default function OrderItem({
   item: OrderItemType
   maxIndex: number
   index: number
-  handleEditItem: (id: string) => void
+  handleEditItem: (item: OrderItemType) => void
 }) {
   const { copiedId, handleCopyText } = useCopyText()
   const status = item.status
@@ -37,10 +37,6 @@ export default function OrderItem({
       break
     default:
       color = "default"
-  }
-
-  const handleEditCustomerItem = (id: string) => {
-    handleEditItem(id)
   }
 
   const countProductBuy = useMemo(() => {
@@ -81,7 +77,7 @@ export default function OrderItem({
         </div>
         <div className="col-span-1 text-black dark:text-white">{convertDateTime(item.created_at)}</div>
         <div className="col-span-1 flex items-center justify-center gap-2">
-          <button onClick={() => handleEditCustomerItem(item._id)}>
+          <button onClick={() => handleEditItem(item)}>
             <Pencil color="orange" size={18} />
           </button>
         </div>

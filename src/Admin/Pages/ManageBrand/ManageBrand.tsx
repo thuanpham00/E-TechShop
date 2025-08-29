@@ -12,7 +12,7 @@ import useQueryParams from "src/Hook/useQueryParams"
 import { isUndefined, omit, omitBy } from "lodash"
 import { queryParamConfigBrand } from "src/Types/queryParams.type"
 import { path } from "src/Constants/path"
-import { useCallback, useEffect, useState } from "react"
+import { useEffect, useState } from "react"
 import { yupResolver } from "@hookform/resolvers/yup"
 import { cleanObject, convertDateTime } from "src/Helpers/common"
 import { toast } from "react-toastify"
@@ -103,26 +103,7 @@ export default function ManageBrand() {
   const listTotalProduct = result?.result?.listTotalProduct
   const page_size = Math.ceil(Number(result?.result.total) / Number(result?.result.limit))
 
-  const [idBrand, setIdBrand] = useState<string | null>(null)
-
-  const handleEditItem = useCallback((id: string) => {
-    setIdBrand(id)
-  }, [])
-
-  const handleExitsEditItem = () => {
-    setIdBrand(null)
-  }
-
-  const getInfoBrand = useQuery({
-    queryKey: ["category", idBrand],
-    queryFn: () => {
-      return adminAPI.category.getBrandDetail(idBrand as string)
-    },
-    enabled: Boolean(idBrand) // chỉ chạy khi idCustomer có giá trị
-  })
-
-  const infoCategory = getInfoBrand.data?.data as SuccessResponse<{ result: BrandItemType }>
-  const brand = infoCategory?.result?.result
+  const [addItem, setAddItem] = useState<boolean | BrandItemType | null>(null)
 
   const {
     register,
@@ -141,13 +122,13 @@ export default function ManageBrand() {
   })
 
   useEffect(() => {
-    if (brand) {
-      setValue("id", brand._id)
-      setValue("name", brand.name)
-      setValue("created_at", convertDateTime(brand.created_at))
-      setValue("updated_at", convertDateTime(brand.updated_at))
+    if (addItem !== null && typeof addItem === "object") {
+      setValue("id", addItem._id)
+      setValue("name", addItem.name)
+      setValue("created_at", convertDateTime(addItem.created_at))
+      setValue("updated_at", convertDateTime(addItem.updated_at))
     }
-  }, [brand, setValue])
+  }, [addItem, setValue])
 
   const updateCategoryMutation = useMutation({
     mutationFn: (body: { id: string; body: UpdateCategoryBodyReq }) => {
@@ -157,10 +138,10 @@ export default function ManageBrand() {
 
   const handleSubmitUpdate = handleSubmit((data) => {
     updateCategoryMutation.mutate(
-      { id: idBrand as string, body: data },
+      { id: (addItem as BrandItemType)._id as string, body: data },
       {
         onSuccess: () => {
-          setIdBrand(null)
+          setAddItem(null)
           toast.success("Cập nhật thành công", { autoClose: 1500 })
           queryClient.invalidateQueries({ queryKey: ["listBrand", queryConfig] })
         },
@@ -283,8 +264,6 @@ export default function ManageBrand() {
     )
   }
 
-  const [addItem, setAddItem] = useState(false)
-
   // xử lý sort ds
   const handleChangeSortListOrder = (value: string) => {
     const body = {
@@ -302,7 +281,7 @@ export default function ManageBrand() {
       key: "1",
       label: <h1 className="text-[16px] font-semibold tracking-wide text-black dark:text-white">Bộ lọc & Tìm kiếm</h1>,
       children: (
-        <div className="bg-white dark:bg-darkPrimary mb-3 dark:border-darkBorder rounded-2xl">
+        <section className="bg-white dark:bg-darkPrimary mb-3 dark:border-darkBorder rounded-2xl">
           <form onSubmit={handleSubmitSearch}>
             <div className="mt-1 grid grid-cols-2">
               <div className="col-span-1 flex items-center h-14 px-2 bg-[#ececec] dark:bg-darkPrimary border border-[#dadada] rounded-tl-xl">
@@ -417,14 +396,14 @@ export default function ManageBrand() {
               />
             </div>
           </form>
-        </div>
+        </section>
       )
     },
     {
       key: "2",
       label: <h2 className="text-[16px] font-semibold tracking-wide text-black dark:text-white">Danh sách Danh mục</h2>,
       children: (
-        <div className="bg-white dark:bg-darkPrimary mb-3 dark:border-darkBorder rounded-2xl">
+        <section className="bg-white dark:bg-darkPrimary mb-3 dark:border-darkBorder rounded-2xl">
           {isLoading && <Skeleton />}
           {!isFetching && (
             <div>
@@ -489,7 +468,7 @@ export default function ManageBrand() {
                         <BrandItem
                           onDelete={handleDeleteBrand}
                           listTotalProduct={listTotalProduct}
-                          handleEditItem={handleEditItem}
+                          handleEditItem={() => setAddItem(item)}
                           item={item}
                           nameCategory={state}
                           maxIndex={listBrandOfCategory?.length}
@@ -512,7 +491,7 @@ export default function ManageBrand() {
               />
 
               <AnimatePresence>
-                {idBrand && (
+                {addItem !== null && typeof addItem === "object" && (
                   <motion.div
                     initial={{ opacity: 0 }} // khởi tạo là 0
                     animate={{ opacity: 1 }} // xuất hiện dần là 1
@@ -525,7 +504,7 @@ export default function ManageBrand() {
                       exit={{ opacity: 0, scale: 0.8 }}
                       className="relative"
                     >
-                      <button onClick={handleExitsEditItem} className="absolute right-2 top-2">
+                      <button onClick={() => setAddItem(null)} className="absolute right-2 top-2">
                         <X color="gray" size={22} />
                       </button>
                       <form onSubmit={handleSubmitUpdate} className="bg-white dark:bg-darkPrimary rounded-md">
@@ -598,7 +577,7 @@ export default function ManageBrand() {
               <AddBrand setAddItem={setAddItem} addItem={addItem} categoryId={id} />
             </div>
           )}
-        </div>
+        </section>
       )
     }
   ]

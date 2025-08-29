@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { yupResolver } from "@hookform/resolvers/yup"
 import { keepPreviousData, useMutation, useQuery } from "@tanstack/react-query"
 import { ArrowUpFromLine, X } from "lucide-react"
@@ -42,26 +43,17 @@ const formDataUpdate = schemaSupplyUpdate.pick([
 ])
 
 export default function SupplyDetail({
-  idSupply,
-  setIdSupply,
+  addItem,
+  setAddItem,
   queryConfig
 }: {
-  idSupply: string | null
-  setIdSupply: React.Dispatch<React.SetStateAction<string | null>>
+  addItem: any
+  setAddItem: React.Dispatch<any>
   queryConfig: queryParamConfigSupply
 }) {
   const [inputValueProduct, setInputValueProduct] = useState("")
 
-  const getInfoSupply = useQuery({
-    queryKey: ["supplier", idSupply],
-    queryFn: () => {
-      return adminAPI.supply.getSupplyDetail(idSupply as string)
-    },
-    enabled: Boolean(idSupply) // chỉ chạy khi idCustomer có giá trị
-  })
-
-  const infoCategory = getInfoSupply.data?.data as SuccessResponse<{ result: SupplyItemType[] }>
-  const profile = infoCategory?.result?.result[0]
+  console.log(addItem)
 
   const {
     register,
@@ -84,18 +76,18 @@ export default function SupplyDetail({
   })
 
   useEffect(() => {
-    if (profile) {
-      setValue("id", profile._id)
-      setValue("productId", profile.productId[0].name)
-      setValue("supplierId", profile.supplierId[0].name)
-      setValue("importPrice", profile.importPrice)
-      setValue("warrantyMonths", profile.warrantyMonths)
-      setValue("leadTimeDays", profile.leadTimeDays)
-      setValue("description", profile.description as string)
-      setValue("created_at", convertDateTime(profile.created_at))
-      setValue("updated_at", convertDateTime(profile.updated_at))
+    if (addItem !== null && typeof addItem === "object") {
+      setValue("id", addItem._id)
+      setValue("productId", addItem.productId[0].name)
+      setValue("supplierId", addItem.supplierId[0].name)
+      setValue("importPrice", addItem.importPrice)
+      setValue("warrantyMonths", addItem.warrantyMonths)
+      setValue("leadTimeDays", addItem.leadTimeDays)
+      setValue("description", addItem.description as string)
+      setValue("created_at", convertDateTime(addItem.created_at))
+      setValue("updated_at", convertDateTime(addItem.updated_at))
     }
-  }, [profile, setValue])
+  }, [addItem, setValue])
 
   const updateCategoryMutation = useMutation({
     mutationFn: (body: { id: string; body: UpdateSupplyBodyReq }) => {
@@ -105,20 +97,16 @@ export default function SupplyDetail({
 
   const handleSubmitUpdate = handleSubmit((data) => {
     updateCategoryMutation.mutate(
-      { id: idSupply as string, body: data },
+      { id: (addItem as SupplyItemType)._id as string, body: data },
       {
         onSuccess: () => {
-          setIdSupply(null)
+          setAddItem(null)
           toast.success("Cập nhật thành công", { autoClose: 1500 })
           queryClient.invalidateQueries({ queryKey: ["listSupply", queryConfig] })
         }
       }
     )
   })
-
-  const handleExitsEditItem = () => {
-    setIdSupply(null)
-  }
 
   const getNameProducts = useQuery({
     queryKey: ["nameProduct"],
@@ -135,13 +123,13 @@ export default function SupplyDetail({
   const listNameProductResult = listNameProduct?.result.result
 
   const getNameSuppliersBasedOnNameProduct = useQuery({
-    queryKey: ["nameSupplierBasedOnNameProduct", profile?.productId[0]?.name],
+    queryKey: ["nameSupplierBasedOnNameProduct_Detail", addItem?.productId[0]?.name],
     queryFn: () => {
-      return adminAPI.supplier.getNameSuppliersNotLinkedToProduct(profile?.productId[0]?.name || inputValueProduct)
+      return adminAPI.supplier.getNameSuppliersNotLinkedToProduct(addItem?.productId[0]?.name || inputValueProduct)
     },
     retry: 0,
     placeholderData: keepPreviousData,
-    enabled: !!profile?.productId[0]?.name
+    enabled: !!addItem?.productId[0]?.name
   })
   const listNameSupplierFilter = getNameSuppliersBasedOnNameProduct.data?.data as SuccessResponse<{
     result: string[]
@@ -153,7 +141,7 @@ export default function SupplyDetail({
 
   return (
     <AnimatePresence>
-      {idSupply !== null && (
+      {addItem !== null && typeof addItem === "object" && (
         <motion.div
           initial={{ opacity: 0 }} // khởi tạo là 0
           animate={{ opacity: 1 }} // xuất hiện dần là 1
@@ -166,7 +154,7 @@ export default function SupplyDetail({
             exit={{ opacity: 0, scale: 0.8 }}
             className="relative"
           >
-            <button onClick={handleExitsEditItem} className="absolute right-2 top-2">
+            <button onClick={() => setAddItem(null)} className="absolute right-2 top-2">
               <X color="gray" size={22} />
             </button>
             <form onSubmit={handleSubmitUpdate} className="bg-white dark:bg-darkPrimary rounded-md w-[700px]">

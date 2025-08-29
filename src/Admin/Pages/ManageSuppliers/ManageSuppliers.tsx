@@ -15,7 +15,7 @@ import { adminAPI } from "src/Apis/admin.api"
 import { SupplierItemType, UpdateSupplierBodyReq } from "src/Types/product.type"
 import { HttpStatusCode } from "src/Constants/httpStatus"
 import Button from "src/Components/Button"
-import { useCallback, useEffect, useState } from "react"
+import { useEffect, useState } from "react"
 import { ArrowUpFromLine, ArrowUpNarrowWide, FolderUp, Plus, RotateCcw, Search, X } from "lucide-react"
 import { toast } from "react-toastify"
 import { yupResolver } from "@hookform/resolvers/yup"
@@ -139,27 +139,8 @@ export default function ManageSuppliers() {
 
   const page_size = Math.ceil(Number(result?.result.total) / Number(result?.result.limit))
 
-  const [idSupplier, setIdSupplier] = useState<string | null>(null)
-
-  const handleEditItem = useCallback((id: string) => {
-    setIdSupplier(id)
-  }, [])
-
-  const handleExitsEditItem = () => {
-    setIdSupplier(null)
-  }
-
-  const getInfoSupplier = useQuery({
-    queryKey: ["supplier", idSupplier],
-    queryFn: () => {
-      return adminAPI.supplier.getSupplierDetail(idSupplier as string)
-    },
-    enabled: Boolean(idSupplier) // chỉ chạy khi idCustomer có giá trị
-  })
-
-  const infoCategory = getInfoSupplier.data?.data as SuccessResponse<{ result: SupplierItemType }>
-
-  const profile = infoCategory?.result?.result
+  // xử lý gọi api chi tiết
+  const [addItem, setAddItem] = useState<boolean | SupplierItemType | null>(null)
 
   const {
     register,
@@ -184,19 +165,19 @@ export default function ManageSuppliers() {
   })
 
   useEffect(() => {
-    if (profile) {
-      setValue("id", profile._id)
-      setValue("name", profile.name)
-      setValue("contactName", profile.contactName)
-      setValue("email", profile.email)
-      setValue("address", profile.address as string)
-      setValue("phone", profile.phone)
-      setValue("description", profile.description as string)
-      setValue("taxCode", profile.taxCode as string)
-      setValue("created_at", convertDateTime(profile.created_at))
-      setValue("updated_at", convertDateTime(profile.updated_at))
+    if (addItem !== null && typeof addItem === "object") {
+      setValue("id", addItem._id)
+      setValue("name", addItem.name)
+      setValue("contactName", addItem.contactName)
+      setValue("email", addItem.email)
+      setValue("address", addItem.address as string)
+      setValue("phone", addItem.phone)
+      setValue("description", addItem.description as string)
+      setValue("taxCode", addItem.taxCode as string)
+      setValue("created_at", convertDateTime(addItem.created_at))
+      setValue("updated_at", convertDateTime(addItem.updated_at))
     }
-  }, [profile, setValue])
+  }, [addItem, setValue])
 
   const updateCategoryMutation = useMutation({
     mutationFn: (body: { id: string; body: UpdateSupplierBodyReq }) => {
@@ -206,10 +187,10 @@ export default function ManageSuppliers() {
 
   const handleSubmitUpdate = handleSubmit((data) => {
     updateCategoryMutation.mutate(
-      { id: idSupplier as string, body: data },
+      { id: (addItem as SupplierItemType)._id as string, body: data },
       {
         onSuccess: () => {
-          setIdSupplier(null)
+          setAddItem(null)
           toast.success("Cập nhật thành công", { autoClose: 1500 })
           queryClient.invalidateQueries({ queryKey: ["listSupplier", queryConfig] })
         },
@@ -325,8 +306,6 @@ export default function ManageSuppliers() {
     resetFormSearch()
     navigate({ pathname: path.AdminSuppliers, search: createSearchParams(filteredSearch).toString() })
   }
-
-  const [addItem, setAddItem] = useState(false)
 
   // xử lý sort ds
   const handleChangeSortListOrder = (value: string) => {
@@ -590,7 +569,7 @@ export default function ManageSuppliers() {
                         >
                           <SupplierItem
                             onDelete={handleDeleteSupplier}
-                            handleEditItem={handleEditItem}
+                            handleEditItem={() => setAddItem(item)}
                             item={item}
                             maxIndex={listSupplier?.length}
                             index={index}
@@ -612,7 +591,7 @@ export default function ManageSuppliers() {
                 />
 
                 <AnimatePresence>
-                  {idSupplier && (
+                  {addItem !== null && typeof addItem === "object" && (
                     <motion.div
                       initial={{ opacity: 0 }} // khởi tạo là 0
                       animate={{ opacity: 1 }} // xuất hiện dần là 1
@@ -625,7 +604,7 @@ export default function ManageSuppliers() {
                         exit={{ opacity: 0, scale: 0.8 }}
                         className="relative"
                       >
-                        <button onClick={handleExitsEditItem} className="absolute right-2 top-2">
+                        <button onClick={() => setAddItem(null)} className="absolute right-2 top-2">
                           <X color="gray" size={22} />
                         </button>
                         <form

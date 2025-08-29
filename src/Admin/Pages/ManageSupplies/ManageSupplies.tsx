@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { keepPreviousData, useMutation, useQuery } from "@tanstack/react-query"
 import { isUndefined, omit, omitBy } from "lodash"
-import { useCallback, useEffect, useState } from "react"
+import { useEffect, useState } from "react"
 import { Helmet } from "react-helmet-async"
 import { createSearchParams, useNavigate } from "react-router-dom"
 import NavigateBack from "src/Admin/Components/NavigateBack"
@@ -94,12 +94,6 @@ export default function ManageSupplies() {
   }>
   const listSupplier = result?.result?.result
   const page_size = Math.ceil(Number(result?.result.total) / Number(result?.result.limit))
-
-  const [idSupply, setIdSupply] = useState<string | null>(null)
-
-  const handleEditItem = useCallback((id: string) => {
-    setIdSupply(id)
-  }, [])
 
   // xử lý tìm kiếm
   const getNameProducts = useQuery({
@@ -221,7 +215,7 @@ export default function ManageSupplies() {
     })
   }
 
-  const [addItem, setAddItem] = useState(false)
+  const [addItem, setAddItem] = useState<null | SupplyItemType | boolean>(null)
 
   // xử lý sort ds
   const handleChangeSortListOrder = (value: string) => {
@@ -449,7 +443,7 @@ export default function ManageSupplies() {
                         >
                           <SupplyItem
                             onDelete={handleDeleteSupply}
-                            handleEditItem={handleEditItem}
+                            handleEditItem={() => setAddItem(item)}
                             item={item}
                             maxIndex={listSupplier?.length}
                             index={index}
@@ -470,7 +464,9 @@ export default function ManageSupplies() {
                   pathNavigate={path.AdminSupplies}
                 />
 
-                <SupplyDetail idSupply={idSupply} setIdSupply={setIdSupply} queryConfig={queryConfig} />
+                {addItem !== null && typeof addItem === "object" && (
+                  <SupplyDetail addItem={addItem} setAddItem={setAddItem} queryConfig={queryConfig} />
+                )}
 
                 <AddSupply setAddItem={setAddItem} addItem={addItem} />
               </div>

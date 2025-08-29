@@ -11,7 +11,7 @@ import useQueryParams from "src/Hook/useQueryParams"
 import { queryParamConfig, queryParamConfigCustomer } from "src/Types/queryParams.type"
 import { UserType } from "src/Types/user.type"
 import { ErrorResponse, SuccessResponse } from "src/Types/utils.type"
-import { useCallback, useEffect, useMemo, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import avatarDefault from "src/Assets/img/avatarDefault.png"
 import { UpdateBodyReq } from "src/Types/product.type"
 import { toast } from "react-toastify"
@@ -132,23 +132,8 @@ export default function ManageCustomers() {
   const page_size = Math.ceil(Number(result?.result.total) / Number(result?.result.limit))
 
   // xử lý gọi api chi tiết
-  const [idCustomer, setIdCustomer] = useState<string | null>(null)
-  const handleEditItem = useCallback((id: string) => {
-    setIdCustomer(id)
-  }, [])
-  const handleExitsEditItem = () => {
-    setIdCustomer(null)
-  }
+  const [addItem, setAddItem] = useState<boolean | UserType | null>(null)
 
-  const getCustomerDetail = useQuery({
-    queryKey: ["customer", idCustomer],
-    queryFn: () => {
-      return adminAPI.customer.getCustomerDetail(idCustomer as string)
-    },
-    enabled: Boolean(idCustomer) // chỉ chạy khi idCustomer có giá trị
-  })
-  const infoUser = getCustomerDetail.data?.data as SuccessResponse<{ result: UserType }>
-  const profile = infoUser?.result?.result
   // console.log(idCustomer)
   // vì sao nó render 2 lần
   // lần 1 là component lần đầu mount (chạy console lần 1 + useQuery)
@@ -180,22 +165,22 @@ export default function ManageCustomers() {
   // sau khi query idCustomer thì chạy useEffect
   // set value vào form
   useEffect(() => {
-    if (profile) {
-      if (profile.avatar === "") {
+    if (addItem !== null && typeof addItem === "object") {
+      if (addItem.avatar === "") {
         setValue("avatar", avatarDefault)
       } else {
-        setValue("avatar", profile.avatar)
+        setValue("avatar", addItem.avatar)
       }
-      setValue("id", profile._id)
-      setValue("name", profile.name)
-      setValue("email", profile.email)
-      setValue("numberPhone", profile.numberPhone)
-      setValue("verify", profile.verify)
-      setValue("date_of_birth", new Date(profile.date_of_birth))
-      setValue("created_at", convertDateTime(profile.created_at))
-      setValue("updated_at", convertDateTime(profile.updated_at))
+      setValue("id", addItem._id)
+      setValue("name", addItem.name)
+      setValue("email", addItem.email)
+      setValue("numberPhone", addItem.numberPhone)
+      setValue("verify", addItem.verify)
+      setValue("date_of_birth", new Date(addItem.date_of_birth))
+      setValue("created_at", convertDateTime(addItem.created_at))
+      setValue("updated_at", convertDateTime(addItem.updated_at))
     }
-  }, [profile, setValue])
+  }, [addItem, setValue])
 
   const [file, setFile] = useState<File>()
 
@@ -229,7 +214,7 @@ export default function ManageCustomers() {
       if (file) {
         const avatar = await updateImageProfileMutation.mutateAsync({
           file: file as File,
-          userId: idCustomer as string
+          userId: (addItem as UserType)._id as string
         })
         avatarName = avatar.data.result.url
       }
@@ -248,12 +233,12 @@ export default function ManageCustomers() {
             ...updatedData,
             numberPhone: data.numberPhone !== undefined ? data.numberPhone : undefined
           },
-          id: idCustomer as string
+          id: (addItem as UserType)._id as string
         },
         {
           onSuccess: () => {
             toast.success("Cập nhật thành công!", { autoClose: 1500 })
-            setIdCustomer(null)
+            setAddItem(null)
             queryClient.invalidateQueries({ queryKey: ["listCustomer", queryConfig] })
           },
           onError: (error) => {
@@ -381,8 +366,6 @@ export default function ManageCustomers() {
     })
     navigate({ pathname: path.AdminCustomers, search: createSearchParams(filteredSearch).toString() })
   }
-
-  const [addItem, setAddItem] = useState(false)
 
   // xử lý sort ds
   const handleChangeSortListOrder = (value: string) => {
@@ -650,7 +633,7 @@ export default function ManageCustomers() {
                         >
                           <CustomerItem
                             onDelete={handleDeleteCustomer}
-                            handleEditItem={handleEditItem}
+                            handleEditItem={(item) => setAddItem(item)}
                             item={item}
                             maxIndex={listCustomer?.length}
                             index={index}
@@ -672,7 +655,7 @@ export default function ManageCustomers() {
                 />
 
                 <AnimatePresence>
-                  {idCustomer !== null && (
+                  {addItem !== null && typeof addItem === "object" && (
                     <motion.div
                       initial={{ opacity: 0 }} // khởi tạo là 0
                       animate={{ opacity: 1 }} // xuất hiện dần là 1
@@ -685,7 +668,7 @@ export default function ManageCustomers() {
                         exit={{ opacity: 0, scale: 0.8 }}
                         className="relative"
                       >
-                        <button onClick={handleExitsEditItem} className="absolute right-2 top-2">
+                        <button onClick={() => setAddItem(null)} className="absolute right-2 top-2">
                           <X color="gray" size={22} />
                         </button>
                         <form
@@ -746,7 +729,7 @@ export default function ManageCustomers() {
                                     nameInput="Trạng thái"
                                     classNameLabel="text-black dark:text-white"
                                     disabled
-                                    value={profile?.verify === 1 ? "Verified" : "Unverified"}
+                                    value={addItem?.verify === 1 ? "Verified" : "Unverified"}
                                   />
                                 </div>
                                 <div className="col-span-6">

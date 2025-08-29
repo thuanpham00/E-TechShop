@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Helmet } from "react-helmet-async"
 import NavigateBack from "src/Admin/Components/NavigateBack"
 import { ArrowUpFromLine, ArrowUpNarrowWide, FolderUp, RotateCcw, Search, X } from "lucide-react"
@@ -16,7 +17,7 @@ import { OrderItemType } from "src/Types/product.type"
 import Skeleton from "src/Components/Skeleton"
 import Pagination from "src/Components/Pagination"
 import OrderItem from "./Components/OrderItem"
-import { useCallback, useEffect, useState } from "react"
+import { useEffect, useState } from "react"
 import { Collapse, CollapseProps, Empty, Select, Steps } from "antd"
 import "./ManageOrders.css"
 import { Controller, useForm } from "react-hook-form"
@@ -120,26 +121,8 @@ export default function ManageOrders() {
     })
   }
 
-  const [idOrder, setIdOrder] = useState<string | null>(null)
-
-  const handleEditItem = useCallback((id: string) => {
-    setIdOrder(id)
-  }, [])
-
-  const handleExitsEditItem = () => {
-    setIdOrder(null)
-  }
-
-  const getInfoOrder = useQuery({
-    queryKey: ["orderDetail", idOrder],
-    queryFn: () => {
-      return adminAPI.order.getOrderDetail(idOrder as string)
-    },
-    enabled: Boolean(idOrder)
-  })
-
-  const infoOrder = getInfoOrder.data?.data as SuccessResponse<OrderItemType>
-  const order = infoOrder?.result
+  // xử lý gọi api chi tiết
+  const [addItem, setAddItem] = useState<boolean | OrderItemType | null>(null)
 
   const {
     register,
@@ -166,17 +149,17 @@ export default function ManageOrders() {
   })
 
   useEffect(() => {
-    if (order) {
-      setValue("id", order._id)
-      setValue("customer_info.name", order.customer_info.name)
-      setValue("customer_info.address", order.customer_info.address)
-      setValue("customer_info.phone", order.customer_info.phone)
-      setValue("totalAmount", order.totalAmount)
-      setValue("status", order.status)
-      setValue("created_at", convertDateTime(order.created_at))
-      setValue("updated_at", convertDateTime(order.updated_at))
+    if (addItem !== null && typeof addItem === "object") {
+      setValue("id", addItem._id)
+      setValue("customer_info.name", addItem.customer_info.name)
+      setValue("customer_info.address", addItem.customer_info.address)
+      setValue("customer_info.phone", addItem.customer_info.phone)
+      setValue("totalAmount", addItem.totalAmount)
+      setValue("status", addItem.status)
+      setValue("created_at", convertDateTime(addItem.created_at))
+      setValue("updated_at", convertDateTime(addItem.updated_at))
     }
-  }, [order, setValue])
+  }, [addItem, setValue])
 
   const updateStatusOrderMutation = useMutation({
     mutationFn: (body: { id: string; status: string }) => {
@@ -189,7 +172,7 @@ export default function ManageOrders() {
       { id: data.id as string, status: data.status as string },
       {
         onSuccess: (res) => {
-          setIdOrder(null)
+          setAddItem(null)
           toast.success(res.data.message, { autoClose: 1500 })
           queryClient.invalidateQueries({ queryKey: ["listOrder", queryConfig] })
         }
@@ -466,7 +449,7 @@ export default function ManageOrders() {
                         transition={{ delay: index * 0.1 }}
                       >
                         <OrderItem
-                          handleEditItem={handleEditItem}
+                          handleEditItem={() => setAddItem(item)}
                           item={item}
                           maxIndex={listOrder?.length}
                           index={index}
@@ -488,7 +471,7 @@ export default function ManageOrders() {
               />
 
               <AnimatePresence>
-                {idOrder && (
+                {addItem !== null && typeof addItem === "object" && (
                   <motion.div
                     initial={{ opacity: 0 }} // khởi tạo là 0
                     animate={{ opacity: 1 }} // xuất hiện dần là 1
@@ -501,7 +484,7 @@ export default function ManageOrders() {
                       exit={{ opacity: 0, scale: 0.8 }}
                       className="relative"
                     >
-                      <button onClick={handleExitsEditItem} className="absolute z-30 right-3 top-2">
+                      <button onClick={() => setAddItem(null)} className="absolute z-30 right-3 top-2">
                         <X color="gray" size={22} />
                       </button>
                       <form
@@ -622,10 +605,10 @@ export default function ManageOrders() {
                               </div>
                               <div className="mt-2">
                                 <div className="text-lg text-center font-semibold mb-2 tracking-wide text-black dark:text-white">
-                                  Danh sách sản phẩm ({order?.products.length})
+                                  Danh sách sản phẩm ({addItem?.products.length})
                                 </div>
                                 <div className="space-y-3">
-                                  {order?.products.map((item) => {
+                                  {addItem?.products.map((item) => {
                                     return (
                                       <div
                                         key={item.product_id}
@@ -677,13 +660,13 @@ export default function ManageOrders() {
                                   })}
                                 </div>
                                 <div className="mt-2 text-[15px]">
-                                  Tạm tính : {formatCurrency((order?.subTotal as number) || 0)} đ
+                                  Tạm tính : {formatCurrency((addItem?.subTotal as number) || 0)} đ
                                 </div>
                                 <div className="text-[15px]">
-                                  Phí vận chuyển: {formatCurrency((order?.shipping_fee as number) || 0)} đ
+                                  Phí vận chuyển: {formatCurrency((addItem?.shipping_fee as number) || 0)} đ
                                 </div>
                                 <div className="text-red-500 text-base font-semibold">
-                                  Tổng tiền: {formatCurrency((order?.totalAmount as number) || 0)} đ
+                                  Tổng tiền: {formatCurrency((addItem?.totalAmount as number) || 0)} đ
                                 </div>
                               </div>
                             </div>
@@ -694,9 +677,9 @@ export default function ManageOrders() {
                               <div className="ml-2">
                                 <Steps
                                   progressDot
-                                  current={order?.status_history.length}
+                                  current={addItem?.status_history.length}
                                   direction="vertical"
-                                  items={order?.status_history.map((item) => ({
+                                  items={addItem?.status_history.map((item) => ({
                                     title: item.status,
                                     description: convertDateTime(item.updated_at)
                                   }))}

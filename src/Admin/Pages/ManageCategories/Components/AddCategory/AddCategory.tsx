@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { yupResolver } from "@hookform/resolvers/yup"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { Plus, X } from "lucide-react"
@@ -12,8 +13,8 @@ import { ErrorResponse, MessageResponse } from "src/Types/utils.type"
 import { motion, AnimatePresence } from "framer-motion"
 
 interface Props {
-  setAddItem: React.Dispatch<React.SetStateAction<boolean>>
-  addItem: boolean
+  setAddItem: React.Dispatch<any>
+  addItem: any
 }
 
 type FormData = Pick<SchemaAuthType, "name">
@@ -38,7 +39,7 @@ export default function AddCategory({ setAddItem, addItem }: Props) {
     addCategoryMutation.mutate(data, {
       onSuccess: () => {
         toast.success("Thêm danh mục thành công", { autoClose: 1500 })
-        setAddItem(false)
+        setAddItem(null)
         queryClient.invalidateQueries({ queryKey: ["listCategory"] }) // validate mọi trang liên quan -> sẽ gọi lại api
       },
       onError: (error) => {
@@ -68,7 +69,7 @@ export default function AddCategory({ setAddItem, addItem }: Props) {
             exit={{ opacity: 0, scale: 0.8 }}
             className="relative"
           >
-            <button onClick={() => setAddItem(false)} className="absolute right-2 top-2">
+            <button onClick={() => setAddItem(null)} className="absolute right-2 top-2">
               <X color="gray" size={22} />
             </button>
             <form onSubmit={handleAddCategorySubmit} className="bg-white dark:bg-darkPrimary rounded-md">

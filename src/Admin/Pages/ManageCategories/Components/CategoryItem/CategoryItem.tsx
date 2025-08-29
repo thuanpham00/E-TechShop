@@ -25,16 +25,12 @@ export default function CategoryItem({
 }: {
   item: CategoryItemType
   onDelete: (id: string) => void
-  handleEditItem: (id: string) => void
+  handleEditItem: (item: CategoryItemType) => void
   maxIndex: number
   index: number
 }) {
   const navigate = useNavigate()
   const { copiedId, handleCopyText } = useCopyText()
-
-  const handleEditCustomerItem = (id: string) => {
-    handleEditItem(id)
-  }
 
   const handleNavigateCategoryDetail = (id: string, nameCategory: string) => {
     navigate(`${path.AdminCategories}/${id}`, {
@@ -57,7 +53,7 @@ export default function CategoryItem({
       <div className="col-span-2 break-words text-black dark:text-white">{convertDateTime(item.created_at)}</div>
       <div className="col-span-2 break-words text-black dark:text-white">{convertDateTime(item.updated_at)}</div>
       <div className="col-span-2 flex items-center justify-center gap-2">
-        <button onClick={() => handleEditCustomerItem(item._id)}>
+        <button onClick={() => handleEditItem(item)}>
           <Pencil color="orange" size={18} />
         </button>
         <AlertDialog>

@@ -10,8 +10,8 @@ import useQueryParams from "src/Hook/useQueryParams"
 import { queryParamConfigCategory } from "src/Types/queryParams.type"
 import { ErrorResponse, MessageResponse, SuccessResponse } from "src/Types/utils.type"
 import { path } from "src/Constants/path"
-import { useCallback, useEffect, useState } from "react"
-import { BrandItemType, CategoryItemType, UpdateCategoryBodyReq } from "src/Types/product.type"
+import { useEffect, useState } from "react"
+import { CategoryItemType, UpdateCategoryBodyReq } from "src/Types/product.type"
 import { isUndefined, omit, omitBy } from "lodash"
 import { cleanObject, convertDateTime } from "src/Helpers/common"
 import { toast } from "react-toastify"
@@ -98,26 +98,8 @@ export default function ManageCategories() {
 
   const page_size = Math.ceil(Number(result?.result.total) / Number(result?.result.limit))
 
-  const [idCategory, setIdCategory] = useState<string | null>(null)
-
-  const handleEditItem = useCallback((id: string) => {
-    setIdCategory(id)
-  }, [])
-
-  const handleExitsEditItem = () => {
-    setIdCategory(null)
-  }
-
-  const getInfoCategory = useQuery({
-    queryKey: ["category", idCategory],
-    queryFn: () => {
-      return adminAPI.category.getCategoryDetail(idCategory as string)
-    },
-    enabled: Boolean(idCategory) // chỉ chạy khi idCustomer có giá trị
-  })
-
-  const infoCategory = getInfoCategory.data?.data as SuccessResponse<{ result: BrandItemType }>
-  const profile = infoCategory?.result?.result
+  // xử lý gọi api chi tiết
+  const [addItem, setAddItem] = useState<boolean | CategoryItemType | null>(null)
 
   const {
     register,
@@ -136,13 +118,13 @@ export default function ManageCategories() {
   })
 
   useEffect(() => {
-    if (profile) {
-      setValue("id", profile._id)
-      setValue("name", profile.name)
-      setValue("created_at", convertDateTime(profile.created_at))
-      setValue("updated_at", convertDateTime(profile.updated_at))
+    if (addItem !== null && typeof addItem === "object") {
+      setValue("id", addItem._id)
+      setValue("name", addItem.name)
+      setValue("created_at", convertDateTime(addItem.created_at))
+      setValue("updated_at", convertDateTime(addItem.updated_at))
     }
-  }, [profile, setValue])
+  }, [addItem, setValue])
 
   const updateCategoryMutation = useMutation({
     mutationFn: (body: { id: string; body: UpdateCategoryBodyReq }) => {
@@ -152,10 +134,10 @@ export default function ManageCategories() {
 
   const handleSubmitUpdate = handleSubmit((data) => {
     updateCategoryMutation.mutate(
-      { id: idCategory as string, body: data },
+      { id: (addItem as CategoryItemType)._id as string, body: data },
       {
         onSuccess: () => {
-          setIdCategory(null)
+          setAddItem(null)
           toast.success("Cập nhật thành công", { autoClose: 1500 })
           queryClient.invalidateQueries({ queryKey: ["listCategory", queryConfig] })
         },
@@ -260,8 +242,6 @@ export default function ManageCategories() {
     resetFormSearch()
     navigate({ pathname: path.AdminCategories, search: createSearchParams(filteredSearch).toString() })
   }
-
-  const [addItem, setAddItem] = useState(false)
 
   // xử lý sort ds
   const handleChangeSortListOrder = (value: string) => {
@@ -464,7 +444,7 @@ export default function ManageCategories() {
                       >
                         <CategoryItem
                           onDelete={handleDeleteCategory}
-                          handleEditItem={handleEditItem}
+                          handleEditItem={() => setAddItem(item)}
                           item={item}
                           maxIndex={listCategory?.length}
                           index={index}
@@ -486,7 +466,7 @@ export default function ManageCategories() {
               />
 
               <AnimatePresence>
-                {idCategory && (
+                {addItem !== null && typeof addItem === "object" && (
                   <motion.div
                     initial={{ opacity: 0 }} // khởi tạo là 0
                     animate={{ opacity: 1 }} // xuất hiện dần là 1
@@ -499,7 +479,7 @@ export default function ManageCategories() {
                       exit={{ opacity: 0, scale: 0.8 }}
                       className="relative"
                     >
-                      <button onClick={handleExitsEditItem} className="absolute right-2 top-2">
+                      <button onClick={() => setAddItem(null)} className="absolute right-2 top-2">
                         <X color="gray" size={22} />
                       </button>
                       <form onSubmit={handleSubmitUpdate} className="bg-white dark:bg-darkPrimary rounded-md">

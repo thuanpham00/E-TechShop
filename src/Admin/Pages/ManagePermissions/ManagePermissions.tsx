@@ -209,23 +209,23 @@ export default function ManagePermissions() {
 }
 
 /**
-  hiện tại gom được 47 quyền - admin có đủ 47 quyền - và các api (quyền nhỏ) bỏ qua chỉ lấy api lớn - ví dụ api lấy giá bán bỏ qua vì cần có quyền tạo cung ứng sản phẩm trước rồi mới pass qua quyền này mới vào api trong được -> lấy những cái api chính (xử lý chính)
+  hiện tại gom được 41 quyền - admin có đủ 41 quyền - và các api (quyền nhỏ) bỏ qua chỉ lấy api lớn - ví dụ api lấy giá bán bỏ qua vì cần có quyền tạo cung ứng sản phẩm trước rồi mới pass qua quyền này mới vào api trong được -> lấy những cái api chính (xử lý chính)
 
   còn coi bổ sung thêm các quyền bên users
 
   sau đó thêm role 
 
 Product: 2
-Customer: 5
-Category: 5
-Brand: 5
-Supplier: 5
-Supply: 5
+Customer: 4
+Category: 4
+Brand: 4
+Supplier: 4
+Supply: 4
 Receipt: 2
-order: 3
+order: 2
 Statistical: 3
 email: 2
 chat: 2
 role & permissions: 7
 employees : 1
- */
+*/

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { yupResolver } from "@hookform/resolvers/yup"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { AnimatePresence, motion } from "framer-motion"
@@ -20,8 +21,8 @@ import { ErrorResponse } from "src/Types/utils.type"
 import { roles } from "src/Helpers/role_permission"
 
 interface Props {
-  setAddItem: React.Dispatch<React.SetStateAction<boolean>>
-  addItem: boolean
+  setAddItem: React.Dispatch<any>
+  addItem: any
 }
 
 const formDataAdd = schemaAuth.pick([
@@ -107,7 +108,7 @@ export default function AddCustomer({ setAddItem, addItem }: Props) {
     addCustomerMutation.mutate(body, {
       onSuccess: () => {
         toast.success("Thêm người dùng thành công", { autoClose: 1500 })
-        setAddItem(false)
+        setAddItem(null)
         queryClient.invalidateQueries({ queryKey: ["listCustomer"] }) // validate mọi trang liên quan -> sẽ gọi lại api
       },
       onError: (error) => {
@@ -139,7 +140,7 @@ export default function AddCustomer({ setAddItem, addItem }: Props) {
             exit={{ opacity: 0, scale: 0.8 }}
             className="relative"
           >
-            <button onClick={() => setAddItem(false)} className="absolute right-2 top-2">
+            <button onClick={() => setAddItem(null)} className="absolute right-2 top-2">
               <X color="gray" size={22} />
             </button>
             <form onSubmit={handleAddCustomerSubmit} className="bg-white dark:bg-darkPrimary rounded-xl w-[900px]">

@@ -58,11 +58,6 @@ export const adminAPI = {
       })
     },
 
-    // lấy chi tiết khách hàng
-    getCustomerDetail: (id: string) => {
-      return Http.get(`/admin/customers/${id}`)
-    },
-
     // cập nhật khách hàng
     updateProfileCustomer: (id: string, body: UpdateBodyReq) => {
       return Http.put(`/admin/customers/${id}`, body)
@@ -92,11 +87,6 @@ export const adminAPI = {
       return Http.get("/admin/name-categories")
     },
 
-    // lấy chi tiết danh mục
-    getCategoryDetail: (id: string) => {
-      return Http.get(`/admin/categories/${id}`)
-    },
-
     // cập nhật danh mục
     updateCategoryDetail: (id: string, body: UpdateCategoryBodyReq) => {
       return Http.put(`/admin/categories/${id}`, body)
@@ -118,11 +108,6 @@ export const adminAPI = {
         params,
         signal
       })
-    },
-
-    // lấy chi tiết thương hiệu
-    getBrandDetail: (id: string) => {
-      return Http.get(`/admin/brands/${id}`)
     },
 
     getNameBrand: () => {
@@ -196,11 +181,6 @@ export const adminAPI = {
       })
     },
 
-    // lấy chi tiết nhà cung cấp
-    getSupplierDetail: (id: string) => {
-      return Http.get(`/admin/suppliers/${id}`)
-    },
-
     // lấy danh sách tên nhà cung cấp de lọc
     getNameSuppliers: () => {
       return Http.get(`/admin/name-suppliers`)
@@ -257,11 +237,6 @@ export const adminAPI = {
       return Http.get(`/admin/supplies/price-product`, { params })
     },
 
-    // lấy chi tiết cung ứng
-    getSupplyDetail: (id: string) => {
-      return Http.get(`/admin/supplies/${id}`)
-    },
-
     createSupply: (body: {
       productId: string
       supplierId: string
@@ -311,10 +286,6 @@ export const adminAPI = {
         params,
         signal
       })
-    },
-
-    getOrderDetail: (idOrder: string) => {
-      return Http.get(`/admin/orders/${idOrder}`)
     },
 
     updateOrderStatus: (idOrder: string, status: string) => {

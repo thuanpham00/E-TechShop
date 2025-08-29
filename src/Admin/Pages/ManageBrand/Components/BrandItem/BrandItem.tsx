@@ -29,7 +29,7 @@ export default function BrandItem({
   item: BrandItemType
   nameCategory: any
   onDelete: (id: string) => void
-  handleEditItem: (id: string) => void
+  handleEditItem: (item: BrandItemType) => void
   listTotalProduct: {
     brand: string
     total: string
@@ -39,10 +39,6 @@ export default function BrandItem({
 }) {
   const navigate = useNavigate()
   const { copiedId, handleCopyText } = useCopyText()
-
-  const handleEditCustomerItem = (id: string) => {
-    handleEditItem(id)
-  }
 
   const handleNavigateProductList = (nameBrand: string, nameCategory: string) => {
     navigate(`${path.AdminProducts}?brand=${nameBrand}&category=${nameCategory}`)
@@ -64,7 +60,7 @@ export default function BrandItem({
       <div className="col-span-2 break-words text-black dark:text-white">{convertDateTime(item.updated_at)}</div>
       <div className="col-span-2">
         <div className="flex-1 flex justify-center items-center gap-1">
-          <button onClick={() => handleEditCustomerItem(item._id)}>
+          <button onClick={() => handleEditItem(item)}>
             <Pencil color="orange" size={18} />
           </button>
           <AlertDialog>

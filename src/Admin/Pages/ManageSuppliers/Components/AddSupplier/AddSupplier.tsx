@@ -13,8 +13,8 @@ import { isError422 } from "src/Helpers/utils"
 import { ErrorResponse } from "src/Types/utils.type"
 
 interface Props {
-  setAddItem: React.Dispatch<React.SetStateAction<boolean>>
-  addItem: boolean
+  setAddItem: React.Dispatch<any>
+  addItem: any
 }
 
 type FormData = Pick<
@@ -58,7 +58,7 @@ export default function AddSupplier({ setAddItem, addItem }: Props) {
     addSupplierMutation.mutate(data, {
       onSuccess: () => {
         toast.success("Thêm nhà cung cấp thành công", { autoClose: 1500 })
-        setAddItem(false)
+        setAddItem(null)
         queryClient.invalidateQueries({ queryKey: ["listSupplier"] }) // validate mọi trang liên quan -> sẽ gọi lại api
       },
       onError: (error) => {
@@ -99,7 +99,7 @@ export default function AddSupplier({ setAddItem, addItem }: Props) {
             exit={{ opacity: 0, scale: 0.8 }}
             className="relative"
           >
-            <button onClick={() => setAddItem(false)} className="absolute right-2 top-2">
+            <button onClick={() => setAddItem(null)} className="absolute right-2 top-2">
               <X color="gray" size={22} />
             </button>
             <form onSubmit={handleAddSupplierSubmit} className="bg-white dark:bg-darkPrimary rounded-md w-[900px]">

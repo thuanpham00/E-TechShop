@@ -14,10 +14,11 @@ import { ErrorResponse, SuccessResponse } from "src/Types/utils.type"
 import DropdownList from "../DropdownList"
 import { AnimatePresence, motion } from "framer-motion"
 import { formatCurrency } from "src/Helpers/common"
+import { SupplyItemType } from "src/Types/product.type"
 
 interface Props {
-  setAddItem: React.Dispatch<React.SetStateAction<boolean>>
-  addItem: boolean
+  setAddItem: React.Dispatch<React.SetStateAction<boolean | SupplyItemType | null>>
+  addItem: boolean | SupplyItemType | null
 }
 
 type FormData = Pick<
@@ -59,11 +60,10 @@ export default function AddSupply({ setAddItem, addItem }: Props) {
 
   const handleAddSupplySubmit = handleSubmit(
     (data) => {
-      console.log(data)
       addSupplyMutation.mutate(data, {
         onSuccess: () => {
           toast.success("Thêm liên kết cung ứng thành công", { autoClose: 1500 })
-          setAddItem(false)
+          setAddItem(null)
           queryClient.invalidateQueries({ queryKey: ["listSupply"] }) // validate mọi trang liên quan -> sẽ gọi lại api
         },
         onError: (error) => {
@@ -101,7 +101,7 @@ export default function AddSupply({ setAddItem, addItem }: Props) {
   const listNameProductResult = listNameProduct?.result.result
 
   const getNameSuppliersBasedOnNameProduct = useQuery({
-    queryKey: ["nameSupplierBasedOnNameProduct", inputValueProduct],
+    queryKey: ["nameSupplierBasedOnNameProduct_Add", inputValueProduct],
     queryFn: () => {
       return adminAPI.supplier.getNameSuppliersNotLinkedToProduct(inputValueProduct)
     },
@@ -139,7 +139,7 @@ export default function AddSupply({ setAddItem, addItem }: Props) {
             exit={{ opacity: 0, scale: 0.8 }}
             className="relative"
           >
-            <button onClick={() => setAddItem(false)} className="absolute right-2 top-2">
+            <button onClick={() => setAddItem(null)} className="absolute right-2 top-2">
               <X color="gray" size={22} />
             </button>
             <form

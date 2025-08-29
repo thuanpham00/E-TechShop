@@ -22,16 +22,12 @@ export default function CustomerItem({
   index
 }: {
   item: UserType
-  handleEditItem: (id: string) => void
+  handleEditItem: (item: UserType) => void
   onDelete: (id: string) => void
   maxIndex: number
   index: number
 }) {
   const { copiedId, handleCopyText } = useCopyText()
-
-  const handleEditCustomerItem = (id: string) => {
-    handleEditItem(id)
-  }
 
   return (
     <div
@@ -61,7 +57,7 @@ export default function CustomerItem({
       <div className="col-span-1 text-black dark:text-white">{convertDateTime(item.created_at)}</div>
       <div className="col-span-1 text-black dark:text-white">{convertDateTime(item.updated_at)}</div>
       <div className="col-span-1 flex items-center justify-center gap-2">
-        <button onClick={() => handleEditCustomerItem(item._id)}>
+        <button onClick={() => handleEditItem(item)}>
           <Pencil color="orange" size={18} />
         </button>
         <AlertDialog>

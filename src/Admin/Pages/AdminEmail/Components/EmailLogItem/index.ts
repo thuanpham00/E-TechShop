@@ -1,3 +1,3 @@
-import BrandItem from "./BrandItem"
+import EmailLogItem from "./EmailLogItem"
 
-export default BrandItem
+export default EmailLogItem
