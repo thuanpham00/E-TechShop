@@ -10,7 +10,7 @@ import { useLocation } from "react-router-dom"
 import { AppContext } from "src/Context/authContext"
 import { toast } from "react-toastify"
 
-interface PermissionType {
+export interface PermissionType {
   _id: string
   name: string
   code: string
@@ -87,7 +87,7 @@ export default function ManagePermissions() {
           path: item.api_endpoints?.path
         }
       }))
-      const rolePermissionsKeys = listPermissionsRoleId.map((item) => item._id)
+      const rolePermissionsKeys = listPermissionsRoleId?.map((item) => item._id)
       setMockData(allPermissions) // cột trái
       setTargetKeys(rolePermissionsKeys) // cột phải
       // nó kiểm tra setTargetKeys gồm những _id nào trong đó và nó sẽ loại bỏ chọn ở setMockData

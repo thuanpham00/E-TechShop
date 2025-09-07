@@ -27,9 +27,10 @@ import {
 } from "src/Components/ui/alert-dialog"
 import { Pencil, Trash2 } from "lucide-react"
 
-interface Role {
+export interface Role {
   _id: string
   name: string
+  key: string
   description: string
   permissions: string[]
 }
@@ -40,7 +41,7 @@ export default function ManageRoles() {
   const { userId } = useContext(AppContext)
   const navigate = useNavigate()
   const { data, isError, error } = useQuery({
-    queryKey: ["listRoles", userId],
+    queryKey: ["listRole", userId],
     queryFn: () => {
       const controller = new AbortController()
       setTimeout(() => {
@@ -181,9 +182,12 @@ export default function ManageRoles() {
       <h1 className="text-2xl font-bold text-gray-800 bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600 my-2">
         Vai trò hệ thống
       </h1>
-      <div className="flex justify-end">
+      <div className="flex justify-end gap-2">
         <Button onClick={() => setAddItem(true)} type="primary">
           Thêm vai trò
+        </Button>
+        <Button onClick={() => navigate("/admin/permission_2")} type="primary" danger>
+          Phân quyền hệ thống
         </Button>
       </div>
       <div className="mt-4">

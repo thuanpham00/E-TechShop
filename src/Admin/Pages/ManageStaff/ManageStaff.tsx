@@ -27,6 +27,7 @@ import { HttpStatusCode } from "src/Constants/httpStatus"
 import { Helmet } from "react-helmet-async"
 import NavigateBack from "src/Admin/Components/NavigateBack"
 import AddStaff from "./Components/AddStaff/AddStaff"
+import { AnimatePresence } from "framer-motion"
 
 // const formDataUpdate = schemaAuth.pick([
 //   "id",
@@ -68,8 +69,9 @@ type FormDataSearch = Pick<
   | "updated_at_end"
 >
 
-export default function ManageEmployees() {
+export default function ManageStaff() {
   const { theme } = useTheme()
+
   const isDark = theme === "dark" || theme === "system"
   const { downloadExcel } = useDownloadExcel()
   const navigate = useNavigate()
@@ -93,7 +95,7 @@ export default function ManageEmployees() {
       setTimeout(() => {
         controller.abort() // hủy request khi chờ quá lâu // 10 giây sau cho nó hủy // làm tự động
       }, 10000)
-      return adminAPI.employees.getStaffs(queryConfig as queryParamConfigCustomer, controller.signal)
+      return adminAPI.staff.getStaffs(queryConfig as queryParamConfigCustomer, controller.signal)
     },
     retry: 0, // số lần retry lại khi hủy request (dùng abort signal)
     staleTime: 3 * 60 * 1000, // dưới 3 phút nó không gọi lại api
@@ -348,46 +350,20 @@ export default function ManageEmployees() {
                 </div>
               </div>
             </div>
-            <div className="flex justify-between mt-4">
-              <div className="flex items-center gap-2">
-                <Button
-                  onClick={() => setAddItem(true)}
-                  icon={<Plus size={15} />}
-                  nameButton="Thêm mới"
-                  classNameButton="py-2 px-3 bg-blue-500 w-full text-white font-medium rounded-3xl hover:bg-blue-500/80 duration-200 text-[13px] flex items-center gap-1"
-                />
-                <Button
-                  onClick={() => downloadExcel(listStaffs)}
-                  icon={<FolderUp size={15} />}
-                  nameButton="Export"
-                  classNameButton="py-2 px-3 border border-[#E2E7FF] bg-[#E2E7FF] w-full text-[#3A5BFF] font-medium rounded-3xl hover:bg-blue-500/40 duration-200 text-[13px] flex items-center gap-1"
-                />
-                <Select
-                  defaultValue="Mới nhất"
-                  className="select-sort"
-                  onChange={handleChangeSortListOrder}
-                  suffixIcon={<ArrowUpNarrowWide color={isDark ? "white" : "black"} />}
-                  options={[
-                    { value: "old", label: "Cũ nhất" },
-                    { value: "new", label: "Mới nhất" }
-                  ]}
-                />
-              </div>
-              <div className="flex gap-2">
-                <Button
-                  onClick={handleResetFormSearch}
-                  type="button"
-                  icon={<RotateCcw size={15} />}
-                  nameButton="Xóa bộ lọc"
-                  classNameButton="py-2 px-3 bg-[#f2f2f2] border border-[#dedede] w-full text-black font-medium hover:bg-[#dedede]/80 rounded-3xl duration-200 text-[13px] flex items-center gap-1 h-[35px]"
-                />
-                <Button
-                  type="submit"
-                  icon={<Search size={15} />}
-                  nameButton="Tìm kiếm"
-                  classNameButton="py-2 px-3 bg-blue-500 w-full text-white font-medium hover:bg-blue-500/80 rounded-3xl duration-200 text-[13px] flex items-center gap-1 h-[35px]"
-                />
-              </div>
+            <div className="flex justify-end gap-2 mt-4">
+              <Button
+                onClick={handleResetFormSearch}
+                type="button"
+                icon={<RotateCcw size={15} />}
+                nameButton="Xóa bộ lọc"
+                classNameButton="py-2 px-3 bg-[#f2f2f2] border border-[#dedede] w-full text-black font-medium hover:bg-[#dedede]/80 rounded-3xl duration-200 text-[13px] flex items-center gap-1 h-[35px]"
+              />
+              <Button
+                type="submit"
+                icon={<Search size={15} />}
+                nameButton="Tìm kiếm"
+                classNameButton="py-2 px-3 bg-blue-500 w-full text-white font-medium hover:bg-blue-500/80 rounded-3xl duration-200 text-[13px] flex items-center gap-1 h-[35px]"
+              />
             </div>
           </form>
         </section>
@@ -406,6 +382,34 @@ export default function ManageEmployees() {
             {isLoading && <Skeleton />}
             {!isFetching && (
               <div>
+                <div className="flex items-center justify-between mb-2">
+                  <div className="flex items-center gap-2">
+                    <Button
+                      onClick={() => downloadExcel(listStaffs)}
+                      icon={<FolderUp size={15} />}
+                      nameButton="Export"
+                      classNameButton="py-2 px-3 border border-[#E2E7FF] bg-[#E2E7FF] w-full text-[#3A5BFF] font-medium rounded-3xl hover:bg-blue-500/40 duration-200 text-[13px] flex items-center gap-1"
+                    />
+                    <Select
+                      defaultValue="Mới nhất"
+                      className="select-sort"
+                      onChange={handleChangeSortListOrder}
+                      suffixIcon={<ArrowUpNarrowWide color={isDark ? "white" : "black"} />}
+                      options={[
+                        { value: "old", label: "Cũ nhất" },
+                        { value: "new", label: "Mới nhất" }
+                      ]}
+                    />
+                  </div>
+                  <div>
+                    <Button
+                      onClick={() => setAddItem(true)}
+                      icon={<Plus size={15} />}
+                      nameButton="Thêm mới"
+                      classNameButton="py-2 px-3 bg-blue-500 w-full text-white font-medium rounded-3xl hover:bg-blue-500/80 duration-200 text-[13px] flex items-center gap-1"
+                    />
+                  </div>
+                </div>
                 <div>
                   <div className="bg-[#f2f2f2] dark:bg-darkPrimary grid grid-cols-12 items-center gap-2 py-3 border border-[#dedede] dark:border-darkBorder px-4 rounded-tl-xl rounded-tr-xl">
                     <div className="col-span-2 text-[14px] font-semibold tracking-wider uppercase text-black dark:text-white">
@@ -465,7 +469,7 @@ export default function ManageEmployees() {
                   pathNavigate={path.AdminEmployees}
                 />
 
-                <AddStaff setAddItem={setAddItem} addItem={addItem} />
+                <AnimatePresence>{addItem === true && <AddStaff setAddItem={setAddItem} />}</AnimatePresence>
               </div>
             )}
           </div>

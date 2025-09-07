@@ -304,7 +304,7 @@ export default function Sidebar() {
               overflowY: "auto",
               overflowX: "hidden"
             }}
-            defaultOpenKeys={["sub1"]}
+            defaultOpenKeys={["sub1", "sub2", "sub3"]}
             className="bg-white dark:bg-darkPrimary"
             items={items}
           />

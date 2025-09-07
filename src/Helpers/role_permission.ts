@@ -5,6 +5,13 @@ export const roles = {
   CUSTOMER: "Customer" // khách hàng, người dùng cuối
 }
 
+export const rolesForApi = {
+  ADMIN: "ADMIN", // quản trị viên cấp cao, có toàn quyền
+  SALES_STAFF: "SALES_STAFF", // nhân viên bán hàng (bao gồm thu ngân)
+  INVENTORY_STAFF: "INVENTORY_STAFF", // nhân viên kho
+  CUSTOMER: "CUSTOMER" // khách hàng, người dùng cuối
+}
+
 export const permissions = {
   VIEW_DASHBOARD: "view_dashboard",
   VIEW_CUSTOMER: "view_customer",

@@ -26,6 +26,15 @@ export const schemaAuth = yup
     verify: yup.number(),
 
     id: yup.string(),
+    department: yup.string().required("Phòng ban bắt buộc!"),
+    contract_type: yup.string().required("Loại hợp đồng bắt buộc!"),
+    status: yup.string().required("Trạng thái bắt buộc!"),
+    hire_date: yup.date().min(new Date(new Date().setHours(0, 0, 0, 0)), "Hãy chọn ngày từ hôm nay trở đi!"),
+    salary: yup
+      .number()
+      .typeError("Lương phải là số!") // nếu nhập ký tự chữ hoặc không phải số
+      .required("Lương bắt buộc!")
+      .min(0, "Lương không được nhỏ hơn 0"),
     created_at: yup.string(),
     updated_at: yup.string(),
 
@@ -78,7 +87,8 @@ export const schemaAuth = yup
       }
     }),
 
-    role: yup.string()
+    role: yup.string(),
+    roleInStaff: yup.string().required("Vị trí làm việc bắt buộc")
   })
   .required()
 

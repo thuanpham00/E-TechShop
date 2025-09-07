@@ -4,6 +4,7 @@ import {
   CreateCustomerBodyReq,
   CreateProductBodyReq,
   CreateReceiptBodyReq,
+  CreateStaffBodyReq,
   UpdateBodyReq,
   UpdateCategoryBodyReq,
   UpdateSupplierBodyReq,
@@ -318,10 +319,14 @@ export const adminAPI = {
       })
     },
 
-    getPermissionsBasedOnId: (idRole: string, signal: AbortSignal) => {
-      return Http.get(`/admin/permissions/${idRole}`, {
-        signal
-      })
+    getPermissionsBasedOnId: (idRoles: string[], signal: AbortSignal) => {
+      return Http.post(
+        `/admin/permissions/by-roles`,
+        {
+          listIdRole: idRoles
+        },
+        { signal }
+      )
     },
 
     updatePermissionsBasedOnId: (idRole: string, listPermissions: Key[], type: string) => {
@@ -332,13 +337,17 @@ export const adminAPI = {
     }
   },
 
-  employees: {
+  staff: {
     // lấy danh sách nhân viên (nhân viên bán hàng, thủ kho, ..)
     getStaffs: (params: queryParamConfigCustomer, signal: AbortSignal) => {
       return Http.get("/admin/staffs", {
         params,
         signal
       })
+    },
+
+    createStaff: (body: CreateStaffBodyReq) => {
+      return Http.post("/admin/staffs", body)
     }
   }
 }

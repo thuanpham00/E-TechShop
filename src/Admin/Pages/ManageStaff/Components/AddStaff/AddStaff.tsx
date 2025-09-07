@@ -1,9 +1,8 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { yupResolver } from "@hookform/resolvers/yup"
-import { useMutation, useQueryClient } from "@tanstack/react-query"
+import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { motion } from "framer-motion"
 import { Plus, X } from "lucide-react"
-import React, { useEffect, useMemo, useState } from "react"
+import React, { useContext, useEffect, useMemo, useState } from "react"
 import { Controller, useForm } from "react-hook-form"
 import { toast } from "react-toastify"
 import { adminAPI } from "src/Apis/admin.api"
@@ -12,16 +11,19 @@ import Button from "src/Components/Button"
 import DateSelect from "src/Components/DateSelect"
 import Input from "src/Components/Input"
 import InputFileImage from "src/Components/InputFileImage"
-import { CreateCustomerBodyReq } from "src/Types/product.type"
+import { CreateStaffBodyReq } from "src/Types/product.type"
 import avatarDefault from "src/Assets/img/avatarDefault.png"
 import { MediaAPI } from "src/Apis/media.api"
 import { ObjectId } from "bson"
 import { isError422 } from "src/Helpers/utils"
-import { ErrorResponse } from "src/Types/utils.type"
-import { rolesForApi } from "src/Helpers/role_permission"
+import { ErrorResponse, SuccessResponse } from "src/Types/utils.type"
+import { roles } from "src/Helpers/role_permission"
+import { Select } from "antd"
+import { AppContext } from "src/Context/authContext"
+import { Role } from "src/Admin/Pages/ManageRoles/ManageRoles"
 
 interface Props {
-  setAddItem: React.Dispatch<any>
+  setAddItem: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 const formDataAdd = schemaAuth.pick([
@@ -33,16 +35,54 @@ const formDataAdd = schemaAuth.pick([
   "password",
   "confirm_password",
   "id",
-  "role"
+  "roleInStaff",
+  "contract_type",
+  "status",
+  "hire_date",
+  "salary"
 ])
 
 type FormDataAdd = Pick<
   SchemaAuthType,
-  "name" | "email" | "phone" | "date_of_birth" | "avatar" | "password" | "confirm_password" | "id" | "role"
+  | "name"
+  | "email"
+  | "phone"
+  | "date_of_birth"
+  | "avatar"
+  | "password"
+  | "confirm_password"
+  | "id"
+  | "roleInStaff"
+  | "contract_type"
+  | "status"
+  | "hire_date"
+  | "salary"
 >
 
-export default function AddCustomer({ setAddItem }: Props) {
+export default function AddStaff({ setAddItem }: Props) {
   const queryClient = useQueryClient()
+  const { userId } = useContext(AppContext)
+  const { data: dataRole } = useQuery({
+    queryKey: ["listRoleInStaff", userId],
+    queryFn: () => {
+      const controller = new AbortController()
+      setTimeout(() => {
+        controller.abort() // hủy request khi chờ quá lâu // 10 giây sau cho nó hủy // làm tự động
+      }, 10000)
+      return adminAPI.role.getRoles(controller.signal)
+    },
+    retry: 0, // số lần retry lại khi hủy request (dùng abort signal)
+    staleTime: 1 * 60 * 1000, // dưới 3 phút nó không gọi lại api
+    placeholderData: keepPreviousData
+  })
+
+  const resultDataRole = dataRole?.data as SuccessResponse<{
+    result: Role[]
+  }>
+  const listRole = resultDataRole?.result?.result
+    .filter((item) => item.key !== "ADMIN" && item.key !== "CUSTOMER")
+    .map((item) => ({ idRole: item._id, name: item.name }))
+
   const {
     handleSubmit,
     register,
@@ -53,9 +93,9 @@ export default function AddCustomer({ setAddItem }: Props) {
     formState: { errors }
   } = useForm<FormDataAdd>({ resolver: yupResolver(formDataAdd) })
 
-  const addCustomerMutation = useMutation({
-    mutationFn: (body: CreateCustomerBodyReq) => {
-      return adminAPI.customer.createCustomer(body)
+  const addStaffMutation = useMutation({
+    mutationFn: (body: CreateStaffBodyReq) => {
+      return adminAPI.staff.createStaff(body)
     }
   })
 
@@ -82,7 +122,7 @@ export default function AddCustomer({ setAddItem }: Props) {
   const avatarWatch = watch("avatar")
   const date_of_birth = watch("date_of_birth")
 
-  const handleAddCustomerSubmit = handleSubmit(async (data) => {
+  const handleAddStaffSubmit = handleSubmit(async (data) => {
     const idUser = new ObjectId().toHexString() // Trả về string như "665e0bcb9142f3e54365e1ef"
 
     let avatarName = avatarDefault
@@ -93,7 +133,7 @@ export default function AddCustomer({ setAddItem }: Props) {
       })
       avatarName = avatar.data.result.url
     }
-    const body: CreateCustomerBodyReq = {
+    const body: CreateStaffBodyReq = {
       name: data.name,
       email: data.email,
       password: data.password,
@@ -102,13 +142,13 @@ export default function AddCustomer({ setAddItem }: Props) {
       date_of_birth: data.date_of_birth as Date,
       avatar: avatarName,
       id: idUser.toString(),
-      role: rolesForApi.CUSTOMER // sử dụng key vì name của Role có thể thay đổi còn key là cố định
+      role: roles.CUSTOMER
     }
-    addCustomerMutation.mutate(body, {
+    addStaffMutation.mutate(body, {
       onSuccess: () => {
         toast.success("Thêm người dùng thành công", { autoClose: 1500 })
-        setAddItem(null)
-        queryClient.invalidateQueries({ queryKey: ["listCustomer"] }) // validate mọi trang liên quan -> sẽ gọi lại api
+        setAddItem(false)
+        queryClient.invalidateQueries({ queryKey: ["listStaffs"] })
       },
       onError: (error) => {
         if (isError422<ErrorResponse<FormDataAdd>>(error)) {
@@ -137,16 +177,17 @@ export default function AddCustomer({ setAddItem }: Props) {
         exit={{ opacity: 0, scale: 0.8 }}
         className="relative"
       >
-        <button onClick={() => setAddItem(null)} className="absolute right-2 top-2">
+        <button onClick={() => setAddItem(false)} className="absolute right-2 top-2">
           <X color="gray" size={22} />
         </button>
-        <form onSubmit={handleAddCustomerSubmit} className="bg-white dark:bg-darkPrimary rounded-xl w-[900px]">
+        <form onSubmit={handleAddStaffSubmit} className="bg-white dark:bg-darkPrimary rounded-xl w-[1050px]">
           <h3 className="py-2 px-4 text-lg font-semibold tracking-wide rounded-md text-black dark:text-white">
-            Thông tin khách hàng
+            Thông tin nhân viên
           </h3>
           <div className="p-4 pt-0">
-            <div className="mt-4 flex justify-between gap-16">
-              <div className="grid grid-cols-12 flex-wrap gap-4">
+            <h2 className="text-black dark:text-white">Thông tin cơ bản</h2>
+            <div className="mt-2 flex justify-between">
+              <div className="grid grid-cols-12 flex-wrap gap-4 w-2/3">
                 <div className="col-span-6">
                   <Input
                     name="name"
@@ -175,26 +216,26 @@ export default function AddCustomer({ setAddItem }: Props) {
                   <Input
                     name="password"
                     register={register}
-                    type="password"
                     placeholder="Nhập mật khẩu"
                     messageErrorInput={errors.password?.message}
                     classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-white dark:bg-darkSecond focus:border-blue-500 focus:ring-2 outline-none rounded-md text-black dark:text-white"
                     className="relative flex-1"
                     classNameLabel="text-black dark:text-white"
                     nameInput="Mật khẩu"
+                    type="password"
                   />
                 </div>
                 <div className="col-span-6">
                   <Input
                     name="confirm_password"
                     register={register}
-                    type="password"
                     placeholder="Nhập mật khẩu"
                     messageErrorInput={errors.confirm_password?.message}
                     classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#fff] dark:bg-darkSecond focus:border-blue-500 focus:ring-2 outline-none rounded-md text-black dark:text-white"
                     className="relative flex-1"
                     classNameLabel="text-black dark:text-white"
                     nameInput="Xác nhận mật khẩu"
+                    type="password"
                   />
                 </div>
                 <div className="col-span-6">
@@ -227,7 +268,7 @@ export default function AddCustomer({ setAddItem }: Props) {
                   />
                 </div>
               </div>
-              <div className="text-center">
+              <div className="text-center w-1/3">
                 <div className="mb-2 text-black dark:text-white">Ảnh đại diện</div>
                 <img
                   src={previewImage || avatarWatch}
@@ -235,6 +276,113 @@ export default function AddCustomer({ setAddItem }: Props) {
                   alt="avatar default"
                 />
                 <InputFileImage onChange={handleChangeImage} />
+              </div>
+            </div>
+            <h2 className="text-black dark:text-white">Thông tin làm việc</h2>
+            <div className="mt-2 flex justify-between gap-8">
+              <div className="w-2/3 grid grid-cols-12 flex-wrap gap-4">
+                <div className="col-span-4">
+                  <span className="text-black dark:text-white">Vai trò</span>
+                  <div className="mt-1">
+                    <Controller
+                      name="roleInStaff"
+                      control={control}
+                      render={({ field }) => (
+                        <Select
+                          value={field.value ?? undefined}
+                          onChange={field.onChange}
+                          placeholder="Chọn vị trí"
+                          className="select-status w-full"
+                          options={listRole?.map((role) => ({
+                            value: role.idRole, // truyền _id làm value
+                            label: role.name // hiển thị name
+                          }))}
+                        />
+                      )}
+                    />
+                    <span className="text-red-500 text-[13px] font-semibold min-h-[1.25rem] block">
+                      {errors.roleInStaff?.message}
+                    </span>
+                  </div>
+                </div>
+                <div className="col-span-4">
+                  <span className="text-black dark:text-white">Loại hợp đồng</span>
+                  <div className="mt-1">
+                    <Controller
+                      name="contract_type"
+                      control={control}
+                      render={({ field }) => (
+                        <Select
+                          value={field.value ?? undefined}
+                          onChange={field.onChange}
+                          placeholder="Chọn loại hợp đồng"
+                          className="select-status w-full"
+                          options={[
+                            { value: "permanent", label: "Hợp đồng dài hạn" },
+                            { value: "fixed-term", label: "Hợp đồng xác định thời hạn" },
+                            { value: "probation", label: "Thử việc" }
+                          ]}
+                        />
+                      )}
+                    />
+                    <span className="text-red-500 text-[13px] font-semibold min-h-[1.25rem] block">
+                      {errors.contract_type?.message}
+                    </span>
+                  </div>
+                </div>
+                <div className="col-span-4">
+                  <span className="text-black dark:text-white">Trạng thái tài khoản</span>
+                  <div className="mt-1">
+                    <Controller
+                      name="status"
+                      control={control}
+                      render={({ field }) => (
+                        <Select
+                          value={field.value ?? undefined} // đảm bảo không phải chuỗi rỗng
+                          placeholder="Chọn trạng thái"
+                          onChange={field.onChange}
+                          className="select-status w-full"
+                          options={[
+                            { value: "active", label: "Hoạt động" },
+                            { value: "inactive", label: "Không hoạt động" },
+                            { value: "suspended", label: "Bị tạm dừng" }
+                          ]}
+                        />
+                      )}
+                    />
+                    <span className="text-red-500 text-[13px] font-semibold min-h-[1.25rem] block">
+                      {errors.status?.message}
+                    </span>
+                  </div>
+                </div>
+                <div className="col-span-4">
+                  <Input
+                    name="salary"
+                    register={register}
+                    placeholder="Nhập lương làm việc"
+                    messageErrorInput={errors.salary?.message}
+                    classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-white dark:bg-darkSecond focus:border-blue-500 focus:ring-2 outline-none rounded-md text-black dark:text-white"
+                    className="relative flex-1"
+                    classNameLabel="text-black dark:text-white"
+                    nameInput="Lương"
+                  />
+                </div>
+                <div className="col-span-8">
+                  <Controller
+                    name="hire_date"
+                    control={control}
+                    render={({ field }) => {
+                      return (
+                        <DateSelect
+                          nameInputSelect="Ngày vào làm"
+                          value={field.value}
+                          onChange={field.onChange}
+                          errorMessage={errors.hire_date?.message}
+                        />
+                      )
+                    }}
+                  />
+                </div>
               </div>
             </div>
             <div className="flex items-center justify-end">

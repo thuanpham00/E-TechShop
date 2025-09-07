@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { yupResolver } from "@hookform/resolvers/yup"
 import { keepPreviousData, useQuery } from "@tanstack/react-query"
 import { isUndefined, omit, omitBy } from "lodash"
@@ -29,6 +30,7 @@ import InputNumber from "src/Components/InputNumber"
 import { Collapse, CollapseProps, Empty, Select } from "antd"
 import "../ManageOrders/ManageOrders.css"
 import { useTheme } from "src/Admin/Components/Theme-provider/Theme-provider"
+import { HttpStatusCode } from "src/Constants/httpStatus"
 
 type FormDataSearch = Pick<
   SchemaSupplyType,
@@ -496,10 +498,16 @@ export default function ManageReceipt() {
 
   useEffect(() => {
     if (isError) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      toast.error((error as any).response?.data?.message, { autoClose: 1500 })
+      const message = (error as any).response?.data?.message
+      const status = (error as any)?.response?.status
+      if (message === "Không có quyền truy cập!") {
+        toast.error(message, { autoClose: 1500 })
+      }
+      if (status === HttpStatusCode.NotFound) {
+        navigate(path.AdminNotFound, { replace: true })
+      }
     }
-  }, [isError, error])
+  }, [isError, error, navigate])
 
   return (
     <div>

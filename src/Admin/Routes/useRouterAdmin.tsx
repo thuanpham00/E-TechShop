@@ -4,6 +4,7 @@ import MainLayoutAdmin from "../Layouts/MainLayoutAdmin"
 import MainLayoutAuth from "src/Client/Layout/MainLayoutAuth"
 import { path } from "src/Constants/path"
 import { AppContext } from "src/Context/authContext"
+import Permission from "../Pages/ManagePermissions/Permission"
 
 const Register = lazy(() => import("src/Client/Pages/Register"))
 const Login = lazy(() => import("src/Client/Pages/Login"))
@@ -13,7 +14,7 @@ const ResetPassword = lazy(() => import("src/Client/Pages/ResetPassword"))
 const NotFound = lazy(() => import("src/Client/Pages/NotFound"))
 const Dashboard = lazy(() => import("src/Admin/Pages/Dashboard"))
 const ManageCustomers = lazy(() => import("src/Admin/Pages/ManageCustomers"))
-const ManageEmployees = lazy(() => import("src/Admin/Pages/ManageEmployees"))
+const ManageStaff = lazy(() => import("src/Admin/Pages/ManageStaff"))
 const ManageCategories = lazy(() => import("src/Admin/Pages/ManageCategories"))
 const ManageRoles = lazy(() => import("src/Admin/Pages/ManageRoles"))
 const ManageSuppliers = lazy(() => import("src/Admin/Pages/ManageSuppliers"))
@@ -73,7 +74,7 @@ export default function useRouterAdmin() {
               path: path.AdminEmployees,
               element: (
                 <Suspense>
-                  <ManageEmployees />
+                  <ManageStaff />
                 </Suspense>
               )
             },
@@ -162,6 +163,14 @@ export default function useRouterAdmin() {
               element: (
                 <Suspense>
                   <ManagePermissions />
+                </Suspense>
+              )
+            },
+            {
+              path: "/admin/permission_2",
+              element: (
+                <Suspense>
+                  <Permission />
                 </Suspense>
               )
             },

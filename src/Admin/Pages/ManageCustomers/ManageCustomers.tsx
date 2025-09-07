@@ -134,7 +134,7 @@ export default function ManageCustomers() {
   // xử lý gọi api chi tiết
   const [addItem, setAddItem] = useState<boolean | UserType | null>(null)
 
-  // console.log(idCustomer)
+  // console.log("chạy")
   // vì sao nó render 2 lần
   // lần 1 là component lần đầu mount (chạy console lần 1 + useQuery)
   // lần 2 là sau khi useQuery trả data về và re-render trang + chạy console lần 2
@@ -162,7 +162,7 @@ export default function ManageCustomers() {
     } // giá trị khởi tạo
   })
 
-  // sau khi query idCustomer thì chạy useEffect
+  // sau khi có addItem thì chạy useEffect
   // set value vào form
   useEffect(() => {
     if (addItem !== null && typeof addItem === "object") {
@@ -815,7 +815,7 @@ export default function ManageCustomers() {
                   )}
                 </AnimatePresence>
 
-                <AddCustomer setAddItem={setAddItem} addItem={addItem} />
+                <AnimatePresence>{addItem === true && <AddCustomer setAddItem={setAddItem} />}</AnimatePresence>
               </div>
             )}
           </div>

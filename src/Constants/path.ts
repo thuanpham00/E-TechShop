@@ -20,7 +20,7 @@ export const path = {
   // admin
   AdminDashboard: "/admin/dashboard",
   AdminCustomers: "/admin/customers",
-  AdminEmployees: "/admin/employees",
+  AdminEmployees: "/admin/staff",
   AdminCategories: "/admin/categories",
   AdminCategoryDetail: "/admin/categories/:id",
   AdminProducts: "/admin/products",
