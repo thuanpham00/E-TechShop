@@ -289,16 +289,12 @@ export type CreateCustomerBodyReq = {
   role: string
 }
 
-export type CreateStaffBodyReq = {
-  id: string
-  name: string
-  email: string
-  phone: string
-  date_of_birth: Date
-  password: string
-  confirm_password: string
-  avatar: string
-  role: string
+export type CreateStaffBodyReq = CreateCustomerBodyReq & {
+  department: string
+  contract_type: string
+  status: string
+  hire_date: Date
+  salary: number
 }
 
 export type FavouriteType = {

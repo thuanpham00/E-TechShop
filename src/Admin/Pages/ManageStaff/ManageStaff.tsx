@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { yupResolver } from "@hookform/resolvers/yup"
 import { keepPreviousData, useQuery } from "@tanstack/react-query"
-import { Collapse, CollapseProps, Select } from "antd"
+import { Collapse, CollapseProps, Empty, Select } from "antd"
 import { isUndefined, omit, omitBy } from "lodash"
 import { ArrowUpNarrowWide, FolderUp, Plus, RotateCcw, Search } from "lucide-react"
 import { useEffect, useState } from "react"
@@ -12,7 +12,6 @@ import DatePicker from "src/Admin/Components/DatePickerRange"
 import { useTheme } from "src/Admin/Components/Theme-provider/Theme-provider"
 import { adminAPI } from "src/Apis/admin.api"
 import { schemaCustomer, SchemaCustomerType } from "src/Client/Utils/rule"
-import Button from "src/Components/Button"
 import Input from "src/Components/Input"
 import Skeleton from "src/Components/Skeleton"
 import { path } from "src/Constants/path"
@@ -27,7 +26,9 @@ import { HttpStatusCode } from "src/Constants/httpStatus"
 import { Helmet } from "react-helmet-async"
 import NavigateBack from "src/Admin/Components/NavigateBack"
 import AddStaff from "./Components/AddStaff/AddStaff"
-import { AnimatePresence } from "framer-motion"
+import { AnimatePresence, motion } from "framer-motion"
+import StaffItem from "./Components/StaffItem"
+import Button from "src/Components/Button"
 
 // const formDataUpdate = schemaAuth.pick([
 //   "id",
@@ -111,7 +112,7 @@ export default function ManageStaff() {
   }>
   const listStaffs = result?.result?.result
   const page_size = Math.ceil(Number(result?.result.total) / Number(result?.result.limit))
-
+  console.log(listStaffs)
   // Xử lý bộ lọc tìm kiếm và fetch lại api
   const {
     register: registerFormSearch,
@@ -411,34 +412,37 @@ export default function ManageStaff() {
                   </div>
                 </div>
                 <div>
-                  <div className="bg-[#f2f2f2] dark:bg-darkPrimary grid grid-cols-12 items-center gap-2 py-3 border border-[#dedede] dark:border-darkBorder px-4 rounded-tl-xl rounded-tr-xl">
+                  <div className="bg-[#f2f2f2] dark:bg-darkPrimary grid grid-cols-10 items-center gap-2 py-3 border border-[#dedede] dark:border-darkBorder px-4 rounded-tl-xl rounded-tr-xl">
                     <div className="col-span-2 text-[14px] font-semibold tracking-wider uppercase text-black dark:text-white">
-                      Mã khách hàng
+                      Mã nhân viên
                     </div>
-                    <div className="col-span-2 text-[14px] font-semibold tracking-wider uppercase text-black dark:text-white">
+                    <div className="col-span-1 text-[14px] font-semibold tracking-wider uppercase text-black dark:text-white">
                       Họ Tên
                     </div>
-                    <div className="col-span-2 text-[14px] font-semibold tracking-wider uppercase text-black dark:text-white">
-                      Email
+                    <div className="col-span-1 text-[14px] font-semibold tracking-wider uppercase text-black dark:text-white">
+                      Chức vụ
+                    </div>
+                    <div className="col-span-1 text-[14px] font-semibold tracking-wider uppercase text-black dark:text-white">
+                      Phòng ban
                     </div>
                     <div className="col-span-1 text-[14px] text-center font-semibold tracking-wider uppercase text-black dark:text-white">
-                      Số điện thoại
+                      Lương
                     </div>
-                    <div className="col-span-2 text-[14px] text-center font-semibold tracking-wider uppercase text-black dark:text-white">
+                    <div className="col-span-1 text-[14px] font-semibold tracking-wider uppercase text-black dark:text-white">
+                      Loại hợp đồng
+                    </div>
+                    <div className="col-span-1 text-[14px] text-center font-semibold tracking-wider uppercase text-black dark:text-white">
                       Trạng thái
                     </div>
                     <div className="col-span-1 text-[14px] font-semibold tracking-wider uppercase text-black dark:text-white">
-                      Ngày tạo
-                    </div>
-                    <div className="col-span-1 text-[14px] font-semibold tracking-wider uppercase text-black dark:text-white">
-                      Ngày cập nhật
+                      Ngày vào làm
                     </div>
                     <div className="col-span-1 text-[14px] text-center font-semibold tracking-wider uppercase text-black dark:text-white">
                       Hành động
                     </div>
                   </div>
                   <div>
-                    {/* {listStaffs?.length > 0 ? (
+                    {listStaffs?.length > 0 ? (
                       listStaffs?.map((item, index) => (
                         <motion.div
                           key={item._id}
@@ -446,9 +450,9 @@ export default function ManageStaff() {
                           animate={{ opacity: 1, y: 0 }}
                           transition={{ delay: index * 0.1 }}
                         >
-                          <CustomerItem
-                            // onDelete={handleDeleteCustomer}
-                            // handleEditItem={handleEditItem}
+                          <StaffItem
+                            onDelete={() => {}}
+                            handleEditItem={() => {}}
                             item={item}
                             maxIndex={listStaffs?.length}
                             index={index}
@@ -459,7 +463,7 @@ export default function ManageStaff() {
                       <div className="text-center mt-4">
                         <Empty />
                       </div>
-                    )} */}
+                    )}
                   </div>
                 </div>
                 <Pagination

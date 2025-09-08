@@ -596,11 +596,11 @@ export default function ManageCustomers() {
                   </div>
                 </div>
                 <div>
-                  <div className="bg-[#f2f2f2] dark:bg-darkPrimary grid grid-cols-12 items-center gap-2 py-3 border border-[#dedede] dark:border-darkBorder px-4 rounded-tl-xl rounded-tr-xl">
+                  <div className="bg-[#f2f2f2] dark:bg-darkPrimary grid grid-cols-10 items-center gap-2 py-3 border border-[#dedede] dark:border-darkBorder px-4 rounded-tl-xl rounded-tr-xl">
                     <div className="col-span-2 text-[14px] font-semibold tracking-wider uppercase text-black dark:text-white">
                       Mã khách hàng
                     </div>
-                    <div className="col-span-2 text-[14px] font-semibold tracking-wider uppercase text-black dark:text-white">
+                    <div className="col-span-1 text-[14px] font-semibold tracking-wider uppercase text-black dark:text-white">
                       Họ Tên
                     </div>
                     <div className="col-span-2 text-[14px] font-semibold tracking-wider uppercase text-black dark:text-white">
@@ -609,7 +609,7 @@ export default function ManageCustomers() {
                     <div className="col-span-1 text-[14px] text-center font-semibold tracking-wider uppercase text-black dark:text-white">
                       Số điện thoại
                     </div>
-                    <div className="col-span-2 text-[14px] text-center font-semibold tracking-wider uppercase text-black dark:text-white">
+                    <div className="col-span-1 text-[14px] text-center font-semibold tracking-wider uppercase text-black dark:text-white">
                       Trạng thái
                     </div>
                     <div className="col-span-1 text-[14px] font-semibold tracking-wider uppercase text-black dark:text-white">
@@ -679,7 +679,7 @@ export default function ManageCustomers() {
                             Thông tin khách hàng
                           </h3>
                           <div className="p-4 pt-0">
-                            <div className="mt-4 flex justify-between gap-16">
+                            <div className="mt-4 flex justify-between gap-8">
                               <div className="grid grid-cols-12 flex-wrap gap-4">
                                 <div className="col-span-6">
                                   <Input
@@ -790,7 +790,7 @@ export default function ManageCustomers() {
                                 </div>
                               </div>
 
-                              <div className="text-center">
+                              <div className="flex items-center justify-center flex-col bg-[#dadada] rounded-sm px-4 shadow-sm">
                                 <div className="mb-2 text-black dark:text-white">Ảnh đại diện</div>
                                 <img
                                   src={previewImage || avatarWatch}

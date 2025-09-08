@@ -16,3 +16,8 @@
   height: 35px !important;
   padding-left: 30px !important;
 }
+
+.menu-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: #888 #f0f0f0;
+}

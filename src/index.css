@@ -127,6 +127,11 @@ a {
   }
 }
 
+html {
+  scrollbar-width: thin; /* auto, thin, none */
+  scrollbar-color: #888 #f0f0f0; /* thumb track */
+}
+
 .custom-button {
   background: red !important;
   color: white;

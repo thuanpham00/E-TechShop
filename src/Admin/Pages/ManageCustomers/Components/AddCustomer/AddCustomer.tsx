@@ -145,7 +145,7 @@ export default function AddCustomer({ setAddItem }: Props) {
             Thông tin khách hàng
           </h3>
           <div className="p-4 pt-0">
-            <div className="mt-4 flex justify-between gap-16">
+            <div className="mt-4 flex justify-between gap-8">
               <div className="grid grid-cols-12 flex-wrap gap-4">
                 <div className="col-span-6">
                   <Input
@@ -227,7 +227,7 @@ export default function AddCustomer({ setAddItem }: Props) {
                   />
                 </div>
               </div>
-              <div className="text-center">
+              <div className="flex items-center justify-center flex-col bg-[#dadada] rounded-sm px-4 shadow-sm">
                 <div className="mb-2 text-black dark:text-white">Ảnh đại diện</div>
                 <img
                   src={previewImage || avatarWatch}

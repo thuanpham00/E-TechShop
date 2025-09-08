@@ -29,7 +29,10 @@ export const schemaAuth = yup
     department: yup.string().required("Phòng ban bắt buộc!"),
     contract_type: yup.string().required("Loại hợp đồng bắt buộc!"),
     status: yup.string().required("Trạng thái bắt buộc!"),
-    hire_date: yup.date().min(new Date(new Date().setHours(0, 0, 0, 0)), "Hãy chọn ngày từ hôm nay trở đi!"),
+    hire_date: yup
+      .date()
+      .required("Ngày vào làm là bắt buộc!") // bắt buộc chọn
+      .min(new Date(new Date().setHours(0, 0, 0, 0)), "Hãy chọn ngày từ hôm nay trở đi!"),
     salary: yup
       .number()
       .typeError("Lương phải là số!") // nếu nhập ký tự chữ hoặc không phải số

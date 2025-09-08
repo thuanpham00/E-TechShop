@@ -10,11 +10,11 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger
 } from "src/Components/ui/alert-dialog"
-import { convertDateTime } from "src/Helpers/common"
+import { convertDateTime, formatCurrency } from "src/Helpers/common"
 import useCopyText from "src/Hook/useCopyText"
 import { UserType } from "src/Types/user.type"
 
-export default function CustomerItem({
+export default function StaffItem({
   item,
   handleEditItem,
   onDelete,
@@ -41,21 +41,38 @@ export default function CustomerItem({
         </button>
       </div>
       <div className="col-span-1 text-black dark:text-white">{item.name}</div>
-      <div className="col-span-2 break-words text-black dark:text-white">{item.email}</div>
-      <div className="col-span-1 text-center text-black dark:text-white">{item.numberPhone}</div>
+      <div className="col-span-1 break-words text-black dark:text-white">{item.role}</div>
+      <div className="col-span-1 break-words text-black dark:text-white">{item.employeeInfo?.department}</div>
+      <div className="col-span-1 text-center dark:text-white text-red-500 font-semibold">
+        {formatCurrency(item.employeeInfo?.salary as number)}
+      </div>
+      <div className="col-span-1 text-black dark:text-white">
+        {item.employeeInfo?.contract_type
+          ? item.employeeInfo.contract_type.charAt(0).toUpperCase() +
+            item.employeeInfo.contract_type.slice(1).toLowerCase()
+          : ""}
+      </div>
       <div className="col-span-1 flex justify-center">
-        {item.verify === 1 ? (
+        {item.employeeInfo?.status === "active" && (
           <div className=" text-[13px] font-medium py-1 px-2 border border-[#b2ffb4] bg-[#b2ffb4] text-[#04710c] text-center rounded-full flex gap-1 justify-center items-center">
-            Verified
+            Active
           </div>
-        ) : (
+        )}
+        {item.employeeInfo?.status === "inactive" && (
           <div className="text-[13px] font-medium py-1 px-2 border border-[#ffdcdc] bg-[#ffdcdc] text-[#f00] text-center rounded-full flex gap-1 justify-center items-center">
-            Unverified
+            Inactive
+          </div>
+        )}
+        {item.employeeInfo?.status === "suspended" && (
+          <div className="text-[13px] font-medium py-1 px-2 border border-[#ffdcdc] bg-[#ffdcdc] text-[#f00] text-center rounded-full flex gap-1 justify-center items-center">
+            Suspended
           </div>
         )}
       </div>
-      <div className="col-span-1 text-black dark:text-white">{convertDateTime(item.created_at)}</div>
-      <div className="col-span-1 text-black dark:text-white">{convertDateTime(item.updated_at)}</div>
+      <div className="col-span-1 text-black dark:text-white">
+        {convertDateTime((item.employeeInfo?.hire_date as Date).toString())}
+      </div>
+
       <div className="col-span-1 flex items-center justify-center gap-2">
         <button onClick={() => handleEditItem(item)}>
           <Pencil color="orange" size={18} />

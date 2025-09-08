@@ -305,7 +305,7 @@ export default function Sidebar() {
               overflowX: "hidden"
             }}
             defaultOpenKeys={["sub1", "sub2", "sub3"]}
-            className="bg-white dark:bg-darkPrimary"
+            className="bg-white dark:bg-darkPrimary menu-scroll"
             items={items}
           />
         </div>

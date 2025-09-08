@@ -17,7 +17,6 @@ import { MediaAPI } from "src/Apis/media.api"
 import { ObjectId } from "bson"
 import { isError422 } from "src/Helpers/utils"
 import { ErrorResponse, SuccessResponse } from "src/Types/utils.type"
-import { roles } from "src/Helpers/role_permission"
 import { Select } from "antd"
 import { AppContext } from "src/Context/authContext"
 import { Role } from "src/Admin/Pages/ManageRoles/ManageRoles"
@@ -36,6 +35,7 @@ const formDataAdd = schemaAuth.pick([
   "confirm_password",
   "id",
   "roleInStaff",
+  "department",
   "contract_type",
   "status",
   "hire_date",
@@ -53,6 +53,7 @@ type FormDataAdd = Pick<
   | "confirm_password"
   | "id"
   | "roleInStaff"
+  | "department"
   | "contract_type"
   | "status"
   | "hire_date"
@@ -142,8 +143,14 @@ export default function AddStaff({ setAddItem }: Props) {
       date_of_birth: data.date_of_birth as Date,
       avatar: avatarName,
       id: idUser.toString(),
-      role: roles.CUSTOMER
+      department: data.department,
+      role: data.roleInStaff,
+      contract_type: data.contract_type,
+      status: data.status,
+      hire_date: data.hire_date as Date,
+      salary: data.salary
     }
+    console.log(body)
     addStaffMutation.mutate(body, {
       onSuccess: () => {
         toast.success("Thêm người dùng thành công", { autoClose: 1500 })
@@ -185,7 +192,7 @@ export default function AddStaff({ setAddItem }: Props) {
             Thông tin nhân viên
           </h3>
           <div className="p-4 pt-0">
-            <h2 className="text-black dark:text-white">Thông tin cơ bản</h2>
+            <h2 className="text-black dark:text-white font-semibold">Thông tin cơ bản</h2>
             <div className="mt-2 flex justify-between">
               <div className="grid grid-cols-12 flex-wrap gap-4 w-2/3">
                 <div className="col-span-6">
@@ -278,7 +285,7 @@ export default function AddStaff({ setAddItem }: Props) {
                 <InputFileImage onChange={handleChangeImage} />
               </div>
             </div>
-            <h2 className="text-black dark:text-white">Thông tin làm việc</h2>
+            <h2 className="text-black dark:text-white font-semibold">Thông tin làm việc</h2>
             <div className="mt-2 flex justify-between gap-8">
               <div className="w-2/3 grid grid-cols-12 flex-wrap gap-4">
                 <div className="col-span-4">
@@ -367,7 +374,31 @@ export default function AddStaff({ setAddItem }: Props) {
                     nameInput="Lương"
                   />
                 </div>
-                <div className="col-span-8">
+                <div className="col-span-4">
+                  <span className="text-black dark:text-white">Phòng ban</span>
+                  <div className="mt-1">
+                    <Controller
+                      name="department"
+                      control={control}
+                      render={({ field }) => (
+                        <Select
+                          value={field.value ?? undefined}
+                          onChange={field.onChange}
+                          placeholder="Chọn loại hợp đồng"
+                          className="select-status w-full h-[40px]"
+                          options={[
+                            { value: "Phòng Kinh doanh", label: "Phòng Kinh doanh" },
+                            { value: "Phòng Kho vận", label: "Phòng Kho vận" }
+                          ]}
+                        />
+                      )}
+                    />
+                    <span className="text-red-500 text-[13px] font-semibold min-h-[1.25rem] block">
+                      {errors.department?.message}
+                    </span>
+                  </div>
+                </div>
+                <div className="col-span-4">
                   <Controller
                     name="hire_date"
                     control={control}
