@@ -6,11 +6,13 @@ import { useContext, useEffect } from "react"
 import { LocalStorageEventTarget } from "./Helpers/auth"
 import { AppContext } from "./Context/authContext"
 import ThemeProvider from "./Admin/Components/Theme-provider"
+import { useLocation } from "react-router-dom"
 
 function App() {
   const routerClient = useRouterClient()
   const routerAdmin = useRouterAdmin()
-  const { reset, role } = useContext(AppContext)
+  const { reset } = useContext(AppContext)
+  const location = useLocation()
 
   useEffect(() => {
     LocalStorageEventTarget.addEventListener("ClearLS", reset) // lắng nghe sự kiện
@@ -24,10 +26,11 @@ function App() {
    *
    * useEffect không tự kích hoạt lại khi không có sự kiện. Chỉ khi sự kiện ClearLS được phát, hàm reset (listener) mới được gọi.
    */
+  const isAdminPath = location.pathname.startsWith("/admin")
 
   return (
     <HelmetProvider>
-      {role === "Admin" ? <ThemeProvider>{routerAdmin}</ThemeProvider> : routerClient}
+      {isAdminPath ? <ThemeProvider>{routerAdmin}</ThemeProvider> : routerClient}
       <ToastContainer />
     </HelmetProvider>
   )

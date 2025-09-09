@@ -21,8 +21,15 @@ import {
   queryParamConfigSupply,
   queryParamsPricePerUnit
 } from "src/Types/queryParams.type"
+import { AuthResponse } from "src/Types/utils.type"
 
 export const adminAPI = {
+  auth: {
+    loginAdmin: (body: { email: string; password: string }) => {
+      return Http.post<AuthResponse>("/admin/login", body)
+    }
+  },
+
   statistical: {
     // lấy số liệu thống kê hệ thống
     getStatisticalSell: (signal: AbortSignal, params: { year: number; month?: number }) => {

@@ -18,6 +18,7 @@ export const path = {
   ResetPassword: "/reset-password",
   NotFound: "*",
   // admin
+  AdminLogin: "/admin/login",
   AdminDashboard: "/admin/dashboard",
   AdminCustomers: "/admin/customers",
   AdminEmployees: "/admin/staff",

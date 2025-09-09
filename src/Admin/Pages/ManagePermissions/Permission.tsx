@@ -295,22 +295,48 @@ export default function Permission() {
       dataIndex: item.name,
       width: 130,
       render: (text: any, record: PermissionType) => {
-        const checkTrue = listPermissionByRolesId?.find(
-          (itemPer) => itemPer._id === item._id && itemPer.permissions.find((per: any) => per._id === record._id)
-        )
         return (
           <div className="text-center">
-            <Checkbox key={record._id} checked={checkTrue} onChange={() => handleChangeChecked(record, item._id)} />
+            <Checkbox
+              key={record._id}
+              checked={isChecked(item._id, record._id)}
+              onChange={(e) => handleChangeChecked(e, item._id, record)}
+            />
           </div>
         )
       }
     }))
   ]
 
-  const [edited, setEdited] = useState<any[] | null>(null)
+  const [edited, setEdited] = useState<any[]>([])
 
-  const handleChangeChecked = (record: PermissionType, id_role: string) => {
-    console.log(record, id_role)
+  useEffect(() => {
+    if (listPermissionByRolesId) {
+      setEdited(listPermissionByRolesId)
+    }
+  }, [listPermissionByRolesId])
+
+  const isChecked = (roleId: string, permissionId: string) => {
+    return edited.some(
+      (itemPer) => itemPer._id === roleId && itemPer.permissions.some((per: any) => per._id === permissionId)
+    )
+  }
+
+  const handleChangeChecked = (e: any, id_role: string, record: PermissionType) => {
+    const checked = e.target.checked
+    setEdited((edited) => {
+      const copy = [...edited]
+      const roleIndex = copy.findIndex((r) => r._id === id_role)
+      const role = copy[roleIndex]
+      const exits = role.permissions.some((p: any) => p._id === record._id)
+      if (checked && !exits) {
+        role.permissions.push(record)
+      } else if (!checked && exits) {
+        role.permissions.filter((item: any) => item._id !== record._id)
+      }
+      copy[roleIndex] = { ...role }
+      return copy
+    })
   }
 
   useEffect(() => {
@@ -355,7 +381,6 @@ export default function Permission() {
           pagination={false}
           bordered
           onChange={(pagination, filters, sorter, extra) => {
-            console.log(extra.currentDataSource)
             setFilteredData(extra.currentDataSource)
           }}
         />
@@ -363,7 +388,6 @@ export default function Permission() {
     </div>
   )
 }
-
 
 /**
   hiện tại gom được 42 quyền - admin có đủ 42 quyền - và các api (quyền nhỏ) bỏ qua chỉ lấy api lớn - ví dụ api lấy giá bán bỏ qua vì cần có quyền tạo cung ứng sản phẩm trước rồi mới pass qua quyền này mới vào api trong được -> lấy những cái api chính (xử lý chính)

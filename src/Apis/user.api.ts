@@ -48,9 +48,5 @@ export const userAPI = {
     })
   }
 
-  // 1 cái loginOauth (có rồi)
-  // 1 cái refreshToken (có rồi)
-  // 1 cái changePassword
   // 1 cái resend-email-token
-  // 1 cái updateUser
 }

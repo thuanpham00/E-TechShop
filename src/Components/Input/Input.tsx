@@ -64,11 +64,11 @@ export default function Input({
         ""
       )}
       {rest.type === "password" && pathname === "/login" ? (
-        <div className="flex justify-between">
+        <div className="mt-1 flex justify-between">
           <span className={classNameError + " w-[70%]"}>{messageErrorInput}</span>
           <Link
             to={path.ForgotPassword}
-            className="w-[30%] cursor-pointer underline hover:text-blue-500 text-right block duration-200 font-medium text-[14px]"
+            className="w-[30%] cursor-pointer underline hover:text-blue-500 text-right block duration-200 font-medium text-[13px]"
           >
             Quên mật khẩu?
           </Link>

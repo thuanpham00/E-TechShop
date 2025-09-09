@@ -46,7 +46,7 @@ class http {
     )
     this.instance.interceptors.response.use(
       (response) => {
-        if (response.config.url === "users/login") {
+        if (response.config.url === "users/login" || response.config.url === "/admin/login") {
           const data = response.data as AuthResponse
           this.accessToken = data.result.accessToken
           setAccessTokenToLS(this.accessToken)

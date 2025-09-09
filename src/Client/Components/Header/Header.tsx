@@ -70,7 +70,8 @@ export default function Header() {
     },
     retry: 0, // số lần retry lại khi hủy request (dùng abort signal)
     staleTime: 10 * 60 * 1000, // dưới 5 phút nó không gọi lại api
-    placeholderData: keepPreviousData
+    placeholderData: keepPreviousData,
+    enabled: !!isAuthenticated
   })
 
   const result = data?.data as SuccessResponse<{
@@ -91,7 +92,8 @@ export default function Header() {
     },
     retry: 0, // số lần retry lại khi hủy request (dùng abort signal)
     staleTime: 10 * 60 * 1000, // dưới 5 phút nó không gọi lại api
-    placeholderData: keepPreviousData
+    placeholderData: keepPreviousData,
+    enabled: !!isAuthenticated
   })
 
   const resultCart = data2?.data as SuccessResponse<{
@@ -112,7 +114,8 @@ export default function Header() {
     },
     retry: 0, // số lần retry lại khi hủy request (dùng abort signal)
     staleTime: 10 * 60 * 1000, // dưới 5 phút nó không gọi lại api
-    placeholderData: keepPreviousData
+    placeholderData: keepPreviousData,
+    enabled: !!isAuthenticated
   })
 
   const listFavourite = result?.result?.products[0]?.products

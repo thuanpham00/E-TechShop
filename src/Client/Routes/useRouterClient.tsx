@@ -4,7 +4,6 @@ import { path } from "../../Constants/path"
 import { lazy, Suspense, useContext } from "react"
 import MainLayoutAuth from "../Layout/MainLayoutAuth"
 import { AppContext } from "src/Context/authContext"
-import { RoleType } from "src/Constants/enum"
 import UserLayout from "../Pages/User/Layout/UserLayout"
 
 const Home = lazy(() => import("../Pages/Home"))
@@ -31,13 +30,21 @@ const ProjectRouter = () => {
 }
 
 const RejectRouter = () => {
-  const { isAuthenticated, role } = useContext(AppContext)
+  const { isAuthenticated } = useContext(AppContext)
   const [searchParams] = useSearchParams()
   if (!isAuthenticated) {
     return <Outlet />
   }
-  const navigate = role === RoleType.ADMIN ? path.AdminDashboard : searchParams.get("redirect_url") || path.Home
+  const navigate = searchParams.get("redirect_url") || path.Home
   return <Navigate to={navigate} />
+}
+
+const BlockAdminForClient = () => {
+  const { role } = useContext(AppContext)
+  if (role === "Admin") {
+    return <Navigate to={path.AdminNotFound} replace />
+  }
+  return <Outlet />
 }
 
 export default function useRouterClient() {
@@ -45,171 +52,177 @@ export default function useRouterClient() {
   const routerElement = useRoutes([
     {
       path: "",
-      element: <MainLayout />,
-      children: [
-        {
-          path: "",
-          element: (
-            <Suspense>
-              <Home />
-            </Suspense>
-          )
-        },
-        {
-          path: path.Home,
-          element: (
-            <Suspense>
-              <Home />
-            </Suspense>
-          )
-        },
-        {
-          path: path.ProductDetail,
-          element: (
-            <Suspense>
-              <ProductDetail />
-            </Suspense>
-          )
-        },
-        {
-          path: path.Collection,
-          element: (
-            <Suspense>
-              <Collection />
-            </Suspense>
-          )
-        },
-        {
-          path: path.VerifyEmail,
-          element: (
-            <Suspense>
-              <VerifyEmail />
-            </Suspense>
-          )
-        },
-        {
-          path: path.NotFound,
-          element: (
-            <Suspense>
-              <NotFound role={role} />
-            </Suspense>
-          )
-        }
-      ]
-    },
-    {
-      path: "",
-      element: <ProjectRouter />,
+      element: <BlockAdminForClient />,
       children: [
         {
           path: "",
           element: <MainLayout />,
           children: [
             {
-              path: path.Cart,
+              index: true,
               element: (
                 <Suspense>
-                  <Cart />
+                  <Home />
                 </Suspense>
               )
             },
             {
-              path: path.InfoOrder,
+              path: path.Home,
               element: (
                 <Suspense>
-                  <InfoOrder />
+                  <Home />
                 </Suspense>
               )
             },
             {
-              path: path.CheckoutSuccess,
+              path: path.ProductDetail,
               element: (
                 <Suspense>
-                  <CheckoutSuccess />
+                  <ProductDetail />
                 </Suspense>
               )
             },
             {
-              path: path.Order,
+              path: path.Collection,
               element: (
                 <Suspense>
-                  <Order />
+                  <Collection />
                 </Suspense>
               )
             },
             {
-              path: path.User,
-              element: <UserLayout />,
+              path: path.VerifyEmail,
+              element: (
+                <Suspense>
+                  <VerifyEmail />
+                </Suspense>
+              )
+            },
+            {
+              path: path.NotFound,
+              element: (
+                <Suspense>
+                  <NotFound role={role} />
+                </Suspense>
+              )
+            }
+          ]
+        },
+        {
+          path: "",
+          element: <ProjectRouter />,
+          children: [
+            {
+              path: "",
+              element: <MainLayout />,
               children: [
                 {
-                  path: path.Profile,
+                  path: path.Cart,
                   element: (
                     <Suspense>
-                      <Profile />
+                      <Cart />
                     </Suspense>
                   )
                 },
                 {
-                  path: path.ChangePassword,
+                  path: path.InfoOrder,
                   element: (
                     <Suspense>
-                      <ChangePassword />
+                      <InfoOrder />
                     </Suspense>
                   )
+                },
+                {
+                  path: path.CheckoutSuccess,
+                  element: (
+                    <Suspense>
+                      <CheckoutSuccess />
+                    </Suspense>
+                  )
+                },
+                {
+                  path: path.Order,
+                  element: (
+                    <Suspense>
+                      <Order />
+                    </Suspense>
+                  )
+                },
+                {
+                  path: path.User,
+                  element: <UserLayout />,
+                  children: [
+                    {
+                      path: path.Profile,
+                      element: (
+                        <Suspense>
+                          <Profile />
+                        </Suspense>
+                      )
+                    },
+                    {
+                      path: path.ChangePassword,
+                      element: (
+                        <Suspense>
+                          <ChangePassword />
+                        </Suspense>
+                      )
+                    }
+                  ]
                 }
               ]
             }
           ]
-        }
-      ]
-    },
-    {
-      path: "",
-      element: <RejectRouter />,
-      children: [
+        },
         {
           path: "",
-          element: <MainLayoutAuth />,
+          element: <RejectRouter />,
           children: [
             {
-              path: path.Register,
-              element: (
-                <Suspense>
-                  <Register />
-                </Suspense>
-              )
-            },
-            {
-              path: path.Login,
-              element: (
-                <Suspense>
-                  <Login />
-                </Suspense>
-              )
-            },
-            {
-              path: path.LoginGoogle,
-              element: (
-                <Suspense>
-                  <LoginGoogle />
-                </Suspense>
-              )
-            },
-            {
-              path: path.ForgotPassword,
-              element: (
-                <Suspense>
-                  <ForgotPassword />
-                </Suspense>
-              )
-            },
-            {
-              path: path.ResetPassword,
-              element: (
-                <Suspense>
-                  <ResetPassword />
-                </Suspense>
-              )
+              path: "",
+              element: <MainLayoutAuth />,
+              children: [
+                {
+                  path: path.Register,
+                  element: (
+                    <Suspense>
+                      <Register />
+                    </Suspense>
+                  )
+                },
+                {
+                  path: path.Login,
+                  element: (
+                    <Suspense>
+                      <Login />
+                    </Suspense>
+                  )
+                },
+                {
+                  path: path.LoginGoogle,
+                  element: (
+                    <Suspense>
+                      <LoginGoogle />
+                    </Suspense>
+                  )
+                },
+                {
+                  path: path.ForgotPassword,
+                  element: (
+                    <Suspense>
+                      <ForgotPassword />
+                    </Suspense>
+                  )
+                },
+                {
+                  path: path.ResetPassword,
+                  element: (
+                    <Suspense>
+                      <ResetPassword />
+                    </Suspense>
+                  )
+                }
+              ]
             }
           ]
         }

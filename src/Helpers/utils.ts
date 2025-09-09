@@ -24,6 +24,10 @@ export function isError404<FormError>(error: unknown): error is AxiosError<FormE
   return isAxiosError(error) && error.response?.status === HttpStatusCode.NotFound
 }
 
+export function isError403<FormError>(error: unknown): error is AxiosError<FormError> {
+  return isAxiosError(error) && error.response?.status === HttpStatusCode.Forbidden
+}
+
 export function isAxiosExpiredTokenError<FormError>(error: unknown, message: string): error is AxiosError<FormError> {
   return isError401<MessageResponse>(error) && error.response?.data.message === message
 }

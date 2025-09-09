@@ -1,43 +1,25 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { yupResolver } from "@hookform/resolvers/yup"
 import { useMutation } from "@tanstack/react-query"
+import { Cpu } from "lucide-react"
 import { useContext } from "react"
 import { Helmet } from "react-helmet-async"
 import { useForm } from "react-hook-form"
 import { Link } from "react-router-dom"
 import { toast } from "react-toastify"
-import { userAPI } from "src/Apis/user.api"
-import { path } from "src/Constants/path"
+import { adminAPI } from "src/Apis/admin.api"
 import { schemaAuth, SchemaAuthType } from "src/Client/Utils/rule"
-import { isError403, isError422 } from "src/Helpers/utils"
-import { ErrorResponse } from "src/Types/utils.type"
-import { AppContext } from "src/Context/authContext"
 import Button from "src/Components/Button"
 import Input from "src/Components/Input"
-import { Cpu } from "lucide-react"
-
-const getGoogleAuthUrl = () => {
-  const { VITE_GOOGLE_CLIENT_ID, VITE_GOOGLE_AUTHORIZED_REDIRECT_URI } = import.meta.env
-  const url = `https://accounts.google.com/o/oauth2/v2/auth`
-  const query = {
-    redirect_uri: VITE_GOOGLE_AUTHORIZED_REDIRECT_URI, // sau khi chọn tài khoản và redirect về server be
-    client_id: VITE_GOOGLE_CLIENT_ID,
-    response_type: "code",
-    scope: ["https://www.googleapis.com/auth/userinfo.profile", "https://www.googleapis.com/auth/userinfo.email"].join(
-      " "
-    ), // 2 quyền khi đăng ký google cloud
-    prompt: "consent",
-    access_type: "offline" // để trả về RT
-  }
-  const queryString = new URLSearchParams(query) // tạo ra query "?"
-  return `${url}?${queryString}`
-}
-const googleAuth = getGoogleAuthUrl()
+import { path } from "src/Constants/path"
+import { AppContext } from "src/Context/authContext"
+import { isError403, isError422 } from "src/Helpers/utils"
+import { ErrorResponse } from "src/Types/utils.type"
 
 type FormData = Pick<SchemaAuthType, "email" | "password"> // kiểu dữ liệu của form
 const formData = schemaAuth.pick(["email", "password"]) // validate ở client
 
-export default function Login() {
+export default function LoginAdmin() {
   const { setIsAuthenticated, setNameUser, setRole, setAvatar, setUserId } = useContext(AppContext)
   const {
     formState: { errors },
@@ -48,7 +30,7 @@ export default function Login() {
 
   const loginMutation = useMutation({
     mutationFn: (body: FormData) => {
-      return userAPI.loginUser(body)
+      return adminAPI.auth.loginAdmin(body)
     }
   })
 
@@ -94,7 +76,7 @@ export default function Login() {
     })
   })
   return (
-    <div>
+    <div className="h-full">
       <Helmet>
         <title>Đăng nhập tài khoản - TechZone</title>
         <meta
@@ -103,34 +85,16 @@ export default function Login() {
         />
       </Helmet>
 
-      <div className="p-6">
+      <div className="p-4 h-full bg-white flex items-center flex-col justify-center rounded-tr-lg rounded-br-lg">
+        <h1 className="text-xl my-2 font-semibold text-center text-[#000] dark:text-[#fff]">Hệ thống quản lý</h1>
         <Link to={path.Home} className="flex items-center justify-center">
           <Cpu />
           <span className="text-darkPrimary dark:text-white text-2xl font-bold text-center pb-[1px] border-b-[3px] border-darkPrimary dark:border-white">
             TechZone
           </span>
         </Link>
-        <h1 className="text-lg font-semibold text-center mt-2 text-[#000] dark:text-[#fff]">Đăng nhập</h1>
-        <Link
-          to={googleAuth}
-          className="mt-4 border border-black/80 dark:border-white rounded-full w-[80%] mx-auto p-2 flex items-center justify-center gap-2"
-        >
-          <div
-            className="w-5 h-5"
-            style={{
-              backgroundImage: `url("https://accounts.scdn.co/sso/images/new-google-icon.72fd940a229bc94cf9484a3320b3dccb.svg")`,
-              backgroundPosition: "center center",
-              backgroundRepeat: "no-repeat"
-            }}
-          ></div>
-          <span className="text-sm font-semibold">Đăng nhập với Google</span>
-        </Link>
-        <div className="flex items-center justify-center mt-2">
-          <div className="w-[40%] h-[1px] bg-gray-500"></div>
-          <span className="w-[10%] text-center block text-gray-400">or</span>
-          <div className="w-[40%] h-[1px] bg-gray-500"></div>
-        </div>
-        <form onSubmit={handleSubmitForm} className="mt-2">
+        <h1 className="text-base text-center mt-2 text-[#000] dark:text-[#fff]">Đăng nhập</h1>
+        <form onSubmit={handleSubmitForm} className="mt-2 w-full">
           <Input
             name="email"
             register={register}
@@ -149,19 +113,12 @@ export default function Login() {
             classNameEye="absolute right-2 top-[40%] -translate-y-1/2"
           />
           <Button
-            classNameButton="mt-1 p-3 bg-blue-500 w-full text-white font-semibold rounded-sm hover:bg-blue-500/80 duration-200"
+            classNameButton="p-2 bg-blue-500 w-full text-white font-semibold rounded-sm hover:bg-blue-500/80 duration-200"
             nameButton="Đăng nhập"
             type="submit"
             disabled={loginMutation.isPending}
           />
         </form>
-        <div className="bg-gray-500 w-full h-[1px] mt-4"></div>
-        <div className="mt-2 flex items-center justify-center gap-1 ">
-          <span className="text-sm font-semibold">Bạn chưa có tài khoản?</span>
-          <Link to={path.Register} className="font-bold underline underline-offset-2">
-            Đăng ký
-          </Link>
-        </div>
       </div>
     </div>
   )

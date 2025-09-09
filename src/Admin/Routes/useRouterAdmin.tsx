@@ -1,16 +1,12 @@
 import { Navigate, Outlet, useRoutes } from "react-router-dom"
 import { lazy, Suspense, useContext } from "react"
 import MainLayoutAdmin from "../Layouts/MainLayoutAdmin"
-import MainLayoutAuth from "src/Client/Layout/MainLayoutAuth"
 import { path } from "src/Constants/path"
 import { AppContext } from "src/Context/authContext"
 import Permission from "../Pages/ManagePermissions/Permission"
+import LayoutAuthAdmin from "../Layouts/LayoutAuthAdmin"
 
-const Register = lazy(() => import("src/Client/Pages/Register"))
-const Login = lazy(() => import("src/Client/Pages/Login"))
-const LoginGoogle = lazy(() => import("src/Client/Pages/LoginGoogle"))
-const ForgotPassword = lazy(() => import("src/Client/Pages/ForgotPassword"))
-const ResetPassword = lazy(() => import("src/Client/Pages/ResetPassword"))
+const LoginAdmin = lazy(() => import("src/Admin/Pages/LoginAdmin"))
 const NotFound = lazy(() => import("src/Client/Pages/NotFound"))
 const Dashboard = lazy(() => import("src/Admin/Pages/Dashboard"))
 const ManageCustomers = lazy(() => import("src/Admin/Pages/ManageCustomers"))
@@ -32,7 +28,7 @@ const AdminProfile = lazy(() => import("src/Admin/Pages/AdminProfile"))
 
 const ProtectedRoute = () => {
   const { isAuthenticated } = useContext(AppContext)
-  return isAuthenticated ? <Outlet /> : <Navigate to={path.Login} />
+  return isAuthenticated ? <Outlet /> : <Navigate to={path.AdminLogin} />
 } // bắt buộc đăng nhập
 
 const RejectRouter = () => {
@@ -43,228 +39,210 @@ const RejectRouter = () => {
   return <Navigate to={path.AdminDashboard} />
 }
 
+const BlockClientForAdmin = () => {
+  const { role } = useContext(AppContext)
+  if (role === "Customer") {
+    return <Navigate to={path.NotFound} replace />
+  }
+  return <Outlet />
+}
+
 export default function useRouterAdmin() {
   const { role } = useContext(AppContext)
   const useRouterElement = useRoutes([
     {
-      path: "/admin",
-      element: <ProtectedRoute />,
+      path: "",
+      element: <BlockClientForAdmin />,
       children: [
         {
-          path: "",
-          element: <MainLayoutAdmin />,
+          path: "/admin",
+          element: <ProtectedRoute />,
           children: [
             {
-              path: path.AdminDashboard,
-              element: (
-                <Suspense>
-                  <Dashboard />
-                </Suspense>
-              )
-            },
-            {
-              path: path.AdminCustomers,
-              element: (
-                <Suspense>
-                  <ManageCustomers />
-                </Suspense>
-              )
-            },
-            {
-              path: path.AdminEmployees,
-              element: (
-                <Suspense>
-                  <ManageStaff />
-                </Suspense>
-              )
-            },
-            {
-              path: path.AdminCategories,
-              element: (
-                <Suspense>
-                  <ManageCategories />
-                </Suspense>
-              )
-            },
-            {
-              path: path.AdminCategoryDetail,
-              element: (
-                <Suspense>
-                  <ManageBrand />
-                </Suspense>
-              )
-            },
-            {
-              path: path.AdminProducts,
-              element: (
-                <Suspense>
-                  <ManageProducts />
-                </Suspense>
-              )
-            },
-            {
-              path: path.AddProduct,
-              element: (
-                <Suspense>
-                  <AddProduct />
-                </Suspense>
-              )
-            },
-            {
-              path: path.AddReceipt,
-              element: (
-                <Suspense>
-                  <AddReceipt />
-                </Suspense>
-              )
-            },
-            {
-              path: path.AdminOrders,
-              element: (
-                <Suspense>
-                  <ManageOrders />
-                </Suspense>
-              )
-            },
-            {
-              path: path.AdminReceipts,
-              element: (
-                <Suspense>
-                  <ManageReceipt />
-                </Suspense>
-              )
-            },
-            {
-              path: path.AdminSupplies,
-              element: (
-                <Suspense>
-                  <ManageSupplies />
-                </Suspense>
-              )
-            },
-            {
-              path: path.AdminSuppliers,
-              element: (
-                <Suspense>
-                  <ManageSuppliers />
-                </Suspense>
-              )
-            },
-            {
-              path: path.AdminRole,
-              element: (
-                <Suspense>
-                  <ManageRoles />
-                </Suspense>
-              )
-            },
-            {
-              path: path.AdminPermission,
-              element: (
-                <Suspense>
-                  <ManagePermissions />
-                </Suspense>
-              )
-            },
-            {
-              path: "/admin/permission_2",
-              element: (
-                <Suspense>
-                  <Permission />
-                </Suspense>
-              )
-            },
-            {
-              path: path.AdminEmail,
-              element: (
-                <Suspense>
-                  <AdminEmail />
-                </Suspense>
-              )
-            },
-            {
-              path: path.AdminChat,
-              element: (
-                <Suspense>
-                  <AdminChatting />
-                </Suspense>
-              )
-            },
-            {
-              path: path.AdminProfile,
-              element: (
-                <Suspense>
-                  <AdminProfile />
-                </Suspense>
-              )
-            },
-            {
-              path: path.NotFound,
-              element: (
-                <Suspense>
-                  <NotFound role={role} />
-                </Suspense>
-              )
-            },
-            {
-              path: path.AdminNotFound,
-              element: (
-                <Suspense>
-                  <NotFound role={role} />
-                </Suspense>
-              )
+              path: "",
+              element: <MainLayoutAdmin />,
+              children: [
+                {
+                  path: path.AdminDashboard,
+                  element: (
+                    <Suspense>
+                      <Dashboard />
+                    </Suspense>
+                  )
+                },
+                {
+                  path: path.AdminCustomers,
+                  element: (
+                    <Suspense>
+                      <ManageCustomers />
+                    </Suspense>
+                  )
+                },
+                {
+                  path: path.AdminEmployees,
+                  element: (
+                    <Suspense>
+                      <ManageStaff />
+                    </Suspense>
+                  )
+                },
+                {
+                  path: path.AdminCategories,
+                  element: (
+                    <Suspense>
+                      <ManageCategories />
+                    </Suspense>
+                  )
+                },
+                {
+                  path: path.AdminCategoryDetail,
+                  element: (
+                    <Suspense>
+                      <ManageBrand />
+                    </Suspense>
+                  )
+                },
+                {
+                  path: path.AdminProducts,
+                  element: (
+                    <Suspense>
+                      <ManageProducts />
+                    </Suspense>
+                  )
+                },
+                {
+                  path: path.AddProduct,
+                  element: (
+                    <Suspense>
+                      <AddProduct />
+                    </Suspense>
+                  )
+                },
+                {
+                  path: path.AddReceipt,
+                  element: (
+                    <Suspense>
+                      <AddReceipt />
+                    </Suspense>
+                  )
+                },
+                {
+                  path: path.AdminOrders,
+                  element: (
+                    <Suspense>
+                      <ManageOrders />
+                    </Suspense>
+                  )
+                },
+                {
+                  path: path.AdminReceipts,
+                  element: (
+                    <Suspense>
+                      <ManageReceipt />
+                    </Suspense>
+                  )
+                },
+                {
+                  path: path.AdminSupplies,
+                  element: (
+                    <Suspense>
+                      <ManageSupplies />
+                    </Suspense>
+                  )
+                },
+                {
+                  path: path.AdminSuppliers,
+                  element: (
+                    <Suspense>
+                      <ManageSuppliers />
+                    </Suspense>
+                  )
+                },
+                {
+                  path: path.AdminRole,
+                  element: (
+                    <Suspense>
+                      <ManageRoles />
+                    </Suspense>
+                  )
+                },
+                {
+                  path: path.AdminPermission,
+                  element: (
+                    <Suspense>
+                      <ManagePermissions />
+                    </Suspense>
+                  )
+                },
+                {
+                  path: "/admin/permission_2",
+                  element: (
+                    <Suspense>
+                      <Permission />
+                    </Suspense>
+                  )
+                },
+                {
+                  path: path.AdminEmail,
+                  element: (
+                    <Suspense>
+                      <AdminEmail />
+                    </Suspense>
+                  )
+                },
+                {
+                  path: path.AdminChat,
+                  element: (
+                    <Suspense>
+                      <AdminChatting />
+                    </Suspense>
+                  )
+                },
+                {
+                  path: path.AdminProfile,
+                  element: (
+                    <Suspense>
+                      <AdminProfile />
+                    </Suspense>
+                  )
+                },
+                {
+                  path: path.NotFound,
+                  element: (
+                    <Suspense>
+                      <NotFound role={role} />
+                    </Suspense>
+                  )
+                },
+                {
+                  path: path.AdminNotFound,
+                  element: (
+                    <Suspense>
+                      <NotFound role={role} />
+                    </Suspense>
+                  )
+                }
+              ]
             }
           ]
-        }
-      ]
-    },
-    {
-      path: "",
-      element: <RejectRouter />,
-      children: [
+        },
         {
           path: "",
-          element: <MainLayoutAuth />,
+          element: <RejectRouter />,
           children: [
             {
-              path: path.Register,
-              element: (
-                <Suspense>
-                  <Register />
-                </Suspense>
-              )
-            },
-            {
-              path: path.Login,
-              element: (
-                <Suspense>
-                  <Login />
-                </Suspense>
-              )
-            },
-            {
-              path: path.LoginGoogle,
-              element: (
-                <Suspense>
-                  <LoginGoogle />
-                </Suspense>
-              )
-            },
-            {
-              path: path.ForgotPassword,
-              element: (
-                <Suspense>
-                  <ForgotPassword />
-                </Suspense>
-              )
-            },
-            {
-              path: path.ResetPassword,
-              element: (
-                <Suspense>
-                  <ResetPassword />
-                </Suspense>
-              )
+              path: "",
+              element: <LayoutAuthAdmin />,
+              children: [
+                {
+                  path: path.AdminLogin,
+                  element: (
+                    <Suspense>
+                      <LoginAdmin />
+                    </Suspense>
+                  )
+                }
+              ]
             }
           ]
         }
