@@ -323,7 +323,7 @@ export type OrderType = {
     image: string
     discount?: number
   }[]
-  subtotal: number // tiền tạm tính
+  subTotal: number // tiền tạm tính
   shipping_fee: number
   totalAmount: number
   note?: string

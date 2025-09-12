@@ -1,4 +1,4 @@
-import { Key } from "react"
+import { UpdatePermissionItem } from "src/Admin/Pages/ManagePermissions/ManagePermissions"
 import Http from "src/Helpers/http"
 import {
   CreateCustomerBodyReq,
@@ -336,11 +336,8 @@ export const adminAPI = {
       )
     },
 
-    updatePermissionsBasedOnId: (idRole: string, listPermissions: Key[], type: string) => {
-      return Http.put(`/admin/permissions/${idRole}`, {
-        listPermissions,
-        type
-      })
+    updatePermissionsBasedOnId: (body: UpdatePermissionItem[]) => {
+      return Http.put(`/admin/permissions`, body)
     }
   },
 

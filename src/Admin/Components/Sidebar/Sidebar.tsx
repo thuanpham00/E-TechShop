@@ -75,6 +75,102 @@ export default function Sidebar() {
     })
   }
 
+  const sub5Menu = [
+    hasPermission(permissions.VIEW_EMPLOYEE) && {
+      key: "11",
+      label: (
+        <SidebarItem
+          className={`${location.pathname.startsWith(sideBarList[2].path) ? "text-[14px] text-[#3b82f6] font-semibold" : "text-[14px] text-black dark:text-white/80 font-normal hover:text-[#495057] duration-200 ease-in"}`}
+          classNameWrapper={`flex items-center gap-2 cursor-pointer`}
+          icon={React.createElement(sideBarList[2].icon, {
+            color: location.pathname.startsWith(sideBarList[2].path) ? "#3b82f6" : iconColor ? "white" : "black"
+          })}
+          nameSideBar={sideBarList[2].name}
+          path={sideBarList[2].path}
+        />
+      )
+    },
+    hasPermission(permissions.VIEW_ROLES) && {
+      key: "12",
+      label: (
+        <SidebarItem
+          className={`${location.pathname.startsWith(sideBarList[9].path) ? "text-[14px] text-[#3b82f6] font-semibold" : "text-[14px] text-black dark:text-white/80 font-normal hover:text-[#495057] duration-200 ease-in"}`}
+          classNameWrapper={`flex items-center gap-2 cursor-pointer`}
+          icon={React.createElement(sideBarList[9].icon, {
+            color: location.pathname.startsWith(sideBarList[9].path) ? "#3b82f6" : iconColor ? "white" : "black"
+          })}
+          nameSideBar={sideBarList[9].name}
+          path={sideBarList[9].path}
+        />
+      )
+    }
+  ].filter(Boolean) // dùng Filter(Boolean) để loại bỏ false undefined null
+
+  const sub5 =
+    sub5Menu.length > 0
+      ? {
+          key: "sub5",
+          label: <div className="font-semibold text-[15px] text-black dark:text-white">Quản lý Hệ thống</div>,
+          children: sub5Menu
+        }
+      : null
+
+  const sub4Menu = [
+    hasPermission(permissions.VIEW_RECEIPT) && {
+      key: "8",
+      label: (
+        <SidebarItem
+          className={`${location.pathname.startsWith(sideBarList[6].path) ? "text-[14px] text-[#3b82f6] font-semibold" : "text-[14px] text-black dark:text-white/80 font-normal hover:text-[#495057] duration-200 ease-in"}`}
+          classNameWrapper={`flex items-center gap-2 cursor-pointer`}
+          icon={React.createElement(sideBarList[6].icon, {
+            color: location.pathname.startsWith(sideBarList[6].path) ? "#3b82f6" : iconColor ? "white" : "black"
+          })}
+          nameSideBar={sideBarList[6].name}
+          path={sideBarList[6].path}
+        />
+      )
+    },
+    hasPermission(permissions.VIEW_SUPPLIERS) && {
+      key: "9",
+      label: (
+        <SidebarItem
+          className={`${location.pathname.startsWith(sideBarList[7].path) ? "text-[14px] text-[#3b82f6] font-semibold" : "text-[14px] text-black dark:text-white/80 font-normal hover:text-[#495057] duration-200 ease-in"}`}
+          classNameWrapper={`flex items-center gap-2 cursor-pointer`}
+          icon={React.createElement(sideBarList[7].icon, {
+            color: location.pathname.startsWith(sideBarList[7].path) ? "#3b82f6" : iconColor ? "white" : "black"
+          })}
+          nameSideBar={sideBarList[7].name}
+          path={sideBarList[7].path}
+        />
+      )
+    },
+    hasPermission(permissions.VIEW_SUPPLIES) && {
+      key: "10",
+      label: (
+        <SidebarItem
+          className={`${location.pathname.startsWith(sideBarList[8].path) ? "text-[14px] text-[#3b82f6] font-semibold" : "text-[14px] text-black dark:text-white/80 font-normal hover:text-[#495057] duration-200 ease-in"}`}
+          classNameWrapper={`flex items-center gap-2 cursor-pointer`}
+          icon={React.createElement(sideBarList[8].icon, {
+            color: location.pathname.startsWith(sideBarList[8].path) ? "#3b82f6" : iconColor ? "white" : "black"
+          })}
+          nameSideBar={sideBarList[8].name}
+          path={sideBarList[8].path}
+        />
+      )
+    }
+  ].filter(Boolean)
+
+  const sub4 =
+    sub4Menu.length > 0
+      ? {
+          key: "sub4",
+          label: (
+            <div className="font-semibold text-[15px] text-black dark:text-white">Quản lý Nhập hàng và Cung ứng</div>
+          ),
+          children: sub4Menu
+        }
+      : null
+
   const items: MenuProps["items"] = [
     {
       key: "sub1",
@@ -201,92 +297,11 @@ export default function Sidebar() {
     {
       type: "divider"
     },
-    {
-      key: "sub4",
-      label: <div className="font-semibold text-[15px] text-black dark:text-white">Quản lý Nhập hàng và Cung ứng</div>,
-      children: [
-        {
-          key: "8",
-          label: hasPermission(permissions.VIEW_RECEIPT) && (
-            <SidebarItem
-              className={`${location.pathname.startsWith(sideBarList[6].path) ? "text-[14px] text-[#3b82f6] font-semibold" : "text-[14px] text-black dark:text-white/80 font-normal hover:text-[#495057] duration-200 ease-in"}`}
-              classNameWrapper={`flex items-center gap-2 cursor-pointer`}
-              icon={React.createElement(sideBarList[6].icon, {
-                color: location.pathname.startsWith(sideBarList[6].path) ? "#3b82f6" : iconColor ? "white" : "black"
-              })}
-              nameSideBar={sideBarList[6].name}
-              path={sideBarList[6].path}
-            />
-          )
-        },
-        {
-          key: "9",
-          label: hasPermission(permissions.VIEW_SUPPLIERS) && (
-            <SidebarItem
-              className={`${location.pathname.startsWith(sideBarList[7].path) ? "text-[14px] text-[#3b82f6] font-semibold" : "text-[14px] text-black dark:text-white/80 font-normal hover:text-[#495057] duration-200 ease-in"}`}
-              classNameWrapper={`flex items-center gap-2 cursor-pointer`}
-              icon={React.createElement(sideBarList[7].icon, {
-                color: location.pathname.startsWith(sideBarList[7].path) ? "#3b82f6" : iconColor ? "white" : "black"
-              })}
-              nameSideBar={sideBarList[7].name}
-              path={sideBarList[7].path}
-            />
-          )
-        },
-        {
-          key: "10",
-          label: hasPermission(permissions.VIEW_SUPPLIES) && (
-            <SidebarItem
-              className={`${location.pathname.startsWith(sideBarList[8].path) ? "text-[14px] text-[#3b82f6] font-semibold" : "text-[14px] text-black dark:text-white/80 font-normal hover:text-[#495057] duration-200 ease-in"}`}
-              classNameWrapper={`flex items-center gap-2 cursor-pointer`}
-              icon={React.createElement(sideBarList[8].icon, {
-                color: location.pathname.startsWith(sideBarList[8].path) ? "#3b82f6" : iconColor ? "white" : "black"
-              })}
-              nameSideBar={sideBarList[8].name}
-              path={sideBarList[8].path}
-            />
-          )
-        }
-      ]
-    },
-
+    sub4,
     {
       type: "divider"
     },
-    {
-      key: "sub5",
-      label: <div className="font-semibold text-[15px] text-black dark:text-white">Quản lý Hệ thống</div>,
-      children: [
-        {
-          key: "11",
-          label: hasPermission(permissions.VIEW_EMPLOYEE) && (
-            <SidebarItem
-              className={`${location.pathname.startsWith(sideBarList[2].path) ? "text-[14px] text-[#3b82f6] font-semibold" : "text-[14px] text-black dark:text-white/80 font-normal hover:text-[#495057] duration-200 ease-in"}`}
-              classNameWrapper={`flex items-center gap-2 cursor-pointer`}
-              icon={React.createElement(sideBarList[2].icon, {
-                color: location.pathname.startsWith(sideBarList[2].path) ? "#3b82f6" : iconColor ? "white" : "black"
-              })}
-              nameSideBar={sideBarList[2].name}
-              path={sideBarList[2].path}
-            />
-          )
-        },
-        {
-          key: "12",
-          label: hasPermission(permissions.VIEW_ROLES) && (
-            <SidebarItem
-              className={`${location.pathname.startsWith(sideBarList[9].path) ? "text-[14px] text-[#3b82f6] font-semibold" : "text-[14px] text-black dark:text-white/80 font-normal hover:text-[#495057] duration-200 ease-in"}`}
-              classNameWrapper={`flex items-center gap-2 cursor-pointer`}
-              icon={React.createElement(sideBarList[9].icon, {
-                color: location.pathname.startsWith(sideBarList[9].path) ? "#3b82f6" : iconColor ? "white" : "black"
-              })}
-              nameSideBar={sideBarList[9].name}
-              path={sideBarList[9].path}
-            />
-          )
-        }
-      ]
-    }
+    sub5
   ]
 
   return (

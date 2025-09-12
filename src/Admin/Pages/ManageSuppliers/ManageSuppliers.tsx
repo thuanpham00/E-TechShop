@@ -559,7 +559,7 @@ export default function ManageSuppliers() {
                     </div>
                   </div>
                   <div>
-                    {listSupplier.length > 0 ? (
+                    {listSupplier?.length > 0 ? (
                       listSupplier.map((item, index) => (
                         <motion.div
                           key={item._id}

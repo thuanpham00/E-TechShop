@@ -6,9 +6,28 @@ import { path } from "src/Constants/path"
 import { formatCurrency } from "src/Helpers/common"
 import useQueryParams from "src/Hook/useQueryParams"
 import { motion } from "framer-motion"
+import { useEffect, useRef } from "react"
+import { useMutation } from "@tanstack/react-query"
+import { OrderApi } from "src/Apis/order.api"
 
 export default function CheckoutSuccess() {
   const paramsUrl = useQueryParams()
+  const calledRef = useRef(false)
+
+  const { mutate } = useMutation({
+    mutationFn: (orderId: string) => {
+      return OrderApi.callBackVnpay(orderId)
+    }
+  })
+
+  useEffect(() => {
+    if (calledRef.current) return
+    const vnp_responseCode = paramsUrl?.vnp_ResponseCode
+    if (vnp_responseCode === "00") {
+      mutate(paramsUrl.vnp_TxnRef)
+      calledRef.current = true
+    } // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   return (
     <div>

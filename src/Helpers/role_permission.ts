@@ -1,10 +1,3 @@
-export const roles = {
-  ADMIN: "Admin", // quản trị viên cấp cao, có toàn quyền
-  SALES_STAFF: "Sales Staff", // nhân viên bán hàng (bao gồm thu ngân)
-  INVENTORY_STAFF: "Inventory Staff", // nhân viên kho
-  CUSTOMER: "Customer" // khách hàng, người dùng cuối
-}
-
 export const rolesForApi = {
   ADMIN: "ADMIN", // quản trị viên cấp cao, có toàn quyền
   SALES_STAFF: "SALES_STAFF", // nhân viên bán hàng (bao gồm thu ngân)
@@ -28,7 +21,7 @@ export const permissions = {
 }
 
 export const Roles_Permissions = {
-  [roles.ADMIN]: [
+  [rolesForApi.ADMIN]: [
     permissions.VIEW_DASHBOARD,
     permissions.VIEW_CUSTOMER,
     permissions.VIEW_EMPLOYEE,
@@ -39,6 +32,15 @@ export const Roles_Permissions = {
     permissions.VIEW_SUPPLIERS,
     permissions.VIEW_SUPPLIES,
     permissions.VIEW_ROLES,
+    permissions.VIEW_EMAIL,
+    permissions.VIEW_CHAT
+  ],
+  [rolesForApi.SALES_STAFF]: [
+    permissions.VIEW_DASHBOARD,
+    permissions.VIEW_CUSTOMER,
+    permissions.VIEW_ORDERS,
+    permissions.VIEW_CATEGORY,
+    permissions.VIEW_PRODUCT,
     permissions.VIEW_EMAIL,
     permissions.VIEW_CHAT
   ]

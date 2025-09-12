@@ -3,8 +3,8 @@ import { lazy, Suspense, useContext } from "react"
 import MainLayoutAdmin from "../Layouts/MainLayoutAdmin"
 import { path } from "src/Constants/path"
 import { AppContext } from "src/Context/authContext"
-import Permission from "../Pages/ManagePermissions/Permission"
 import LayoutAuthAdmin from "../Layouts/LayoutAuthAdmin"
+import { rolesForApi } from "src/Helpers/role_permission"
 
 const LoginAdmin = lazy(() => import("src/Admin/Pages/LoginAdmin"))
 const NotFound = lazy(() => import("src/Client/Pages/NotFound"))
@@ -41,7 +41,7 @@ const RejectRouter = () => {
 
 const BlockClientForAdmin = () => {
   const { role } = useContext(AppContext)
-  if (role === "Customer") {
+  if (role === rolesForApi.CUSTOMER) {
     return <Navigate to={path.NotFound} replace />
   }
   return <Outlet />
@@ -171,14 +171,6 @@ export default function useRouterAdmin() {
                   element: (
                     <Suspense>
                       <ManagePermissions />
-                    </Suspense>
-                  )
-                },
-                {
-                  path: "/admin/permission_2",
-                  element: (
-                    <Suspense>
-                      <Permission />
                     </Suspense>
                   )
                 },

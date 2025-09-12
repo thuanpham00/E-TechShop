@@ -27,7 +27,6 @@ function App() {
    * useEffect không tự kích hoạt lại khi không có sự kiện. Chỉ khi sự kiện ClearLS được phát, hàm reset (listener) mới được gọi.
    */
   const isAdminPath = location.pathname.startsWith("/admin")
-
   return (
     <HelmetProvider>
       {isAdminPath ? <ThemeProvider>{routerAdmin}</ThemeProvider> : routerClient}

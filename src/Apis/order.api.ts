@@ -8,11 +8,17 @@ export const OrderApi = {
     })
   },
 
-  createOrder: (body: OrderType) => {
-    return Http.post(`/orders`, body)
-  },
-
   updateStatusOrderForCustomer: (idOrder: string, status: number) => {
     return Http.put(`/orders/${idOrder}`, { status })
+  },
+
+  createOrderPayment: (body: OrderType) => {
+    return Http.post("/payment", body)
+  },
+
+  callBackVnpay: (orderId: string) => {
+    return Http.post("/payment/vnpay-callback", {
+      orderId
+    })
   }
 }

@@ -1,17 +1,16 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useMutation } from "@tanstack/react-query"
 import { Button, Col, Form, Image, Input, Row, Steps, Table, Typography } from "antd"
 import { useContext, useEffect, useRef } from "react"
 import { Helmet } from "react-helmet-async"
 import { Link, useLocation } from "react-router-dom"
 import { toast } from "react-toastify"
 import NavigateBack from "src/Admin/Components/NavigateBack"
-import { OrderApi } from "src/Apis/order.api"
 import { AppContext } from "src/Context/authContext"
 import { CalculateSalePrice, formatCurrency, slugify } from "src/Helpers/common"
-import Http from "src/Helpers/http"
 import { OrderType } from "src/Types/product.type"
 import { motion } from "framer-motion"
+import { OrderApi } from "src/Apis/order.api"
+import { useMutation } from "@tanstack/react-query"
 
 const { Text } = Typography
 const { TextArea } = Input
@@ -104,7 +103,7 @@ export default function InfoOrder() {
 
   const createOrderMutation = useMutation({
     mutationFn: (body: OrderType) => {
-      return OrderApi.createOrder(body)
+      return OrderApi.createOrderPayment(body)
     }
   })
 
@@ -127,7 +126,7 @@ export default function InfoOrder() {
         email: values.email
       },
       products: orderList,
-      subtotal: totalPriceProducts, // tiền tạm tính
+      subTotal: totalPriceProducts, // tiền tạm tính
       shipping_fee,
       totalAmount: totalPriceProducts + shipping_fee,
       note: values.note !== undefined ? values.note : ""
@@ -135,15 +134,12 @@ export default function InfoOrder() {
 
     const toastId = toast.loading("Đang xử lý thanh toán. Vui lòng chờ trong giây lát...")
     try {
-      const response = await Http.post("/payment", {
-        amount: totalPriceProducts, // số tiền
-        orderDescription: "Thanh toán đơn hàng", // mô tả đơn hàng
-        orderType: "billpayment", // loại đơn hàng
-        language: "vn" // ngôn ngữ
+      const response = await createOrderMutation.mutateAsync(body, {
+        onSuccess: () => {
+          toast.dismiss(toastId)
+        }
       })
-      toast.dismiss(toastId)
-      if (response) {
-        createOrderMutation.mutate(body)
+      if (response.data.url) {
         window.location.href = response.data.url
       }
     } catch (error) {

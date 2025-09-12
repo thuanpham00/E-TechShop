@@ -186,7 +186,7 @@ export default function ManageRoles() {
         <Button onClick={() => setAddItem(true)} type="primary">
           Thêm vai trò
         </Button>
-        <Button onClick={() => navigate("/admin/permission_2")} type="primary" danger>
+        <Button onClick={() => navigate(path.AdminPermission)} type="primary" danger>
           Phân quyền hệ thống
         </Button>
       </div>

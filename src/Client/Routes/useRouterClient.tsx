@@ -5,6 +5,7 @@ import { lazy, Suspense, useContext } from "react"
 import MainLayoutAuth from "../Layout/MainLayoutAuth"
 import { AppContext } from "src/Context/authContext"
 import UserLayout from "../Pages/User/Layout/UserLayout"
+import { rolesForApi } from "src/Helpers/role_permission"
 
 const Home = lazy(() => import("../Pages/Home"))
 const Login = lazy(() => import("../Pages/Login"))
@@ -41,7 +42,7 @@ const RejectRouter = () => {
 
 const BlockAdminForClient = () => {
   const { role } = useContext(AppContext)
-  if (role === "Admin") {
+  if (role === rolesForApi.ADMIN) {
     return <Navigate to={path.AdminNotFound} replace />
   }
   return <Outlet />
