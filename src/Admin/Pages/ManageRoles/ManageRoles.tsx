@@ -68,7 +68,7 @@ export default function ManageRoles() {
   const handleDeleteCategory = (id: string) => {
     deleteRoleMutation.mutate(id, {
       onSuccess: () => {
-        queryClient.invalidateQueries({ queryKey: ["listRoles", userId] })
+        queryClient.invalidateQueries({ queryKey: ["listRole", userId] })
         toast.success("Xóa thành công!", { autoClose: 1500 })
       },
       onError: (error) => {
@@ -80,6 +80,7 @@ export default function ManageRoles() {
       }
     })
   }
+
   const columns = [
     {
       title: "Tên Role",

@@ -192,6 +192,13 @@ export type UpdateBodyReq = {
   date_of_birth?: Date
   numberPhone?: string
   avatar?: string
+  employeeInfo?: {
+    contract_type?: string
+    department?: string
+    status?: string
+    hire_date?: Date
+    salary?: number
+  }
 }
 
 export type UpdateCategoryBodyReq = {

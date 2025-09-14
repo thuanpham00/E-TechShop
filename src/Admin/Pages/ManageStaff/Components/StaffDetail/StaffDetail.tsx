@@ -2,7 +2,7 @@
 import { yupResolver } from "@hookform/resolvers/yup"
 import { Select } from "antd"
 import { motion } from "framer-motion"
-import { Plus, X } from "lucide-react"
+import { ArrowUpFromLine, X } from "lucide-react"
 import { useContext, useEffect, useMemo, useState } from "react"
 import { Controller, useForm } from "react-hook-form"
 import { schemaAuth, SchemaAuthType } from "src/Client/Utils/rule"
@@ -12,21 +12,24 @@ import Input from "src/Components/Input"
 import InputFileImage from "src/Components/InputFileImage"
 import { queryParamConfigCustomer } from "src/Types/queryParams.type"
 import avatarDefault from "src/Assets/img/avatarDefault.png"
-import { keepPreviousData, useQuery } from "@tanstack/react-query"
-import { SuccessResponse } from "src/Types/utils.type"
+import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
+import { ErrorResponse, SuccessResponse } from "src/Types/utils.type"
 import { Role } from "src/Admin/Pages/ManageRoles/ManageRoles"
 import { adminAPI } from "src/Apis/admin.api"
 import { AppContext } from "src/Context/authContext"
 import { convertDateTime } from "src/Helpers/common"
+import { UpdateBodyReq } from "src/Types/product.type"
+import { MediaAPI } from "src/Apis/media.api"
+import { UserType } from "src/Types/user.type"
+import { toast } from "react-toastify"
+import { isError422 } from "src/Helpers/utils"
 
 const formDataAdd = schemaAuth.pick([
   "name",
   "email",
-  "phone",
+  "numberPhone",
   "date_of_birth",
   "avatar",
-  "password",
-  "confirm_password",
   "id",
   "roleInStaff",
   "department",
@@ -42,11 +45,9 @@ type FormDataAdd = Pick<
   SchemaAuthType,
   | "name"
   | "email"
-  | "phone"
+  | "numberPhone"
   | "date_of_birth"
   | "avatar"
-  | "password"
-  | "confirm_password"
   | "id"
   | "roleInStaff"
   | "department"
@@ -67,6 +68,7 @@ export default function StaffDetail({
   setAddItem: React.Dispatch<any>
   queryConfig: queryParamConfigCustomer
 }) {
+  const queryClient = useQueryClient()
   const { userId } = useContext(AppContext)
   const { data: dataRole } = useQuery({
     queryKey: ["listRoleInStaff", userId],
@@ -94,7 +96,7 @@ export default function StaffDetail({
     formState: { errors },
     setValue,
     control,
-    // setError,
+    setError,
     handleSubmit,
     watch
   } = useForm<FormDataAdd>({ resolver: yupResolver(formDataAdd) })
@@ -109,7 +111,7 @@ export default function StaffDetail({
       setValue("id", addItem._id)
       setValue("name", addItem.name)
       setValue("email", addItem.email)
-      setValue("phone", addItem.numberPhone)
+      setValue("numberPhone", addItem.numberPhone)
       setValue("date_of_birth", new Date(addItem.date_of_birth))
       setValue("roleInStaff", addItem.role)
       setValue("contract_type", addItem.employeeInfo?.contract_type)
@@ -135,6 +137,86 @@ export default function StaffDetail({
   const avatarWatch = watch("avatar")
   const date_of_birth = watch("date_of_birth")
 
+  // Gọi api cập nhật và fetch lại api
+  const updateProfileMutation = useMutation({
+    mutationFn: (body: { body: UpdateBodyReq; id: string }) => {
+      return adminAPI.staff.updateProfileStaff(body.id, body.body)
+    }
+  })
+
+  const updateImageProfileMutation = useMutation({
+    mutationFn: (body: { file: File; userId: string }) => {
+      return MediaAPI.uploadImageProfile(body.file, body.userId)
+    }
+  })
+
+  const handleSubmitUpdate = handleSubmit(
+    async (data) => {
+      try {
+        let avatarName = avatarWatch
+        if (file) {
+          const avatar = await updateImageProfileMutation.mutateAsync({
+            file: file as File,
+            userId: (addItem as UserType)._id as string
+          })
+          avatarName = avatar.data.result.url
+        }
+
+        // Chuẩn bị dữ liệu cập nhật
+        const updatedData: UpdateBodyReq = {
+          avatar: avatarName as string,
+          name: data.name,
+          date_of_birth: data.date_of_birth,
+          employeeInfo: {
+            contract_type: data.contract_type,
+            department: data.department,
+            status: data.status,
+            hire_date: data.hire_date,
+            salary: data.salary
+          }
+        }
+
+        // Gửi request cập nhật
+        updateProfileMutation.mutate(
+          {
+            body: {
+              ...updatedData,
+              numberPhone: data.numberPhone !== undefined ? data.numberPhone : undefined
+            },
+            id: (addItem as UserType)._id as string
+          },
+          {
+            onSuccess: () => {
+              toast.success("Cập nhật thành công!", { autoClose: 1500 })
+              setAddItem(null)
+              queryClient.invalidateQueries({ queryKey: ["listStaffs", queryConfig] })
+            },
+            onError: (error) => {
+              if (isError422<ErrorResponse<FormDataAdd>>(error)) {
+                const formError = error.response?.data.errors
+                if (formError?.name) {
+                  setError("name", {
+                    message: (formError.name as any).msg
+                  })
+                }
+                if (formError?.numberPhone) {
+                  setError("numberPhone", {
+                    message: (formError.numberPhone as any).msg
+                  })
+                }
+              }
+            }
+          }
+        )
+      } catch (error) {
+        console.log("Lỗi submit: ", error)
+      }
+    },
+    (error) => {
+      console.log(error)
+    }
+  )
+
   return (
     <motion.div
       initial={{ opacity: 0 }} // khởi tạo là 0
@@ -151,7 +233,7 @@ export default function StaffDetail({
         <button onClick={() => setAddItem(false)} className="absolute right-2 top-2">
           <X color="gray" size={22} />
         </button>
-        <form className="bg-white dark:bg-darkPrimary rounded-xl w-[1050px]">
+        <form onSubmit={handleSubmitUpdate} className="bg-white dark:bg-darkPrimary rounded-xl w-[1050px]">
           <h3 className="py-2 px-4 text-lg font-semibold tracking-wide rounded-md text-black dark:text-white">
             Thông tin nhân viên
           </h3>
@@ -174,11 +256,12 @@ export default function StaffDetail({
                   </div>
                   <div className="col-span-6">
                     <Input
+                      disabled
                       name="email"
                       register={register}
                       placeholder="Nhập email"
                       messageErrorInput={errors.email?.message}
-                      classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#fff] dark:bg-darkSecond focus:border-blue-500 focus:ring-2 outline-none rounded-md text-black dark:text-white"
+                      classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-darkSecond focus:border-blue-500 focus:ring-2 outline-none rounded-md text-black dark:text-white"
                       className="relative flex-1"
                       classNameLabel="text-black dark:text-white"
                       nameInput="Email"
@@ -186,10 +269,10 @@ export default function StaffDetail({
                   </div>
                   <div className="col-span-6">
                     <Input
-                      name="phone"
+                      name="numberPhone"
                       register={register}
                       placeholder="Nhập số điện thoại"
-                      messageErrorInput={errors.phone?.message}
+                      messageErrorInput={errors.numberPhone?.message}
                       classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-white dark:bg-darkSecond focus:border-blue-500 focus:ring-2 outline-none rounded-md text-black dark:text-white"
                       className="relative flex-1"
                       classNameLabel="text-black dark:text-white"
@@ -306,9 +389,9 @@ export default function StaffDetail({
                               onChange={field.onChange}
                               className="select-status w-full"
                               options={[
-                                { value: "active", label: "Hoạt động" },
-                                { value: "inactive", label: "Không hoạt động" },
-                                { value: "suspended", label: "Bị tạm dừng" }
+                                { value: "Active", label: "Hoạt động" },
+                                { value: "Inactive", label: "Không hoạt động" },
+                                { value: "Suspended", label: "Bị tạm dừng" }
                               ]}
                             />
                           )}
@@ -386,8 +469,8 @@ export default function StaffDetail({
             <div className="flex items-center justify-end">
               <Button
                 type="submit"
-                icon={<Plus size={18} />}
-                nameButton="Thêm"
+                icon={<ArrowUpFromLine size={18} />}
+                nameButton="Cập nhật"
                 classNameButton="w-[120px] p-4 py-2 bg-blue-500 mt-2 w-full text-white font-semibold rounded-3xl hover:bg-blue-500/80 duration-200 flex items-center gap-1"
               />
             </div>

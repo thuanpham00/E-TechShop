@@ -352,6 +352,11 @@ export const adminAPI = {
 
     createStaff: (body: CreateStaffBodyReq) => {
       return Http.post("/admin/staffs", body)
+    },
+
+    // cập nhật khách hàng
+    updateProfileStaff: (id: string, body: UpdateBodyReq) => {
+      return Http.put(`/admin/staffs/${id}`, body)
     }
   }
 }

@@ -25,6 +25,7 @@ export default function AddRole({ setAddItem, addItem }: Props) {
     handleSubmit,
     register,
     setError,
+    reset,
     formState: { errors }
   } = useForm<FormData>({ resolver: yupResolver(formData) })
 
@@ -39,7 +40,8 @@ export default function AddRole({ setAddItem, addItem }: Props) {
       onSuccess: () => {
         toast.success("Thêm vai trò thành công", { autoClose: 1500 })
         setAddItem(null)
-        queryClient.invalidateQueries({ queryKey: ["listRoles"] }) // validate mọi trang liên quan -> sẽ gọi lại api
+        reset()
+        queryClient.invalidateQueries({ queryKey: ["listRole"] }) // validate mọi trang liên quan -> sẽ gọi lại api
       },
       onError: (error) => {
         if (isError400<ErrorResponse<MessageResponse>>(error)) {

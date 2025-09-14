@@ -53,7 +53,7 @@ export default function RoleDetail({ setAddItem, dataItem }: Props) {
       return adminAPI.role.updateRole(body.idRole, { name: body.name, description: body.description })
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["listRoles"] })
+      queryClient.invalidateQueries({ queryKey: ["listRole"] })
       setAddItem(null)
       toast.success("Cập nhật vai trò thành công", {
         autoClose: 1500

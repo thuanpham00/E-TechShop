@@ -53,17 +53,17 @@ export default function StaffItem({
           : ""}
       </div>
       <div className="col-span-1 flex justify-center">
-        {item.employeeInfo?.status === "active" && (
+        {item.employeeInfo?.status === "Active" && (
           <div className=" text-[13px] font-medium py-1 px-2 border border-[#b2ffb4] bg-[#b2ffb4] text-[#04710c] text-center rounded-full flex gap-1 justify-center items-center">
             Active
           </div>
         )}
-        {item.employeeInfo?.status === "inactive" && (
+        {item.employeeInfo?.status === "Inactive" && (
           <div className="text-[13px] font-medium py-1 px-2 border border-[#ffdcdc] bg-[#ffdcdc] text-[#f00] text-center rounded-full flex gap-1 justify-center items-center">
             Inactive
           </div>
         )}
-        {item.employeeInfo?.status === "suspended" && (
+        {item.employeeInfo?.status === "Suspended" && (
           <div className="text-[13px] font-medium py-1 px-2 border border-[#ffdcdc] bg-[#ffdcdc] text-[#f00] text-center rounded-full flex gap-1 justify-center items-center">
             Suspended
           </div>
