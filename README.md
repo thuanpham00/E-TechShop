@@ -39,9 +39,9 @@ Repo này được thiết kế theo mô hình _monorepo_ (hoặc tách 2 thư m
 - Responsive (desktop, tablet, mobile).
 
 *Ví dụ ảnh minh họa:*
-![Client Home](/TechZone/media/bg-client-home.png)
-![Client Product](/TechZone/media/bg-client-product.png)
-![Client Cart](/TechZone/media/bg-client-cart.png)
+![Client Home](media/bg-client-home.png)
+![Client Product](media/bg-client-product.png)
+![Client Cart](media/bg-client-cart.png)
 
 ### Giao diện Admin (Quản trị + Nhân viên)
 
@@ -54,8 +54,8 @@ Repo này được thiết kế theo mô hình _monorepo_ (hoặc tách 2 thư m
 - Quản lý email và hệ thống chat với khách hàng
 ---
 *Ví dụ ảnh minh họa:*
-![Admin Dashboard](/TechZone/media/bg-admin.png)
-![Admin Product](/TechZone/media/bg-admin-product.png)
+![Admin Dashboard](media/bg-admin.png)
+![Admin Product](media/bg-admin-product.png)
 
 ## Kiến trúc & Cấu trúc thư mục
 
