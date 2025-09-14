@@ -99,27 +99,6 @@ export default function ManageRoles() {
       render: (permissions: string[]) => <Tag color="blue">{permissions?.length}</Tag>
     },
     {
-      title: <div className="text-center">Xem quyền chi tiết</div>,
-      key: "action",
-      render: (_: any, record: Role) => (
-        <div className="flex gap-2 justify-center">
-          <Button
-            type="primary"
-            onClick={() => {
-              navigate(path.AdminPermission, {
-                state: {
-                  name: record.name,
-                  idRole: record._id
-                }
-              })
-            }}
-          >
-            Xem chi tiết
-          </Button>
-        </div>
-      )
-    },
-    {
       title: <div className="text-center">Thao tác</div>,
       key: "action",
       render: (_: any, record: Role) => (

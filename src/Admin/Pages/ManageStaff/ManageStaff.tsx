@@ -29,7 +29,8 @@ import AddStaff from "./Components/AddStaff/AddStaff"
 import { AnimatePresence, motion } from "framer-motion"
 import StaffItem from "./Components/StaffItem"
 import Button from "src/Components/Button"
-
+import "../ManageOrders/ManageOrders.css"
+import StaffDetail from "./Components/StaffDetail"
 // const formDataUpdate = schemaAuth.pick([
 //   "id",
 //   "name",
@@ -112,7 +113,7 @@ export default function ManageStaff() {
   }>
   const listStaffs = result?.result?.result
   const page_size = Math.ceil(Number(result?.result.total) / Number(result?.result.limit))
-  console.log(listStaffs)
+
   // Xử lý bộ lọc tìm kiếm và fetch lại api
   const {
     register: registerFormSearch,
@@ -179,7 +180,7 @@ export default function ManageStaff() {
     navigate({ pathname: path.AdminEmployees, search: createSearchParams(filteredSearch).toString() })
   }
 
-  const [addItem, setAddItem] = useState(false)
+  const [addItem, setAddItem] = useState<null | UserType | boolean>(null)
 
   // xử lý sort ds
   const handleChangeSortListOrder = (value: string) => {
@@ -452,7 +453,7 @@ export default function ManageStaff() {
                         >
                           <StaffItem
                             onDelete={() => {}}
-                            handleEditItem={() => {}}
+                            handleEditItem={() => setAddItem(item)}
                             item={item}
                             maxIndex={listStaffs?.length}
                             index={index}
@@ -472,6 +473,12 @@ export default function ManageStaff() {
                   page_size={page_size}
                   pathNavigate={path.AdminEmployees}
                 />
+
+                <AnimatePresence>
+                  {addItem !== null && typeof addItem === "object" && (
+                    <StaffDetail addItem={addItem} setAddItem={setAddItem} queryConfig={queryConfig} />
+                  )}
+                </AnimatePresence>
 
                 <AnimatePresence>{addItem === true && <AddStaff setAddItem={setAddItem} />}</AnimatePresence>
               </div>

@@ -28,7 +28,7 @@ import { HttpStatusCode } from "src/Constants/httpStatus"
 import SupplyDetail from "./Components/SupplyDetail"
 import { queryClient } from "src/main"
 import DropdownSearch from "./Components/DropdownSearch"
-import { motion } from "framer-motion"
+import { AnimatePresence, motion } from "framer-motion"
 import { Collapse, CollapseProps, Empty, Select } from "antd"
 import "../ManageOrders/ManageOrders.css"
 import { useTheme } from "src/Admin/Components/Theme-provider/Theme-provider"
@@ -464,9 +464,11 @@ export default function ManageSupplies() {
                   pathNavigate={path.AdminSupplies}
                 />
 
-                {addItem !== null && typeof addItem === "object" && (
-                  <SupplyDetail addItem={addItem} setAddItem={setAddItem} queryConfig={queryConfig} />
-                )}
+                <AnimatePresence>
+                  {addItem !== null && typeof addItem === "object" && (
+                    <SupplyDetail addItem={addItem} setAddItem={setAddItem} queryConfig={queryConfig} />
+                  )}
+                </AnimatePresence>
 
                 <AddSupply setAddItem={setAddItem} addItem={addItem} />
               </div>

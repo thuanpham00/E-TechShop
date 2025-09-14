@@ -10,8 +10,9 @@ import {
 } from "src/Helpers/auth"
 import { config } from "src/Constants/config"
 import { AuthResponse, MessageResponse, SuccessResponse } from "src/Types/utils.type"
-import { isAxiosExpiredTokenError, isError401, isError404 } from "./utils"
+import { isAxiosExpiredTokenError, isError401, isError403, isError404 } from "./utils"
 import { toast } from "react-toastify"
+import { HttpStatusCode } from "src/Constants/httpStatus"
 
 class http {
   // khai báo các thuộc tính của class
@@ -63,7 +64,19 @@ class http {
         }
         return response
       },
+      // nơi bắt lỗi chung cho response
       (error) => {
+        // bắt lỗi 403 chung cho các API
+        if (isError403<MessageResponse>) {
+          if (
+            error.response.status === HttpStatusCode.Forbidden ||
+            error.response.data.message === "Không có quyền truy cập!"
+          ) {
+            toast.error(error.response.data.message, {
+              autoClose: 1500
+            })
+          }
+        }
         if (isError404<MessageResponse>(error)) {
           //
         }

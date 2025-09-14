@@ -297,13 +297,6 @@ export default function ManageCustomers() {
 
         queryClient.invalidateQueries({ queryKey: ["listCustomer"] })
         toast.success("Xóa thành công!", { autoClose: 1500 })
-      },
-      onError: (error: any) => {
-        if (
-          error.response.status === HttpStatusCode.Forbidden ||
-          error.response.data.message === "Không có quyền truy cập!"
-        )
-          toast.error("Không có quyền truy cập", { autoClose: 1500 })
       }
     })
   }

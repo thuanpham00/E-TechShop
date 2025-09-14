@@ -282,6 +282,7 @@ export default function AddProduct() {
       medias: galleryFiles as File[],
       specifications: data.specifications
     }
+    console.log(body)
     addProductMutation.mutate(body, {
       onSuccess: () => {
         toast.success("Thêm sản phẩm thành công!", {

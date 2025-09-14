@@ -1,30 +1,23 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { yupResolver } from "@hookform/resolvers/yup"
-import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
+import { Select } from "antd"
 import { motion } from "framer-motion"
 import { Plus, X } from "lucide-react"
-import React, { useContext, useEffect, useMemo, useState } from "react"
+import { useContext, useEffect, useMemo, useState } from "react"
 import { Controller, useForm } from "react-hook-form"
-import { toast } from "react-toastify"
-import { adminAPI } from "src/Apis/admin.api"
 import { schemaAuth, SchemaAuthType } from "src/Client/Utils/rule"
 import Button from "src/Components/Button"
 import DateSelect from "src/Components/DateSelect"
 import Input from "src/Components/Input"
 import InputFileImage from "src/Components/InputFileImage"
-import { CreateStaffBodyReq } from "src/Types/product.type"
+import { queryParamConfigCustomer } from "src/Types/queryParams.type"
 import avatarDefault from "src/Assets/img/avatarDefault.png"
-import { MediaAPI } from "src/Apis/media.api"
-import { ObjectId } from "bson"
-import { isError422 } from "src/Helpers/utils"
-import { ErrorResponse, SuccessResponse } from "src/Types/utils.type"
-import { Select } from "antd"
-import { AppContext } from "src/Context/authContext"
+import { keepPreviousData, useQuery } from "@tanstack/react-query"
+import { SuccessResponse } from "src/Types/utils.type"
 import { Role } from "src/Admin/Pages/ManageRoles/ManageRoles"
-
-interface Props {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  setAddItem: React.Dispatch<any>
-}
+import { adminAPI } from "src/Apis/admin.api"
+import { AppContext } from "src/Context/authContext"
+import { convertDateTime } from "src/Helpers/common"
 
 const formDataAdd = schemaAuth.pick([
   "name",
@@ -40,7 +33,9 @@ const formDataAdd = schemaAuth.pick([
   "contract_type",
   "status",
   "hire_date",
-  "salary"
+  "salary",
+  "created_at",
+  "updated_at"
 ])
 
 type FormDataAdd = Pick<
@@ -59,10 +54,19 @@ type FormDataAdd = Pick<
   | "status"
   | "hire_date"
   | "salary"
+  | "created_at"
+  | "updated_at"
 >
 
-export default function AddStaff({ setAddItem }: Props) {
-  const queryClient = useQueryClient()
+export default function StaffDetail({
+  addItem,
+  setAddItem,
+  queryConfig
+}: {
+  addItem: any
+  setAddItem: React.Dispatch<any>
+  queryConfig: queryParamConfigCustomer
+}) {
   const { userId } = useContext(AppContext)
   const { data: dataRole } = useQuery({
     queryKey: ["listRoleInStaff", userId],
@@ -86,26 +90,37 @@ export default function AddStaff({ setAddItem }: Props) {
     .map((item) => ({ idRole: item._id, name: item.name }))
 
   const {
-    handleSubmit,
     register,
-    control,
-    watch,
-    setError,
+    formState: { errors },
     setValue,
-    formState: { errors }
+    control,
+    // setError,
+    handleSubmit,
+    watch
   } = useForm<FormDataAdd>({ resolver: yupResolver(formDataAdd) })
 
-  const addStaffMutation = useMutation({
-    mutationFn: (body: CreateStaffBodyReq) => {
-      return adminAPI.staff.createStaff(body)
+  useEffect(() => {
+    if (addItem !== null && typeof addItem === "object") {
+      if (addItem.avatar === "") {
+        setValue("avatar", avatarDefault)
+      } else {
+        setValue("avatar", addItem.avatar)
+      }
+      setValue("id", addItem._id)
+      setValue("name", addItem.name)
+      setValue("email", addItem.email)
+      setValue("phone", addItem.numberPhone)
+      setValue("date_of_birth", new Date(addItem.date_of_birth))
+      setValue("roleInStaff", addItem.role)
+      setValue("contract_type", addItem.employeeInfo?.contract_type)
+      setValue("status", addItem.employeeInfo?.status)
+      setValue("salary", addItem.employeeInfo?.salary)
+      setValue("department", addItem.employeeInfo?.department)
+      setValue("hire_date", new Date(addItem.employeeInfo?.hire_date))
+      setValue("created_at", convertDateTime(addItem.created_at))
+      setValue("updated_at", convertDateTime(addItem.updated_at))
     }
-  })
-
-  const updateImageProfileMutation = useMutation({
-    mutationFn: (body: { file: File; userId: string }) => {
-      return MediaAPI.uploadImageProfile(body.file, body.userId)
-    }
-  })
+  }, [addItem, setValue])
 
   const [file, setFile] = useState<File>()
 
@@ -117,59 +132,8 @@ export default function AddStaff({ setAddItem }: Props) {
     setFile(file)
   }
 
-  useEffect(() => {
-    setValue("avatar", avatarDefault)
-  }, [setValue])
-
   const avatarWatch = watch("avatar")
   const date_of_birth = watch("date_of_birth")
-
-  const handleAddStaffSubmit = handleSubmit(async (data) => {
-    const idUser = new ObjectId().toHexString() // Trả về string như "665e0bcb9142f3e54365e1ef"
-
-    let avatarName = avatarDefault
-    if (file) {
-      const avatar = await updateImageProfileMutation.mutateAsync({
-        file: file as File,
-        userId: idUser as string
-      })
-      avatarName = avatar.data.result.url
-    }
-    const body: CreateStaffBodyReq = {
-      name: data.name,
-      email: data.email,
-      password: data.password,
-      confirm_password: data.confirm_password,
-      phone: data.phone,
-      date_of_birth: data.date_of_birth as Date,
-      avatar: avatarName,
-      id: idUser.toString(),
-      department: data.department,
-      role: data.roleInStaff,
-      contract_type: data.contract_type,
-      status: data.status,
-      hire_date: data.hire_date as Date,
-      salary: data.salary
-    }
-    addStaffMutation.mutate(body, {
-      onSuccess: () => {
-        toast.success("Thêm người dùng thành công", { autoClose: 1500 })
-        setAddItem(false)
-        queryClient.invalidateQueries({ queryKey: ["listStaffs"] })
-      },
-      onError: (error) => {
-        if (isError422<ErrorResponse<FormDataAdd>>(error)) {
-          const formError = error.response?.data.errors
-          if (formError?.email) {
-            setError("email", {
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              message: (formError.email as any).msg
-            })
-          }
-        }
-      }
-    })
-  })
 
   return (
     <motion.div
@@ -187,7 +151,7 @@ export default function AddStaff({ setAddItem }: Props) {
         <button onClick={() => setAddItem(false)} className="absolute right-2 top-2">
           <X color="gray" size={22} />
         </button>
-        <form onSubmit={handleAddStaffSubmit} className="bg-white dark:bg-darkPrimary rounded-xl w-[1050px]">
+        <form className="bg-white dark:bg-darkPrimary rounded-xl w-[1050px]">
           <h3 className="py-2 px-4 text-lg font-semibold tracking-wide rounded-md text-black dark:text-white">
             Thông tin nhân viên
           </h3>
@@ -222,32 +186,6 @@ export default function AddStaff({ setAddItem }: Props) {
                   </div>
                   <div className="col-span-6">
                     <Input
-                      name="password"
-                      register={register}
-                      placeholder="Nhập mật khẩu"
-                      messageErrorInput={errors.password?.message}
-                      classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-white dark:bg-darkSecond focus:border-blue-500 focus:ring-2 outline-none rounded-md text-black dark:text-white"
-                      className="relative flex-1"
-                      classNameLabel="text-black dark:text-white"
-                      nameInput="Mật khẩu"
-                      type="password"
-                    />
-                  </div>
-                  <div className="col-span-6">
-                    <Input
-                      name="confirm_password"
-                      register={register}
-                      placeholder="Nhập mật khẩu"
-                      messageErrorInput={errors.confirm_password?.message}
-                      classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#fff] dark:bg-darkSecond focus:border-blue-500 focus:ring-2 outline-none rounded-md text-black dark:text-white"
-                      className="relative flex-1"
-                      classNameLabel="text-black dark:text-white"
-                      nameInput="Xác nhận mật khẩu"
-                      type="password"
-                    />
-                  </div>
-                  <div className="col-span-6">
-                    <Input
                       name="phone"
                       register={register}
                       placeholder="Nhập số điện thoại"
@@ -273,6 +211,33 @@ export default function AddStaff({ setAddItem }: Props) {
                           />
                         )
                       }}
+                    />
+                  </div>
+
+                  <div className="col-span-6">
+                    <Input
+                      name="created_at"
+                      register={register}
+                      placeholder="Nhập ngày khởi tạo"
+                      messageErrorInput={errors.created_at?.message}
+                      classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-darkSecond focus:border-blue-500 focus:ring-2 outline-none rounded-md text-black dark:text-white"
+                      className="relative flex-1"
+                      classNameLabel="text-black dark:text-white"
+                      nameInput="Ngày tạo"
+                      disabled
+                    />
+                  </div>
+                  <div className="col-span-6">
+                    <Input
+                      name="updated_at"
+                      register={register}
+                      placeholder="Nhập ngày cập nhật"
+                      messageErrorInput={errors.updated_at?.message}
+                      classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-darkSecond focus:border-blue-500 focus:ring-2 outline-none rounded-md text-black dark:text-white"
+                      className="relative flex-1"
+                      classNameLabel="text-black dark:text-white"
+                      nameInput="Ngày cập nhật"
+                      disabled
                     />
                   </div>
                 </div>

@@ -14,6 +14,7 @@ import { isError422 } from "src/Helpers/utils"
 import { ErrorResponse } from "src/Types/utils.type"
 import { motion } from "framer-motion"
 import avatarDefault from "src/Assets/img/avatarDefault.png"
+import { setAvatarImageToLS } from "src/Helpers/auth"
 
 const days = Array.from({ length: 31 }, (_, i) => i + 1)
 const months = Array.from({ length: 12 }, (_, i) => i + 1)
@@ -22,7 +23,7 @@ const years = Array.from({ length: 100 }, (_, i) => 2024 - i) // 1924 - 2024
 const { Option } = Select
 
 export default function Profile() {
-  const { avatar, userId } = useContext(AppContext)
+  const { avatar, userId, setAvatar } = useContext(AppContext)
   const queryClient = useQueryClient()
   const [day, setDay] = useState<number | null>(null)
   const [month, setMonth] = useState<number | null>(null)
@@ -104,7 +105,7 @@ export default function Profile() {
         name: values.name,
         date_of_birth: new Date(year as number, (month as number) - 1, day as number)
       }
-      updateProfileMutation.mutate(
+      const res = await updateProfileMutation.mutateAsync(
         {
           ...updatedData,
           numberPhone: values.numberPhone !== undefined ? values.numberPhone : undefined
@@ -137,6 +138,8 @@ export default function Profile() {
           }
         }
       )
+      setAvatar(res?.data?.result?.avatar)
+      setAvatarImageToLS(res?.data?.result?.avatar)
     } catch (error) {
       console.log(error)
     }

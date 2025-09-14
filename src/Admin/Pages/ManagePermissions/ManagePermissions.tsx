@@ -319,9 +319,28 @@ export default function ManagePermissions() {
 
   useEffect(() => {
     if (listPermissionByRolesId) {
-      setEdited(listPermissionByRolesId)
+      setEdited(structuredClone(listPermissionByRolesId))
     }
   }, [listPermissionByRolesId])
+
+  // edited này dùng để clone lại mảng listPermissionByRolesId và thay đổi trạng thái checked
+  /**
+  listPermissionByRolesId vốn dĩ là một biến độc lập (mảng do API trả về).
+
+  Nhưng khi bạn setEdited(listPermissionByRolesId) thì React chỉ gán tham chiếu chứ không copy.
+
+  Sau đó trong handleChangeChecked, bạn làm:
+
+  role.permissions.push(record)
+  role.permissions = role.permissions.filter(...)
+
+
+  → tức là bạn mutate trực tiếp object trong mảng.
+
+  Vì edited và listPermissionByRolesId đang trỏ chung tới vùng nhớ đó → dữ liệu gốc (listPermissionByRolesId) cũng bị thay đổi theo.
+
+  Khi bấm Hủy mà gọi setEdited(listPermissionByRolesId) thì thực ra bạn chỉ gán lại cái tham chiếu đã bị mutate → nên không thấy reset.
+   */
 
   const isChecked = (roleId: string, permissionId: string) => {
     return edited.some(
@@ -377,6 +396,7 @@ export default function ManagePermissions() {
   }
 
   console.log(updatePermissionForRole)
+  console.log(edited)
 
   useEffect(() => {
     if (isError) {
@@ -420,7 +440,15 @@ export default function ManagePermissions() {
         </h1>
 
         <div className="space-x-2">
-          <Button type="primary" danger disabled={updatePermissionForRole.length === 0}>
+          <Button
+            type="primary"
+            danger
+            disabled={updatePermissionForRole.length === 0}
+            onClick={() => {
+              setUpdatePermissionForRole([])
+              setEdited(structuredClone(listPermissionByRolesId))
+            }}
+          >
             Hủy thay đổi
           </Button>
           <Button type="primary" disabled={updatePermissionForRole.length === 0} onClick={() => setIsModalOpen(true)}>
@@ -465,7 +493,7 @@ export default function ManagePermissions() {
 }
 
 /**
-  hiện tại gom được 42 quyền - admin có đủ 42 quyền - và các api (quyền nhỏ) bỏ qua chỉ lấy api lớn - ví dụ api lấy giá bán bỏ qua vì cần có quyền tạo cung ứng sản phẩm trước rồi mới pass qua quyền này mới vào api trong được -> lấy những cái api chính (xử lý chính)
+  hiện tại gom được 44 quyền - admin có đủ 44 quyền - và các api (quyền nhỏ) bỏ qua chỉ lấy api lớn - ví dụ api lấy giá bán bỏ qua vì cần có quyền tạo cung ứng sản phẩm trước rồi mới pass qua quyền này mới vào api trong được -> lấy những cái api chính (xử lý chính)
 
   còn coi bổ sung thêm các quyền bên users
 
@@ -483,5 +511,5 @@ Statistical: 3
 email: 2
 chat: 2
 role & permissions: 7
-staff : 2
+staff : 4
 */
