@@ -39,9 +39,9 @@ Repo này được thiết kế theo mô hình _monorepo_ (hoặc tách 2 thư m
 - Responsive (desktop, tablet, mobile).
 
 *Ví dụ ảnh minh họa:*
-![Client Home](media/bg-client-home.png)
-![Client Product](media/bg-client-product.png)
-![Client Cart](media/bg-client-cart.png)
+![Client Home](https://pub-9c2ae26b29c841968f1def8091e99be4.r2.dev/bg-client-home.png)
+![Client Product](https://pub-9c2ae26b29c841968f1def8091e99be4.r2.dev/bg-client-product.png)
+![Client Cart](https://pub-9c2ae26b29c841968f1def8091e99be4.r2.dev/bg-client-cart.png)
 
 ### Giao diện Admin (Quản trị + Nhân viên)
 
@@ -54,8 +54,8 @@ Repo này được thiết kế theo mô hình _monorepo_ (hoặc tách 2 thư m
 - Quản lý email và hệ thống chat với khách hàng
 ---
 *Ví dụ ảnh minh họa:*
-![Admin Dashboard](media/bg-admin.png)
-![Admin Product](media/bg-admin-product.png)
+![Admin Dashboard](https://pub-9c2ae26b29c841968f1def8091e99be4.r2.dev/bg-admin.png)
+![Admin Product](https://pub-9c2ae26b29c841968f1def8091e99be4.r2.dev/bg-admin-product.png)
 
 ## Kiến trúc & Cấu trúc thư mục
 
