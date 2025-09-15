@@ -1,28 +1,40 @@
-import { memo } from "react"
+import { memo, useEffect, useState } from "react"
 import { Outlet } from "react-router-dom"
 import ModeToggle from "src/Admin/Components/Mode-Toggle"
-import banner_2 from "src/Assets/img/ui_admin_login.png"
+import banner_1 from "src/Assets/img/banner_background/banner_1.webp"
+import banner_2 from "src/Assets/img/banner_background/banner_2.webp"
+import banner_3 from "src/Assets/img/banner_background/banner_3.webp"
+import banner_4 from "src/Assets/img/banner_background/banner_4.webp"
+import banner_5 from "src/Assets/img/banner_background/banner_5.webp"
+
+const bannerList = [banner_1, banner_2, banner_3, banner_4, banner_5]
 
 function LayoutAuthAdminInner() {
+  const [index, setIndex] = useState(0)
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setIndex((prev) => (prev + 1) % bannerList.length)
+    }, 5000)
+
+    return () => clearInterval(interval)
+  }, [])
+
   return (
-    <div className="relative bg-[#f2f2f2] dark:bg-darkSecond">
+    <div className="relative h-screen flex justify-center items-center">
+      {bannerList.map((item, i) => (
+        <img
+          key={i}
+          src={item}
+          alt={banner_2}
+          className={`absolute top-0 left-0 w-full h-full object-cover brightness-75 transition-opacity duration-500 ${index === i ? "opacity-100" : "opacity-0"}`}
+        />
+      ))}
       <div className="absolute right-4 top-2">
         <ModeToggle />
       </div>
-      <div className="h-screen flex items-center justify-center">
-        <div className="w-[80%] h-[500px] rounded-lg shadow-lg flex items-center justify-center">
-          <div
-            className="w-[70%] h-full rounded-tl-lg rounded-bl-lg p-16"
-            style={{
-              backgroundImage: "linear-gradient(135deg, #FCCF31 10%, #F55555 100%)"
-            }}
-          >
-            <img src={banner_2} alt="banner_2" className="w-full h-full object-cover rounded-lg" />
-          </div>
-          <div className="w-[30%] h-full">
-            <Outlet />
-          </div>
-        </div>
+      <div className="w-[25%] top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 absolute">
+        <Outlet />
       </div>
     </div>
   )

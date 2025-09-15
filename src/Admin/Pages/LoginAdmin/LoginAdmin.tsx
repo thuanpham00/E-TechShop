@@ -85,7 +85,7 @@ export default function LoginAdmin() {
         />
       </Helmet>
 
-      <div className="p-4 h-full bg-white dark:bg-darkBorder flex items-center flex-col justify-center rounded-tr-lg rounded-br-lg">
+      <div className="px-6 py-8 h-full bg-white dark:bg-darkBorder flex items-center flex-col justify-center rounded-lg">
         <h1 className="text-xl my-2 font-semibold text-center text-[#000] dark:text-[#fff]">Hệ thống quản lý</h1>
         <Link to={path.Home} className="flex items-center justify-center">
           <Cpu />
