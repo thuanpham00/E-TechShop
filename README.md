@@ -59,42 +59,53 @@ Repo này được thiết kế theo mô hình _monorepo_ (hoặc tách 2 thư m
 
 ## Kiến trúc & Cấu trúc thư mục
 
-```
+``` bash
 TechZone/
-├── dist/ # thư mục build
-├── media/ # hình ảnh demo, screenshot
-├── public/ # tài nguyên tĩnh
-├── src/ # mã nguồn chính
-│ ├── Admin/ # giao diện quản trị
-│ │ ├── Components/ # component tái sử dụng trong admin
-│ │ ├── Layouts/ # layout admin (sidebar, header...)
-│ │ ├── Pages/ # các trang (Dashboard, Product, Order, User...)
-│ │ ├── Routes/ # định nghĩa routing admin
-│ │ ├── Apis/ # gọi API cho admin
-│ │ └── Assets/ # tài nguyên riêng của admin
-│ │
-│ ├── Client/ # giao diện người dùng
-│ │ ├── Components/ # component UI (ProductCard, CartItem...)
-│ │ ├── Constants/ # hằng số dùng trong client
-│ │ ├── Layout/ # layout người dùng (navbar, footer...)
-│ │ ├── Pages/ # các trang (Home, Product Detail, Cart, Checkout...)
-│ │ ├── Routes/ # định nghĩa routing client
-│ │ └── Utils/ # hàm tiện ích cho client
-│ │
-│ ├── Components/ # component dùng chung
-│ ├── Context/ # context API (state toàn cục)
-│ ├── Helpers/ # helper functions
-│ ├── Hook/ # custom hooks
-│ ├── lib/ # thư viện bổ sung
-│ ├── Types/ # định nghĩa TypeScript types
-│ ├── App.tsx # file gốc React
-│ ├── main.tsx # entry point
-│ └── socket.ts # cấu hình socket (nếu có)
+│── dist/                  # Thư mục build sau khi chạy production
+│── media/                 # Lưu trữ media (ảnh, video...)
+│── node_modules/          # Thư viện cài đặt bởi npm/yarn
+│── public/                # Static files (favicon, images, ...)
+│── src/                   # Code chính của dự án
+│   ├── Admin/             # Phần dành riêng cho quản trị viên
+│   │   ├── Components/    # Các component tái sử dụng trong admin
+│   │   ├── Layouts/       # Giao diện layout admin
+│   │   ├── Pages/         # Trang của admin (Dashboard, Quản lý...)
+│   │   └── Routes/        # Định nghĩa route cho admin
+│   │
+│   ├── Apis/              # Gọi API backend
+│   │   ├── admin.api.ts   # API cho admin
+│   │   └── client.api.ts  # API cho client
+│   │
+│   ├── Assets/            # Tài nguyên (ảnh, logo, ...)
+│   │   ├── img/           
+│   │   └── logo/
+│   │
+│   ├── Client/            # Phần dành cho khách hàng
+│   │   ├── Components/    # Component tái sử dụng cho client
+│   │   ├── Constants/     # Các hằng số client
+│   │   ├── Layout/        # Layout client
+│   │   ├── Pages/         # Các trang của client (Menu, Order...)
+│   │   └── Routes/        # Định nghĩa route cho client
+│   │
+│   ├── Utils/             # Hàm tiện ích (helper functions)
+│   ├── Components/        # Component chung (dùng cho cả Admin & Client)
+│   ├── Constants/         # Hằng số toàn cục
+│   ├── Context/           # React Context API (quản lý state)
+│   │   └── authContext.tsx # Quản lý trạng thái đăng nhập
+│   ├── Helpers/           # Các hàm helper
+│   ├── Hook/              # Custom React hooks
+│   ├── lib/               # Thư viện tự viết/tích hợp
+│   ├── Types/             # Định nghĩa TypeScript types & interfaces
+│   ├── App.tsx            # File gốc React App
+│   ├── index.css          # CSS global
+│   ├── main.tsx           # Điểm vào ứng dụng
+│   └── vite-env.d.ts      # TypeScript cho Vite
 │
-├── index.html
-├── package.json
-├── tsconfig.json
-└── README.md
+├── .editorconfig          # Quy tắc format code
+├── .env                   # File môi trường (API keys, config)
+├── .eslintrc.js/cjs       # ESLint config
+├── .gitignore             # Bỏ qua file/thư mục khi push git
+├── .prettierrc            # Prettier config (format code)
 ```
 
 **Ghi chú**: Nếu repo của bạn khác (ví dụ folder `frontend` + `backend`, hoặc `apps/client`, `apps/admin`), bạn có thể sửa phần "Cấu trúc thư mục" cho khớp.

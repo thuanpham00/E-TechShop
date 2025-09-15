@@ -40,8 +40,8 @@ export default function HeaderAdmin({ handleSidebar, isShowSidebar }: Props) {
       <div className="flex items-center gap-2">
         <ModeToggle />
         <div className="flex items-center gap-1 text-black font-semibold duration-200 transition ease-linear cursor-pointer">
-          <img src={avatar || avatarDefault} className="h-8 w-8" alt="avatar default" />
-          <div>
+          <img src={avatar || avatarDefault} className="h-10 w-10 rounded-full" alt="avatar default" />
+          <div className="ml-1">
             <span className="text-xs dark:text-white">{renderRoleTag()}</span>
             <span className="block text-[13px] truncate w-32 dark:text-white">{nameUser}</span>
           </div>

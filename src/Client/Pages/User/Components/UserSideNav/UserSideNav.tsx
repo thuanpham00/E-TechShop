@@ -12,8 +12,8 @@ export default function UserSideNav() {
         <Link to={path.Profile} className="flex-shrink-0 w-14 h-14 overflow-hidden">
           <img src={(avatar as string) || avatarDefault} alt="" className="w-full h-full rounded-full object-cover" />
         </Link>
-        <div className="flex-grow">
-          <div className="text-gray-600 mb-1 font-semibold truncate text-sm">{nameUser as string}</div>
+        <div className="flex-grow min-w-0">
+          <div className="text-gray-600 mb-1 font-semibold text-sm break-all">{nameUser as string}</div>
           <Link to={path.Profile} className={`flex items-center gap-1 text-gray-500 capitalize text-sm`}>
             <svg
               xmlns="http://www.w3.org/2000/svg"

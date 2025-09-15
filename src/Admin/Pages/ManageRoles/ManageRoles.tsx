@@ -112,8 +112,8 @@ export default function ManageRoles() {
             <Pencil color="orange" size={18} />
           </button>
           <AlertDialog>
-            <AlertDialogTrigger>
-              <Trash2 color="red" size={18} />
+            <AlertDialogTrigger disabled={record.key === "ADMIN"}>
+              <Trash2 color={`${record.key === "ADMIN" ? "gray" : "red"}`} size={18} />
             </AlertDialogTrigger>
             <AlertDialogContent className="w-[350px] dark:bg-darkPrimary">
               <AlertDialogHeader>

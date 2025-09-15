@@ -14,7 +14,7 @@ import { isError422 } from "src/Helpers/utils"
 import { ErrorResponse } from "src/Types/utils.type"
 import { motion } from "framer-motion"
 import avatarDefault from "src/Assets/img/avatarDefault.png"
-import { setAvatarImageToLS } from "src/Helpers/auth"
+import { setAvatarImageToLS, setNameUserToLS } from "src/Helpers/auth"
 
 const days = Array.from({ length: 31 }, (_, i) => i + 1)
 const months = Array.from({ length: 12 }, (_, i) => i + 1)
@@ -23,7 +23,7 @@ const years = Array.from({ length: 100 }, (_, i) => 2024 - i) // 1924 - 2024
 const { Option } = Select
 
 export default function Profile() {
-  const { avatar, userId, setAvatar } = useContext(AppContext)
+  const { avatar, userId, setAvatar, setNameUser } = useContext(AppContext)
   const queryClient = useQueryClient()
   const [day, setDay] = useState<number | null>(null)
   const [month, setMonth] = useState<number | null>(null)
@@ -118,7 +118,6 @@ export default function Profile() {
           onError: (error) => {
             if (isError422<ErrorResponse<{ name: string; numberPhone: string }>>(error)) {
               const formError = error.response?.data.errors
-              console.log(formError)
               const errorFields = []
               if (formError?.name) {
                 errorFields.push({
@@ -140,6 +139,8 @@ export default function Profile() {
       )
       setAvatar(res?.data?.result?.avatar)
       setAvatarImageToLS(res?.data?.result?.avatar)
+      setNameUser(res?.data?.result?.name)
+      setNameUserToLS(res?.data?.result?.name)
     } catch (error) {
       console.log(error)
     }
@@ -239,7 +240,7 @@ export default function Profile() {
                 <Button
                   htmlType="submit"
                   type="primary"
-                  className="p-2 px-4 bg-blue-500 w-[100px] text-white font-semibold rounded-sm hover:bg-blue-500/80 duration-200"
+                  className="p-2 px-4 pb-3 bg-blue-500 w-[100px] text-white font-semibold rounded-sm hover:bg-blue-500/80 duration-200"
                 >
                   Cập nhật
                 </Button>
