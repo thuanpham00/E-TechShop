@@ -15,7 +15,7 @@ export const categories = [
 
 interface MenuItem {
   heading: string
-  value: { name: string; path: string }[]
+  value: { name: string; path: string; type_filter?: string }[]
 }
 
 export const MenuCategoryDetail: MenuItem[][] = [
@@ -24,18 +24,18 @@ export const MenuCategoryDetail: MenuItem[][] = [
     {
       heading: "Thương hiệu",
       value: [
-        { name: "ASUS", path: "laptop-asus-hoc-tap-va-lam-viec" },
-        { name: "ACER", path: "laptop-acer-hoc-tap-va-lam-viec" },
-        { name: "MSI", path: "laptop-msi-hoc-tap-va-lam-viec" },
-        { name: "LENOVO", path: "laptop-lenovo-hoc-tap-va-lam-viec" }
+        { name: "ASUS", path: "laptop-asus-hoc-tap-va-lam-viec", type_filter: "Laptop" },
+        { name: "ACER", path: "laptop-acer-hoc-tap-va-lam-viec", type_filter: "Laptop" },
+        { name: "MSI", path: "laptop-msi-hoc-tap-va-lam-viec", type_filter: "Laptop" },
+        { name: "LENOVO", path: "laptop-lenovo-hoc-tap-va-lam-viec", type_filter: "Laptop" }
       ]
     },
     {
       heading: "Giá bán",
       value: [
-        { name: "Dưới 15 triệu", path: "laptop-duoi-15-trieu" },
-        { name: "Từ 15 đến 20 triệu", path: "laptop-tu-15-den-20-trieu" },
-        { name: "Trên 20 triệu", path: "laptop-tren-20-trieu" }
+        { name: "Dưới 15 triệu", path: "laptop-duoi-15-trieu", type_filter: "Laptop" },
+        { name: "Từ 15 đến 20 triệu", path: "laptop-tu-15-den-20-trieu", type_filter: "Laptop" },
+        { name: "Trên 20 triệu", path: "laptop-tren-20-trieu", type_filter: "Laptop" }
       ]
     },
     {

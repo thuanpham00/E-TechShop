@@ -85,14 +85,14 @@ export default function LoginAdmin() {
         />
       </Helmet>
 
-      <div className="px-6 py-8 h-full bg-white/90 dark:bg-darkBorder flex items-center flex-col justify-center rounded-lg">
+      <div className="p-6 h-full bg-white/90 dark:bg-darkBorder flex items-center flex-col justify-center rounded-lg">
         <h1 className="text-xl my-2 font-semibold text-center text-[#000] dark:text-[#fff]">Hệ thống quản lý</h1>
-        <Link to={path.Home} className="flex items-center justify-center">
+        <div className="flex items-center justify-center">
           <Cpu />
           <span className="text-darkPrimary dark:text-white text-2xl font-bold text-center pb-[1px] border-b-[3px] border-darkPrimary dark:border-white">
             TechZone
           </span>
-        </Link>
+        </div>
         <h1 className="text-base text-center mt-2 text-[#000] dark:text-[#fff]">Đăng nhập</h1>
         <form onSubmit={handleSubmitForm} className="mt-2 w-full">
           <Input
@@ -119,6 +119,17 @@ export default function LoginAdmin() {
             disabled={loginMutation.isPending}
           />
         </form>
+        <div className="px-4 w-full mt-4">
+          <div className="h-[2px] bg-gray-300 w-full flex justify-center"></div>
+        </div>
+        <div className="w-full flex justify-center">
+          <Link
+            to={path.Home}
+            className="mt-4 text-white text-sm bg-red-500 w-full text-center rounded-lg p-2 hover:bg-red-400 duration-200 transition-all"
+          >
+            Trang mua sắm
+          </Link>
+        </div>
       </div>
     </div>
   )

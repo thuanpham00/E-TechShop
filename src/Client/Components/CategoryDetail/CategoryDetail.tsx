@@ -11,8 +11,12 @@ export default function CategoryDetail({ showDetail }: Props) {
   const { setIsShowCategory } = useContext(AppContext)
   const navigate = useNavigate()
 
-  const handleNavigate = (valueItem: string) => {
-    navigate(`/collections/${valueItem}`)
+  const handleNavigate = (valueItem: string, type: string) => {
+    navigate(`/collections/${valueItem}`, {
+      state: {
+        type_filter: type
+      }
+    })
     setIsShowCategory(false)
   }
 
@@ -23,7 +27,7 @@ export default function CategoryDetail({ showDetail }: Props) {
           <span className="text-base tracking-wide font-semibold text-primaryBlue">{item.heading}</span>
           {item.value.map((valueItem, indexValue) => (
             <button
-              onClick={() => handleNavigate(valueItem.path)}
+              onClick={() => handleNavigate(valueItem.path, valueItem.type_filter as string)}
               key={indexValue}
               className="block my-3 text-[13px] font-medium cursor-pointer hover:text-primaryBlue"
             >

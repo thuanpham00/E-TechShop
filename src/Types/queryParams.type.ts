@@ -86,3 +86,8 @@ export type queryParamConfigEmail = {
   page?: string
   limit?: string
 }
+
+export type queryParamsCollection = {
+  status?: string
+  screen_size?: string
+}

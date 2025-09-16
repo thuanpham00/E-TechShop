@@ -1,9 +1,19 @@
 import Http from "src/Helpers/http"
 import { CartType, FavouriteType } from "src/Types/product.type"
+import { queryParamsCollection } from "src/Types/queryParams.type"
 
 export const collectionAPI = {
-  getCollections: (slug: string, signal?: AbortSignal) => {
+  getFilterBaseOnCategory: (category: string) => {
+    return Http.get(`/collections/filters`, {
+      params: {
+        category
+      }
+    })
+  },
+
+  getCollections: (slug: string, params: queryParamsCollection, signal?: AbortSignal) => {
     return Http.get(`/collections/${slug}`, {
+      params,
       signal
     })
   },
