@@ -208,7 +208,7 @@ export default function Header() {
                 value={searchText}
                 onChange={(e) => setSearchText(e.target.value)}
                 onFocus={() => setShowListSearch(true)}
-                className="flex-grow text-[13px] p-3 outline-none rounded-[4px]"
+                className="flex-grow text-[13px] p-3 outline-none rounded-[4px] pr-8"
                 placeholder="Bạn cần tìm gì?"
               />
               <div className="absolute top-1/2 -translate-y-1/2 right-2">
