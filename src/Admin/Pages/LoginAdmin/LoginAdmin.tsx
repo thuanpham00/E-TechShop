@@ -13,7 +13,7 @@ import Button from "src/Components/Button"
 import Input from "src/Components/Input"
 import { path } from "src/Constants/path"
 import { AppContext } from "src/Context/authContext"
-import { isError403, isError422 } from "src/Helpers/utils"
+import { isError422 } from "src/Helpers/utils"
 import { ErrorResponse } from "src/Types/utils.type"
 
 type FormData = Pick<SchemaAuthType, "email" | "password"> // kiểu dữ liệu của form
@@ -46,10 +46,6 @@ export default function LoginAdmin() {
         setRole(response.data.result.userInfo.role)
         setAvatar(response.data.result.userInfo.avatar)
         setUserId(response.data.result.userInfo._id)
-        // nếu không set state tại đây thì nó chỉ set LS và không re-render app
-        // -> dẫn đến UI không cập nhật (mới nhất sau khi login) -> cần set state
-        // để app re-render lại và đặt giá trị mới cho state global
-        // và giá trị khởi tạo cho state global (LS) - set trong response
       },
       onError: (error) => {
         // lỗi từ server trả về
@@ -64,13 +60,6 @@ export default function LoginAdmin() {
               message: (formError.password as any).msg
             })
           }
-        }
-        if (isError403<ErrorResponse<any>>(error)) {
-          const formError = error.response?.data.message
-          console.log(formError)
-          setError("email", {
-            message: formError // lỗi 422 từ server trả về
-          })
         }
       }
     })

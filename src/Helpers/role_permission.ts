@@ -8,16 +8,17 @@ export const rolesForApi = {
 export const permissions = {
   VIEW_DASHBOARD: "view_dashboard",
   VIEW_CUSTOMER: "view_customer",
-  VIEW_EMPLOYEE: "view_employee",
+  VIEW_ORDERS: "view_orders",
   VIEW_CATEGORY: "view_category",
   VIEW_PRODUCT: "view_product",
-  VIEW_ORDERS: "view_orders",
+  VIEW_EMAIL: "view_email",
+  VIEW_CHAT: "view_chat",
   VIEW_RECEIPT: "view_receipt",
   VIEW_SUPPLIERS: "view_suppliers",
   VIEW_SUPPLIES: "view_supplies",
+  VIEW_EMPLOYEE: "view_employee",
   VIEW_ROLES: "view_roles",
-  VIEW_EMAIL: "view_email",
-  VIEW_CHAT: "view_chat"
+  VIEW_PERMISSION: "view_permissions"
 }
 
 export const Roles_Permissions = {
@@ -33,7 +34,8 @@ export const Roles_Permissions = {
     permissions.VIEW_SUPPLIES,
     permissions.VIEW_ROLES,
     permissions.VIEW_EMAIL,
-    permissions.VIEW_CHAT
+    permissions.VIEW_CHAT,
+    permissions.VIEW_PERMISSION
   ],
   [rolesForApi.SALES_STAFF]: [
     permissions.VIEW_DASHBOARD,

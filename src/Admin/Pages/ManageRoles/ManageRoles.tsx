@@ -3,11 +3,9 @@ import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tansta
 import { Button, Table, Tag } from "antd"
 import { useContext, useEffect, useState } from "react"
 import { Helmet } from "react-helmet-async"
-import { useNavigate } from "react-router-dom"
 import { toast } from "react-toastify"
 import NavigateBack from "src/Admin/Components/NavigateBack"
 import { adminAPI } from "src/Apis/admin.api"
-import { path } from "src/Constants/path"
 import { AppContext } from "src/Context/authContext"
 import { ErrorResponse, MessageResponse, SuccessResponse } from "src/Types/utils.type"
 import "./ManageRoles.css"
@@ -39,7 +37,6 @@ export default function ManageRoles() {
   const queryClient = useQueryClient()
 
   const { userId } = useContext(AppContext)
-  const navigate = useNavigate()
   const { data, isError, error } = useQuery({
     queryKey: ["listRole", userId],
     queryFn: () => {
@@ -165,9 +162,6 @@ export default function ManageRoles() {
       <div className="flex justify-end gap-2">
         <Button onClick={() => setAddItem(true)} type="primary">
           Thêm vai trò
-        </Button>
-        <Button onClick={() => navigate(path.AdminPermission)} type="primary" danger>
-          Phân quyền hệ thống
         </Button>
       </div>
       <div className="mt-4">

@@ -99,7 +99,12 @@ export default function StaffDetail({
     setError,
     handleSubmit,
     watch
-  } = useForm<FormDataAdd>({ resolver: yupResolver(formDataAdd) })
+  } = useForm<FormDataAdd>({
+    resolver: yupResolver(formDataAdd),
+    context: {
+      initialHireDate: addItem?.employeeInfo?.hire_date || null // truyền xuống test
+    }
+  })
 
   useEffect(() => {
     if (addItem !== null && typeof addItem === "object") {

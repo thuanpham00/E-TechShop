@@ -31,22 +31,6 @@ import StaffItem from "./Components/StaffItem"
 import Button from "src/Components/Button"
 import "../ManageOrders/ManageOrders.css"
 import StaffDetail from "./Components/StaffDetail"
-// const formDataUpdate = schemaAuth.pick([
-//   "id",
-//   "name",
-//   "email",
-//   "verify",
-//   "numberPhone",
-//   "date_of_birth",
-//   "created_at",
-//   "updated_at",
-//   "avatar"
-// ]) // giúp validate các field trong form
-
-// type FormDataUpdate = Pick<
-//   SchemaAuthType,
-//   "id" | "name" | "email" | "verify" | "numberPhone" | "date_of_birth" | "created_at" | "updated_at" | "avatar"
-// > // các field (type) trong 1 form
 
 const formDataSearch = schemaCustomer.pick([
   "email",

@@ -14,6 +14,7 @@ import { CalculateSalePrice, formatCurrency, slugify } from "src/Helpers/common"
 import { debounce } from "lodash"
 import { toast } from "react-toastify"
 import { motion } from "framer-motion"
+import { path } from "src/Constants/path"
 
 const { Text } = Typography
 
@@ -284,7 +285,7 @@ export default function Cart() {
     if (selectedProducts.length === 0) {
       toast.error("Bạn chưa chọn sản phẩm nào!", { autoClose: 1500 })
     } else {
-      navigate("/cart/info", {
+      navigate(path.InfoOrder, {
         state: {
           selectedProducts,
           totalPriceProducts
@@ -304,7 +305,7 @@ export default function Cart() {
       </Helmet>
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
         <div className="my-4">
-          <div className="container">
+          <div className="container" style={{ maxWidth: "70rem" }}>
             <Link to={"/home"} className="flex items-center gap-[2px] cursor-pointer">
               <ChevronLeft size={16} color="blue" />
               <span className="text-[14px] font-medium text-blue-500">Mua thêm sản phẩm khác</span>

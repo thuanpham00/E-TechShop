@@ -19,7 +19,6 @@ import type { MenuProps } from "antd"
 import { isUndefined, omitBy } from "lodash"
 import { queryParamsCollection } from "src/Types/queryParams.type"
 import useQueryParams from "src/Hook/useQueryParams"
-import { useState } from "react"
 
 export default function Collection() {
   const { slug } = useParams()
@@ -74,11 +73,6 @@ export default function Collection() {
     }
   })
 
-  const [selectedParams, setSelectedParams] = useState<{ status?: string; screen_size?: string }>({
-    status: "",
-    screen_size: ""
-  })
-
   const itemsStatus: MenuProps["items"] = [
     {
       label: <div>Còn hàng</div>,
@@ -100,7 +94,6 @@ export default function Collection() {
   }))
 
   console.log(itemsScreenSizeList)
-  console.log(selectedParams)
 
   const itemSSDList: MenuProps["items"] = dataFilter?.data?.ssd_list.map((item: string) => ({
     label: <div>{item}</div>,
@@ -118,7 +111,6 @@ export default function Collection() {
   }))
 
   const handleChangeQuery = (field: string, value: string) => {
-    setSelectedParams((prev) => ({ ...prev, [field]: value })) // lưu lại nếu cần
     const params: queryParamsCollection = {
       ...queryConfig,
       [field]: value
@@ -176,9 +168,9 @@ export default function Collection() {
                   <button className="border border-gray-300 rounded-md px-3 py-1 bg-white hover:bg-gray-50 flex items-center gap-1">
                     <Space>
                       <span className="text-[13px]">
-                        {selectedParams.status
+                        {queryParams.status
                           ? // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                            (itemsStatus.find((item) => item?.key === selectedParams.status) as any)?.label
+                            (itemsStatus.find((item) => item?.key === queryParams.status) as any)?.label
                           : "Tình trạng sản phẩm"}
                       </span>
                       <DownOutlined />
@@ -192,10 +184,10 @@ export default function Collection() {
                   <button className="border border-gray-300 rounded-md px-3 py-1 bg-white hover:bg-gray-50 flex items-center gap-1">
                     <Space>
                       <span className="text-[13px]">
-                        {itemsScreenSizeList && selectedParams.screen_size
+                        {itemsScreenSizeList && queryParams.screen_size
                           ? (
                               itemsScreenSizeList.find(
-                                (item) => item?.key?.toString() === selectedParams.screen_size
+                                (item) => item?.key?.toString() === queryParams.screen_size
                               ) as any
                             )?.label
                           : "Kích thước màn hình"}

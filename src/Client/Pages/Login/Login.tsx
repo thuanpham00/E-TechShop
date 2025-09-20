@@ -9,7 +9,7 @@ import { toast } from "react-toastify"
 import { userAPI } from "src/Apis/user.api"
 import { path } from "src/Constants/path"
 import { schemaAuth, SchemaAuthType } from "src/Client/Utils/rule"
-import { isError403, isError422 } from "src/Helpers/utils"
+import { isError422 } from "src/Helpers/utils"
 import { ErrorResponse } from "src/Types/utils.type"
 import { AppContext } from "src/Context/authContext"
 import Button from "src/Components/Button"
@@ -82,13 +82,6 @@ export default function Login() {
               message: (formError.password as any).msg
             })
           }
-        }
-        if (isError403<ErrorResponse<any>>(error)) {
-          const formError = error.response?.data.message
-          console.log(formError)
-          setError("email", {
-            message: formError // lỗi 422 từ server trả về
-          })
         }
       }
     })

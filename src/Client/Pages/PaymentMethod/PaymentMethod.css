@@ -1,0 +1,17 @@
+.info_order .ant-card-head-title {
+  font-weight: 600;
+  font-size: 20px;
+}
+
+.info_order .ant-input {
+  margin-top: 5px;
+}
+
+.info_order .ant-divider {
+  margin: 2px 0;
+  background-color: #f2f2f2;
+}
+
+.total_amount .ant-typography:last-child {
+  color: red;
+}

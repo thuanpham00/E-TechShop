@@ -31,8 +31,18 @@ export const schemaAuth = yup
     status: yup.string().required("Trạng thái bắt buộc!"),
     hire_date: yup
       .date()
-      .required("Ngày vào làm là bắt buộc!") // bắt buộc chọn
-      .min(new Date(new Date().setHours(0, 0, 0, 0)), "Hãy chọn ngày từ hôm nay trở đi!"),
+      .required("Ngày vào làm là bắt buộc!")
+      .test("min-today", "Hãy chọn ngày từ hôm nay trở đi!", function (value) {
+        const today = new Date(new Date().setHours(0, 0, 0, 0))
+        const initial = this.options.context?.initialHireDate
+
+        // Nếu có giá trị ban đầu và user không đổi -> bỏ qua check
+        if (initial && new Date(initial).getTime() === new Date(value).getTime()) {
+          return true
+        }
+
+        return value >= today
+      }),
     salary: yup
       .number()
       .typeError("Lương phải là số!") // nếu nhập ký tự chữ hoặc không phải số

@@ -5,7 +5,6 @@ import {
   ClipboardCopy,
   Cpu,
   House,
-  IdCard,
   Info,
   LayoutDashboard,
   LogOut,
@@ -13,7 +12,9 @@ import {
   MessageCircle,
   PackageSearch,
   User,
-  Users
+  Users,
+  Settings,
+  Settings2
 } from "lucide-react"
 import { path } from "src/Constants/path"
 import SidebarItem from "../SidebarItem"
@@ -45,9 +46,10 @@ export default function Sidebar() {
     { name: "Quản lý Nhập hàng", icon: ClipboardCopy, path: path.AdminReceipts },
     { name: "Quản lý Cung ứng", icon: PackageSearch, path: path.AdminSupplies },
     { name: "Quản lý Nhà cung cấp", icon: House, path: path.AdminSuppliers },
-    { name: "Quản lý Vai trò", icon: IdCard, path: path.AdminRole },
+    { name: "Quản lý Vai trò", icon: Settings2, path: path.AdminRole },
     { name: "Thông báo Email", icon: Mail, path: path.AdminEmail },
-    { name: "Hệ thống chat", icon: MessageCircle, path: path.AdminChat }
+    { name: "Hệ thống chat", icon: MessageCircle, path: path.AdminChat },
+    { name: "Phân quyền hệ thống", icon: Settings, path: path.AdminPermission }
   ]
 
   const { theme } = useTheme() // Lấy theme hiện tại
@@ -103,6 +105,20 @@ export default function Sidebar() {
           path={sideBarList[9].path}
         />
       )
+    },
+    hasPermission(permissions.VIEW_PERMISSION) && {
+      key: "13",
+      label: (
+        <SidebarItem
+          className={`${location.pathname.startsWith(sideBarList[12].path) ? "text-[14px] text-[#3b82f6] font-semibold" : "text-[14px] text-black dark:text-white/80 font-normal hover:text-[#495057] duration-200 ease-in"}`}
+          classNameWrapper={`flex items-center gap-2 cursor-pointer`}
+          icon={React.createElement(sideBarList[12].icon, {
+            color: location.pathname.startsWith(sideBarList[12].path) ? "#3b82f6" : iconColor ? "white" : "black"
+          })}
+          nameSideBar={sideBarList[12].name}
+          path={sideBarList[12].path}
+        />
+      )
     }
   ].filter(Boolean) // dùng Filter(Boolean) để loại bỏ false undefined null
 
@@ -110,7 +126,7 @@ export default function Sidebar() {
     sub5Menu.length > 0
       ? {
           key: "sub5",
-          label: <div className="font-semibold text-[15px] text-black dark:text-white">Quản lý Hệ thống</div>,
+          label: <div className="font-semibold text-[15px] text-black dark:text-white">Cấu hình và bảo mật</div>,
           children: sub5Menu
         }
       : null
@@ -319,7 +335,7 @@ export default function Sidebar() {
               overflowY: "auto",
               overflowX: "hidden"
             }}
-            defaultOpenKeys={["sub1", "sub2", "sub3"]}
+            defaultOpenKeys={["sub1", "sub2"]}
             className="bg-white dark:bg-darkPrimary menu-scroll"
             items={items}
           />

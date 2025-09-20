@@ -2,15 +2,13 @@
 import { Button, Col, Form, Image, Input, Row, Steps, Table, Typography } from "antd"
 import { useContext, useEffect, useRef } from "react"
 import { Helmet } from "react-helmet-async"
-import { Link, useLocation } from "react-router-dom"
-import { toast } from "react-toastify"
+import { Link, useLocation, useNavigate } from "react-router-dom"
 import NavigateBack from "src/Admin/Components/NavigateBack"
 import { AppContext } from "src/Context/authContext"
 import { CalculateSalePrice, formatCurrency, slugify } from "src/Helpers/common"
 import { OrderType } from "src/Types/product.type"
 import { motion } from "framer-motion"
-import { OrderApi } from "src/Apis/order.api"
-import { useMutation } from "@tanstack/react-query"
+import { path } from "src/Constants/path"
 
 const { Text } = Typography
 const { TextArea } = Input
@@ -18,6 +16,7 @@ const { TextArea } = Input
 const shipping_fee = 30000
 
 export default function InfoOrder() {
+  const navigate = useNavigate()
   const { nameUser } = useContext(AppContext)
   const { state } = useLocation()
   const listCart = state?.selectedProducts
@@ -101,12 +100,6 @@ export default function InfoOrder() {
     window.scroll(0, 0) // scroll mượt
   }, [])
 
-  const createOrderMutation = useMutation({
-    mutationFn: (body: OrderType) => {
-      return OrderApi.createOrderPayment(body)
-    }
-  })
-
   const onFinish = async (values: { name: string; phone: string; address: string; email: string; note?: string }) => {
     const orderList = listCart?.map((item: any) => {
       return {
@@ -132,19 +125,11 @@ export default function InfoOrder() {
       note: values.note !== undefined ? values.note : ""
     }
 
-    const toastId = toast.loading("Đang xử lý thanh toán. Vui lòng chờ trong giây lát...")
-    try {
-      const response = await createOrderMutation.mutateAsync(body, {
-        onSuccess: () => {
-          toast.dismiss(toastId)
-        }
-      })
-      if (response.data.url) {
-        window.location.href = response.data.url
+    navigate(path.PaymentMethod, {
+      state: {
+        infoOrder: body
       }
-    } catch (error) {
-      console.error("Error creating payment URL:", error)
-    }
+    })
   }
 
   return (
@@ -157,7 +142,7 @@ export default function InfoOrder() {
         />
       </Helmet>
       <div className="my-4">
-        <div className="container">
+        <div className="container" style={{ maxWidth: "70rem" }}>
           <NavigateBack />
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
             <div className="p-4 bg-white rounded-md mt-4">

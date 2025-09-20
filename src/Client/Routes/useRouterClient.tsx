@@ -6,6 +6,7 @@ import MainLayoutAuth from "../Layout/MainLayoutAuth"
 import { AppContext } from "src/Context/authContext"
 import UserLayout from "../Pages/User/Layout/UserLayout"
 import { rolesForApi } from "src/Helpers/role_permission"
+import PaymentMethod from "../Pages/PaymentMethod"
 
 const Home = lazy(() => import("../Pages/Home"))
 const Login = lazy(() => import("../Pages/Login"))
@@ -20,7 +21,8 @@ const ResetPassword = lazy(() => import("../Pages/ResetPassword"))
 const ProductDetail = lazy(() => import("../Pages/ProductDetail"))
 const Order = lazy(() => import("../Pages/Order"))
 const InfoOrder = lazy(() => import("../Pages/InfoOrder"))
-const CheckoutSuccess = lazy(() => import("../Pages/CheckoutSuccess"))
+const PaymentSuccessVNPay = lazy(() => import("../Pages/PaymentSuccessVNPay"))
+const PaymentSuccessCod = lazy(() => import("../Pages/PaymentSuccessCod"))
 const ChangePassword = lazy(() => import("../Pages/User/Pages/ChangePassword"))
 const Profile = lazy(() => import("../Pages/User/Pages/Profile"))
 
@@ -134,10 +136,26 @@ export default function useRouterClient() {
                   )
                 },
                 {
+                  path: path.PaymentMethod,
+                  element: (
+                    <Suspense>
+                      <PaymentMethod />
+                    </Suspense>
+                  )
+                },
+                {
                   path: path.CheckoutSuccess,
                   element: (
                     <Suspense>
-                      <CheckoutSuccess />
+                      <PaymentSuccessVNPay />
+                    </Suspense>
+                  )
+                },
+                {
+                  path: path.CheckoutSuccessCod,
+                  element: (
+                    <Suspense>
+                      <PaymentSuccessCod />
                     </Suspense>
                   )
                 },

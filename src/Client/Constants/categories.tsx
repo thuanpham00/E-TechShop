@@ -40,7 +40,7 @@ export const MenuCategoryDetail: MenuItem[][] = [
     },
     {
       heading: "Khám phá",
-      value: [{ name: "Tất cả sản phẩm", path: "laptop" }]
+      value: [{ name: "Tất cả sản phẩm", path: "laptop", type_filter: "Laptop" }]
     }
     // {
     //   heading: "CPU Intel - AMD",

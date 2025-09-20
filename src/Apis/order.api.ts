@@ -16,6 +16,10 @@ export const OrderApi = {
     return Http.post("/payment", body)
   },
 
+  createOrderPaymentCOD: (body: OrderType) => {
+    return Http.post("/payment/create-order-cod", body)
+  },
+
   callBackVnpay: (orderId: string) => {
     return Http.post("/payment/vnpay-callback", {
       orderId
