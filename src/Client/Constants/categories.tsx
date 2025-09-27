@@ -9,7 +9,7 @@ export const categories = [
   { index: "5", name: "Ổ cứng, RAM, Thẻ nhớ", icon: <HardDrive size={22} /> },
   { index: "6", name: "Màn hình", icon: <Monitor size={22} /> },
   { index: "7", name: "Bàn phím", icon: <Keyboard size={22} /> },
-  { index: "8", name: "Chuột + Lót chuột", icon: <Mouse size={22} /> },
+  { index: "8", name: "Chuột", icon: <Mouse size={22} /> },
   { index: "9", name: "Tai nghe", icon: <Headset size={22} /> }
 ]
 

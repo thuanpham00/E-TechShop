@@ -5,10 +5,14 @@ import "swiper/css"
 import "swiper/css/navigation"
 import "swiper/css/pagination"
 import { Navigation, Pagination, Autoplay } from "swiper/modules"
-import banner_1 from "src/Assets/img/banner_home/banner-home-1.jpeg"
-import banner_2 from "src/Assets/img/banner_home/banner-home-2.jpeg"
-import banner_3 from "src/Assets/img/banner_home/lenovo_brand_700x280px.jpg"
-import banner_4 from "src/Assets/img/banner_home/banner-home-3.jpeg"
+import banner_1 from "src/Assets/img/banner_category/acer.webp"
+import banner_2 from "src/Assets/img/banner_category/asus.webp"
+import banner_3 from "src/Assets/img/banner_category/laptop_duoi_15_trieu.webp"
+import banner_4 from "src/Assets/img/banner_category/lenovo.webp"
+import banner_5 from "src/Assets/img/banner_category/thang_02_pc_gvn_banner_web_collection_1920x420.webp"
+import banner_7 from "src/Assets/img/banner_category/asus-monitor.webp"
+import banner_8 from "src/Assets/img/banner_category/dell-monitor.webp"
+import banner_9 from "src/Assets/img/banner_category/banner-man-hinh-viewsonic.jpg"
 
 export default function SlideShow() {
   return (
@@ -25,16 +29,28 @@ export default function SlideShow() {
       modules={[Navigation, Pagination, Autoplay]}
     >
       <SwiperSlide>
-        <img src={banner_1} className="object-cover w-full h-[480px] block rounded-[4px]" alt="banner_1" />
+        <img src={banner_1} className="object-fill w-full h-[300px] block" alt="banner_1" />
       </SwiperSlide>
       <SwiperSlide>
-        <img src={banner_2} className="object-cover w-full h-[480px] block rounded-[4px]" alt="banner_2" />
+        <img src={banner_2} className="object-fill w-full h-[300px] block" alt="banner_2" />
       </SwiperSlide>
       <SwiperSlide>
-        <img src={banner_3} className="object-cover w-full h-[480px] block rounded-[4px]" alt="banner_2" />
+        <img src={banner_3} className="object-fill w-full h-[300px] block" alt="banner_2" />
       </SwiperSlide>
       <SwiperSlide>
-        <img src={banner_4} className="object-cover w-full h-[480px] block rounded-[4px]" alt="banner_2" />
+        <img src={banner_4} className="object-fill w-full h-[300px] block" alt="banner_2" />
+      </SwiperSlide>
+      <SwiperSlide>
+        <img src={banner_5} className="object-fill w-full h-[300px] block" alt="banner_1" />
+      </SwiperSlide>
+      <SwiperSlide>
+        <img src={banner_7} className="object-fill w-full h-[300px] block" alt="banner_2" />
+      </SwiperSlide>
+      <SwiperSlide>
+        <img src={banner_8} className="object-fill w-full h-[300px] block" alt="banner_2" />
+      </SwiperSlide>
+      <SwiperSlide>
+        <img src={banner_9} className="object-fill w-full h-[300px] block" alt="banner_2" />
       </SwiperSlide>
     </Swiper>
   )

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { createContext, useState } from "react"
 import {
   getAccessTokenFromLS,
@@ -6,6 +7,7 @@ import {
   getRoleFromLS,
   getUserIdFromLS
 } from "src/Helpers/auth"
+import { CollectionItemType } from "src/Types/product.type"
 
 type Props = {
   children: React.ReactNode
@@ -25,6 +27,9 @@ type TypeInitialState = {
   isShowCategory: boolean
   setIsShowCategory: React.Dispatch<React.SetStateAction<boolean>>
   reset: () => void
+
+  recentlyViewed: CollectionItemType[]
+  setRecentlyViewed: React.Dispatch<React.SetStateAction<any[]>>
 }
 
 // giá trị khởi tạo cho state global
@@ -41,7 +46,10 @@ const initialStateContext: TypeInitialState = {
   setUserId: () => null,
   isShowCategory: false,
   setIsShowCategory: () => null,
-  reset: () => null
+  reset: () => null,
+
+  recentlyViewed: [],
+  setRecentlyViewed: () => null
 }
 
 export const AppContext = createContext<TypeInitialState>(initialStateContext)
@@ -54,11 +62,17 @@ export default function AppClientProvider({ children }: Props) {
   const [avatar, setAvatar] = useState<string | null>(initialStateContext.avatar)
   const [userId, setUserId] = useState<string | null>(initialStateContext.userId)
 
-  // nếu ko dùng state thì nó ko set lại giá trị context được vì ở đây tôi () => null đúng ko .
-  // nên dùng state để nó có thể trigger set lại giá trị đúng ko
+  const [recentlyViewed, setRecentlyViewed] = useState<CollectionItemType[]>([])
+
+  console.log(recentlyViewed)
   /**
    * Các biến trong context (như isAuthenticated, nameUser, isShowCategory, ...) phải khớp với các biến state trong AppClientProvider để đảm bảo rằng chúng phản ánh đúng dữ liệu toàn cục được quản lý bởi context.
    * Việc các biến trong context đặt tên giống state là giúp quản lý trạng thái dữ liệu toàn cục và khi các biến trong context thay đổi đồng thời state thay đổi dẫn đến các component con sử dụng context đó sẽ re-render lại do state
+   */
+  /**
+   * truyền giá trị tĩnh context vào state và sau đó mượn hàm set state này trigger set lại giá trị đồng thời giá trị set (state) khớp với context nên nó re-render lại các component đang sử dụng đúng ko
+   *
+   * Bạn truyền giá trị khởi tạo (static) vào state → sau đó dùng state + setState để biến context thành nguồn dữ liệu động. Khi state thay đổi, context thay đổi, và toàn bộ component dùng context sẽ re-render theo. ✅
    */
 
   const reset = () => {
@@ -84,7 +98,9 @@ export default function AppClientProvider({ children }: Props) {
         avatar,
         setAvatar,
         userId,
-        setUserId
+        setUserId,
+        recentlyViewed,
+        setRecentlyViewed
       }}
     >
       {children}

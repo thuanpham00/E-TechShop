@@ -1,10 +1,11 @@
 import { Eye, Star } from "lucide-react"
-import { useMemo, useState } from "react"
+import { useContext, useMemo, useState } from "react"
 import { Fragment } from "react/jsx-runtime"
 import { CalculateSalePrice, ConvertAverageRating, formatCurrency, slugify } from "src/Helpers/common"
 import { CollectionItemType } from "src/Types/product.type"
 import image_default from "src/Assets/img/anh_default_url.jpg"
-import { Link } from "react-router-dom"
+import { useNavigate } from "react-router-dom"
+import { AppContext } from "src/Context/authContext"
 
 const getStatusTagClass = (status: string) => {
   switch (status?.toLowerCase()) {
@@ -21,6 +22,8 @@ const getStatusTagClass = (status: string) => {
 
 export default function ProductItem({ item }: { item: CollectionItemType }) {
   const [imageChange, setImageChange] = useState<string | null>("")
+  const navigate = useNavigate()
+  const { setRecentlyViewed } = useContext(AppContext)
 
   const handleHoverProduct = (id: string) => {
     setImageChange(id)
@@ -34,15 +37,17 @@ export default function ProductItem({ item }: { item: CollectionItemType }) {
     return imageDefault
   }, [item.medias, imageDefault])
 
+  const handleNavigate = () => {
+    navigate(`/products/${slugify(item.name)}-i-${item._id}`, { state: item.category[0] })
+    setRecentlyViewed((prev) => [...prev, item])
+  }
+
   return (
-    <Link
-      to={{
-        pathname: `/products/${slugify(item.name)}-i-${item._id}`
-      }}
-      state={item.category[0]}
+    <button
       className="col-span-1 block border border-[#dedede] rounded-[4px] p-4 pt-[6px] bg-white transition-all duration-200 ease-in cursor-pointer"
       onMouseEnter={() => handleHoverProduct(item._id)}
       onMouseLeave={() => handleHoverProduct("")}
+      onClick={handleNavigate}
     >
       <div className="flex flex-col relative">
         <div className="absolute top-[-4px] right-[-16px]">
@@ -101,6 +106,6 @@ export default function ProductItem({ item }: { item: CollectionItemType }) {
           </div>
         </div>
       </div>
-    </Link>
+    </button>
   )
 }
