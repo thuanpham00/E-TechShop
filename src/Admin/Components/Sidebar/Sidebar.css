@@ -1,23 +1,27 @@
-.ant-menu-title-content {
+.menu-sidebar .ant-menu-title-content {
   white-space: normal !important; /* Cho phép xuống dòng */
   word-break: break-word; /* Ngắt từ khi dài quá */
   line-height: 1.3; /* Dãn dòng một chút */
 }
 
-.ant-menu-submenu {
+.menu-sidebar .ant-menu-submenu {
   margin-bottom: 6px;
 }
 
-.ant-menu-submenu-title {
+.menu-sidebar .ant-menu-submenu-title {
   height: 45px !important;
 }
 
-.ant-menu-item {
+.menu-sidebar .ant-menu-item {
   height: 35px !important;
   padding-left: 30px !important;
 }
 
-.menu-scroll {
+.menu-sidebar .menu-scroll {
   scrollbar-width: thin;
   scrollbar-color: #888 #f0f0f0;
+}
+
+.menu-sidebar .ant-menu-submenu-arrow {
+  color: white;
 }

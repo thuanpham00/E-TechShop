@@ -367,115 +367,6 @@ export default function ManageSupplies() {
           </div>
         </section>
       )
-    },
-    {
-      key: "2",
-      label: <h2 className="text-[16px] font-semibold tracking-wide text-black dark:text-white">Danh sách Cung ứng</h2>,
-      children: (
-        <section>
-          <div className="bg-white dark:bg-darkPrimary mb-3 dark:border-darkBorder rounded-2xl">
-            {isLoading && <Skeleton />}
-            {!isFetching && (
-              <div>
-                <div className="flex items-center justify-between mb-2">
-                  <div className="flex items-center gap-2">
-                    <Button
-                      onClick={() => downloadExcel(listSupplier)}
-                      icon={<FolderUp size={15} />}
-                      nameButton="Export"
-                      classNameButton="py-2 px-3 border border-[#E2E7FF] bg-[#E2E7FF] w-full text-[#3A5BFF] font-medium rounded-3xl hover:bg-blue-500/40 duration-200 text-[13px] flex items-center gap-1"
-                    />
-                    <Select
-                      defaultValue="Mới nhất"
-                      className="select-sort"
-                      onChange={handleChangeSortListOrder}
-                      suffixIcon={<ArrowUpNarrowWide color={isDarkMode ? "white" : "black"} />}
-                      options={[
-                        { value: "old", label: "Cũ nhất" },
-                        { value: "new", label: "Mới nhất" }
-                      ]}
-                    />
-                  </div>
-                  <div>
-                    <Button
-                      onClick={() => setAddItem(true)}
-                      icon={<Plus size={15} />}
-                      nameButton="Thêm mới"
-                      classNameButton="py-2 px-3 bg-blue-500 w-full text-white font-medium rounded-3xl hover:bg-blue-500/80 duration-200 text-[13px] flex items-center gap-1"
-                    />
-                  </div>
-                </div>
-                <div>
-                  <div className="bg-[#f2f2f2] dark:bg-darkPrimary grid grid-cols-12 items-center gap-2 py-3 border border-[#dedede] dark:border-darkBorder px-4 rounded-tl-xl rounded-tr-xl">
-                    <div className="col-span-2 text-[14px] font-semibold tracking-wider uppercase text-black dark:text-white">
-                      Mã cung ứng
-                    </div>
-                    <div className="col-span-3 text-[14px] font-semibold tracking-wider uppercase text-black dark:text-white">
-                      Tên sản phẩm
-                    </div>
-                    <div className="col-span-2 text-[14px] font-semibold tracking-wider uppercase text-black dark:text-white">
-                      Tên nhà cung cấp
-                    </div>
-                    <div className="col-span-1 text-[14px] font-semibold tracking-wider uppercase text-black dark:text-white">
-                      Giá nhập
-                    </div>
-                    <div className="col-span-1 text-[14px] font-semibold tracking-wider uppercase text-black dark:text-white">
-                      Thời gian cung ứng
-                    </div>
-                    <div className="col-span-1 text-[14px] font-semibold tracking-wider uppercase text-black dark:text-white">
-                      Ngày tạo
-                    </div>
-                    <div className="col-span-1 text-[14px] font-semibold tracking-wider uppercase text-black dark:text-white">
-                      Ngày cập nhật
-                    </div>
-                    <div className="col-span-1 text-[14px] text-center font-semibold tracking-wider uppercase text-black dark:text-white">
-                      Hành động
-                    </div>
-                  </div>
-                  <div>
-                    {listSupplier?.length > 0 ? (
-                      listSupplier.map((item, index) => (
-                        <motion.div
-                          key={item._id}
-                          initial={{ opacity: 0, y: 20 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          transition={{ delay: index * 0.1 }}
-                        >
-                          <SupplyItem
-                            onDelete={handleDeleteSupply}
-                            handleEditItem={() => setAddItem(item)}
-                            item={item}
-                            maxIndex={listSupplier?.length}
-                            index={index}
-                          />
-                        </motion.div>
-                      ))
-                    ) : (
-                      <div className="text-center mt-4">
-                        <Empty />
-                      </div>
-                    )}
-                  </div>
-                </div>
-                <Pagination
-                  data={result}
-                  queryConfig={queryConfig}
-                  page_size={page_size}
-                  pathNavigate={path.AdminSupplies}
-                />
-
-                <AnimatePresence>
-                  {addItem !== null && typeof addItem === "object" && (
-                    <SupplyDetail addItem={addItem} setAddItem={setAddItem} queryConfig={queryConfig} />
-                  )}
-                </AnimatePresence>
-
-                <AddSupply setAddItem={setAddItem} addItem={addItem} />
-              </div>
-            )}
-          </div>
-        </section>
-      )
     }
   ]
 
@@ -508,6 +399,110 @@ export default function ManageSupplies() {
       </h1>
 
       <Collapse items={items} defaultActiveKey={["2"]} className="bg-white dark:bg-darkPrimary dark:border-none" />
+
+      <section className="mt-4">
+        <div className="bg-white dark:bg-darkPrimary mb-3 dark:border-darkBorder rounded-2xl">
+          {isLoading && <Skeleton />}
+          {!isFetching && (
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center gap-2">
+                  <Button
+                    onClick={() => downloadExcel(listSupplier)}
+                    icon={<FolderUp size={15} />}
+                    nameButton="Export"
+                    classNameButton="py-2 px-3 border border-[#E2E7FF] bg-[#E2E7FF] w-full text-[#3A5BFF] font-medium rounded-3xl hover:bg-blue-500/40 duration-200 text-[13px] flex items-center gap-1"
+                  />
+                  <Select
+                    defaultValue="Mới nhất"
+                    className="select-sort"
+                    onChange={handleChangeSortListOrder}
+                    suffixIcon={<ArrowUpNarrowWide color={isDarkMode ? "white" : "black"} />}
+                    options={[
+                      { value: "old", label: "Cũ nhất" },
+                      { value: "new", label: "Mới nhất" }
+                    ]}
+                  />
+                </div>
+                <div>
+                  <Button
+                    onClick={() => setAddItem(true)}
+                    icon={<Plus size={15} />}
+                    nameButton="Thêm mới"
+                    classNameButton="py-2 px-3 bg-blue-500 w-full text-white font-medium rounded-3xl hover:bg-blue-500/80 duration-200 text-[13px] flex items-center gap-1"
+                  />
+                </div>
+              </div>
+              <div className="mt-4">
+                <div className="bg-[#fff] dark:bg-darkPrimary grid grid-cols-12 items-center gap-2 py-3 border border-[#dedede] dark:border-darkBorder px-4 rounded-tl-lg rounded-tr-lg">
+                  <div className="col-span-2 text-[14px] font-semibold tracking-wider uppercase text-black dark:text-white">
+                    Mã cung ứng
+                  </div>
+                  <div className="col-span-3 text-[14px] font-semibold tracking-wider uppercase text-black dark:text-white">
+                    Tên sản phẩm
+                  </div>
+                  <div className="col-span-2 text-[14px] font-semibold tracking-wider uppercase text-black dark:text-white">
+                    Tên nhà cung cấp
+                  </div>
+                  <div className="col-span-1 text-[14px] font-semibold tracking-wider uppercase text-black dark:text-white">
+                    Giá nhập
+                  </div>
+                  <div className="col-span-1 text-[14px] font-semibold tracking-wider uppercase text-black dark:text-white">
+                    Thời gian cung ứng
+                  </div>
+                  <div className="col-span-1 text-[14px] font-semibold tracking-wider uppercase text-black dark:text-white">
+                    Ngày tạo
+                  </div>
+                  <div className="col-span-1 text-[14px] font-semibold tracking-wider uppercase text-black dark:text-white">
+                    Ngày cập nhật
+                  </div>
+                  <div className="col-span-1 text-[14px] text-center font-semibold tracking-wider uppercase text-black dark:text-white">
+                    Hành động
+                  </div>
+                </div>
+                <div>
+                  {listSupplier?.length > 0 ? (
+                    listSupplier.map((item, index) => (
+                      <motion.div
+                        key={item._id}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: index * 0.1 }}
+                      >
+                        <SupplyItem
+                          onDelete={handleDeleteSupply}
+                          handleEditItem={() => setAddItem(item)}
+                          item={item}
+                          maxIndex={listSupplier?.length}
+                          index={index}
+                        />
+                      </motion.div>
+                    ))
+                  ) : (
+                    <div className="text-center mt-4">
+                      <Empty />
+                    </div>
+                  )}
+                </div>
+              </div>
+              <Pagination
+                data={result}
+                queryConfig={queryConfig}
+                page_size={page_size}
+                pathNavigate={path.AdminSupplies}
+              />
+
+              <AnimatePresence>
+                {addItem !== null && typeof addItem === "object" && (
+                  <SupplyDetail addItem={addItem} setAddItem={setAddItem} queryConfig={queryConfig} />
+                )}
+              </AnimatePresence>
+
+              <AddSupply setAddItem={setAddItem} addItem={addItem} />
+            </div>
+          )}
+        </div>
+      </section>
     </div>
   )
 }

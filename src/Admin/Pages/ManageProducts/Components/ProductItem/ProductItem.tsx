@@ -13,6 +13,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger
 } from "src/Components/ui/alert-dialog"
+import { Image } from "antd"
 
 export default function ProductItem({
   item,
@@ -42,7 +43,7 @@ export default function ProductItem({
 
   return (
     <div
-      className={`bg-white dark:bg-darkPrimary grid grid-cols-12 items-center gap-4 py-3 cursor-pointer border border-[#dedede] dark:border-darkBorder px-4 ${index + 1 === maxIndex ? "rounded-bl-xl rounded-br-xl" : ""}`}
+      className={`${index % 2 === 0 ? "bg-[#f2f2f2]" : "bg-white"} dark:bg-darkPrimary grid grid-cols-12 items-center gap-4 py-3 cursor-pointer border border-[#dedede] dark:border-darkBorder px-4 ${index + 1 === maxIndex ? "rounded-bl-lg rounded-br-lg" : ""}`}
       key={item._id}
     >
       <div className="col-span-1 flex items-center justify-between">
@@ -52,7 +53,7 @@ export default function ProductItem({
         </button>
       </div>
       <div className="col-span-2">
-        <img src={item.banner.url} loading="lazy" alt={item._id} className="h-auto w-full object-cover" />
+        <Image src={item.banner.url} loading="lazy" alt={item._id} className="h-auto w-full object-cover" />
       </div>
       <div className="col-span-2 font-semibold text-black dark:text-white">{item.name}</div>
       <div className="col-span-1 text-black dark:text-white">{item.brand[0].name}</div>

@@ -122,7 +122,7 @@ export default function AdminEmail() {
           {!isFetching && (
             <div>
               <div className="mt-4 shadow-lg">
-                <div className="bg-[#f2f2f2] dark:bg-darkPrimary grid grid-cols-12 items-center gap-2 py-3 border border-[#dedede] dark:border-darkBorder px-4 rounded-tl-xl rounded-tr-xl ">
+                <div className="bg-[#fff] dark:bg-darkPrimary grid grid-cols-12 items-center gap-2 py-3 border border-[#dedede] dark:border-darkBorder px-4 rounded-tl-xl rounded-tr-xl ">
                   <div className="col-span-1 text-[14px] font-semibold tracking-wider uppercase">Mã resend</div>
                   <div className="col-span-2 text-[14px] font-semibold tracking-wider uppercase">Email gửi</div>
                   <div className="col-span-2 text-[14px] font-semibold tracking-wider uppercase">Email nhận</div>

@@ -398,187 +398,6 @@ export default function ManageBrand() {
           </form>
         </section>
       )
-    },
-    {
-      key: "2",
-      label: <h2 className="text-[16px] font-semibold tracking-wide text-black dark:text-white">Danh sách Danh mục</h2>,
-      children: (
-        <section className="bg-white dark:bg-darkPrimary mb-3 dark:border-darkBorder rounded-2xl">
-          {isLoading && <Skeleton />}
-          {!isFetching && (
-            <div>
-              <div className="flex items-center justify-between mb-2">
-                <div className="flex items-center gap-2">
-                  <Button
-                    onClick={() => downloadExcel(listBrandOfCategory)}
-                    icon={<FolderUp size={15} />}
-                    nameButton="Export"
-                    classNameButton="py-2 px-3 border border-[#E2E7FF] bg-[#E2E7FF] w-full text-[#3A5BFF] font-medium rounded-3xl hover:bg-blue-500/40 duration-200 text-[13px] flex items-center gap-1"
-                  />
-                  <Select
-                    defaultValue="Mới nhất"
-                    className="select-sort"
-                    onChange={handleChangeSortListOrder}
-                    suffixIcon={<ArrowUpNarrowWide color={isDark ? "white" : "black"} />}
-                    options={[
-                      { value: "old", label: "Cũ nhất" },
-                      { value: "new", label: "Mới nhất" }
-                    ]}
-                  />
-                </div>
-                <div>
-                  <Button
-                    onClick={() => setAddItem(true)}
-                    icon={<Plus size={15} />}
-                    nameButton="Thêm mới"
-                    classNameButton="py-2 px-3 bg-blue-500 w-full text-white font-medium rounded-3xl hover:bg-blue-500/80 duration-200 text-[13px] flex items-center gap-1"
-                  />
-                </div>
-              </div>
-              <div>
-                <div className="bg-[#f2f2f2] dark:bg-darkPrimary grid grid-cols-12 items-center gap-2 py-3 border border-[#dedede] dark:border-darkBorder px-4 rounded-tl-xl rounded-tr-xl">
-                  <div className="col-span-2 text-[14px] font-semibold tracking-wider uppercase text-black dark:text-white">
-                    Mã thương hiệu
-                  </div>
-                  <div className="col-span-2 text-[14px] font-semibold tracking-wider uppercase text-black dark:text-white">
-                    Tên thương hiệu
-                  </div>
-                  <div className="col-span-2 text-[14px] font-semibold tracking-wider uppercase text-black dark:text-white">
-                    Ngày tạo
-                  </div>
-                  <div className="col-span-2 text-[14px] font-semibold tracking-wider uppercase text-black dark:text-white">
-                    Ngày cập nhật
-                  </div>
-                  <div className="col-span-2 text-[14px] text-center font-semibold tracking-wider uppercase text-black dark:text-white">
-                    Hành động
-                  </div>
-                  <div className="col-span-2 text-[14px] text-center font-semibold tracking-wider uppercase text-black dark:text-white">
-                    Sản phẩm
-                  </div>
-                </div>
-                <div>
-                  {listBrandOfCategory.length > 0 ? (
-                    listBrandOfCategory.map((item, index) => (
-                      <motion.div
-                        key={item._id}
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: index * 0.1 }}
-                      >
-                        <BrandItem
-                          onDelete={handleDeleteBrand}
-                          listTotalProduct={listTotalProduct}
-                          handleEditItem={() => setAddItem(item)}
-                          item={item}
-                          nameCategory={state}
-                          maxIndex={listBrandOfCategory?.length}
-                          index={index}
-                        />
-                      </motion.div>
-                    ))
-                  ) : (
-                    <div className="text-center mt-4">
-                      <Empty />
-                    </div>
-                  )}
-                </div>
-              </div>
-              <Pagination
-                data={result}
-                queryConfig={queryConfig}
-                page_size={page_size}
-                pathNavigate={`${path.AdminCategories}/${id}`}
-              />
-
-              <AnimatePresence>
-                {addItem !== null && typeof addItem === "object" && (
-                  <motion.div
-                    initial={{ opacity: 0 }} // khởi tạo là 0
-                    animate={{ opacity: 1 }} // xuất hiện dần là 1
-                    exit={{ opacity: 0 }} // biến mất là 0
-                    className="fixed left-0 top-0 z-10 h-screen w-screen bg-black/60 flex items-center justify-center"
-                  >
-                    <motion.div
-                      initial={{ opacity: 0, scale: 0.8 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      exit={{ opacity: 0, scale: 0.8 }}
-                      className="relative"
-                    >
-                      <button onClick={() => setAddItem(null)} className="absolute right-2 top-2">
-                        <X color="gray" size={22} />
-                      </button>
-                      <form onSubmit={handleSubmitUpdate} className="bg-white dark:bg-darkPrimary rounded-md">
-                        <h3 className="py-2 px-4 text-lg font-semibold tracking-wide rounded-md text-black dark:text-white">
-                          Thông tin thương hiệu
-                        </h3>
-                        <div className="p-4 pt-0">
-                          <div className="mt-4 flex items-center gap-4">
-                            <Input
-                              name="id"
-                              register={register}
-                              placeholder="Nhập họ tên"
-                              messageErrorInput={errors.id?.message}
-                              classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-darkSecond focus:border-blue-500 focus:ring-2 outline-none rounded-md text-black dark:text-white"
-                              className="relative flex-1"
-                              classNameLabel="text-black dark:text-white"
-                              nameInput="Mã thương hiệu"
-                              disabled
-                            />
-                            <Input
-                              name="name"
-                              register={register}
-                              placeholder="Nhập họ tên"
-                              messageErrorInput={errors.name?.message}
-                              classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-white dark:bg-darkSecond focus:border-blue-500 focus:ring-2 outline-none rounded-md text-black dark:text-white"
-                              className="relative flex-1"
-                              classNameLabel="text-black dark:text-white"
-                              nameInput="Tên thương hiệu"
-                            />
-                          </div>
-                          <div className="mt-2 flex items-center gap-4">
-                            <Input
-                              name="created_at"
-                              register={register}
-                              placeholder="Nhập ngày tạo"
-                              messageErrorInput={errors.created_at?.message}
-                              classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-darkSecond focus:border-blue-500 focus:ring-2 outline-none rounded-md text-black dark:text-white"
-                              className="relative flex-1"
-                              classNameLabel="text-black dark:text-white"
-                              nameInput="Ngày tạo"
-                              disabled
-                            />
-                            <Input
-                              name="updated_at"
-                              register={register}
-                              placeholder="Nhập ngày tạo cập nhật"
-                              messageErrorInput={errors.updated_at?.message}
-                              classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-darkSecond  focus:border-blue-500 focus:ring-2 outline-none rounded-md text-black dark:text-white"
-                              className="relative flex-1"
-                              classNameLabel="text-black dark:text-white"
-                              nameInput="Ngày cập nhật"
-                              disabled
-                            />
-                          </div>
-                          <div className="flex items-center justify-end">
-                            <Button
-                              type="submit"
-                              icon={<ArrowUpFromLine size={18} />}
-                              nameButton="Cập nhật"
-                              classNameButton="w-[120px] p-4 py-2 bg-blue-500 mt-2 w-full text-white font-semibold rounded-3xl hover:bg-blue-500/80 duration-200 flex items-center gap-1"
-                            />
-                          </div>
-                        </div>
-                      </form>
-                    </motion.div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-
-              <AddBrand setAddItem={setAddItem} addItem={addItem} categoryId={id} />
-            </div>
-          )}
-        </section>
-      )
     }
   ]
 
@@ -610,6 +429,182 @@ export default function ManageBrand() {
       </h1>
 
       <Collapse items={items} defaultActiveKey={["2"]} className="bg-white dark:bg-darkPrimary dark:border-none" />
+
+      <section className="bg-white dark:bg-darkPrimary mb-3 dark:border-darkBorder mt-4">
+        {isLoading && <Skeleton />}
+        {!isFetching && (
+          <div>
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center gap-2">
+                <Button
+                  onClick={() => downloadExcel(listBrandOfCategory)}
+                  icon={<FolderUp size={15} />}
+                  nameButton="Export"
+                  classNameButton="py-2 px-3 border border-[#E2E7FF] bg-[#E2E7FF] w-full text-[#3A5BFF] font-medium rounded-3xl hover:bg-blue-500/40 duration-200 text-[13px] flex items-center gap-1"
+                />
+                <Select
+                  defaultValue="Mới nhất"
+                  className="select-sort"
+                  onChange={handleChangeSortListOrder}
+                  suffixIcon={<ArrowUpNarrowWide color={isDark ? "white" : "black"} />}
+                  options={[
+                    { value: "old", label: "Cũ nhất" },
+                    { value: "new", label: "Mới nhất" }
+                  ]}
+                />
+              </div>
+              <div>
+                <Button
+                  onClick={() => setAddItem(true)}
+                  icon={<Plus size={15} />}
+                  nameButton="Thêm mới"
+                  classNameButton="py-2 px-3 bg-blue-500 w-full text-white font-medium rounded-3xl hover:bg-blue-500/80 duration-200 text-[13px] flex items-center gap-1"
+                />
+              </div>
+            </div>
+            <div className="mt-4">
+              <div className="bg-[#fff] dark:bg-darkPrimary grid grid-cols-12 items-center gap-2 py-3 border border-[#dedede] dark:border-darkBorder px-4 rounded-tl-lg rounded-tr-lg">
+                <div className="col-span-2 text-[14px] font-semibold tracking-wider uppercase text-black dark:text-white">
+                  Mã thương hiệu
+                </div>
+                <div className="col-span-2 text-[14px] font-semibold tracking-wider uppercase text-black dark:text-white">
+                  Tên thương hiệu
+                </div>
+                <div className="col-span-2 text-[14px] font-semibold tracking-wider uppercase text-black dark:text-white">
+                  Ngày tạo
+                </div>
+                <div className="col-span-2 text-[14px] font-semibold tracking-wider uppercase text-black dark:text-white">
+                  Ngày cập nhật
+                </div>
+                <div className="col-span-2 text-[14px] text-center font-semibold tracking-wider uppercase text-black dark:text-white">
+                  Hành động
+                </div>
+                <div className="col-span-2 text-[14px] text-center font-semibold tracking-wider uppercase text-black dark:text-white">
+                  Sản phẩm
+                </div>
+              </div>
+              <div>
+                {listBrandOfCategory.length > 0 ? (
+                  listBrandOfCategory.map((item, index) => (
+                    <motion.div
+                      key={item._id}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: index * 0.1 }}
+                    >
+                      <BrandItem
+                        onDelete={handleDeleteBrand}
+                        listTotalProduct={listTotalProduct}
+                        handleEditItem={() => setAddItem(item)}
+                        item={item}
+                        nameCategory={state}
+                        maxIndex={listBrandOfCategory?.length}
+                        index={index}
+                      />
+                    </motion.div>
+                  ))
+                ) : (
+                  <div className="text-center mt-4">
+                    <Empty />
+                  </div>
+                )}
+              </div>
+            </div>
+            <Pagination
+              data={result}
+              queryConfig={queryConfig}
+              page_size={page_size}
+              pathNavigate={`${path.AdminCategories}/${id}`}
+            />
+
+            <AnimatePresence>
+              {addItem !== null && typeof addItem === "object" && (
+                <motion.div
+                  initial={{ opacity: 0 }} // khởi tạo là 0
+                  animate={{ opacity: 1 }} // xuất hiện dần là 1
+                  exit={{ opacity: 0 }} // biến mất là 0
+                  className="fixed left-0 top-0 z-10 h-screen w-screen bg-black/60 flex items-center justify-center"
+                >
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.8 }}
+                    className="relative"
+                  >
+                    <button onClick={() => setAddItem(null)} className="absolute right-2 top-2">
+                      <X color="gray" size={22} />
+                    </button>
+                    <form onSubmit={handleSubmitUpdate} className="bg-white dark:bg-darkPrimary rounded-md">
+                      <h3 className="py-2 px-4 text-lg font-semibold tracking-wide rounded-md text-black dark:text-white">
+                        Thông tin thương hiệu
+                      </h3>
+                      <div className="p-4 pt-0">
+                        <div className="mt-4 flex items-center gap-4">
+                          <Input
+                            name="id"
+                            register={register}
+                            placeholder="Nhập họ tên"
+                            messageErrorInput={errors.id?.message}
+                            classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-darkSecond focus:border-blue-500 focus:ring-2 outline-none rounded-md text-black dark:text-white"
+                            className="relative flex-1"
+                            classNameLabel="text-black dark:text-white"
+                            nameInput="Mã thương hiệu"
+                            disabled
+                          />
+                          <Input
+                            name="name"
+                            register={register}
+                            placeholder="Nhập họ tên"
+                            messageErrorInput={errors.name?.message}
+                            classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-white dark:bg-darkSecond focus:border-blue-500 focus:ring-2 outline-none rounded-md text-black dark:text-white"
+                            className="relative flex-1"
+                            classNameLabel="text-black dark:text-white"
+                            nameInput="Tên thương hiệu"
+                          />
+                        </div>
+                        <div className="mt-2 flex items-center gap-4">
+                          <Input
+                            name="created_at"
+                            register={register}
+                            placeholder="Nhập ngày tạo"
+                            messageErrorInput={errors.created_at?.message}
+                            classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-darkSecond focus:border-blue-500 focus:ring-2 outline-none rounded-md text-black dark:text-white"
+                            className="relative flex-1"
+                            classNameLabel="text-black dark:text-white"
+                            nameInput="Ngày tạo"
+                            disabled
+                          />
+                          <Input
+                            name="updated_at"
+                            register={register}
+                            placeholder="Nhập ngày tạo cập nhật"
+                            messageErrorInput={errors.updated_at?.message}
+                            classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-darkSecond  focus:border-blue-500 focus:ring-2 outline-none rounded-md text-black dark:text-white"
+                            className="relative flex-1"
+                            classNameLabel="text-black dark:text-white"
+                            nameInput="Ngày cập nhật"
+                            disabled
+                          />
+                        </div>
+                        <div className="flex items-center justify-end">
+                          <Button
+                            type="submit"
+                            icon={<ArrowUpFromLine size={18} />}
+                            nameButton="Cập nhật"
+                            classNameButton="w-[120px] p-4 py-2 bg-blue-500 mt-2 w-full text-white font-semibold rounded-3xl hover:bg-blue-500/80 duration-200 flex items-center gap-1"
+                          />
+                        </div>
+                      </div>
+                    </form>
+                  </motion.div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            <AddBrand setAddItem={setAddItem} addItem={addItem} categoryId={id} />
+          </div>
+        )}
+      </section>
     </div>
   )
 }

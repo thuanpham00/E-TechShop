@@ -185,6 +185,7 @@ export default function Header() {
 
   const [showCategoryDetail, setShowCategoryDetail] = useState<string>("")
   const [isHover, setIsHover] = useState(false)
+
   const handleCategory = useCallback((index: string) => {
     setShowCategoryDetail(index)
     setIsHover(true)
@@ -482,18 +483,10 @@ export default function Header() {
         <div className="container">
           <div onMouseLeave={handleExitCategory} className="relative">
             <div className="flex items-center flex-wrap justify-center">
-              {categories.slice(0, 7).map((category) => (
+              {categories.slice(0, 10).map((category) => (
                 <MenuCategoryItem
-                  key={category.index}
-                  onHover={() => handleCategory(category.index)}
-                  nameCategory={category.name}
-                  iconCategory={category.icon}
-                />
-              ))}
-            </div>
-            <div className="flex items-center flex-wrap justify-center">
-              {categories.slice(7, 10).map((category) => (
-                <MenuCategoryItem
+                  showCategoryDetail={showCategoryDetail}
+                  index={category.index}
                   key={category.index}
                   onHover={() => handleCategory(category.index)}
                   nameCategory={category.name}
@@ -503,7 +496,7 @@ export default function Header() {
             </div>
             {isHover && (
               <div className="mx-auto absolute w-full top-22 left-0">
-                <div className="bg-white border border-gray-300 shadow-md h-[350px] rounded-md p-6">
+                <div className="bg-white border border-gray-300 shadow-xl h-[350px] rounded-md p-6">
                   <CategoryDetail showDetail={showCategoryDetail} />
                 </div>
               </div>

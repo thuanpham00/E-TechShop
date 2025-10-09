@@ -17,7 +17,7 @@ body {
   font-family: "Open Sans", serif;
   font-weight: 400;
   font-size: 14px;
-  background: #ececec;
+  background: #fff;
 }
 
 input,
@@ -51,7 +51,7 @@ a {
 }
 
 .custom-prev {
-  left: 5;
+  left: 2px;
 }
 
 .custom-next {

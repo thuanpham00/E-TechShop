@@ -5,12 +5,11 @@ export const categories = [
   { index: "1", name: "Laptop Gaming", icon: <LaptopMinimal size={22} /> },
   { index: "2", name: "PC GVN", icon: <Laptop size={22} /> },
   { index: "3", name: "Main, CPU, VGA", icon: <Cpu size={22} /> },
-  { index: "4", name: "Case, Nguồn, Tản", icon: <Cpu size={22} /> },
-  { index: "5", name: "Ổ cứng, RAM, Thẻ nhớ", icon: <HardDrive size={22} /> },
-  { index: "6", name: "Màn hình", icon: <Monitor size={22} /> },
-  { index: "7", name: "Bàn phím", icon: <Keyboard size={22} /> },
-  { index: "8", name: "Chuột", icon: <Mouse size={22} /> },
-  { index: "9", name: "Tai nghe", icon: <Headset size={22} /> }
+  { index: "4", name: "Ổ cứng, RAM, Thẻ nhớ", icon: <HardDrive size={22} /> },
+  { index: "5", name: "Màn hình", icon: <Monitor size={22} /> },
+  { index: "6", name: "Bàn phím", icon: <Keyboard size={22} /> },
+  { index: "7", name: "Chuột", icon: <Mouse size={22} /> },
+  { index: "8", name: "Tai nghe", icon: <Headset size={22} /> }
 ]
 
 interface MenuItem {
@@ -57,23 +56,23 @@ export const MenuCategoryDetail: MenuItem[][] = [
     {
       heading: "Thương hiệu",
       value: [
-        { name: "ASUS / ROG", path: "laptop-gaming-asus" },
-        { name: "ACER / PREDATOR", path: "laptop-gaming-acer" },
-        { name: "MSI", path: "laptop-gaming-msi" },
-        { name: "LENOVO", path: "laptop-gaming-lenovo" }
+        { name: "ASUS / ROG", path: "laptop-gaming-asus", type_filter: "Laptop Gaming" },
+        { name: "ACER / PREDATOR", path: "laptop-gaming-acer", type_filter: "Laptop Gaming" },
+        { name: "MSI", path: "laptop-gaming-msi", type_filter: "Laptop Gaming" },
+        { name: "LENOVO", path: "laptop-gaming-lenovo", type_filter: "Laptop Gaming" }
       ]
     },
     {
       heading: "Giá bán",
       value: [
-        { name: "Dưới 20 triệu", path: "laptop-gaming-duoi-20-trieu" },
-        { name: "Từ 20 đến 25 triệu", path: "laptop-gaming-tu-20-den-25-trieu" },
-        { name: "Trên 25 triệu", path: "laptop-gaming-tren-25-trieu" }
+        { name: "Dưới 20 triệu", path: "laptop-gaming-duoi-20-trieu", type_filter: "Laptop Gaming" },
+        { name: "Từ 20 đến 25 triệu", path: "laptop-gaming-tu-20-den-25-trieu", type_filter: "Laptop Gaming" },
+        { name: "Trên 25 triệu", path: "laptop-gaming-tren-25-trieu", type_filter: "Laptop Gaming" }
       ]
     },
     {
       heading: "Khám phá",
-      value: [{ name: "Tất cả sản phẩm", path: "laptop-gaming" }]
+      value: [{ name: "Tất cả sản phẩm", path: "laptop-gaming", type_filter: "Laptop Gaming" }]
     }
     // {
     //   heading: "Kích thước",
@@ -131,27 +130,6 @@ export const MenuCategoryDetail: MenuItem[][] = [
       ]
     }
   ],
-  // dành cho case-nguồn-tản
-  [
-    {
-      heading: "1",
-      value: [
-        { name: "1", path: "pc-gvn-rtx-5090" },
-        { name: "2", path: "pc-gvn-rtx-5080" },
-        { name: "2", path: "pc-gvn-rtx-5070Ti" },
-        { name: "2", path: "pc-gvn-rtx-5060Ti" }
-      ]
-    },
-    {
-      heading: "1",
-      value: [
-        { name: "1", path: "pc-gvn-rtx-5090" },
-        { name: "2", path: "pc-gvn-rtx-5080" },
-        { name: "2", path: "pc-gvn-rtx-5070Ti" },
-        { name: "2", path: "pc-gvn-rtx-5060Ti" }
-      ]
-    }
-  ],
   // dành cho ổ cứng-ram-thẻ nhớ
   [
     {
@@ -178,25 +156,25 @@ export const MenuCategoryDetail: MenuItem[][] = [
     {
       heading: "Thương hiệu",
       value: [
-        { name: "SAMSUNG", path: "man-hinh-samsung" },
-        { name: "ASUS", path: "man-hinh-asus" },
-        { name: "DELL", path: "man-hinh-dell" },
-        { name: "VIEWSONIC", path: "man-hinh-viewsonic" },
-        { name: "ACER", path: "man-hinh-acer" }
+        { name: "SAMSUNG", path: "man-hinh-samsung", type_filter: "Màn hình" },
+        { name: "ASUS", path: "man-hinh-asus", type_filter: "Màn hình" },
+        { name: "DELL", path: "man-hinh-dell", type_filter: "Màn hình" },
+        { name: "VIEWSONIC", path: "man-hinh-viewsonic", type_filter: "Màn hình" },
+        { name: "ACER", path: "man-hinh-acer", type_filter: "Màn hình" }
       ]
     },
     {
       heading: "Giá bán",
       value: [
-        { name: "Dưới 5 triệu", path: "man-hinh-duoi-5-trieu" },
-        { name: "Từ 5 đến 10tr", path: "man-hinh-tu-5-den-10-trieu" },
-        { name: "Từ 10 đến 20tr", path: "man-hinh-tu-10-den-20-trieu" },
-        { name: "Trên 20tr", path: "man-hinh-tren-20-trieu" }
+        { name: "Dưới 5 triệu", path: "man-hinh-duoi-5-trieu", type_filter: "Màn hình" },
+        { name: "Từ 5 đến 10tr", path: "man-hinh-tu-5-den-10-trieu", type_filter: "Màn hình" },
+        { name: "Từ 10 đến 20tr", path: "man-hinh-tu-10-den-20-trieu", type_filter: "Màn hình" },
+        { name: "Trên 20tr", path: "man-hinh-tren-20-trieu", type_filter: "Màn hình" }
       ]
     },
     {
       heading: "Khám phá",
-      value: [{ name: "Tất cả sản phẩm", path: "man-hinh" }]
+      value: [{ name: "Tất cả sản phẩm", path: "man-hinh", type_filter: "Màn hình" }]
     }
   ],
   // dành cho bàn phím
@@ -231,6 +209,53 @@ export const MenuCategoryDetail: MenuItem[][] = [
     {
       heading: "Khám phá",
       value: [{ name: "Tất cả sản phẩm", path: "ban-phim" }]
+    }
+  ],
+  // dành cho chuột
+  [
+    {
+      heading: "1",
+      value: [
+        { name: "1", path: "pc-gvn-rtx-5090" },
+        { name: "2", path: "pc-gvn-rtx-5080" },
+        { name: "2", path: "pc-gvn-rtx-5070Ti" },
+        { name: "2", path: "pc-gvn-rtx-5060Ti" }
+      ]
+    },
+    {
+      heading: "1",
+      value: [
+        { name: "1", path: "pc-gvn-rtx-5090" },
+        { name: "2", path: "pc-gvn-rtx-5080" },
+        { name: "2", path: "pc-gvn-rtx-5070Ti" },
+        { name: "2", path: "pc-gvn-rtx-5060Ti" }
+      ]
+    }
+  ],
+  // dành cho tai nghe
+  [
+    {
+      heading: "Thương hiệu",
+      value: [
+        { name: "SAMSUNG", path: "man-hinh-samsung" },
+        { name: "ASUS", path: "man-hinh-asus" },
+        { name: "DELL", path: "man-hinh-dell" },
+        { name: "VIEWSONIC", path: "man-hinh-viewsonic" },
+        { name: "ACER", path: "man-hinh-acer" }
+      ]
+    },
+    {
+      heading: "Giá bán",
+      value: [
+        { name: "Dưới 5 triệu", path: "man-hinh-duoi-5-trieu" },
+        { name: "Từ 5 đến 10tr", path: "man-hinh-tu-5-den-10-trieu" },
+        { name: "Từ 10 đến 20tr", path: "man-hinh-tu-10-den-20-trieu" },
+        { name: "Trên 20tr", path: "man-hinh-tren-20-trieu" }
+      ]
+    },
+    {
+      heading: "Khám phá",
+      value: [{ name: "Tất cả sản phẩm", path: "man-hinh" }]
     }
   ]
 ]

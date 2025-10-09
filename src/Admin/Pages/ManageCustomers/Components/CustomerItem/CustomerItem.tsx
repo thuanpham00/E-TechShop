@@ -1,3 +1,4 @@
+import { Image } from "antd"
 import { ClipboardCheck, Copy, Pencil, Trash2 } from "lucide-react"
 import {
   AlertDialog,
@@ -13,6 +14,7 @@ import {
 import { convertDateTime } from "src/Helpers/common"
 import useCopyText from "src/Hook/useCopyText"
 import { UserType } from "src/Types/user.type"
+import avatarDefault from "src/Assets/img/avatarDefault.png"
 
 export default function CustomerItem({
   item,
@@ -31,7 +33,7 @@ export default function CustomerItem({
 
   return (
     <div
-      className={`bg-white dark:bg-darkPrimary grid grid-cols-10 items-center gap-2 py-3 cursor-pointer border-t-0 border border-[#dedede] dark:border-darkBorder px-4 ${index + 1 === maxIndex ? "rounded-bl-xl rounded-br-xl" : ""}`}
+      className={`${index % 2 === 0 ? "bg-[#f2f2f2]" : "bg-white"} dark:bg-darkPrimary grid grid-cols-11 items-center gap-2 py-3 cursor-pointer border-t-0 border border-[#dedede] dark:border-darkBorder px-4 ${index + 1 === maxIndex ? "rounded-bl-lg rounded-br-lg" : ""}`}
       key={item._id}
     >
       <div className="col-span-2 flex items-center justify-between">
@@ -40,7 +42,18 @@ export default function CustomerItem({
           {copiedId === item._id ? <ClipboardCheck color="#8d99ae" size={12} /> : <Copy color="#8d99ae" size={12} />}
         </button>
       </div>
-      <div className="col-span-1 text-black dark:text-white">{item.name}</div>
+      <div className="col-span-2 text-black dark:text-white">
+        <div className="flex items-center gap-2">
+          {item.avatar ? (
+            <Image src={item.avatar} alt={item.name} className="rounded-md object-cover" width={48} height={48} />
+          ) : (
+            <Image src={avatarDefault} alt={item.name} className="rounded-md object-cover" width={48} height={48} />
+          )}
+          <div>
+            <p className="font-medium">{item.name}</p>
+          </div>
+        </div>
+      </div>
       <div className="col-span-2 break-words text-black dark:text-white">{item.email}</div>
       <div className="col-span-1 text-center text-black dark:text-white">{item.numberPhone}</div>
       <div className="col-span-1 flex justify-center">
