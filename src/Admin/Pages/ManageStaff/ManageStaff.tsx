@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { yupResolver } from "@hookform/resolvers/yup"
-import { keepPreviousData, useQuery } from "@tanstack/react-query"
-import { Collapse, CollapseProps, Empty, Select } from "antd"
+import { keepPreviousData, useMutation, useQuery } from "@tanstack/react-query"
+import { Collapse, CollapseProps, Empty, Image, Modal, Select, Table } from "antd"
 import { isUndefined, omit, omitBy } from "lodash"
-import { ArrowUpNarrowWide, FolderUp, Plus, RotateCcw, Search } from "lucide-react"
+import { ArrowUpNarrowWide, ClipboardCheck, FolderUp, Pencil, Plus, RotateCcw, Search, Trash2 } from "lucide-react"
 import { useEffect, useState } from "react"
 import { Controller, useForm } from "react-hook-form"
 import { createSearchParams, useNavigate } from "react-router-dom"
@@ -15,22 +15,21 @@ import { schemaCustomer, SchemaCustomerType } from "src/Client/Utils/rule"
 import Input from "src/Components/Input"
 import Skeleton from "src/Components/Skeleton"
 import { path } from "src/Constants/path"
-import { cleanObject } from "src/Helpers/common"
+import { cleanObject, convertDateTime, formatCurrency } from "src/Helpers/common"
 import useDownloadExcel from "src/Hook/useDownloadExcel"
 import useQueryParams from "src/Hook/useQueryParams"
 import { queryParamConfigCustomer } from "src/Types/queryParams.type"
 import { UserType } from "src/Types/user.type"
 import { SuccessResponse } from "src/Types/utils.type"
-import Pagination from "src/Components/Pagination"
 import { HttpStatusCode } from "src/Constants/httpStatus"
 import { Helmet } from "react-helmet-async"
 import NavigateBack from "src/Admin/Components/NavigateBack"
 import AddStaff from "./Components/AddStaff/AddStaff"
-import { AnimatePresence, motion } from "framer-motion"
-import StaffItem from "./Components/StaffItem"
+import { AnimatePresence } from "framer-motion"
 import Button from "src/Components/Button"
 import "../ManageOrders/ManageOrders.css"
 import StaffDetail from "./Components/StaffDetail"
+import { ColumnsType } from "antd/es/table"
 
 const formDataSearch = schemaCustomer.pick([
   "email",
@@ -96,7 +95,6 @@ export default function ManageStaff() {
     totalOfPage: string
   }>
   const listStaffs = result?.result?.result
-  const page_size = Math.ceil(Number(result?.result.total) / Number(result?.result.limit))
 
   // Xử lý bộ lọc tìm kiếm và fetch lại api
   const {
@@ -354,121 +352,179 @@ export default function ManageStaff() {
           </form>
         </section>
       )
+    }
+  ]
+
+  // Gọi api xóa và fetch lại api
+  const deleteStaffMutation = useMutation({
+    mutationFn: (id: string) => {
+      return adminAPI.staff.deleteProfileStaff(id)
+    }
+  })
+
+  const handleDeleteCustomer = (id: string) => {
+    deleteStaffMutation.mutate(id, {
+      onSuccess: () => {
+        // lấy ra query của trang hiện tại (có queryConfig)
+        // const data = queryClient.getQueryData(["listCustomer", queryConfig])
+        // // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        // const data_2 = (data as any).data as SuccessResponse<{
+        //   result: UserType[]
+        //   total: string
+        //   page: string
+        //   limit: string
+        //   totalOfPage: string
+        //   listTotalProduct: { brand: string; total: string }[]
+        // }>
+        // // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        // if (data && data_2.result.result.length === 1 && Number(queryConfig.page) > 1) {
+        //   navigate({
+        //     pathname: path.AdminCustomers,
+        //     search: createSearchParams({
+        //       ...queryConfig,
+        //       page: (Number(queryConfig.page) - 1).toString()
+        //     }).toString()
+        //   })
+        // }
+        // queryClient.invalidateQueries({ queryKey: ["listCustomer"] })
+        // toast.success("Xóa thành công!", { autoClose: 1500 })
+      }
+    })
+  }
+
+  const copyId = async (id: string) => {
+    try {
+      await navigator.clipboard.writeText(id)
+      toast.success("Đã sao chép ID", { autoClose: 1200 })
+    } catch {
+      toast.error("Sao chép thất bại", { autoClose: 1200 })
+    }
+  }
+
+  const columns: ColumnsType<UserType> = [
+    {
+      title: "Mã nhân viên",
+      dataIndex: "_id",
+      key: "_id",
+      width: 220,
+      render: (id: string) => (
+        <div className="flex items-center justify-between">
+          <div className="text-blue-500 break-all max-w-[85%]">{id}</div>
+          <button onClick={() => copyId(id)} className="p-1 ml-2">
+            <ClipboardCheck color="#8d99ae" size={14} />
+          </button>
+        </div>
+      )
     },
     {
-      key: "2",
-      label: (
-        <h2 className="text-[16px] font-semibold tracking-wide text-black dark:text-white">
-          Danh sách Nhân viên hệ thống
-        </h2>
-      ),
-      children: (
-        <section className="bg-white dark:bg-darkPrimary mb-3 dark:border-darkBorder rounded-2xl">
-          <div>
-            {isLoading && <Skeleton />}
-            {!isFetching && (
-              <div>
-                <div className="flex items-center justify-between mb-2">
-                  <div className="flex items-center gap-2">
-                    <Button
-                      onClick={() => downloadExcel(listStaffs)}
-                      icon={<FolderUp size={15} />}
-                      nameButton="Export"
-                      classNameButton="py-2 px-3 border border-[#E2E7FF] bg-[#E2E7FF] w-full text-[#3A5BFF] font-medium rounded-3xl hover:bg-blue-500/40 duration-200 text-[13px] flex items-center gap-1"
-                    />
-                    <Select
-                      defaultValue="Mới nhất"
-                      className="select-sort"
-                      onChange={handleChangeSortListOrder}
-                      suffixIcon={<ArrowUpNarrowWide color={isDark ? "white" : "black"} />}
-                      options={[
-                        { value: "old", label: "Cũ nhất" },
-                        { value: "new", label: "Mới nhất" }
-                      ]}
-                    />
-                  </div>
-                  <div>
-                    <Button
-                      onClick={() => setAddItem(true)}
-                      icon={<Plus size={15} />}
-                      nameButton="Thêm mới"
-                      classNameButton="py-2 px-3 bg-blue-500 w-full text-white font-medium rounded-3xl hover:bg-blue-500/80 duration-200 text-[13px] flex items-center gap-1"
-                    />
-                  </div>
-                </div>
-                <div>
-                  <div className="bg-[#f2f2f2] dark:bg-darkPrimary grid grid-cols-10 items-center gap-2 py-3 border border-[#dedede] dark:border-darkBorder px-4 rounded-tl-xl rounded-tr-xl">
-                    <div className="col-span-2 text-[14px] font-semibold tracking-wider uppercase text-black dark:text-white">
-                      Mã nhân viên
-                    </div>
-                    <div className="col-span-1 text-[14px] font-semibold tracking-wider uppercase text-black dark:text-white">
-                      Họ Tên
-                    </div>
-                    <div className="col-span-1 text-[14px] font-semibold tracking-wider uppercase text-black dark:text-white">
-                      Chức vụ
-                    </div>
-                    <div className="col-span-1 text-[14px] font-semibold tracking-wider uppercase text-black dark:text-white">
-                      Phòng ban
-                    </div>
-                    <div className="col-span-1 text-[14px] text-center font-semibold tracking-wider uppercase text-black dark:text-white">
-                      Lương
-                    </div>
-                    <div className="col-span-1 text-[14px] font-semibold tracking-wider uppercase text-black dark:text-white">
-                      Loại hợp đồng
-                    </div>
-                    <div className="col-span-1 text-[14px] text-center font-semibold tracking-wider uppercase text-black dark:text-white">
-                      Trạng thái
-                    </div>
-                    <div className="col-span-1 text-[14px] font-semibold tracking-wider uppercase text-black dark:text-white">
-                      Ngày vào làm
-                    </div>
-                    <div className="col-span-1 text-[14px] text-center font-semibold tracking-wider uppercase text-black dark:text-white">
-                      Hành động
-                    </div>
-                  </div>
-                  <div>
-                    {listStaffs?.length > 0 ? (
-                      listStaffs?.map((item, index) => (
-                        <motion.div
-                          key={item._id}
-                          initial={{ opacity: 0, y: 20 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          transition={{ delay: index * 0.1 }}
-                        >
-                          <StaffItem
-                            onDelete={() => {}}
-                            handleEditItem={() => setAddItem(item)}
-                            item={item}
-                            maxIndex={listStaffs?.length}
-                            index={index}
-                          />
-                        </motion.div>
-                      ))
-                    ) : (
-                      <div className="text-center mt-4">
-                        <Empty />
-                      </div>
-                    )}
-                  </div>
-                </div>
-                <Pagination
-                  data={result}
-                  queryConfig={queryConfig}
-                  page_size={page_size}
-                  pathNavigate={path.AdminEmployees}
-                />
-
-                <AnimatePresence>
-                  {addItem !== null && typeof addItem === "object" && (
-                    <StaffDetail addItem={addItem} setAddItem={setAddItem} queryConfig={queryConfig} />
-                  )}
-                </AnimatePresence>
-
-                <AnimatePresence>{addItem === true && <AddStaff setAddItem={setAddItem} />}</AnimatePresence>
-              </div>
-            )}
+      title: "Họ Tên",
+      dataIndex: "name",
+      key: "name",
+      width: 260,
+      render: (_, record) => (
+        <div className="flex items-center gap-2 min-w-0">
+          <div className="w-[48px] h-[48px] rounded overflow-hidden">
+            <Image
+              src={record.avatar || "/images/avatar-default.png"}
+              alt={record.name}
+              width={48}
+              height={48}
+              preview={false}
+            />
           </div>
-        </section>
+          <div className="min-w-0">
+            <div className="font-medium text-black dark:text-white break-words whitespace-normal">{record.name}</div>
+            <div className="text-xs text-gray-500 break-all whitespace-normal">{record.email}</div>
+          </div>
+        </div>
+      )
+    },
+    {
+      title: "Chức vụ",
+      dataIndex: "role",
+      key: "role",
+      width: 140,
+      render: (v: string) => <div className="break-words text-black dark:text-white">{v || ""}</div>
+    },
+    {
+      title: "Phòng ban",
+      dataIndex: ["employeeInfo", "department"],
+      key: "department",
+      width: 160,
+      render: (_, record) => (
+        <div className="break-words text-black dark:text-white">{record.employeeInfo?.department || ""}</div>
+      )
+    },
+    {
+      title: "Trạng thái",
+      dataIndex: ["employeeInfo", "status"],
+      key: "status",
+      width: 140,
+      align: "center",
+      render: (_, record) => {
+        const s = record.employeeInfo?.status
+        if (!s) return null
+        const isActive = s === "Active"
+        const bg = isActive
+          ? "bg-[#b2ffb4] border-[#b2ffb4] text-[#04710c]"
+          : "bg-[#ffdcdc] border-[#ffdcdc] text-[#f00]"
+        return <div className={`text-[13px] font-medium py-1 px-2 border ${bg} text-center rounded-full`}>{s}</div>
+      }
+    },
+    {
+      title: "Lương",
+      dataIndex: ["employeeInfo", "salary"],
+      key: "salary",
+      width: 140,
+      align: "center",
+      render: (_, record) =>
+        record.employeeInfo?.salary ? (
+          <div className="text-red-500 font-semibold">{formatCurrency(record.employeeInfo.salary)}đ</div>
+        ) : (
+          ""
+        )
+    },
+    {
+      title: "Loại hợp đồng",
+      dataIndex: ["employeeInfo", "contract_type"],
+      key: "contract_type",
+      width: 160,
+      render: (_, record) => <div>{record.employeeInfo?.contract_type || ""}</div>
+    },
+    {
+      title: "Ngày vào làm",
+      dataIndex: ["employeeInfo", "hire_date"],
+      key: "hire_date",
+      width: 160,
+      render: (_, record) => <div>{convertDateTime((record.employeeInfo?.hire_date as Date).toString())}</div>
+    },
+    {
+      title: "Hành động",
+      key: "action",
+      width: 120,
+      fixed: "right",
+      align: "center",
+      render: (_, record) => (
+        <div className="flex items-center justify-center gap-2">
+          <button onClick={() => setAddItem(record)} className="p-1">
+            <Pencil color="orange" size={18} />
+          </button>
+          <button
+            onClick={() =>
+              Modal.confirm({
+                title: "Bạn có chắc chắn muốn xóa?",
+                content: "Không thể hoàn tác hành động này.",
+                okText: "Xóa",
+                okButtonProps: { danger: true },
+                cancelText: "Hủy",
+                onOk: () => handleDeleteCustomer(record._id)
+              })
+            }
+            className="p-1"
+          >
+            <Trash2 color="red" size={18} />
+          </button>
+        </div>
       )
     }
   ]
@@ -502,6 +558,86 @@ export default function ManageStaff() {
       </h1>
 
       <Collapse items={items} defaultActiveKey={["2"]} className="bg-white dark:bg-darkPrimary dark:border-none" />
+
+      <section className="bg-white dark:bg-darkPrimary mb-3 dark:border-darkBorder rounded-2xl mt-4">
+        <div>
+          {isLoading && <Skeleton />}
+          <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center gap-2">
+              <Button
+                onClick={() => downloadExcel(listStaffs)}
+                icon={<FolderUp size={15} />}
+                nameButton="Export"
+                classNameButton="py-2 px-3 border border-[#E2E7FF] bg-[#E2E7FF] w-full text-[#3A5BFF] font-medium rounded-md hover:bg-blue-500/40 duration-200 text-[13px] flex items-center gap-1"
+              />
+              <Select
+                defaultValue="Mới nhất"
+                className="select-sort"
+                onChange={handleChangeSortListOrder}
+                suffixIcon={<ArrowUpNarrowWide color={isDark ? "white" : "black"} />}
+                options={[
+                  { value: "old", label: "Cũ nhất" },
+                  { value: "new", label: "Mới nhất" }
+                ]}
+              />
+            </div>
+            <div>
+              <Button
+                onClick={() => setAddItem(true)}
+                icon={<Plus size={15} />}
+                nameButton="Thêm mới"
+                classNameButton="py-2 px-3 bg-blue-500 w-full text-white font-medium rounded-md hover:bg-blue-500/80 duration-200 text-[13px] flex items-center gap-1 text-[13px]"
+              />
+            </div>
+          </div>
+          {!isFetching ? (
+            <div>
+              <div>
+                {listStaffs?.length > 0 ? (
+                  <Table
+                    rowKey={(r) => r._id}
+                    dataSource={listStaffs}
+                    columns={columns}
+                    loading={isLoading}
+                    pagination={{
+                      current: Number(queryConfig.page),
+                      pageSize: Number(queryConfig.limit),
+                      total: Number(result?.result.total || 0),
+                      showSizeChanger: true,
+                      pageSizeOptions: ["5", "10", "20", "50"],
+                      onChange: (page, pageSize) =>
+                        navigate({
+                          pathname: path.AdminEmployees,
+                          search: createSearchParams({
+                            ...queryConfig,
+                            page: page.toString(),
+                            limit: pageSize.toString()
+                          }).toString()
+                        })
+                    }}
+                    rowClassName={(_, index) => (index % 2 === 0 ? "bg-[#f2f2f2]" : "bg-white")}
+                    scroll={{ x: "max-content" }}
+                  />
+                ) : (
+                  <div className="text-center mt-4">
+                    <Empty />
+                  </div>
+                )}
+              </div>
+            </div>
+          ) : (
+            <Skeleton />
+          )}
+
+          <AnimatePresence>
+            {addItem !== null && typeof addItem === "object" && (
+              <StaffDetail addItem={addItem} setAddItem={setAddItem} queryConfig={queryConfig} />
+            )}
+          </AnimatePresence>
+
+          <AnimatePresence>{addItem === true && <AddStaff setAddItem={setAddItem} />}</AnimatePresence>
+        </div>
+      </section>
     </div>
   )
 }

@@ -2,7 +2,7 @@
 import { yupResolver } from "@hookform/resolvers/yup"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { Plus, X } from "lucide-react"
-import { useForm } from "react-hook-form"
+import { Controller, useForm } from "react-hook-form"
 import { toast } from "react-toastify"
 import { adminAPI } from "src/Apis/admin.api"
 import { schemaAuth, SchemaAuthType } from "src/Client/Utils/rule"
@@ -11,13 +11,14 @@ import Input from "src/Components/Input"
 import { isError400 } from "src/Helpers/utils"
 import { ErrorResponse, MessageResponse } from "src/Types/utils.type"
 import { motion, AnimatePresence } from "framer-motion"
+import { Select } from "antd"
 
 interface Props {
   setAddItem: React.Dispatch<any>
   addItem: any
 }
 
-type FormData = Pick<SchemaAuthType, "name">
+type FormData = Pick<SchemaAuthType, "name"> & { status?: "active" | "inactive" }
 const formData = schemaAuth.pick(["name"])
 
 export default function AddCategory({ setAddItem, addItem }: Props) {
@@ -26,6 +27,7 @@ export default function AddCategory({ setAddItem, addItem }: Props) {
     handleSubmit,
     register,
     setError,
+    control,
     formState: { errors }
   } = useForm<FormData>({ resolver: yupResolver(formData) })
 
@@ -76,8 +78,8 @@ export default function AddCategory({ setAddItem, addItem }: Props) {
               <h3 className="py-2 px-4 text-lg font-semibold tracking-wide rounded-md text-black dark:text-white">
                 Thông tin danh mục
               </h3>
-              <div className="p-4 pt-0">
-                <div className="mt-4 flex items-center gap-4">
+              <div className="p-4 pt-0 w-[400px]">
+                <div className="w-full">
                   <Input
                     name="name"
                     register={register}
@@ -89,12 +91,31 @@ export default function AddCategory({ setAddItem, addItem }: Props) {
                     nameInput="Tên danh mục"
                   />
                 </div>
+                <div className="w-full">
+                  <div className="text-black dark:text-white block mb-1">Trạng thái</div>
+                  <Controller
+                    control={control}
+                    name="status"
+                    render={({ field }) => (
+                      <Select
+                        {...field}
+                        value={field.value}
+                        onChange={(val) => field.onChange(val)}
+                        className="mt-1 w-full"
+                        options={[
+                          { label: "Hiển thị", value: "active" },
+                          { label: "Tắt", value: "inactive" }
+                        ]}
+                      />
+                    )}
+                  />
+                </div>
                 <div className="flex items-center justify-end">
                   <Button
                     type="submit"
                     icon={<Plus size={18} />}
                     nameButton="Thêm"
-                    classNameButton="w-[120px] p-4 py-2 bg-blue-500 mt-2 w-full text-white font-semibold rounded-3xl hover:bg-blue-500/80 duration-200 flex items-center gap-1"
+                    classNameButton="w-[120px] px-3 py-2 bg-blue-500 mt-2 w-full text-white font-semibold rounded-md hover:bg-blue-500/80 duration-200 flex items-center gap-1 text-[13px]"
                   />
                 </div>
               </div>

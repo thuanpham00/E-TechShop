@@ -10,20 +10,19 @@ import { queryParamConfigCategory, queryParamConfigProduct } from "src/Types/que
 import { SuccessResponse } from "src/Types/utils.type"
 import NavigateBack from "src/Admin/Components/NavigateBack"
 import Skeleton from "src/Components/Skeleton"
-import Pagination from "src/Components/Pagination"
-import ProductItem from "./Components/ProductItem"
 import { createSearchParams, Link, useNavigate } from "react-router-dom"
 import { HttpStatusCode } from "src/Constants/httpStatus"
 import FilterProduct from "./Components/FilterProduct"
-import { motion } from "framer-motion"
-import { Collapse, CollapseProps, Empty, Select } from "antd"
+import { Collapse, CollapseProps, Empty, Image, Modal, Select, Table, Tag } from "antd"
 import "../ManageOrders/ManageOrders.css"
-import { ArrowUpNarrowWide, FolderUp, Plus } from "lucide-react"
+import { ArrowUpNarrowWide, ClipboardCheck, FolderUp, Pencil, Plus, Trash2 } from "lucide-react"
 import Button from "src/Components/Button"
 import useDownloadExcel from "src/Hook/useDownloadExcel"
 import { useTheme } from "src/Admin/Components/Theme-provider/Theme-provider"
 import { toast } from "react-toastify"
 import { useEffect } from "react"
+import { ColumnsType } from "antd/es/table"
+import { convertDateTime, formatCurrency } from "src/Helpers/common"
 
 export default function ManageProducts() {
   const { theme } = useTheme()
@@ -75,18 +74,6 @@ export default function ManageProducts() {
   }>
   const listProduct = result?.result?.result
 
-  const page_size = Math.ceil(Number(result?.result.total) / Number(result?.result.limit))
-
-  // const [idBrand, setIdBrand] = useState<string | null>(null)
-
-  // const handleEditItem = useCallback((id: string) => {
-  //   setIdBrand(id)
-  // }, [])
-
-  // const handleExitsEditItem = () => {
-  //   setIdBrand(null)
-  // }
-
   // xử lý sort ds
   const handleChangeSortListOrder = (value: string) => {
     const body = {
@@ -107,6 +94,149 @@ export default function ManageProducts() {
         <section>
           <FilterProduct queryConfig={queryConfig} />
         </section>
+      )
+    }
+  ]
+
+  const copyId = async (id: string) => {
+    try {
+      await navigator.clipboard.writeText(id)
+      toast.success("Đã sao chép ID", { autoClose: 1200 })
+    } catch {
+      toast.error("Sao chép thất bại", { autoClose: 1200 })
+    }
+  }
+
+  const columns: ColumnsType<ProductItemType> = [
+    {
+      title: "Hình ảnh",
+      dataIndex: "banner",
+      key: "product",
+      fixed: "left",
+      width: 250,
+      render: (_: any, record: ProductItemType) => (
+        <div className="flex items-center gap-3">
+          <Image
+            src={record.banner?.url}
+            alt={record._id}
+            preview={false}
+            style={{ width: 200, height: 120, objectFit: "cover" }}
+          />
+        </div>
+      )
+    },
+    {
+      title: "Tên sản phẩm",
+      dataIndex: "name",
+      key: "name",
+      width: 200,
+      render: (val: string) => (
+        <div style={{ whiteSpace: "normal", wordBreak: "break-word" }} className="truncate font-semibold">
+          {val}
+        </div>
+      )
+    },
+    {
+      title: "Mã sản phẩm",
+      dataIndex: "_id",
+      key: "_id",
+      width: 200,
+      render: (id: string) => (
+        <div className="flex items-center justify-between">
+          <div className="truncate w-[80%] text-blue-500">{id}</div>
+          <button onClick={() => copyId(id)} className="p-1 border rounded ml-2">
+            <ClipboardCheck color="#8d99ae" size={14} />
+          </button>
+        </div>
+      )
+    },
+    {
+      title: "Thương hiệu",
+      dataIndex: "brand",
+      key: "brand",
+      width: 140,
+      render: (brand: any[]) => (
+        <div className="text-black dark:text-white">{<Tag color="green">{brand?.[0]?.name}</Tag>}</div>
+      )
+    },
+    {
+      title: "Thể loại",
+      dataIndex: "category",
+      key: "category",
+      width: 140,
+      render: (category: any[]) => (
+        <div className="text-black dark:text-white">{<Tag color="blue">{category?.[0]?.name}</Tag>}</div>
+      )
+    },
+    {
+      title: "Giá gốc",
+      dataIndex: "price",
+      key: "price",
+      width: 120,
+      render: (price: number) => <div className="text-red-600 font-semibold">{formatCurrency(price)}đ</div>
+    },
+    {
+      title: "Trạng thái",
+      dataIndex: "status",
+      key: "status",
+      width: 140,
+      align: "center",
+      render: (status: string) =>
+        status === "out_of_stock" ? (
+          <div className="text-[13px] font-medium py-1 px-2 border border-[#ffdcdc] bg-[#ffdcdc] text-[#f00] text-center rounded-full">
+            Hết hàng
+          </div>
+        ) : status === "available" ? (
+          <div className="text-[13px] font-medium py-1 px-2 border border-[#b2ffb4] bg-[#b2ffb4] text-[#04710c] text-center rounded-full">
+            Còn hàng
+          </div>
+        ) : (
+          <div className="text-[13px] font-medium py-1 px-2 border border-[#ffdcdc] bg-[#ffdcdc] text-[#04710c] text-center rounded-full">
+            Ngừng kinh doanh
+          </div>
+        )
+    },
+    {
+      title: "Ngày tạo",
+      dataIndex: "created_at",
+      key: "created_at",
+      width: 160,
+      render: (v: string) => <div>{convertDateTime(v)}</div>
+    },
+    {
+      title: "Ngày cập nhật",
+      dataIndex: "updated_at",
+      key: "updated_at",
+      width: 160,
+      render: (v: string) => <div>{convertDateTime(v)}</div>
+    },
+    {
+      title: "Hành động",
+      key: "action",
+      width: 120,
+      fixed: "right",
+      align: "center",
+      render: (_, record) => (
+        <div className="flex items-center justify-center gap-2">
+          <button onClick={() => navigate(`${path.AdminProducts}/${record._id}`)} className="p-1">
+            <Pencil color="orange" size={18} />
+          </button>
+          <button
+            onClick={() =>
+              Modal.confirm({
+                title: "Bạn có chắc chắn muốn xóa?",
+                content: "Không thể hoàn tác hành động này. Thao tác này sẽ xóa vĩnh viễn dữ liệu của bạn.",
+                okText: "Xóa",
+                okButtonProps: { danger: true },
+                cancelText: "Hủy",
+                onOk: () => {}
+              })
+            }
+            className="p-1"
+          >
+            <Trash2 color="red" size={18} />
+          </button>
+        </div>
       )
     }
   ]
@@ -137,172 +267,77 @@ export default function ManageProducts() {
       <h1 className="text-2xl font-bold text-gray-800 bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600 my-2">
         Sản phẩm
       </h1>
-      {/* <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-        <div className="p-4 bg-white dark:bg-darkPrimary mb-3 border border-gray-300 dark:border-darkBorder rounded-2xl shadow-xl">
-          <h1 className="text-[16px] font-semibold tracking-wide">Bộ lọc & Tìm kiếm</h1>
-          <FilterProduct queryConfig={queryConfig} listProduct={listProduct} />
-          <div>
-            {isLoading && <Skeleton />}
-            {!isFetching && (
-              <div>
-                <div className="mt-4">
-                  <div className="bg-[#f2f2f2] dark:bg-darkPrimary grid grid-cols-12 items-center gap-2 py-3 border border-[#dedede] dark:border-darkBorder px-4 rounded-tl-xl rounded-tr-xl">
-                    <div className="col-span-2 text-[14px] font-semibold tracking-wider uppercase">Mã sản phẩm</div>
-                    <div className="col-span-1 text-[14px] font-semibold tracking-wider uppercase">Hình ảnh</div>
-                    <div className="col-span-2 text-[14px] font-semibold tracking-wider uppercase">Tên sản phẩm</div>
-                    <div className="col-span-1 text-[14px] font-semibold tracking-wider uppercase">Thương hiệu</div>
-                    <div className="col-span-1 text-[14px] font-semibold tracking-wider uppercase">Thể loại</div>
-                    <div className="col-span-1 text-[14px] font-semibold tracking-wider uppercase">Giá gốc</div>
-                    <div className="col-span-1 text-[14px] text-center font-semibold tracking-wider uppercase">
-                      Trạng thái
-                    </div>
-                    <div className="col-span-1 text-[14px] text-center font-semibold tracking-wider uppercase">
-                      Ngày tạo
-                    </div>
-                    <div className="col-span-1 text-[14px] text-center font-semibold tracking-wider uppercase">
-                      Ngày cập nhật
-                    </div>
-                    <div className="col-span-1 text-[14px] text-center font-semibold tracking-wider uppercase">
-                      Hành động
-                    </div>
-                  </div>
-                  <div>
-                    {listProduct?.length > 0 ? (
-                      listProduct?.map((item, index) => (
-                        <motion.div
-                          key={item._id}
-                          initial={{ opacity: 0, y: 20 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          transition={{ delay: index * 0.1 }}
-                        >
-                          <ProductItem
-                            // onDelete={handleDeleteCategory}
-                            // handleEditItem={handleEditItem}
-                            item={item}
-                            maxIndex={listProduct?.length}
-                            index={index}
-                          />
-                        </motion.div>
-                      ))
-                    ) : (
-                      <div className="text-center mt-4">
-                        <Empty />
-                      </div>
-                    )}
-                  </div>
-                </div>
-                <Pagination
-                  data={result}
-                  queryConfig={queryConfig}
-                  page_size={page_size}
-                  pathNavigate={path.AdminProducts}
-                />
-              </div>
-            )}
-          </div>
-        </div>
-      </motion.div> */}
 
       <Collapse items={items} defaultActiveKey={["2"]} className="bg-white dark:bg-darkPrimary dark:border-none" />
 
       <section className="mt-4">
         {isLoading && <Skeleton />}
-        {!isFetching && (
-          <div>
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <Button
-                  onClick={() => downloadExcel(listProduct)}
-                  icon={<FolderUp size={15} />}
-                  nameButton="Export"
-                  classNameButton="py-2 px-3 border border-[#E2E7FF] bg-[#E2E7FF] w-full text-[#3A5BFF] font-medium rounded-3xl hover:bg-blue-500/40 duration-200 text-[13px] flex items-center gap-1"
-                />
-                <Select
-                  defaultValue="Mới nhất"
-                  className="select-sort"
-                  onChange={handleChangeSortListOrder}
-                  suffixIcon={<ArrowUpNarrowWide color={isDarkMode ? "white" : "black"} />}
-                  options={[
-                    { value: "old", label: "Cũ nhất" },
-                    { value: "new", label: "Mới nhất" }
-                  ]}
-                />
-              </div>
-              <div>
-                <Link
-                  to={path.AddProduct}
-                  className="py-2 px-3 bg-blue-500 w-full text-white font-medium rounded-3xl hover:bg-blue-500/80 duration-200 text-[13px] flex items-center gap-1"
-                >
-                  <Plus size={15} />
-                  <span>Thêm mới</span>
-                </Link>
-              </div>
-            </div>
-            <div className="mt-4">
-              <div className="bg-[#fff] dark:bg-darkPrimary grid grid-cols-12 items-center gap-2 py-3 border border-[#dedede] dark:border-darkBorder px-4 rounded-tl-lg rounded-tr-lg">
-                <div className="col-span-2 text-[14px] font-semibold tracking-wider uppercase text-black dark:text-white">
-                  Mã sản phẩm
-                </div>
-                <div className="col-span-1 text-[14px] font-semibold tracking-wider uppercase text-black dark:text-white">
-                  Hình ảnh
-                </div>
-                <div className="col-span-2 text-[14px] font-semibold tracking-wider uppercase text-black dark:text-white">
-                  Tên sản phẩm
-                </div>
-                <div className="col-span-1 text-[14px] font-semibold tracking-wider uppercase text-black dark:text-white">
-                  Thương hiệu
-                </div>
-                <div className="col-span-1 text-[14px] font-semibold tracking-wider uppercase text-black dark:text-white">
-                  Thể loại
-                </div>
-                <div className="col-span-1 text-[14px] font-semibold tracking-wider uppercase text-black dark:text-white">
-                  Giá gốc
-                </div>
-                <div className="col-span-1 text-[14px] text-center font-semibold tracking-wider uppercase text-black dark:text-white">
-                  Trạng thái
-                </div>
-                <div className="col-span-1 text-[14px] text-center font-semibold tracking-wider uppercase text-black dark:text-white">
-                  Ngày tạo
-                </div>
-                <div className="col-span-1 text-[14px] text-center font-semibold tracking-wider uppercase text-black dark:text-white">
-                  Ngày cập nhật
-                </div>
-                <div className="col-span-1 text-[14px] text-center font-semibold tracking-wider uppercase text-black dark:text-white">
-                  Hành động
-                </div>
-              </div>
-              <div>
-                {listProduct?.length > 0 ? (
-                  listProduct?.map((item, index) => (
-                    <motion.div
-                      key={item._id}
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: index * 0.1 }}
-                    >
-                      <ProductItem
-                        // onDelete={handleDeleteCategory}
-                        // handleEditItem={handleEditItem}
-                        item={item}
-                        maxIndex={listProduct?.length}
-                        index={index}
-                      />
-                    </motion.div>
-                  ))
-                ) : (
-                  <div className="text-center mt-4">
-                    <Empty />
-                  </div>
-                )}
-              </div>
-            </div>
-            <Pagination
-              data={result}
-              queryConfig={queryConfig}
-              page_size={page_size}
-              pathNavigate={path.AdminProducts}
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Button
+              onClick={() => downloadExcel(listProduct)}
+              icon={<FolderUp size={15} />}
+              nameButton="Export"
+              classNameButton="py-2 px-3 border border-[#E2E7FF] bg-[#E2E7FF] w-full text-[#3A5BFF] font-medium rounded-md hover:bg-blue-500/40 duration-200 text-[13px] flex items-center gap-1 text-[13px]"
+            />
+            <Select
+              defaultValue="Mới nhất"
+              className="select-sort"
+              onChange={handleChangeSortListOrder}
+              suffixIcon={<ArrowUpNarrowWide color={isDarkMode ? "white" : "black"} />}
+              options={[
+                { value: "old", label: "Cũ nhất" },
+                { value: "new", label: "Mới nhất" }
+              ]}
             />
           </div>
+          <div>
+            <Link
+              to={path.AddProduct}
+              className="py-2 px-3 bg-blue-500 w-full text-white font-medium rounded-md hover:bg-blue-500/80 duration-200 text-[13px] flex items-center gap-1"
+            >
+              <Plus size={15} />
+              <span>Thêm mới</span>
+            </Link>
+          </div>
+        </div>
+        {!isFetching ? (
+          <div>
+            {listProduct?.length > 0 ? (
+              <Table
+                rowKey={(r) => r._id}
+                dataSource={listProduct}
+                loading={isLoading}
+                scroll={{
+                  x: "max-content"
+                }}
+                pagination={{
+                  current: Number(queryConfig.page),
+                  pageSize: Number(queryConfig.limit),
+                  total: Number(result?.result.total || 0),
+                  showSizeChanger: true,
+                  pageSizeOptions: ["5", "10", "20", "50"],
+                  onChange: (page, pageSize) =>
+                    navigate({
+                      pathname: path.AdminProducts,
+                      search: createSearchParams({
+                        ...queryConfig,
+                        page: page.toString(),
+                        limit: pageSize.toString()
+                      }).toString()
+                    })
+                }}
+                columns={columns}
+                rowClassName={(_, index) => (index % 2 === 0 ? "bg-[#f2f2f2]" : "bg-white")}
+              />
+            ) : (
+              <div className="text-center mt-4">
+                <Empty />
+              </div>
+            )}
+          </div>
+        ) : (
+          <Skeleton />
         )}
       </section>
     </div>

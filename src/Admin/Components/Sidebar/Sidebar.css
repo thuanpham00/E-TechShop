@@ -25,3 +25,20 @@
 .menu-sidebar .ant-menu-submenu-arrow {
   color: white;
 }
+
+.menu-sidebar .ant-menu-root > .ant-menu-item {
+  padding-inline: 24px !important;
+  color: white;
+}
+
+.menu-sidebar .ant-menu-root > .ant-menu-item:hover {
+  background-color: #e6f4ff !important;
+  color: #1677ff !important;
+}
+
+/* Active/Selected state cho tất cả root level items */
+.menu-sidebar .ant-menu-root > .ant-menu-item.ant-menu-item-selected {
+  background-color: #e6f4ff !important;
+  padding-inline: 24px !important;
+  color: #1677ff !important;
+}

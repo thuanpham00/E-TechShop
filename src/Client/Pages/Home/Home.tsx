@@ -23,6 +23,9 @@ import useCollectionTopSold from "src/Hook/useCollectionTopSold"
 import { motion } from "framer-motion"
 import SlideShow from "./Components/SlideShow"
 import { AppContext } from "src/Context/authContext"
+import { Col, Row } from "antd"
+import bannerQC1 from "src/Assets/img/banner_home/thang_06_banner_build_pc_top_promotion_banner_2.png"
+import bannerQC2 from "src/Assets/img/banner_home/thang_06_banner_ghe_top_promotion_banner_1.png"
 
 export default function Home() {
   const navigate = useNavigate()
@@ -190,6 +193,15 @@ export default function Home() {
                   </Fragment>
                 )}
               </div>
+
+              <Row gutter={12} className="my-4">
+                <Col span={12}>
+                  <img src={bannerQC1} alt={bannerQC1} />
+                </Col>
+                <Col span={12}>
+                  <img src={bannerQC2} alt={bannerQC2} />
+                </Col>
+              </Row>
 
               <div className="relative bg-white rounded-lg shadow-md my-4 p-4">
                 {getCollectionPCTopSold.isLoading && <Skeleton />}

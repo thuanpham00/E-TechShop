@@ -395,9 +395,6 @@ export default function ManagePermissions() {
     })
   }
 
-  console.log(updatePermissionForRole)
-  console.log(edited)
-
   useEffect(() => {
     if (isError) {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any

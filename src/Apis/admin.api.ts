@@ -354,9 +354,14 @@ export const adminAPI = {
       return Http.post("/admin/staffs", body)
     },
 
-    // cập nhật khách hàng
+    // cập nhật nhân viên
     updateProfileStaff: (id: string, body: UpdateBodyReq) => {
       return Http.put(`/admin/staffs/${id}`, body)
+    },
+
+    // xóa nhân viên
+    deleteProfileStaff: (id: string) => {
+      return Http.delete(`/admin/staffs/${id}`)
     }
   }
 }

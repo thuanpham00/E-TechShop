@@ -199,7 +199,7 @@ export default function ProductDetail() {
           </Helmet>
           <Breadcrumb slug_1={nameCategory} slug_2={productDetail?.name} />
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-            <div className="bg-white rounded-lg shadow-md my-4 grid grid-cols-6 gap-6 p-6 pt-4">
+            <div className="bg-white rounded-lg border border-gray-200 shadow-md my-4 grid grid-cols-6 gap-6 p-6 pt-4">
               <div className="col-span-3">
                 <div className="flex items-center">
                   <button
@@ -297,35 +297,36 @@ export default function ProductDetail() {
                   </div>
                 )}
 
-                <div className="flex items-center gap-2 mt-4">
+                <div className="flex items-center gap-2 mt-4 w-full">
                   {productDetail?.status === "out_of_stock" && (
-                    <button className="py-2 bg-[#bcbec2] rounded-md text-white w-[180px] text-[15px]">HẾT HÀNG</button>
+                    <button className="py-2 bg-[#bcbec2] rounded-md text-white text-[15px] w-[80%]">HẾT HÀNG</button>
                   )}
 
                   {productDetail?.status === "discontinued" && (
-                    <button className="py-2 bg-[#bcbec2] rounded-md text-white w-[180px] text-[15px]">
+                    <button className="py-2 bg-[#bcbec2] rounded-md text-white text-[15px] w-[50%]">
                       Ngừng sản xuất
                     </button>
                   )}
 
                   {productDetail?.status === "available" && (
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 w-full">
                       <button
                         type="button"
                         onClick={() => addProductToCart(productDetail._id, valueQuantity)}
-                        className="py-2 border-2 border-red-600 hover:bg-red-100 duration-200  rounded-md text-red-600 min-w-[180px] text-sm font-semibold"
+                        className="flex-1 py-2 border-2 border-red-600 hover:bg-red-100 duration-200  rounded-md text-red-600 min-w-[180px] text-sm font-semibold"
                       >
                         Thêm vào giỏ hàng
                       </button>
                       <button
                         onClick={() => handleBuyNow(productDetail._id, valueQuantity)}
                         type="button"
-                        className="py-2 border-2 border-red-600 bg-red-600 hover:bg-red-400 hover:border-red-400 duration-200 rounded-md text-white min-w-[150px] text-sm font-semibold"
+                        className="flex-1 py-2 border-2 border-red-600 bg-red-600 hover:bg-red-400 hover:border-red-400 duration-200 rounded-md text-white min-w-[150px] text-sm font-semibold"
                       >
                         Mua ngay
                       </button>
                     </div>
                   )}
+
                   <button
                     onClick={() => handleAddProductToFavourite(productDetail._id)}
                     className={`p-2 px-3 border border-red-400 duration-300 rounded-lg transition-all hover:shadow-md ${liked ? "bg-red-500 hover:bg-red-400" : "bg-red-100 hover:bg-red-200"}`}
@@ -373,7 +374,7 @@ export default function ProductDetail() {
                 </div>
               </div>
             </div>
-            <div className="mt-2 bg-white rounded-lg shadow-md my-4 p-6 pt-4">
+            <div className="mt-2 bg-white border border-gray-200 rounded-lg shadow-md my-4 p-6 pt-4">
               <h4 className="text-xl font-semibold">Sản phẩm tương tự</h4>
               <div className="mt-1 grid grid-cols-5 gap-2">
                 {listProductRelated?.map((item) => {
@@ -385,7 +386,7 @@ export default function ProductDetail() {
                 })}
               </div>
             </div>
-            <div className="mt-2 bg-white rounded-lg shadow-md my-4 p-6">
+            <div className="mt-2 bg-white border border-gray-200 rounded-lg shadow-md my-4 p-6">
               <h4 className="text-xl font-medium">Thông tin sản phẩm</h4>
               <div className="mt-2 text-lg font-bold">Thông số kĩ thuật:</div>
               <div className="mt-2">

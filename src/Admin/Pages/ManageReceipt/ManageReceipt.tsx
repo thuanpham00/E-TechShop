@@ -463,7 +463,7 @@ export default function ManageReceipt() {
                   onClick={() => downloadExcel(listReceipt)}
                   icon={<FolderUp size={15} />}
                   nameButton="Export"
-                  classNameButton="py-2 px-3 border border-[#E2E7FF] bg-[#E2E7FF] w-full text-[#3A5BFF] font-medium rounded-3xl hover:bg-blue-500/40 duration-200 text-[13px] flex items-center gap-1"
+                  classNameButton="py-2 px-3 border border-[#E2E7FF] bg-[#E2E7FF] w-full text-[#3A5BFF] font-medium rounded-md hover:bg-blue-500/40 duration-200 text-[13px] flex items-center gap-1 text-[13px]"
                 />
                 <Select
                   defaultValue="Mới nhất"
@@ -479,7 +479,7 @@ export default function ManageReceipt() {
               <div>
                 <Link
                   to={path.AddReceipt}
-                  className="py-2 px-3 bg-blue-500 w-full text-white font-medium rounded-3xl hover:bg-blue-500/80 duration-200 text-[13px] flex items-center gap-1"
+                  className="py-2 px-3 bg-blue-500 w-full text-white font-medium rounded-md hover:bg-blue-500/80 duration-200 text-[13px] flex items-center gap-1"
                 >
                   <Plus size={15} />
                   <span>Thêm mới</span>
@@ -508,12 +508,6 @@ export default function ManageReceipt() {
               page_size={page_size}
               pathNavigate={path.AdminReceipts}
             />
-            {/* {idSupply !== null ? (
-              <SupplyDetail idSupply={idSupply} setIdSupply={setIdSupply} queryConfig={queryConfig} />
-            ) : (
-              ""
-            )} */}
-            {/* {addItem ? <AddSupply setAddItem={setAddItem} /> : ""} */}
           </div>
         )}
       </section>

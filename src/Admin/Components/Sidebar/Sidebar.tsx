@@ -75,29 +75,26 @@ export default function Sidebar() {
     })
   }
 
+  const checkActive = (path: string): boolean => {
+    return location.pathname === path || location.pathname.startsWith(path + "/") // dùng để chính route chính và các route con như /id ...
+  }
+
+  const getSelectedKey = (): string => {
+    const activeItem = sideBarList.find(
+      (item) => location.pathname === item.path || location.pathname.startsWith(item.path + "/")
+    )
+    return activeItem ? activeItem.path : location.pathname
+  }
+
   const sub1Menu = [
-    hasPermission(permissions.VIEW_DASHBOARD) && {
-      key: "1",
-      label: hasPermission(permissions.VIEW_DASHBOARD) && (
-        <SidebarItem
-          className={`${location.pathname.startsWith(sideBarList[0].path) ? "text-[14px] text-[#3b82f6] font-semibold" : "text-[14px] text-white font-normal hover:text-[#495057] duration-200 ease-in"}`}
-          classNameWrapper={`flex items-center gap-2 cursor-pointer`}
-          icon={React.createElement(sideBarList[0].icon, {
-            color: location.pathname.startsWith(sideBarList[0].path) ? "#3b82f6" : "white"
-          })}
-          nameSideBar={sideBarList[0].name}
-          path={sideBarList[0].path}
-        />
-      )
-    },
     hasPermission(permissions.VIEW_CUSTOMER) && {
-      key: "2",
+      key: path.AdminCustomers,
       label: (
         <SidebarItem
-          className={`${location.pathname.startsWith(sideBarList[1].path) ? "text-[14px] text-[#3b82f6] font-semibold" : "text-[14px] text-white font-normal hover:text-[#495057] duration-200 ease-in"}`}
+          className={`${checkActive(sideBarList[1].path) ? "text-[14px] text-[#3b82f6] font-semibold" : "text-[14px] text-white font-normal hover:text-[#495057] duration-200 ease-in"}`}
           classNameWrapper={`flex items-center gap-2 cursor-pointer`}
           icon={React.createElement(sideBarList[1].icon, {
-            color: location.pathname.startsWith(sideBarList[1].path) ? "#3b82f6" : "white"
+            color: checkActive(sideBarList[1].path) ? "#3b82f6" : "white"
           })}
           nameSideBar={sideBarList[1].name}
           path={sideBarList[1].path}
@@ -105,13 +102,13 @@ export default function Sidebar() {
       )
     },
     hasPermission(permissions.VIEW_ORDERS) && {
-      key: "3",
+      key: path.AdminOrders,
       label: (
         <SidebarItem
-          className={`${location.pathname.startsWith(sideBarList[5].path) ? "text-[14px] text-[#3b82f6] font-semibold" : "text-[14px] text-white font-normal hover:text-[#495057] duration-200 ease-in"}`}
+          className={`${checkActive(sideBarList[5].path) ? "text-[14px] text-[#3b82f6] font-semibold" : "text-[14px] text-white font-normal hover:text-[#495057] duration-200 ease-in"}`}
           classNameWrapper={`flex items-center gap-2 cursor-pointer`}
           icon={React.createElement(sideBarList[5].icon, {
-            color: location.pathname.startsWith(sideBarList[5].path) ? "#3b82f6" : "white"
+            color: checkActive(sideBarList[5].path) ? "#3b82f6" : "white"
           })}
           nameSideBar={sideBarList[5].name}
           path={sideBarList[5].path}
@@ -119,13 +116,13 @@ export default function Sidebar() {
       )
     },
     hasPermission(permissions.VIEW_VOUCHER) && {
-      key: "14",
+      key: path.AdminVoucher,
       label: (
         <SidebarItem
-          className={`${location.pathname.startsWith(sideBarList[13].path) ? "text-[14px] text-[#3b82f6] font-semibold" : "text-[14px] text-white font-normal hover:text-[#495057] duration-200 ease-in"}`}
+          className={`${checkActive(sideBarList[13].path) ? "text-[14px] text-[#3b82f6] font-semibold" : "text-[14px] text-white font-normal hover:text-[#495057] duration-200 ease-in"}`}
           classNameWrapper={`flex items-center gap-2 cursor-pointer`}
           icon={React.createElement(sideBarList[13].icon, {
-            color: location.pathname.startsWith(sideBarList[13].path) ? "#3b82f6" : "white"
+            color: checkActive(sideBarList[13].path) ? "#3b82f6" : "white"
           })}
           nameSideBar={sideBarList[13].name}
           path={sideBarList[13].path}
@@ -145,13 +142,13 @@ export default function Sidebar() {
 
   const sub2Menu = [
     hasPermission(permissions.VIEW_CATEGORY) && {
-      key: "4",
+      key: path.AdminCategories,
       label: (
         <SidebarItem
-          className={`${location.pathname.startsWith(sideBarList[3].path) ? "text-[14px] text-[#3b82f6] font-semibold" : "text-[14px] text-white font-normal hover:text-[#495057] duration-200 ease-in"}`}
+          className={`${checkActive(sideBarList[3].path) ? "text-[14px] text-[#3b82f6] font-semibold" : "text-[14px] text-white font-normal hover:text-[#495057] duration-200 ease-in"}`}
           classNameWrapper={`flex items-center gap-2 cursor-pointer`}
           icon={React.createElement(sideBarList[3].icon, {
-            color: location.pathname.startsWith(sideBarList[3].path) ? "#3b82f6" : "white"
+            color: checkActive(sideBarList[3].path) ? "#3b82f6" : "white"
           })}
           nameSideBar={sideBarList[3].name}
           path={sideBarList[3].path}
@@ -159,13 +156,13 @@ export default function Sidebar() {
       )
     },
     hasPermission(permissions.VIEW_PRODUCT) && {
-      key: "5",
+      key: path.AdminProducts,
       label: (
         <SidebarItem
-          className={`${location.pathname.startsWith(sideBarList[4].path) ? "text-[14px] text-[#3b82f6] font-semibold" : "text-[14px] text-white font-normal hover:text-[#495057] duration-200 ease-in"}`}
+          className={`${checkActive(sideBarList[4].path) ? "text-[14px] text-[#3b82f6] font-semibold" : "text-[14px] text-white font-normal hover:text-[#495057] duration-200 ease-in"}`}
           classNameWrapper={`flex items-center gap-2 cursor-pointer`}
           icon={React.createElement(sideBarList[4].icon, {
-            color: location.pathname.startsWith(sideBarList[4].path) ? "#3b82f6" : "white"
+            color: checkActive(sideBarList[4].path) ? "#3b82f6" : "white"
           })}
           nameSideBar={sideBarList[4].name}
           path={sideBarList[4].path}
@@ -185,13 +182,13 @@ export default function Sidebar() {
 
   const sub3Menu = [
     hasPermission(permissions.VIEW_EMAIL) && {
-      key: "6",
+      key: path.AdminEmail,
       label: (
         <SidebarItem
-          className={`${location.pathname.startsWith(sideBarList[10].path) ? "text-[14px] text-[#3b82f6] font-semibold" : "text-[14px] text-white font-normal hover:text-[#495057] duration-200 ease-in"}`}
+          className={`${checkActive(sideBarList[10].path) ? "text-[14px] text-[#3b82f6] font-semibold" : "text-[14px] text-white font-normal hover:text-[#495057] duration-200 ease-in"}`}
           classNameWrapper={`flex items-center gap-2 cursor-pointer`}
           icon={React.createElement(sideBarList[10].icon, {
-            color: location.pathname.startsWith(sideBarList[10].path) ? "#3b82f6" : "white"
+            color: checkActive(sideBarList[10].path) ? "#3b82f6" : "white"
           })}
           nameSideBar={sideBarList[10].name}
           path={sideBarList[10].path}
@@ -199,13 +196,13 @@ export default function Sidebar() {
       )
     },
     hasPermission(permissions.VIEW_CHAT) && {
-      key: "7",
+      key: path.AdminChat,
       label: (
         <SidebarItem
-          className={`${location.pathname.startsWith(sideBarList[11].path) ? "text-[14px] text-[#3b82f6] font-semibold" : "text-[14px] text-white font-normal hover:text-[#495057] duration-200 ease-in"}`}
+          className={`${checkActive(sideBarList[11].path) ? "text-[14px] text-[#3b82f6] font-semibold" : "text-[14px] text-white font-normal hover:text-[#495057] duration-200 ease-in"}`}
           classNameWrapper={`flex items-center gap-2 cursor-pointer`}
           icon={React.createElement(sideBarList[11].icon, {
-            color: location.pathname.startsWith(sideBarList[11].path) ? "#3b82f6" : "white"
+            color: checkActive(sideBarList[11].path) ? "#3b82f6" : "white"
           })}
           nameSideBar={sideBarList[11].name}
           path={sideBarList[11].path}
@@ -223,15 +220,69 @@ export default function Sidebar() {
         }
       : null
 
-  const sub5Menu = [
-    hasPermission(permissions.VIEW_EMPLOYEE) && {
-      key: "11",
+  const sub4Menu = [
+    hasPermission(permissions.VIEW_RECEIPT) && {
+      key: path.AdminReceipts,
       label: (
         <SidebarItem
-          className={`${location.pathname.startsWith(sideBarList[2].path) ? "text-[14px] text-[#3b82f6] font-semibold" : "text-[14px] text-white font-normal hover:text-[#495057] duration-200 ease-in"}`}
+          className={`${checkActive(sideBarList[6].path) ? "text-[14px] text-[#3b82f6] font-semibold" : "text-[14px] text-white font-normal hover:text-[#495057] duration-200 ease-in"}`}
+          classNameWrapper={`flex items-center gap-2 cursor-pointer`}
+          icon={React.createElement(sideBarList[6].icon, {
+            color: checkActive(sideBarList[6].path) ? "#3b82f6" : "white"
+          })}
+          nameSideBar={sideBarList[6].name}
+          path={sideBarList[6].path}
+        />
+      )
+    },
+    hasPermission(permissions.VIEW_SUPPLIERS) && {
+      key: path.AdminSuppliers,
+      label: (
+        <SidebarItem
+          className={`${checkActive(sideBarList[8].path) ? "text-[14px] text-[#3b82f6] font-semibold" : "text-[14px] text-white font-normal hover:text-[#495057] duration-200 ease-in"}`}
+          classNameWrapper={`flex items-center gap-2 cursor-pointer`}
+          icon={React.createElement(sideBarList[8].icon, {
+            color: checkActive(sideBarList[8].path) ? "#3b82f6" : "white"
+          })}
+          nameSideBar={sideBarList[8].name}
+          path={sideBarList[8].path}
+        />
+      )
+    },
+    hasPermission(permissions.VIEW_SUPPLIES) && {
+      key: path.AdminSupplies,
+      label: (
+        <SidebarItem
+          className={`${checkActive(sideBarList[7].path) ? "text-[14px] text-[#3b82f6] font-semibold" : "text-[14px] text-white font-normal hover:text-[#495057] duration-200 ease-in"}`}
+          classNameWrapper={`flex items-center gap-2 cursor-pointer`}
+          icon={React.createElement(sideBarList[7].icon, {
+            color: checkActive(sideBarList[7].path) ? "#3b82f6" : "white"
+          })}
+          nameSideBar={sideBarList[7].name}
+          path={sideBarList[7].path}
+        />
+      )
+    }
+  ].filter(Boolean)
+
+  const sub4 =
+    sub4Menu.length > 0
+      ? {
+          key: "sub4",
+          label: <div className="font-semibold text-[15px] text-white">Quản lý Nhập hàng và Cung ứng</div>,
+          children: sub4Menu
+        }
+      : null
+
+  const sub5Menu = [
+    hasPermission(permissions.VIEW_EMPLOYEE) && {
+      key: path.AdminEmployees,
+      label: (
+        <SidebarItem
+          className={`${checkActive(sideBarList[2].path) ? "text-[14px] text-[#3b82f6] font-semibold" : "text-[14px] text-white font-normal hover:text-[#495057] duration-200 ease-in"}`}
           classNameWrapper={`flex items-center gap-2 cursor-pointer`}
           icon={React.createElement(sideBarList[2].icon, {
-            color: location.pathname.startsWith(sideBarList[2].path) ? "#3b82f6" : "white"
+            color: checkActive(sideBarList[2].path) ? "#3b82f6" : "white"
           })}
           nameSideBar={sideBarList[2].name}
           path={sideBarList[2].path}
@@ -239,13 +290,13 @@ export default function Sidebar() {
       )
     },
     hasPermission(permissions.VIEW_ROLES) && {
-      key: "12",
+      key: path.AdminRole,
       label: (
         <SidebarItem
-          className={`${location.pathname.startsWith(sideBarList[9].path) ? "text-[14px] text-[#3b82f6] font-semibold" : "text-[14px] text-white font-normal hover:text-[#495057] duration-200 ease-in"}`}
+          className={`${checkActive(sideBarList[9].path) ? "text-[14px] text-[#3b82f6] font-semibold" : "text-[14px] text-white font-normal hover:text-[#495057] duration-200 ease-in"}`}
           classNameWrapper={`flex items-center gap-2 cursor-pointer`}
           icon={React.createElement(sideBarList[9].icon, {
-            color: location.pathname.startsWith(sideBarList[9].path) ? "#3b82f6" : "white"
+            color: checkActive(sideBarList[9].path) ? "#3b82f6" : "white"
           })}
           nameSideBar={sideBarList[9].name}
           path={sideBarList[9].path}
@@ -253,13 +304,13 @@ export default function Sidebar() {
       )
     },
     hasPermission(permissions.VIEW_PERMISSION) && {
-      key: "13",
+      key: path.AdminPermission,
       label: (
         <SidebarItem
-          className={`${location.pathname.startsWith(sideBarList[12].path) ? "text-[14px] text-[#3b82f6] font-semibold" : "text-[14px] text-white font-normal hover:text-[#495057] duration-200 ease-in"}`}
+          className={`${checkActive(sideBarList[12].path) ? "text-[14px] text-[#3b82f6] font-semibold" : "text-[14px] text-white font-normal hover:text-[#495057] duration-200 ease-in"}`}
           classNameWrapper={`flex items-center gap-2 cursor-pointer`}
           icon={React.createElement(sideBarList[12].icon, {
-            color: location.pathname.startsWith(sideBarList[12].path) ? "#3b82f6" : "white"
+            color: checkActive(sideBarList[12].path) ? "#3b82f6" : "white"
           })}
           nameSideBar={sideBarList[12].name}
           path={sideBarList[12].path}
@@ -277,61 +328,15 @@ export default function Sidebar() {
         }
       : null
 
-  const sub4Menu = [
-    hasPermission(permissions.VIEW_RECEIPT) && {
-      key: "8",
-      label: (
-        <SidebarItem
-          className={`${location.pathname.startsWith(sideBarList[6].path) ? "text-[14px] text-[#3b82f6] font-semibold" : "text-[14px] text-white font-normal hover:text-[#495057] duration-200 ease-in"}`}
-          classNameWrapper={`flex items-center gap-2 cursor-pointer`}
-          icon={React.createElement(sideBarList[6].icon, {
-            color: location.pathname.startsWith(sideBarList[6].path) ? "#3b82f6" : "white"
-          })}
-          nameSideBar={sideBarList[6].name}
-          path={sideBarList[6].path}
-        />
-      )
-    },
-    hasPermission(permissions.VIEW_SUPPLIERS) && {
-      key: "9",
-      label: (
-        <SidebarItem
-          className={`${location.pathname.startsWith(sideBarList[7].path) ? "text-[14px] text-[#3b82f6] font-semibold" : "text-[14px] text-white font-normal hover:text-[#495057] duration-200 ease-in"}`}
-          classNameWrapper={`flex items-center gap-2 cursor-pointer`}
-          icon={React.createElement(sideBarList[7].icon, {
-            color: location.pathname.startsWith(sideBarList[7].path) ? "#3b82f6" : "white"
-          })}
-          nameSideBar={sideBarList[7].name}
-          path={sideBarList[7].path}
-        />
-      )
-    },
-    hasPermission(permissions.VIEW_SUPPLIES) && {
-      key: "10",
-      label: (
-        <SidebarItem
-          className={`${location.pathname.startsWith(sideBarList[8].path) ? "text-[14px] text-[#3b82f6] font-semibold" : "text-[14px] text-white font-normal hover:text-[#495057] duration-200 ease-in"}`}
-          classNameWrapper={`flex items-center gap-2 cursor-pointer`}
-          icon={React.createElement(sideBarList[8].icon, {
-            color: location.pathname.startsWith(sideBarList[8].path) ? "#3b82f6" : "white"
-          })}
-          nameSideBar={sideBarList[8].name}
-          path={sideBarList[8].path}
-        />
-      )
-    }
-  ].filter(Boolean)
-
-  const sub4 =
-    sub4Menu.length > 0
-      ? {
-          key: "sub4",
-          label: <div className="font-semibold text-[15px] text-white">Quản lý Nhập hàng và Cung ứng</div>,
-          children: sub4Menu
-        }
-      : null
-
   const items: MenuProps["items"] = [
+    {
+      key: path.AdminDashboard, // key trùng pathname
+      label: hasPermission(permissions.VIEW_DASHBOARD) && (
+        <Link to={path.AdminDashboard} className="font-semibold text-white block text-[15px]">
+          Thống kê hệ thống
+        </Link>
+      )
+    },
     sub1,
     {
       type: "divider"
@@ -354,9 +359,9 @@ export default function Sidebar() {
   return (
     <div className="sticky top-0 left-0 py-4 bg-darkPrimary h-screen border-r border-[#dedede] dark:border-darkBorder shadow-xl">
       <div>
-        <div className="mx-4 flex items-center justify-center bg-[#f2f2f2] py-1 rounded-lg">
-          <Cpu color={"black"} />
-          <span className="text-gray-900 text-2xl font-bold">TechZone</span>
+        <div className="flex items-center justify-center gap-2 py-1 rounded-lg mr-2">
+          <Cpu color={"white"} size={30} />
+          <span className="text-white text-2xl font-bold">TechZone</span>
         </div>
         <div className="mt-4 menu-sidebar">
           <Menu
@@ -366,6 +371,7 @@ export default function Sidebar() {
               overflowY: "auto",
               overflowX: "hidden"
             }}
+            selectedKeys={[getSelectedKey()]}
             defaultOpenKeys={["sub1", "sub2"]}
             className="bg-darkPrimary menu-scroll"
             items={items}
@@ -376,7 +382,7 @@ export default function Sidebar() {
           <div className="m-4">
             <Link
               to={path.AdminProfile}
-              className={`text-[14px] flex items-center gap-1 px-3 py-2 w-full hover:text-primaryBlue bg-darkPrimary hover:underline duration-100 ${location.pathname.startsWith(path.AdminProfile) ? "text-primaryBlue font-semibold" : "text-white"}`}
+              className={`text-[14px] flex items-center gap-1 px-3 py-2 w-full hover:text-primaryBlue bg-darkPrimary hover:underline duration-100 ${checkActive(path.AdminProfile) ? "text-primaryBlue font-semibold" : "text-white"}`}
             >
               Thông tin tài khoản
               <Info size={16} />

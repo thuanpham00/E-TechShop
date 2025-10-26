@@ -1,7 +1,16 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Helmet } from "react-helmet-async"
 import NavigateBack from "src/Admin/Components/NavigateBack"
-import { ArrowUpFromLine, ArrowUpNarrowWide, FolderUp, RotateCcw, Search, X } from "lucide-react"
+import {
+  ArrowUpFromLine,
+  ArrowUpNarrowWide,
+  ClipboardCheck,
+  FolderUp,
+  Pencil,
+  RotateCcw,
+  Search,
+  X
+} from "lucide-react"
 import { createSearchParams, useNavigate } from "react-router-dom"
 import Button from "src/Components/Button"
 import { AnimatePresence, motion } from "framer-motion"
@@ -15,10 +24,8 @@ import { adminAPI } from "src/Apis/admin.api"
 import { SuccessResponse } from "src/Types/utils.type"
 import { OrderItemType } from "src/Types/product.type"
 import Skeleton from "src/Components/Skeleton"
-import Pagination from "src/Components/Pagination"
-import OrderItem from "./Components/OrderItem"
 import { useEffect, useState } from "react"
-import { Collapse, CollapseProps, Empty, Select, Steps } from "antd"
+import { Collapse, CollapseProps, Empty, Select, Steps, Table, Tag } from "antd"
 import "./ManageOrders.css"
 import { Controller, useForm } from "react-hook-form"
 import { yupResolver } from "@hookform/resolvers/yup"
@@ -29,6 +36,7 @@ import { queryClient } from "src/main"
 import DatePicker from "src/Admin/Components/DatePickerRange"
 import useDownloadExcel from "src/Hook/useDownloadExcel"
 import { useTheme } from "src/Admin/Components/Theme-provider/Theme-provider"
+import { ColumnsType } from "antd/es/table"
 
 type FormDataUpdate = Pick<
   SchemaOrderType,
@@ -107,7 +115,6 @@ export default function ManageOrders() {
     totalOfPage: string
   }>
   const listOrder = result?.result?.result
-  const page_size = Math.ceil(Number(result?.result.total) / Number(result?.result.limit))
 
   // xử lý sort ds
   const handleChangeSortListOrder = (value: string) => {
@@ -385,6 +392,128 @@ export default function ManageOrders() {
     }
   ]
 
+  const copyId = async (id: string) => {
+    try {
+      await navigator.clipboard.writeText(id)
+      toast.success("Đã sao chép ID", { autoClose: 1200 })
+    } catch {
+      toast.error("Sao chép thất bại", { autoClose: 1200 })
+    }
+  }
+
+  const columns: ColumnsType<OrderItemType> = [
+    {
+      title: "Mã đơn hàng",
+      dataIndex: "_id",
+      key: "_id",
+      width: 220,
+      render: (id: string) => (
+        <div className="flex items-center justify-between">
+          <div className="truncate w-[80%] text-blue-500">{id}</div>
+          <button onClick={() => copyId(id)} className="p-1 border rounded ml-2">
+            <ClipboardCheck color="#8d99ae" size={14} />
+          </button>
+        </div>
+      )
+    },
+    {
+      title: "Người nhận hàng",
+      dataIndex: ["customer_info", "name"],
+      key: "customer_name",
+      width: 220,
+      render: (_, record) => <div className="text-black dark:text-white">{record.customer_info?.name || ""}</div>
+    },
+    {
+      title: "Số điện thoại",
+      dataIndex: ["customer_info", "phone"],
+      key: "phone",
+      width: 140,
+      render: (_, record) => <div className="break-words">{record.customer_info?.phone || ""}</div>
+    },
+    {
+      title: "Địa chỉ",
+      dataIndex: ["customer_info", "address"],
+      key: "address",
+      width: 300,
+      render: (_, record) => (
+        <div className="text-left break-words max-w-[420px]">{record.customer_info?.address || ""}</div>
+      )
+    },
+    {
+      title: "Tổng tiền",
+      dataIndex: "totalAmount",
+      key: "totalAmount",
+      width: 140,
+      render: (v: number) => <div className="text-red-500 font-semibold">{v ? formatCurrency(v) + "đ" : ""}</div>
+    },
+    {
+      title: "Sản phẩm",
+      dataIndex: "products",
+      key: "products_count",
+      width: 120,
+      align: "center",
+      render: (_, record) => {
+        const count = record.products?.reduce((t, p) => t + (p.quantity || 0), 0) ?? 0
+        return <div className="text-red-500 font-semibold">({count})</div>
+      }
+    },
+    {
+      title: "Trạng thái",
+      dataIndex: "status",
+      key: "status",
+      width: 200,
+      align: "center",
+      render: (status: string) => {
+        let color = "default"
+        switch (status) {
+          case "Chờ xác nhận":
+            color = "orange"
+            break
+          case "Đang xử lý":
+            color = "blue"
+            break
+          case "Đang vận chuyển":
+            color = "cyan"
+            break
+          case "Đã giao hàng":
+            color = "green"
+            break
+          case "Đã hủy":
+            color = "red"
+            break
+          default:
+            color = "default"
+        }
+        return (
+          <Tag color={color} className="text-sm break-words whitespace-normal max-w-full">
+            {status}
+          </Tag>
+        )
+      }
+    },
+    {
+      title: "Ngày tạo",
+      dataIndex: "created_at",
+      key: "created_at",
+      width: 160,
+      render: (v: string) => <div>{convertDateTime(v)}</div>
+    },
+    {
+      title: "Hành động",
+      key: "action",
+      width: 100,
+      fixed: "right",
+      align: "center",
+      render: (_, record) => (
+        <div className="flex items-center justify-center gap-2">
+          <button onClick={() => setAddItem(record)} className="p-1">
+            <Pencil color="orange" size={18} />
+          </button>
+        </div>
+      )
+    }
+  ]
+
   useEffect(() => {
     if (isError) {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -410,315 +539,291 @@ export default function ManageOrders() {
 
       <section className="bg-white dark:bg-darkPrimary mb-3 dark:border-darkBorder mt-4">
         {isLoading && <Skeleton />}
-        {!isFetching && (
+        <div className="flex items-center gap-2">
+          <Button
+            onClick={() => downloadExcel(listOrder)}
+            icon={<FolderUp size={15} />}
+            nameButton="Export"
+            classNameButton="py-2 px-3 border border-[#E2E7FF] bg-[#E2E7FF] w-full text-[#3A5BFF] font-medium rounded-md hover:bg-blue-500/40 duration-200 text-[13px] flex items-center gap-1 text-[13px]"
+          />
+          <Select
+            defaultValue="Mới nhất"
+            className="select-sort"
+            onChange={handleChangeSortListOrder}
+            suffixIcon={<ArrowUpNarrowWide color={isDark ? "white" : "black"} />}
+            options={[
+              { value: "old", label: "Cũ nhất" },
+              { value: "new", label: "Mới nhất" }
+            ]}
+          />
+        </div>
+        {!isFetching ? (
           <div>
-            <div className="flex items-center gap-2">
-              <Button
-                onClick={() => downloadExcel(listOrder)}
-                icon={<FolderUp size={15} />}
-                nameButton="Export"
-                classNameButton="py-2 px-3 border border-[#E2E7FF] bg-[#E2E7FF] w-full text-[#3A5BFF] font-medium rounded-3xl hover:bg-blue-500/40 duration-200 text-[13px] flex items-center gap-1"
+            {listOrder?.length > 0 ? (
+              <Table
+                rowKey={(r) => r._id}
+                dataSource={listOrder}
+                columns={columns}
+                loading={isLoading}
+                pagination={{
+                  current: Number(queryConfig.page),
+                  pageSize: Number(queryConfig.limit),
+                  total: Number(result?.result.total || 0),
+                  showSizeChanger: true,
+                  pageSizeOptions: ["5", "10", "20", "50"],
+                  onChange: (page, pageSize) =>
+                    navigate({
+                      pathname: path.AdminOrders,
+                      search: createSearchParams({
+                        ...queryConfig,
+                        page: page.toString(),
+                        limit: pageSize.toString()
+                      }).toString()
+                    })
+                }}
+                rowClassName={(_, index) => (index % 2 === 0 ? "bg-[#f2f2f2]" : "bg-white")}
+                scroll={{ x: "max-content" }}
               />
-              <Select
-                defaultValue="Mới nhất"
-                className="select-sort"
-                onChange={handleChangeSortListOrder}
-                suffixIcon={<ArrowUpNarrowWide color={isDark ? "white" : "black"} />}
-                options={[
-                  { value: "old", label: "Cũ nhất" },
-                  { value: "new", label: "Mới nhất" }
-                ]}
-              />
-            </div>
-            <div className="mt-4">
-              <div className="bg-white dark:bg-darkPrimary grid grid-cols-12 items-center gap-2 py-3 border border-[#dedede] dark:border-darkBorder px-4 rounded-tl-lg rounded-tr-lg">
-                <div className="col-span-1 text-[14px] font-semibold tracking-wider uppercase sticky top-0 left-0 text-black dark:text-white">
-                  Mã đơn hàng
-                </div>
-                <div className="col-span-2 text-[14px] font-semibold tracking-wider uppercase text-black dark:text-white">
-                  Người nhận hàng
-                </div>
-                <div className="col-span-1 text-[14px] font-semibold tracking-wider uppercase  text-black dark:text-white">
-                  Số điện thoại
-                </div>
-                <div className="col-span-2 text-[14px] text-center font-semibold tracking-wider uppercase text-black dark:text-white">
-                  Địa chỉ
-                </div>
-                <div className="col-span-1 text-[14px] font-semibold tracking-wider uppercase text-black dark:text-white">
-                  Tổng tiền
-                </div>
-                <div className="col-span-1 text-[14px] text-center font-semibold tracking-wider uppercase text-black dark:text-white">
-                  Sản phẩm
-                </div>
-                <div className="col-span-2 text-[14px] text-center font-semibold tracking-wider uppercase text-black dark:text-white">
-                  Trạng thái
-                </div>
-                <div className="col-span-1 text-[14px] font-semibold tracking-wider uppercase text-black dark:text-white">
-                  Ngày tạo
-                </div>
-                <div className="col-span-1 text-[14px] text-center font-semibold tracking-wider uppercase text-black dark:text-white">
-                  Hành động
-                </div>
+            ) : (
+              <div className="text-center mt-4">
+                <Empty />
               </div>
-              <div>
-                {listOrder?.length > 0 ? (
-                  listOrder?.map((item, index) => (
-                    <motion.div
-                      key={item._id}
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: index * 0.1 }}
-                    >
-                      <OrderItem
-                        handleEditItem={() => setAddItem(item)}
-                        item={item}
-                        maxIndex={listOrder?.length}
-                        index={index}
-                      />
-                    </motion.div>
-                  ))
-                ) : (
-                  <div className="text-center mt-4">
-                    <Empty />
-                  </div>
-                )}
-              </div>
-            </div>
-            <Pagination data={result} queryConfig={queryConfig} page_size={page_size} pathNavigate={path.AdminOrders} />
+            )}
+          </div>
+        ) : (
+          <Skeleton />
+        )}
 
-            <AnimatePresence>
-              {addItem !== null && typeof addItem === "object" && (
-                <motion.div
-                  initial={{ opacity: 0 }} // khởi tạo là 0
-                  animate={{ opacity: 1 }} // xuất hiện dần là 1
-                  exit={{ opacity: 0 }} // biến mất là 0
-                  className="fixed left-0 top-0 z-10 h-screen w-screen bg-black/60 flex items-center justify-center"
+        <AnimatePresence>
+          {addItem !== null && typeof addItem === "object" && (
+            <motion.div
+              initial={{ opacity: 0 }} // khởi tạo là 0
+              animate={{ opacity: 1 }} // xuất hiện dần là 1
+              exit={{ opacity: 0 }} // biến mất là 0
+              className="fixed left-0 top-0 z-10 h-screen w-screen bg-black/60 flex items-center justify-center"
+            >
+              <motion.div
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.8 }}
+                className="relative"
+              >
+                <button onClick={() => setAddItem(null)} className="absolute z-30 right-3 top-2">
+                  <X color="gray" size={22} />
+                </button>
+                <form
+                  onSubmit={handleUpdateOrder}
+                  className="bg-white dark:bg-darkPrimary rounded-md w-[1100px] overflow-hidden"
                 >
-                  <motion.div
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.8 }}
-                    className="relative"
-                  >
-                    <button onClick={() => setAddItem(null)} className="absolute z-30 right-3 top-2">
-                      <X color="gray" size={22} />
-                    </button>
-                    <form
-                      onSubmit={handleUpdateOrder}
-                      className="bg-white dark:bg-darkPrimary rounded-md w-[1100px] overflow-hidden"
-                    >
-                      <div className="max-h-[600px] overflow-y-auto">
-                        <h3 className="py-2 px-4 text-lg font-semibold tracking-wide rounded-md sticky top-0 left-0 bg-white dark:bg-darkPrimary z-20 text-black dark:text-white">
-                          Thông tin đơn hàng
-                        </h3>
-                        <div className="p-4 pt-0 flex items-start justify-between gap-4">
-                          <div className="w-2/3">
-                            <div className="mt-4 flex items-center gap-4">
-                              <Input
-                                name="id"
-                                register={register}
-                                placeholder="Nhập họ tên"
-                                messageErrorInput={errors.id?.message}
-                                classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-darkSecond focus:border-blue-500 focus:ring-2 outline-none rounded-md text-black dark:text-white"
-                                className="relative flex-1"
-                                classNameLabel="text-black dark:text-white"
-                                nameInput="Mã đơn hàng"
-                                disabled
+                  <div className="max-h-[600px] overflow-y-auto">
+                    <h3 className="py-2 px-4 text-lg font-semibold tracking-wide rounded-md sticky top-0 left-0 bg-white dark:bg-darkPrimary z-20 text-black dark:text-white">
+                      Thông tin đơn hàng
+                    </h3>
+                    <div className="p-4 pt-0 flex items-start justify-between gap-4">
+                      <div className="w-2/3">
+                        <div className="mt-4 flex items-center gap-4">
+                          <Input
+                            name="id"
+                            register={register}
+                            placeholder="Nhập họ tên"
+                            messageErrorInput={errors.id?.message}
+                            classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-darkSecond focus:border-blue-500 focus:ring-2 outline-none rounded-md text-black dark:text-white"
+                            className="relative flex-1"
+                            classNameLabel="text-black dark:text-white"
+                            nameInput="Mã đơn hàng"
+                            disabled
+                          />
+                          <Input
+                            name="customer_info.name"
+                            register={register}
+                            placeholder="Nhập họ tên"
+                            messageErrorInput={errors.customer_info?.name?.message}
+                            classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-darkSecond focus:border-blue-500 focus:ring-2 outline-none rounded-md text-black dark:text-white"
+                            className="relative flex-1"
+                            classNameLabel="text-black dark:text-white"
+                            nameInput="Tên người nhận"
+                            disabled
+                          />
+                          <Input
+                            register={register}
+                            name="customer_info.phone"
+                            placeholder="Nhập số điện thoại"
+                            messageErrorInput={errors.customer_info?.phone?.message}
+                            classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-darkSecond  focus:border-blue-500 focus:ring-2 outline-none rounded-md text-black dark:text-white"
+                            className="relative flex-1"
+                            classNameLabel="text-black dark:text-white"
+                            nameInput="Số điện thoại"
+                            disabled
+                          />
+                        </div>
+                        <div className="mt-2 flex items-center gap-4">
+                          <Input
+                            name="customer_info.address"
+                            register={register}
+                            placeholder="Nhập địa chỉ"
+                            messageErrorInput={errors.customer_info?.address?.message}
+                            classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-darkSecond focus:border-blue-500 focus:ring-2 outline-none rounded-md text-black dark:text-white"
+                            className="relative flex-1"
+                            classNameLabel="text-black dark:text-white"
+                            nameInput="Địa chỉ"
+                            disabled
+                          />
+                        </div>
+                        <div className="mt-2 flex items-center gap-4">
+                          <Input
+                            register={register}
+                            name="note"
+                            placeholder="Nhập ghi chú"
+                            messageErrorInput={errors.customer_info?.phone?.message}
+                            classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-darkSecond focus:border-blue-500 focus:ring-2 outline-none rounded-md text-black dark:text-white"
+                            className="relative flex-1"
+                            nameInput="Ghi chú (Optional)"
+                            classNameLabel="text-black dark:text-white"
+                            disabled
+                          />
+                        </div>
+                        <div className="mt-2 flex items-center gap-4">
+                          <Input
+                            name="created_at"
+                            register={register}
+                            placeholder="Nhập ngày tạo"
+                            messageErrorInput={errors.created_at?.message}
+                            classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-darkSecond focus:border-blue-500 focus:ring-2 outline-none rounded-md text-black dark:text-white"
+                            className="relative flex-1"
+                            classNameLabel="text-black dark:text-white"
+                            nameInput="Ngày tạo"
+                            disabled
+                          />
+                          <Input
+                            name="updated_at"
+                            register={register}
+                            placeholder="Nhập ngày tạo cập nhật"
+                            messageErrorInput={errors.updated_at?.message}
+                            classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-darkSecond  focus:border-blue-500 focus:ring-2 outline-none rounded-md text-black dark:text-white"
+                            className="relative flex-1"
+                            classNameLabel="text-black dark:text-white"
+                            nameInput="Ngày cập nhật"
+                            disabled
+                          />
+                        </div>
+                        <div className="mt-1">
+                          <span className="text-black dark:text-white">Trạng thái</span>
+                          <Controller
+                            name="status"
+                            control={control}
+                            render={({ field }) => (
+                              <Select
+                                value={field.value}
+                                onChange={field.onChange}
+                                className="select-status"
+                                options={[
+                                  { value: "Chờ xác nhận", label: "Chờ xác nhận" },
+                                  { value: "Đang xử lý", label: "Đang xử lý" },
+                                  { value: "Đang vận chuyển", label: "Đang vận chuyển" },
+                                  { value: "Đã giao hàng", label: "Đã giao hàng" },
+                                  { value: "Đã hủy", label: "Đã hủy" }
+                                ]}
                               />
-                              <Input
-                                name="customer_info.name"
-                                register={register}
-                                placeholder="Nhập họ tên"
-                                messageErrorInput={errors.customer_info?.name?.message}
-                                classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-darkSecond focus:border-blue-500 focus:ring-2 outline-none rounded-md text-black dark:text-white"
-                                className="relative flex-1"
-                                classNameLabel="text-black dark:text-white"
-                                nameInput="Tên người nhận"
-                                disabled
-                              />
-                              <Input
-                                register={register}
-                                name="customer_info.phone"
-                                placeholder="Nhập số điện thoại"
-                                messageErrorInput={errors.customer_info?.phone?.message}
-                                classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-darkSecond  focus:border-blue-500 focus:ring-2 outline-none rounded-md text-black dark:text-white"
-                                className="relative flex-1"
-                                classNameLabel="text-black dark:text-white"
-                                nameInput="Số điện thoại"
-                                disabled
-                              />
-                            </div>
-                            <div className="mt-2 flex items-center gap-4">
-                              <Input
-                                name="customer_info.address"
-                                register={register}
-                                placeholder="Nhập địa chỉ"
-                                messageErrorInput={errors.customer_info?.address?.message}
-                                classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-darkSecond focus:border-blue-500 focus:ring-2 outline-none rounded-md text-black dark:text-white"
-                                className="relative flex-1"
-                                classNameLabel="text-black dark:text-white"
-                                nameInput="Địa chỉ"
-                                disabled
-                              />
-                            </div>
-                            <div className="mt-2 flex items-center gap-4">
-                              <Input
-                                register={register}
-                                name="note"
-                                placeholder="Nhập ghi chú"
-                                messageErrorInput={errors.customer_info?.phone?.message}
-                                classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-darkSecond focus:border-blue-500 focus:ring-2 outline-none rounded-md text-black dark:text-white"
-                                className="relative flex-1"
-                                nameInput="Ghi chú (Optional)"
-                                classNameLabel="text-black dark:text-white"
-                                disabled
-                              />
-                            </div>
-                            <div className="mt-2 flex items-center gap-4">
-                              <Input
-                                name="created_at"
-                                register={register}
-                                placeholder="Nhập ngày tạo"
-                                messageErrorInput={errors.created_at?.message}
-                                classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-darkSecond focus:border-blue-500 focus:ring-2 outline-none rounded-md text-black dark:text-white"
-                                className="relative flex-1"
-                                classNameLabel="text-black dark:text-white"
-                                nameInput="Ngày tạo"
-                                disabled
-                              />
-                              <Input
-                                name="updated_at"
-                                register={register}
-                                placeholder="Nhập ngày tạo cập nhật"
-                                messageErrorInput={errors.updated_at?.message}
-                                classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-darkSecond  focus:border-blue-500 focus:ring-2 outline-none rounded-md text-black dark:text-white"
-                                className="relative flex-1"
-                                classNameLabel="text-black dark:text-white"
-                                nameInput="Ngày cập nhật"
-                                disabled
-                              />
-                            </div>
-                            <div className="mt-1">
-                              <span className="text-black dark:text-white">Trạng thái</span>
-                              <Controller
-                                name="status"
-                                control={control}
-                                render={({ field }) => (
-                                  <Select
-                                    value={field.value}
-                                    onChange={field.onChange}
-                                    className="select-status"
-                                    options={[
-                                      { value: "Chờ xác nhận", label: "Chờ xác nhận" },
-                                      { value: "Đang xử lý", label: "Đang xử lý" },
-                                      { value: "Đang vận chuyển", label: "Đang vận chuyển" },
-                                      { value: "Đã giao hàng", label: "Đã giao hàng" },
-                                      { value: "Đã hủy", label: "Đã hủy" }
-                                    ]}
-                                  />
-                                )}
-                              />
-                            </div>
-                            <div className="mt-2">
-                              <div className="text-lg text-center font-semibold mb-2 tracking-wide text-black dark:text-white">
-                                Danh sách sản phẩm ({addItem?.products.length})
-                              </div>
-                              <div className="space-y-3">
-                                {addItem?.products.map((item) => {
-                                  return (
-                                    <div
-                                      key={item.product_id}
-                                      className="flex items-center justify-between p-3 border border-gray-200 rounded-md shadow-sm bg-white dark:bg-darkPrimary"
-                                    >
-                                      <div className="flex items-center gap-4">
-                                        <img
-                                          src={item.image}
-                                          alt={item.name}
-                                          className="w-16 h-16 object-cover rounded-md border"
-                                        />
-                                        <div>
-                                          <p className="font-medium text-gray-800 dark:text-white">{item.name}</p>
-                                          <p className="text-sm text-gray-500 dark:text-gray-300">
-                                            Số lượng: {item.quantity}
-                                          </p>
-                                        </div>
-                                      </div>
-
-                                      {/* Giá tiền */}
-                                      <div className="text-right">
-                                        {item.discount !== 0 ? (
-                                          <div>
-                                            <p className="text-sm text-gray-600 dark:text-gray-300">
-                                              Đơn giá: {formatCurrency(item.price - item.price * (item.discount / 100))}
-                                              đ
-                                            </p>
-                                            <p className="text-sm font-semibold text-gray-700 dark:text-gray-300">
-                                              Thành tiền:{" "}
-                                              {formatCurrency(
-                                                (item.price - item.price * (item.discount / 100)) * item.quantity
-                                              )}
-                                              đ
-                                            </p>
-                                          </div>
-                                        ) : (
-                                          <div>
-                                            <p className="text-sm text-gray-600 dark:text-gray-300">
-                                              Đơn giá: {formatCurrency(item.price)} đ
-                                            </p>
-                                            <p className="text-sm font-semibold text-gray-700">
-                                              Thành tiền: {formatCurrency(item.price * item.quantity)}đ
-                                            </p>
-                                          </div>
-                                        )}
-                                      </div>
-                                    </div>
-                                  )
-                                })}
-                              </div>
-                              <div className="mt-2 text-[15px]">
-                                Tạm tính : {formatCurrency((addItem?.subTotal as number) || 0)} đ
-                              </div>
-                              <div className="text-[15px]">
-                                Phí vận chuyển: {formatCurrency((addItem?.shipping_fee as number) || 0)} đ
-                              </div>
-                              <div className="text-red-500 text-base font-semibold">
-                                Tổng tiền: {formatCurrency((addItem?.totalAmount as number) || 0)} đ
-                              </div>
-                            </div>
+                            )}
+                          />
+                        </div>
+                        <div className="mt-2">
+                          <div className="text-lg text-center font-semibold mb-2 tracking-wide text-black dark:text-white">
+                            Danh sách sản phẩm ({addItem?.products.length})
                           </div>
-                          <div className="w-1/3">
-                            <div className="text-base font-semibold tracking-wide text-black dark:text-white">
-                              Lịch sử đơn hàng
-                            </div>
-                            <div className="ml-2">
-                              <Steps
-                                progressDot
-                                current={addItem?.status_history.length}
-                                direction="vertical"
-                                items={addItem?.status_history.map((item) => ({
-                                  title: item.status,
-                                  description: convertDateTime(item.updated_at)
-                                }))}
-                              />
-                            </div>
+                          <div className="space-y-3">
+                            {addItem?.products.map((item) => {
+                              return (
+                                <div
+                                  key={item.product_id}
+                                  className="flex items-center justify-between p-3 border border-gray-200 rounded-md shadow-sm bg-white dark:bg-darkPrimary"
+                                >
+                                  <div className="flex items-center gap-4">
+                                    <img
+                                      src={item.image}
+                                      alt={item.name}
+                                      className="w-16 h-16 object-cover rounded-md border"
+                                    />
+                                    <div>
+                                      <p className="font-medium text-gray-800 dark:text-white">{item.name}</p>
+                                      <p className="text-sm text-gray-500 dark:text-gray-300">
+                                        Số lượng: {item.quantity}
+                                      </p>
+                                    </div>
+                                  </div>
+
+                                  {/* Giá tiền */}
+                                  <div className="text-right">
+                                    {item.discount !== 0 ? (
+                                      <div>
+                                        <p className="text-sm text-gray-600 dark:text-gray-300">
+                                          Đơn giá: {formatCurrency(item.price - item.price * (item.discount / 100))}đ
+                                        </p>
+                                        <p className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+                                          Thành tiền:{" "}
+                                          {formatCurrency(
+                                            (item.price - item.price * (item.discount / 100)) * item.quantity
+                                          )}
+                                          đ
+                                        </p>
+                                      </div>
+                                    ) : (
+                                      <div>
+                                        <p className="text-sm text-gray-600 dark:text-gray-300">
+                                          Đơn giá: {formatCurrency(item.price)} đ
+                                        </p>
+                                        <p className="text-sm font-semibold text-gray-700">
+                                          Thành tiền: {formatCurrency(item.price * item.quantity)}đ
+                                        </p>
+                                      </div>
+                                    )}
+                                  </div>
+                                </div>
+                              )
+                            })}
+                          </div>
+                          <div className="mt-2 text-[15px]">
+                            Tạm tính : {formatCurrency((addItem?.subTotal as number) || 0)} đ
+                          </div>
+                          <div className="text-[15px]">
+                            Phí vận chuyển: {formatCurrency((addItem?.shipping_fee as number) || 0)} đ
+                          </div>
+                          <div className="text-red-500 text-base font-semibold">
+                            Tổng tiền: {formatCurrency((addItem?.totalAmount as number) || 0)} đ
                           </div>
                         </div>
-                        <div className="flex items-center justify-end mr-2 mb-2">
-                          <Button
-                            type="submit"
-                            icon={<ArrowUpFromLine size={18} />}
-                            nameButton="Cập nhật"
-                            classNameButton="w-[120px] p-4 py-2 bg-blue-500 mt-2 w-full text-white font-semibold rounded-3xl hover:bg-blue-500/80 duration-200 flex items-center gap-1"
+                      </div>
+                      <div className="w-1/3">
+                        <div className="text-base font-semibold tracking-wide text-black dark:text-white">
+                          Lịch sử đơn hàng
+                        </div>
+                        <div className="ml-2">
+                          <Steps
+                            progressDot
+                            current={addItem?.status_history.length}
+                            direction="vertical"
+                            items={addItem?.status_history.map((item) => ({
+                              title: item.status,
+                              description: convertDateTime(item.updated_at)
+                            }))}
                           />
                         </div>
                       </div>
-                    </form>
-                  </motion.div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
-        )}
+                    </div>
+                    <div className="flex items-center justify-end mr-2 mb-2">
+                      <Button
+                        type="submit"
+                        icon={<ArrowUpFromLine size={18} />}
+                        nameButton="Cập nhật"
+                        classNameButton="w-[120px] px-3 py-2 bg-blue-500 mt-2 w-full text-white font-semibold rounded-md hover:bg-blue-500/80 duration-200 flex items-center gap-1 text-[13px]"
+                      />
+                    </div>
+                  </div>
+                </form>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </section>
     </div>
   )

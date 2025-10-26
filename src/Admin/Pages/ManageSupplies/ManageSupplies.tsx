@@ -7,7 +7,6 @@ import { createSearchParams, useNavigate } from "react-router-dom"
 import NavigateBack from "src/Admin/Components/NavigateBack"
 import { adminAPI } from "src/Apis/admin.api"
 import Button from "src/Components/Button"
-import Pagination from "src/Components/Pagination"
 import Skeleton from "src/Components/Skeleton"
 import { path } from "src/Constants/path"
 import useDownloadExcel from "src/Hook/useDownloadExcel"
@@ -15,23 +14,23 @@ import useQueryParams from "src/Hook/useQueryParams"
 import { SupplyItemType } from "src/Types/product.type"
 import { queryParamConfigSupply } from "src/Types/queryParams.type"
 import { SuccessResponse } from "src/Types/utils.type"
-import SupplyItem from "./Components/SupplyItem"
-import { ArrowUpNarrowWide, FolderUp, Plus, RotateCcw, Search } from "lucide-react"
+import { ArrowUpNarrowWide, ClipboardCheck, FolderUp, Pencil, Plus, RotateCcw, Search, Trash2 } from "lucide-react"
 import { toast } from "react-toastify"
 import { Controller, useForm } from "react-hook-form"
 import { yupResolver } from "@hookform/resolvers/yup"
 import { schemaSupply, SchemaSupplyType } from "src/Client/Utils/rule"
-import { cleanObject } from "src/Helpers/common"
+import { cleanObject, convertDateTime, formatCurrency } from "src/Helpers/common"
 import DatePicker from "src/Admin/Components/DatePickerRange"
 import AddSupply from "./Components/AddSupply/AddSupply"
 import { HttpStatusCode } from "src/Constants/httpStatus"
 import SupplyDetail from "./Components/SupplyDetail"
 import { queryClient } from "src/main"
 import DropdownSearch from "./Components/DropdownSearch"
-import { AnimatePresence, motion } from "framer-motion"
-import { Collapse, CollapseProps, Empty, Select } from "antd"
+import { AnimatePresence } from "framer-motion"
+import { Collapse, CollapseProps, Empty, Modal, Select, Table } from "antd"
 import "../ManageOrders/ManageOrders.css"
 import { useTheme } from "src/Admin/Components/Theme-provider/Theme-provider"
+import { ColumnsType } from "antd/es/table"
 
 type FormDataSearch = Pick<
   SchemaSupplyType,
@@ -93,7 +92,6 @@ export default function ManageSupplies() {
     totalOfPage: string
   }>
   const listSupplier = result?.result?.result
-  const page_size = Math.ceil(Number(result?.result.total) / Number(result?.result.limit))
 
   // xử lý tìm kiếm
   const getNameProducts = useQuery({
@@ -370,6 +368,105 @@ export default function ManageSupplies() {
     }
   ]
 
+  const copyId = async (id: string) => {
+    try {
+      await navigator.clipboard.writeText(id)
+      toast.success("Đã sao chép ID", { autoClose: 1200 })
+    } catch {
+      toast.error("Sao chép thất bại", { autoClose: 1200 })
+    }
+  }
+
+  const columns: ColumnsType<SupplyItemType> = [
+    {
+      title: "Mã cung ứng",
+      dataIndex: "_id",
+      key: "_id",
+      width: 220,
+      render: (id: string) => (
+        <div className="flex items-center justify-between">
+          <div className="text-blue-500 break-all max-w-[85%]">{id}</div>
+          <button onClick={() => copyId(id)} className="p-1 ml-2">
+            <ClipboardCheck color="#8d99ae" size={14} />
+          </button>
+        </div>
+      )
+    },
+    {
+      title: "Tên sản phẩm",
+      dataIndex: "name_product",
+      key: "name_product",
+      width: 300,
+      render: (_, record) => (
+        <div className="break-words max-w-[420px] text-black dark:text-white">{record.productId[0].name || ""}</div>
+      )
+    },
+    {
+      title: "Tên nhà cung cấp",
+      dataIndex: "name_supplier",
+      key: "name_supplier",
+      width: 220,
+      render: (_, record) => <div className="break-words">{record.supplierId[0].name || ""}</div>
+    },
+    {
+      title: "Giá nhập",
+      dataIndex: "importPrice",
+      key: "importPrice",
+      width: 140,
+      render: (v: number) => <div className="text-red-500 font-semibold">{v ? formatCurrency(v) + "đ" : ""}</div>
+    },
+    {
+      title: "Thời gian cung ứng (Ngày)",
+      dataIndex: "leadTimeDays",
+      key: "leadTimeDays",
+      width: 160,
+      render: (_: string, record) => <div className="">{record.leadTimeDays ? `${record.leadTimeDays}` : ""}</div>
+    },
+    {
+      title: "Ngày tạo",
+      dataIndex: "created_at",
+      key: "created_at",
+      width: 160,
+      render: (v: string) => <div>{convertDateTime(v)}</div>
+    },
+    {
+      title: "Ngày cập nhật",
+      dataIndex: "updated_at",
+      key: "updated_at",
+      width: 160,
+      render: (v: string) => <div>{convertDateTime(v)}</div>
+    },
+    {
+      title: "Hành động",
+      key: "action",
+      width: 120,
+      fixed: "right",
+      align: "center",
+      render: (_, record) => (
+        <div className="flex items-center justify-center gap-2">
+          <button onClick={() => setAddItem(record)} className="p-1">
+            <Pencil color="orange" size={18} />
+          </button>
+          <button
+            onClick={() =>
+              Modal.confirm({
+                title: "Bạn có chắc chắn muốn xóa?",
+                content: "Không thể hoàn tác hành động này. Thao tác này sẽ xóa vĩnh viễn dữ liệu của bạn.",
+                okText: "Xóa",
+                okButtonProps: { danger: true },
+                cancelText: "Hủy",
+                onOk: () => handleDeleteSupply(record._id)
+              })
+            }
+            className="p-1"
+          >
+            <Trash2 color="red" size={18} />
+          </button>
+        </div>
+      )
+    }
+  ]
+
   useEffect(() => {
     if (isError) {
       const message = (error as any).response?.data?.message
@@ -403,104 +500,79 @@ export default function ManageSupplies() {
       <section className="mt-4">
         <div className="bg-white dark:bg-darkPrimary mb-3 dark:border-darkBorder rounded-2xl">
           {isLoading && <Skeleton />}
-          {!isFetching && (
-            <div>
-              <div className="flex items-center justify-between mb-2">
-                <div className="flex items-center gap-2">
-                  <Button
-                    onClick={() => downloadExcel(listSupplier)}
-                    icon={<FolderUp size={15} />}
-                    nameButton="Export"
-                    classNameButton="py-2 px-3 border border-[#E2E7FF] bg-[#E2E7FF] w-full text-[#3A5BFF] font-medium rounded-3xl hover:bg-blue-500/40 duration-200 text-[13px] flex items-center gap-1"
-                  />
-                  <Select
-                    defaultValue="Mới nhất"
-                    className="select-sort"
-                    onChange={handleChangeSortListOrder}
-                    suffixIcon={<ArrowUpNarrowWide color={isDarkMode ? "white" : "black"} />}
-                    options={[
-                      { value: "old", label: "Cũ nhất" },
-                      { value: "new", label: "Mới nhất" }
-                    ]}
-                  />
-                </div>
-                <div>
-                  <Button
-                    onClick={() => setAddItem(true)}
-                    icon={<Plus size={15} />}
-                    nameButton="Thêm mới"
-                    classNameButton="py-2 px-3 bg-blue-500 w-full text-white font-medium rounded-3xl hover:bg-blue-500/80 duration-200 text-[13px] flex items-center gap-1"
-                  />
-                </div>
-              </div>
-              <div className="mt-4">
-                <div className="bg-[#fff] dark:bg-darkPrimary grid grid-cols-12 items-center gap-2 py-3 border border-[#dedede] dark:border-darkBorder px-4 rounded-tl-lg rounded-tr-lg">
-                  <div className="col-span-2 text-[14px] font-semibold tracking-wider uppercase text-black dark:text-white">
-                    Mã cung ứng
-                  </div>
-                  <div className="col-span-3 text-[14px] font-semibold tracking-wider uppercase text-black dark:text-white">
-                    Tên sản phẩm
-                  </div>
-                  <div className="col-span-2 text-[14px] font-semibold tracking-wider uppercase text-black dark:text-white">
-                    Tên nhà cung cấp
-                  </div>
-                  <div className="col-span-1 text-[14px] font-semibold tracking-wider uppercase text-black dark:text-white">
-                    Giá nhập
-                  </div>
-                  <div className="col-span-1 text-[14px] font-semibold tracking-wider uppercase text-black dark:text-white">
-                    Thời gian cung ứng
-                  </div>
-                  <div className="col-span-1 text-[14px] font-semibold tracking-wider uppercase text-black dark:text-white">
-                    Ngày tạo
-                  </div>
-                  <div className="col-span-1 text-[14px] font-semibold tracking-wider uppercase text-black dark:text-white">
-                    Ngày cập nhật
-                  </div>
-                  <div className="col-span-1 text-[14px] text-center font-semibold tracking-wider uppercase text-black dark:text-white">
-                    Hành động
-                  </div>
-                </div>
-                <div>
-                  {listSupplier?.length > 0 ? (
-                    listSupplier.map((item, index) => (
-                      <motion.div
-                        key={item._id}
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: index * 0.1 }}
-                      >
-                        <SupplyItem
-                          onDelete={handleDeleteSupply}
-                          handleEditItem={() => setAddItem(item)}
-                          item={item}
-                          maxIndex={listSupplier?.length}
-                          index={index}
-                        />
-                      </motion.div>
-                    ))
-                  ) : (
-                    <div className="text-center mt-4">
-                      <Empty />
-                    </div>
-                  )}
-                </div>
-              </div>
-              <Pagination
-                data={result}
-                queryConfig={queryConfig}
-                page_size={page_size}
-                pathNavigate={path.AdminSupplies}
+          <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center gap-2">
+              <Button
+                onClick={() => downloadExcel(listSupplier)}
+                icon={<FolderUp size={15} />}
+                nameButton="Export"
+                classNameButton="py-2 px-3 border border-[#E2E7FF] bg-[#E2E7FF] w-full text-[#3A5BFF] font-medium rounded-md hover:bg-blue-500/40 duration-200 text-[13px] flex items-center gap-1 text-[13px]"
               />
-
-              <AnimatePresence>
-                {addItem !== null && typeof addItem === "object" && (
-                  <SupplyDetail addItem={addItem} setAddItem={setAddItem} queryConfig={queryConfig} />
-                )}
-              </AnimatePresence>
-
-              <AddSupply setAddItem={setAddItem} addItem={addItem} />
+              <Select
+                defaultValue="Mới nhất"
+                className="select-sort"
+                onChange={handleChangeSortListOrder}
+                suffixIcon={<ArrowUpNarrowWide color={isDarkMode ? "white" : "black"} />}
+                options={[
+                  { value: "old", label: "Cũ nhất" },
+                  { value: "new", label: "Mới nhất" }
+                ]}
+              />
             </div>
+            <div>
+              <Button
+                onClick={() => setAddItem(true)}
+                icon={<Plus size={15} />}
+                nameButton="Thêm mới"
+                classNameButton="py-2 px-3 bg-blue-500 w-full text-white font-medium rounded-md hover:bg-blue-500/80 duration-200 text-[13px] flex items-center gap-1"
+              />
+            </div>
+          </div>
+          {!isFetching ? (
+            <div>
+              {listSupplier?.length > 0 ? (
+                <Table
+                  rowKey={(r) => r._id}
+                  dataSource={listSupplier}
+                  columns={columns}
+                  loading={isLoading}
+                  pagination={{
+                    current: Number(queryConfig.page),
+                    pageSize: Number(queryConfig.limit),
+                    total: Number(result?.result.total || 0),
+                    showSizeChanger: true,
+                    pageSizeOptions: ["5", "10", "20", "50"],
+                    onChange: (page, pageSize) => {
+                      navigate({
+                        pathname: path.AdminSupplies,
+                        search: createSearchParams({
+                          ...queryConfig,
+                          page: page.toString(),
+                          limit: pageSize.toString()
+                        }).toString()
+                      })
+                    }
+                  }}
+                  rowClassName={(_, index) => (index % 2 === 0 ? "bg-[#f2f2f2]" : "bg-white")}
+                  scroll={{ x: "max-content" }}
+                />
+              ) : (
+                <div className="text-center mt-4">
+                  <Empty />
+                </div>
+              )}
+            </div>
+          ) : (
+            <Skeleton />
           )}
+
+          <AnimatePresence>
+            {addItem !== null && typeof addItem === "object" && (
+              <SupplyDetail addItem={addItem} setAddItem={setAddItem} queryConfig={queryConfig} />
+            )}
+          </AnimatePresence>
+
+          <AddSupply setAddItem={setAddItem} addItem={addItem} />
         </div>
       </section>
     </div>

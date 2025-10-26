@@ -69,10 +69,10 @@ export default function ProductItem({ item }: { item: CollectionItemType }) {
           alt={item.name}
           className="mt-4 object-cover w-full h-[180px] duration-200 transition-all"
         />
-        <span className="text-[14px] font-bold mt-4 mb-2 line-clamp-2">{item.name}</span>
+        <span className="text-[14px] font-bold mt-4 mb-2 line-clamp-2 block text-left">{item.name}</span>
         {item.discount ? (
           <Fragment>
-            <span className="block text-[14px] line-through text-[#6d7e72] font-semibold">
+            <span className="block text-[14px] text-left line-through text-[#6d7e72] font-semibold">
               {formatCurrency(item.price)}₫
             </span>
             <div className="flex items-center gap-2">
@@ -87,7 +87,12 @@ export default function ProductItem({ item }: { item: CollectionItemType }) {
         ) : (
           <Fragment>
             <span className="opacity-0 text-[14px] line-through text-[#6d7e72] font-semibold">1</span>
-            <span className="block text-[16px] text-[#e30019] font-semibold">{formatCurrency(item.price)}₫</span>
+            <span
+              className="block text-[16px] text-[#e30019] font-semibold text-lè
+            "
+            >
+              {formatCurrency(item.price)}₫
+            </span>
           </Fragment>
         )}
         <div className="flex justify-between items-center gap-1">

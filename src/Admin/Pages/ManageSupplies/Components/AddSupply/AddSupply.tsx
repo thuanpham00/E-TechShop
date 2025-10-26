@@ -232,7 +232,7 @@ export default function AddSupply({ setAddItem, addItem }: Props) {
                     type="submit"
                     icon={<Plus size={18} />}
                     nameButton="Thêm"
-                    classNameButton="w-[120px] px-4 py-2 bg-blue-500 mt-2 w-full text-white font-semibold rounded-3xl hover:bg-blue-500/80 duration-200 flex items-center gap-1"
+                    classNameButton="w-[120px] px-3 py-2 bg-blue-500 mt-2 w-full text-white font-semibold rounded-md hover:bg-blue-500/80 duration-200 flex items-center gap-1 text-[13px]"
                   />
                 </div>
               </div>

@@ -13,7 +13,7 @@ import Breadcrumb from "src/Client/Components/Breadcrumb"
 import ProductItem from "./Components/ProductItem"
 import { getNameParams } from "src/Helpers/common"
 import { Button, Dropdown, Empty, Space, Spin } from "antd"
-import { ListFilter, X } from "lucide-react"
+import { ListFilter, RotateCcw } from "lucide-react"
 import { DownOutlined } from "@ant-design/icons"
 import type { MenuProps } from "antd"
 import { isUndefined, omit, omitBy } from "lodash"
@@ -149,7 +149,7 @@ export default function Collection() {
             )}
 
             {/* Bộ lọc */}
-            <div className="bg-white p-4 my-4 rounded-lg shadow-md">
+            <div className="bg-white border border-gray-200 p-4 my-4 rounded-lg shadow-md">
               <div className="mt-1 mb-3 flex items-center gap-3">
                 <div className="border border-gray-300 rounded-md px-2 py-1 flex items-center gap-1">
                   <ListFilter size={16} />
@@ -248,11 +248,11 @@ export default function Collection() {
                 )}
 
                 <button
-                  className="h-[32px] border border-gray-300 rounded-md px-2 bg-primaryBlue hover:bg-primaryBlue/60 duration-200 flex items-center gap-1 text-white text-[13px]"
+                  className="h-[32px] rounded-md px-2 bg-primaryBlue hover:bg-primaryBlue/80 duration-200 flex items-center gap-1 text-white text-[13px]"
                   onClick={handleResetFilter}
                 >
-                  Xóa bộ lọc
-                  <X size={14} />
+                  Clear
+                  <RotateCcw size={14} />
                 </button>
               </div>
 

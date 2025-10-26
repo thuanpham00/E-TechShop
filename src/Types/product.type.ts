@@ -36,6 +36,7 @@ export type CollectionItemType = {
 export type CategoryItemType = {
   _id: string
   name: string
+  is_active: boolean
   created_at: string
   updated_at: string
   brand_ids: string[]
