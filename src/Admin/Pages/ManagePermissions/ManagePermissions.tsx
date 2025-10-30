@@ -2,7 +2,6 @@
 import { keepPreviousData, useMutation, useQuery } from "@tanstack/react-query"
 import { Alert, Button, Checkbox, Input, InputRef, Modal, Space, Table, TableColumnType, Tag } from "antd"
 import { useContext, useEffect, useMemo, useRef, useState } from "react"
-import { adminAPI } from "src/Apis/admin.api"
 import { AppContext } from "src/Context/authContext"
 import { SuccessResponse } from "src/Types/utils.type"
 import { Role } from "../ManageRoles/ManageRoles"
@@ -14,6 +13,7 @@ import type { FilterDropdownProps } from "antd/es/table/interface"
 import { SearchOutlined } from "@ant-design/icons"
 import Highlighter from "react-highlight-words"
 import { useTheme } from "src/Admin/Components/Theme-provider/Theme-provider"
+import { RolePermissionAPI } from "src/Apis/admin/role.api"
 
 interface PermissionType {
   _id: string
@@ -48,7 +48,7 @@ export default function ManagePermissions() {
       setTimeout(() => {
         controller.abort() // hủy request khi chờ quá lâu // 10 giây sau cho nó hủy // làm tự động
       }, 10000)
-      return adminAPI.role.getRoles(controller.signal)
+      return RolePermissionAPI.getRoles(controller.signal)
     },
     retry: 0, // số lần retry lại khi hủy request (dùng abort signal)
     staleTime: 1 * 60 * 1000, // dưới 3 phút nó không gọi lại api
@@ -79,7 +79,7 @@ export default function ManagePermissions() {
       setTimeout(() => {
         controller.abort() // hủy request khi chờ quá lâu // 10 giây sau cho nó hủy // làm tự động
       }, 10000)
-      return adminAPI.role.getPermissions(controller.signal)
+      return RolePermissionAPI.getPermissions(controller.signal)
     },
     retry: 0, // số lần retry lại khi hủy request (dùng abort signal)
     staleTime: 1 * 60 * 1000, // dưới 3 phút nó không gọi lại api
@@ -97,7 +97,7 @@ export default function ManagePermissions() {
       setTimeout(() => {
         controller.abort() // hủy request khi chờ quá lâu // 10 giây sau cho nó hủy // làm tự động
       }, 10000)
-      return adminAPI.role.getPermissionsBasedOnId(listRoleId, controller.signal)
+      return RolePermissionAPI.getPermissionsBasedOnId(listRoleId, controller.signal)
     },
     retry: 0, // số lần retry lại khi hủy request (dùng abort signal)
     staleTime: 1 * 60 * 1000, // dưới 3 phút nó không gọi lại api
@@ -300,7 +300,7 @@ export default function ManagePermissions() {
       title: <div className="text-center">{item.name}</div>,
       dataIndex: item.name,
       width: 130,
-      render: (text: any, record: PermissionType) => {
+      render: (_: any, record: PermissionType) => {
         return (
           <div className="text-center">
             <Checkbox
@@ -406,7 +406,7 @@ export default function ManagePermissions() {
 
   const updatePermissionForRoleMutation = useMutation({
     mutationFn: (body: UpdatePermissionItem[]) => {
-      return adminAPI.role.updatePermissionsBasedOnId(body)
+      return RolePermissionAPI.updatePermissionsBasedOnId(body)
     }
   })
 
@@ -463,7 +463,7 @@ export default function ManagePermissions() {
           dataSource={filteredData}
           pagination={false}
           bordered
-          onChange={(pagination, filters, sorter, extra) => {
+          onChange={(___, __, _, extra) => {
             setFilteredData(extra.currentDataSource)
           }}
         />

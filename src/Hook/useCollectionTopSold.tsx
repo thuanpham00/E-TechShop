@@ -11,7 +11,11 @@ export default function useCollectionTopSold(slug: string, queryKey: string) {
       }, 10000)
 
       return collectionAPI
-        .getCollections(slug, controller.signal)
+        .getCollections({
+          slug,
+          params: {},
+          signal: controller.signal
+        })
         .then((res) => res)
         .catch((err) => Promise.reject(err))
     },

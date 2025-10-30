@@ -9,7 +9,6 @@ import useQueryParams from "src/Hook/useQueryParams"
 import { queryParamConfigSupplier } from "src/Types/queryParams.type"
 import { path } from "src/Constants/path"
 import { ErrorResponse, MessageResponse, SuccessResponse } from "src/Types/utils.type"
-import { adminAPI } from "src/Apis/admin.api"
 import { SupplierItemType, UpdateSupplierBodyReq } from "src/Types/product.type"
 import { HttpStatusCode } from "src/Constants/httpStatus"
 import Button from "src/Components/Button"
@@ -47,6 +46,7 @@ import { Collapse, CollapseProps, Empty, Modal, Select, Table } from "antd"
 import "../ManageOrders/ManageOrders.css"
 import { useTheme } from "src/Admin/Components/Theme-provider/Theme-provider"
 import { ColumnsType } from "antd/es/table"
+import { SupplierAPI } from "src/Apis/admin/supplier.api"
 
 type FormDataUpdate = Pick<
   SchemaSupplierUpdateType,
@@ -130,7 +130,7 @@ export default function ManageSuppliers() {
       setTimeout(() => {
         controller.abort() // hủy request khi chờ quá lâu // 10 giây sau cho nó hủy // làm tự động
       }, 10000)
-      return adminAPI.supplier.getSuppliers(queryConfig as queryParamConfigSupplier, controller.signal)
+      return SupplierAPI.getSuppliers(queryConfig as queryParamConfigSupplier, controller.signal)
     },
     retry: 0, // số lần retry lại khi hủy request (dùng abort signal)
     staleTime: 3 * 60 * 1000, // dưới 3 phút nó không gọi lại api
@@ -189,7 +189,7 @@ export default function ManageSuppliers() {
 
   const updateCategoryMutation = useMutation({
     mutationFn: (body: { id: string; body: UpdateSupplierBodyReq }) => {
-      return adminAPI.supplier.updateSupplierDetail(body.id, body.body)
+      return SupplierAPI.updateSupplierDetail(body.id, body.body)
     }
   })
 
@@ -222,7 +222,7 @@ export default function ManageSuppliers() {
 
   const deleteSupplierMutation = useMutation({
     mutationFn: (id: string) => {
-      return adminAPI.supplier.deleteSupplierDetail(id)
+      return SupplierAPI.deleteSupplierDetail(id)
     }
   })
 
@@ -485,13 +485,13 @@ export default function ManageSuppliers() {
                   type="button"
                   icon={<RotateCcw size={15} />}
                   nameButton="Xóa bộ lọc"
-                  classNameButton="py-2 px-3 bg-[#f2f2f2] border border-[#dedede] w-full text-black font-medium hover:bg-[#dedede]/80 rounded-3xl duration-200 text-[13px] flex items-center gap-1 h-[35px]"
+                  classNameButton="py-2 px-3 bg-[#f2f2f2] border border-[#dedede] w-full text-black font-medium hover:bg-[#dedede]/80 rounded-md duration-200 text-[13px] flex items-center gap-1 h-[35px]"
                 />
                 <Button
                   type="submit"
                   icon={<Search size={15} />}
                   nameButton="Tìm kiếm"
-                  classNameButton="py-2 px-3 bg-blue-500 w-full text-white font-medium rounded-3xl hover:bg-blue-500/80 duration-200 text-[13px] flex items-center gap-1 h-[35px]"
+                  classNameButton="py-2 px-3 bg-blue-500 w-full text-white font-medium rounded-md hover:bg-blue-500/80 duration-200 text-[13px] flex items-center gap-1 h-[35px]"
                   className="flex-shrink-0"
                 />
               </div>
@@ -838,7 +838,7 @@ export default function ManageSuppliers() {
                         <Button
                           type="submit"
                           icon={<ArrowUpFromLine size={18} />}
-                          nameButton="Cập nhật"
+                          nameButton="Lưu thay đổi"
                           classNameButton="w-[120px] px-3 py-2 bg-blue-500 mt-2 w-full text-white font-semibold rounded-md hover:bg-blue-500/80 duration-200 flex items-center gap-1 shadow-xl text-[13px]"
                         />
                       </div>

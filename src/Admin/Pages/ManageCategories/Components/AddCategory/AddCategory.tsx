@@ -4,7 +4,6 @@ import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { Plus, X } from "lucide-react"
 import { Controller, useForm } from "react-hook-form"
 import { toast } from "react-toastify"
-import { adminAPI } from "src/Apis/admin.api"
 import { schemaAuth, SchemaAuthType } from "src/Client/Utils/rule"
 import Button from "src/Components/Button"
 import Input from "src/Components/Input"
@@ -12,13 +11,14 @@ import { isError400 } from "src/Helpers/utils"
 import { ErrorResponse, MessageResponse } from "src/Types/utils.type"
 import { motion, AnimatePresence } from "framer-motion"
 import { Select } from "antd"
+import { CategoryAPI } from "src/Apis/admin/category.api"
 
 interface Props {
   setAddItem: React.Dispatch<any>
   addItem: any
 }
 
-type FormData = Pick<SchemaAuthType, "name"> & { status?: "active" | "inactive" }
+type FormData = Pick<SchemaAuthType, "name"> & { is_active?: "active" | "inactive" }
 const formData = schemaAuth.pick(["name"])
 
 export default function AddCategory({ setAddItem, addItem }: Props) {
@@ -28,20 +28,31 @@ export default function AddCategory({ setAddItem, addItem }: Props) {
     register,
     setError,
     control,
+    reset,
     formState: { errors }
-  } = useForm<FormData>({ resolver: yupResolver(formData) })
-
-  const addCategoryMutation = useMutation({
-    mutationFn: (body: { name: string }) => {
-      return adminAPI.category.createCategory({ name: body.name })
+  } = useForm<FormData>({
+    resolver: yupResolver(formData),
+    defaultValues: {
+      is_active: "active"
     }
   })
 
-  const handleAddCategorySubmit = handleSubmit((data) =>
-    addCategoryMutation.mutate(data, {
+  const addCategoryMutation = useMutation({
+    mutationFn: (body: { name: string; is_active: boolean }) => {
+      return CategoryAPI.createCategory({ name: body.name, is_active: body.is_active })
+    }
+  })
+
+  const handleAddCategorySubmit = handleSubmit((data) => {
+    const payload = {
+      name: data.name,
+      is_active: data.is_active === "active" ? true : false
+    }
+    addCategoryMutation.mutate(payload, {
       onSuccess: () => {
         toast.success("Thêm danh mục thành công", { autoClose: 1500 })
         setAddItem(null)
+        reset()
         queryClient.invalidateQueries({ queryKey: ["listCategory"] }) // validate mọi trang liên quan -> sẽ gọi lại api
       },
       onError: (error) => {
@@ -54,7 +65,7 @@ export default function AddCategory({ setAddItem, addItem }: Props) {
         }
       }
     })
-  )
+  })
 
   return (
     <AnimatePresence>
@@ -95,7 +106,7 @@ export default function AddCategory({ setAddItem, addItem }: Props) {
                   <div className="text-black dark:text-white block mb-1">Trạng thái</div>
                   <Controller
                     control={control}
-                    name="status"
+                    name="is_active"
                     render={({ field }) => (
                       <Select
                         {...field}

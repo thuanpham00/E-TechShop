@@ -35,8 +35,10 @@ export default function InputFileImage({ onChange }: { onChange?: (file?: File) 
         }}
         ref={refInput}
         type="file"
-        className="hidden"
-        accept=".jpg,.jpeg,.png"
+        style={{
+          display: "none"
+        }}
+        accept=".jpg,.jpeg,.png,.webp"
       />
       <Button
         type="button"

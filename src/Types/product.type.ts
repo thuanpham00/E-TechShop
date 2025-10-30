@@ -204,6 +204,7 @@ export type UpdateBodyReq = {
 
 export type UpdateCategoryBodyReq = {
   name?: string
+  is_active?: boolean
 }
 
 export type UpdateSupplierBodyReq = {

@@ -5,7 +5,6 @@ import { ArrowUpFromLine, X } from "lucide-react"
 import { useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
 import { toast } from "react-toastify"
-import { adminAPI } from "src/Apis/admin.api"
 import { schemaSupplyUpdate, SchemaSupplyUpdateType } from "src/Client/Utils/rule"
 import Button from "src/Components/Button"
 import Input from "src/Components/Input"
@@ -16,6 +15,9 @@ import { queryParamConfigSupply } from "src/Types/queryParams.type"
 import { SuccessResponse } from "src/Types/utils.type"
 import DropdownList from "../DropdownList"
 import { motion } from "framer-motion"
+import { ProductAPI } from "src/Apis/admin/product.api"
+import { SupplierAPI } from "src/Apis/admin/supplier.api"
+import { SupplyAPI } from "src/Apis/admin/supply.api"
 
 type FormDataUpdate = Pick<
   SchemaSupplyUpdateType,
@@ -89,7 +91,7 @@ export default function SupplyDetail({
 
   const updateCategoryMutation = useMutation({
     mutationFn: (body: { id: string; body: UpdateSupplyBodyReq }) => {
-      return adminAPI.supply.updateSupplyDetail(body.id, body.body)
+      return SupplyAPI.updateSupplyDetail(body.id, body.body)
     }
   })
 
@@ -109,7 +111,7 @@ export default function SupplyDetail({
   const getNameProducts = useQuery({
     queryKey: ["nameProduct"],
     queryFn: () => {
-      return adminAPI.product.getNameProducts()
+      return ProductAPI.getNameProducts()
     },
     retry: 0,
     staleTime: 15 * 60 * 1000,
@@ -123,7 +125,7 @@ export default function SupplyDetail({
   const getNameSuppliersBasedOnNameProduct = useQuery({
     queryKey: ["nameSupplierBasedOnNameProduct_Detail", addItem?.productId[0]?.name],
     queryFn: () => {
-      return adminAPI.supplier.getNameSuppliersNotLinkedToProduct(addItem?.productId[0]?.name || inputValueProduct)
+      return SupplierAPI.getNameSuppliersNotLinkedToProduct(addItem?.productId[0]?.name || inputValueProduct)
     },
     retry: 0,
     placeholderData: keepPreviousData,
@@ -265,7 +267,7 @@ export default function SupplyDetail({
             <div className="flex items-center justify-end">
               <Button
                 type="submit"
-                nameButton="Cập nhật"
+                nameButton="Lưu thay đổi"
                 icon={<ArrowUpFromLine size={18} />}
                 classNameButton="w-[120px] px-3 py-2 bg-blue-500 mt-2 w-full text-white font-semibold rounded-md hover:bg-blue-500/80 duration-200 flex items-center gap-1 text-[13px]"
               />

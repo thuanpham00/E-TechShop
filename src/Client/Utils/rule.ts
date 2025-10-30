@@ -51,62 +51,66 @@ export const schemaAuth = yup
     created_at: yup.string(),
     updated_at: yup.string(),
 
-    created_at_start: yup.date().test({
-      name: "Invalid Date",
-      message: "Ngày không phù hợp!",
-      test: function (value) {
-        const { created_at_end } = this.parent
-        if (!value || !created_at_end) {
-          return true
-        }
-        const created_at_start = value
-        return new Date(created_at_end) > new Date(created_at_start)
-      }
-    }),
-    created_at_end: yup.date().test({
-      name: "Invalid Date",
-      message: "Ngày không phù hợp!",
-      test: function (value) {
-        const { created_at_start } = this.parent
-        if (!value || !created_at_start) {
-          return true
-        }
-        const created_at_end = value
-        return new Date(created_at_end) > new Date(created_at_start)
-      }
-    }),
-    updated_at_start: yup.date().test({
-      name: "Invalid Date",
-      message: "Ngày không phù hợp!",
-      test: function (value) {
-        const { updated_at_end } = this.parent
-        if (!value || !updated_at_end) {
-          return true // nếu true thì ko xét nữa
-        }
-        const updated_at_start = value
-        return new Date(updated_at_end) > new Date(updated_at_start)
-      }
-    }),
-    updated_at_end: yup.date().test({
-      name: "Invalid Date",
-      message: "Ngày không phù hợp!",
-      test: function (value) {
-        const { updated_at_start } = this.parent
-        if (!value || !updated_at_start) {
-          return true // nếu true thì ko xét nữa
-        }
-        const updated_at_end = value
-        return new Date(updated_at_end) > new Date(updated_at_start)
-      }
-    }),
-
     role: yup.string(),
     roleInStaff: yup.string().required("Vị trí làm việc bắt buộc")
   })
   .required()
 
+export const schemaSearchFilter = yup.object({
+  name: yup.string(),
+
+  created_at_start: yup.date().test({
+    name: "Invalid Date",
+    message: "Ngày không phù hợp!",
+    test: function (value) {
+      const { created_at_end } = this.parent
+      if (!value || !created_at_end) {
+        return true
+      }
+      const created_at_start = value
+      return new Date(created_at_end) > new Date(created_at_start)
+    }
+  }),
+  created_at_end: yup.date().test({
+    name: "Invalid Date",
+    message: "Ngày không phù hợp!",
+    test: function (value) {
+      const { created_at_start } = this.parent
+      if (!value || !created_at_start) {
+        return true
+      }
+      const created_at_end = value
+      return new Date(created_at_end) > new Date(created_at_start)
+    }
+  }),
+  updated_at_start: yup.date().test({
+    name: "Invalid Date",
+    message: "Ngày không phù hợp!",
+    test: function (value) {
+      const { updated_at_end } = this.parent
+      if (!value || !updated_at_end) {
+        return true // nếu true thì ko xét nữa
+      }
+      const updated_at_start = value
+      return new Date(updated_at_end) > new Date(updated_at_start)
+    }
+  }),
+  updated_at_end: yup.date().test({
+    name: "Invalid Date",
+    message: "Ngày không phù hợp!",
+    test: function (value) {
+      const { updated_at_start } = this.parent
+      if (!value || !updated_at_start) {
+        return true // nếu true thì ko xét nữa
+      }
+      const updated_at_end = value
+      return new Date(updated_at_end) > new Date(updated_at_start)
+    }
+  })
+})
+
 // dùng .shape() để mở rộng schema schemaAuth mà không làm mất các trường đã có:
-export const schemaProduct = schemaAuth
+export const schemaProduct = schemaSearchFilter
   .pick(["created_at_start", "created_at_end", "updated_at_start", "updated_at_end"])
   .shape({
     name: yup.string().default(""),
@@ -136,7 +140,7 @@ export const schemaProduct = schemaAuth
     status: yup.string()
   })
 
-export const schemaCustomer = schemaAuth
+export const schemaSearchFilterCustomer = schemaSearchFilter
   .pick(["created_at_start", "created_at_end", "updated_at_start", "updated_at_end"])
   .shape({
     name: yup.string(),
@@ -173,7 +177,7 @@ export const schemaAddProduct = yup.object({
   specifications: yup.array().required("Thông số kỹ thuật bắt buộc!").min(1, "Thông số kỹ thuật bắt buộc!")
 })
 
-export const schemaSupplier = schemaAuth
+export const schemaSupplier = schemaSearchFilter
   .pick(["created_at_start", "created_at_end", "updated_at_start", "updated_at_end"])
   .shape({
     name: yup.string(),
@@ -200,7 +204,7 @@ export const schemaSupplierUpdate = schemaAuth.pick(["created_at", "updated_at",
   taxCode: yup.string().required("Mã số thuế bắt buộc!")
 })
 
-export const schemaSupply = schemaAuth
+export const schemaSupply = schemaSearchFilter
   .pick(["created_at_start", "created_at_end", "updated_at_start", "updated_at_end"])
   .shape({
     name_product: yup.string(),
@@ -282,7 +286,7 @@ export const schemaOrder = schemaAuth.pick(["created_at", "updated_at", "id"]).s
   )
 })
 
-export const schemaOrderSearch = schemaSupply
+export const schemaSearchFilterOrder = schemaSupply
   .pick(["created_at_start", "created_at_end", "price_max", "price_min"])
   .shape({
     status: yup.string(),
@@ -299,9 +303,11 @@ export const schemaRole = schemaAuth.pick(["updated_at", "created_at"]).shape({
 
 export type SchemaAuthType = yup.InferType<typeof schemaAuth>
 
-export type SchemaProductType = SchemaAuthType & yup.InferType<typeof schemaProduct>
+export type SchemaSearchFilterType = yup.InferType<typeof schemaSearchFilter>
 
-export type SchemaCustomerType = yup.InferType<typeof schemaCustomer>
+export type SchemaSearchFilterCustomerType = yup.InferType<typeof schemaSearchFilterCustomer>
+
+export type SchemaProductType = SchemaAuthType & yup.InferType<typeof schemaProduct>
 
 export type SchemaAddProductType = yup.InferType<typeof schemaAddProduct>
 
@@ -317,6 +323,6 @@ export type SchemaAddReceiptType = yup.InferType<typeof schemaAddReceipt>
 
 export type SchemaOrderType = yup.InferType<typeof schemaOrder>
 
-export type SchemaOrderSearchType = yup.InferType<typeof schemaOrderSearch>
+export type SchemaSearchFilterOrderType = yup.InferType<typeof schemaSearchFilterOrder>
 
 export type SchemaRoleType = yup.InferType<typeof schemaRole>

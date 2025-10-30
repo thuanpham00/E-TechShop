@@ -15,7 +15,6 @@ import avatarDefault from "src/Assets/img/avatarDefault.png"
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { ErrorResponse, SuccessResponse } from "src/Types/utils.type"
 import { Role } from "src/Admin/Pages/ManageRoles/ManageRoles"
-import { adminAPI } from "src/Apis/admin.api"
 import { AppContext } from "src/Context/authContext"
 import { convertDateTime } from "src/Helpers/common"
 import { UpdateBodyReq } from "src/Types/product.type"
@@ -23,6 +22,8 @@ import { MediaAPI } from "src/Apis/media.api"
 import { UserType } from "src/Types/user.type"
 import { toast } from "react-toastify"
 import { isError422 } from "src/Helpers/utils"
+import { RolePermissionAPI } from "src/Apis/admin/role.api"
+import { StaffAPI } from "src/Apis/admin/staff.api"
 
 const formDataAdd = schemaAuth.pick([
   "name",
@@ -77,7 +78,7 @@ export default function StaffDetail({
       setTimeout(() => {
         controller.abort() // hủy request khi chờ quá lâu // 10 giây sau cho nó hủy // làm tự động
       }, 10000)
-      return adminAPI.role.getRoles(controller.signal)
+      return RolePermissionAPI.getRoles(controller.signal)
     },
     retry: 0, // số lần retry lại khi hủy request (dùng abort signal)
     staleTime: 1 * 60 * 1000, // dưới 3 phút nó không gọi lại api
@@ -145,7 +146,7 @@ export default function StaffDetail({
   // Gọi api cập nhật và fetch lại api
   const updateProfileMutation = useMutation({
     mutationFn: (body: { body: UpdateBodyReq; id: string }) => {
-      return adminAPI.staff.updateProfileStaff(body.id, body.body)
+      return StaffAPI.updateProfileStaff(body.id, body.body)
     }
   })
 
@@ -475,7 +476,7 @@ export default function StaffDetail({
               <Button
                 type="submit"
                 icon={<ArrowUpFromLine size={18} />}
-                nameButton="Cập nhật"
+                nameButton="Lưu thay đổi"
                 classNameButton="w-[120px] px-3 py-2 bg-blue-500 mt-2 w-full text-white font-semibold rounded-md hover:bg-blue-500/80 duration-200 flex items-center gap-1 text-[13px]"
               />
             </div>

@@ -5,7 +5,7 @@ import { AnimatePresence, motion } from "framer-motion"
 import { Plus, X } from "lucide-react"
 import { useForm } from "react-hook-form"
 import { toast } from "react-toastify"
-import { adminAPI } from "src/Apis/admin.api"
+import { BrandAPI } from "src/Apis/admin/brand.api"
 import { schemaAuth, SchemaAuthType } from "src/Client/Utils/rule"
 import Button from "src/Components/Button"
 import Input from "src/Components/Input"
@@ -27,12 +27,13 @@ export default function AddBrand({ setAddItem, addItem, categoryId }: Props) {
     handleSubmit,
     register,
     setError,
+    reset,
     formState: { errors }
   } = useForm<FormData>({ resolver: yupResolver(formData) })
 
   const addBrandMutation = useMutation({
     mutationFn: (body: { name: string; categoryId: string }) => {
-      return adminAPI.category.createBrand({ name: body.name, categoryId: categoryId as string })
+      return BrandAPI.createBrand({ name: body.name, categoryId: categoryId as string })
     }
   })
 
@@ -43,6 +44,7 @@ export default function AddBrand({ setAddItem, addItem, categoryId }: Props) {
         onSuccess: () => {
           toast.success("Thêm thương hiệu thành công", { autoClose: 1500 })
           setAddItem(null)
+          reset()
           queryClient.invalidateQueries({ queryKey: ["listBrand"] }) // validate mọi trang liên quan -> sẽ gọi lại api
         },
         onError: (error) => {

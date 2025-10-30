@@ -44,7 +44,11 @@ export default function Collection() {
       const controller = new AbortController()
       setTimeout(() => controller.abort(), 10000)
       return collectionAPI
-        .getCollections(slug as string, queryConfig, controller.signal)
+        .getCollections({
+          slug: slug as string,
+          params: queryConfig,
+          signal: controller.signal
+        })
         .then((res) => res)
         .catch((err) => Promise.reject(err))
     },

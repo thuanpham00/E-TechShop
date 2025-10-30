@@ -6,7 +6,7 @@ import { ArrowUpFromLine, X } from "lucide-react"
 import { useEffect } from "react"
 import { useForm } from "react-hook-form"
 import { toast } from "react-toastify"
-import { adminAPI } from "src/Apis/admin.api"
+import { RolePermissionAPI } from "src/Apis/admin/role.api"
 import { schemaRole, SchemaRoleType } from "src/Client/Utils/rule"
 import Button from "src/Components/Button"
 import Input from "src/Components/Input"
@@ -50,7 +50,7 @@ export default function RoleDetail({ setAddItem, dataItem }: Props) {
 
   const updateRoleMutation = useMutation({
     mutationFn: (body: { idRole: string; name: string; description: string }) => {
-      return adminAPI.role.updateRole(body.idRole, { name: body.name, description: body.description })
+      return RolePermissionAPI.updateRole(body.idRole, { name: body.name, description: body.description })
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["listRole"] })
@@ -148,7 +148,7 @@ export default function RoleDetail({ setAddItem, dataItem }: Props) {
                   <Button
                     type="submit"
                     icon={<ArrowUpFromLine size={18} />}
-                    nameButton="Cập nhật"
+                    nameButton="Lưu thay đổi"
                     classNameButton="w-[120px] px-3 py-2 bg-blue-500 mt-2 w-full text-white font-semibold rounded-md hover:bg-blue-500/80 duration-200 flex items-center gap-1 text-[13px]"
                   />
                 </div>

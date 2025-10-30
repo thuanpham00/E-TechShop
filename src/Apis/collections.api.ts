@@ -11,7 +11,7 @@ export const collectionAPI = {
     })
   },
 
-  getCollections: (slug: string, params: queryParamsCollection, signal?: AbortSignal) => {
+  getCollections: ({ slug, params, signal }: { slug: string; params: queryParamsCollection; signal?: AbortSignal }) => {
     return Http.get(`/collections/${slug}`, {
       params,
       signal

@@ -72,3 +72,13 @@ export function getNameFromNameId(nameId: string) {
   const arr = nameId.split("-i-")
   return arr[arr.length - 1]
 }
+
+export function normalize(s?: string) {
+  return (s ?? "")
+    .toString()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "") // remove diacritics
+    .replace(/[^a-z0-9]/gi, "") // remove spaces/punctuation
+    .toLowerCase()
+    .trim()
+}

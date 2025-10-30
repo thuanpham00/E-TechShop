@@ -24,8 +24,6 @@ type TypeInitialState = {
   setAvatar: React.Dispatch<React.SetStateAction<string | null>>
   userId: string | null
   setUserId: React.Dispatch<React.SetStateAction<string | null>>
-  isShowCategory: boolean
-  setIsShowCategory: React.Dispatch<React.SetStateAction<boolean>>
   reset: () => void
 
   recentlyViewed: CollectionItemType[]
@@ -44,8 +42,6 @@ const initialStateContext: TypeInitialState = {
   setAvatar: () => null,
   userId: getUserIdFromLS(),
   setUserId: () => null,
-  isShowCategory: false,
-  setIsShowCategory: () => null,
   reset: () => null,
 
   recentlyViewed: [],
@@ -57,7 +53,6 @@ export const AppContext = createContext<TypeInitialState>(initialStateContext)
 export default function AppClientProvider({ children }: Props) {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(initialStateContext.isAuthenticated)
   const [nameUser, setNameUser] = useState<string | null>(initialStateContext.nameUser)
-  const [isShowCategory, setIsShowCategory] = useState<boolean>(initialStateContext.isShowCategory)
   const [role, setRole] = useState<string | null>(initialStateContext.role)
   const [avatar, setAvatar] = useState<string | null>(initialStateContext.avatar)
   const [userId, setUserId] = useState<string | null>(initialStateContext.userId)
@@ -89,8 +84,6 @@ export default function AppClientProvider({ children }: Props) {
         setIsAuthenticated,
         nameUser,
         setNameUser,
-        isShowCategory,
-        setIsShowCategory,
         reset,
         role,
         setRole,

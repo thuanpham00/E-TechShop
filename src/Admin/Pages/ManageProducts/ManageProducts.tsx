@@ -2,7 +2,6 @@
 import { keepPreviousData, useQuery } from "@tanstack/react-query"
 import { isUndefined, omitBy } from "lodash"
 import { Helmet } from "react-helmet-async"
-import { adminAPI } from "src/Apis/admin.api"
 import { path } from "src/Constants/path"
 import useQueryParams from "src/Hook/useQueryParams"
 import { ProductItemType } from "src/Types/product.type"
@@ -23,6 +22,7 @@ import { toast } from "react-toastify"
 import { useEffect } from "react"
 import { ColumnsType } from "antd/es/table"
 import { convertDateTime, formatCurrency } from "src/Helpers/common"
+import { ProductAPI } from "src/Apis/admin/product.api"
 
 export default function ManageProducts() {
   const { theme } = useTheme()
@@ -58,7 +58,7 @@ export default function ManageProducts() {
       setTimeout(() => {
         controller.abort() // hủy request khi chờ quá lâu // 10 giây sau cho nó hủy // làm tự động
       }, 10000)
-      return adminAPI.product.getProducts(queryConfig as queryParamConfigCategory, controller.signal)
+      return ProductAPI.getProducts(queryConfig as queryParamConfigCategory, controller.signal)
     },
     retry: 0, // số lần retry lại khi hủy request (dùng abort signal)
     staleTime: 3 * 60 * 1000, // dưới 5 phút nó không gọi lại api

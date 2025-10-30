@@ -10,10 +10,12 @@ import { convertDateTime, formatCurrency, parseCurrencyToNumber } from "src/Help
 import DropdownList from "../ManageSupplies/Components/DropdownList"
 import { keepPreviousData, useMutation, useQueries, useQuery } from "@tanstack/react-query"
 import { SuccessResponse } from "src/Types/utils.type"
-import { adminAPI } from "src/Apis/admin.api"
 import Button from "src/Components/Button"
 import { toast } from "react-toastify"
 import { CreateReceiptBodyReq } from "src/Types/product.type"
+import { ProductAPI } from "src/Apis/admin/product.api"
+import { SupplierAPI } from "src/Apis/admin/supplier.api"
+import { ReceiptAPI } from "src/Apis/admin/receipt.api"
 
 type FormData = Pick<SchemaAddReceiptType, "importDate" | "totalItem" | "totalAmount" | "items">
 
@@ -70,7 +72,7 @@ export default function AddReceipt() {
   const getNameProducts = useQuery({
     queryKey: ["nameProductReceipt"],
     queryFn: () => {
-      return adminAPI.product.getNameProducts()
+      return ProductAPI.getNameProducts()
     },
     retry: 0, // số lần retry lại khi hủy request (dùng abort signal)
     staleTime: 15 * 60 * 1000, // dưới 1 phút nó không gọi lại api
@@ -87,7 +89,7 @@ export default function AddReceipt() {
     queries: inputValueProducts.map((productName, index) => ({
       queryKey: ["nameSupplierBasedOnNameProductReceipt", `${productName}-${index}`],
       queryFn: () => {
-        return adminAPI.supplier.getNameSuppliersLinkedToProduct(productName)
+        return SupplierAPI.getNameSuppliersLinkedToProduct(productName)
       },
       enabled: !!productName
     }))
@@ -97,7 +99,7 @@ export default function AddReceipt() {
     queries: fields.map((_, index) => ({
       queryKey: ["pricePerUnit", inputValueProducts[index], watch(`items.${index}.supplierId`)],
       queryFn: () => {
-        return adminAPI.receipt.getPricePerUnitBasedOnProductAndSupplier({
+        return ReceiptAPI.getPricePerUnitBasedOnProductAndSupplier({
           name_product: inputValueProducts[index],
           name_supplier: watch(`items.${index}.supplierId`)
         })
@@ -124,7 +126,7 @@ export default function AddReceipt() {
 
   const AddReceiptMutation = useMutation({
     mutationFn: (data: CreateReceiptBodyReq) => {
-      return adminAPI.receipt.createReceipt(data)
+      return ReceiptAPI.createReceipt(data)
     }
   })
 

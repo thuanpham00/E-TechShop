@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { keepPreviousData, useQuery } from "@tanstack/react-query"
-import { adminAPI } from "src/Apis/admin.api"
 import { SuccessResponse } from "src/Types/utils.type"
 import Skeleton from "src/Components/Skeleton"
 import { motion } from "framer-motion"
@@ -27,6 +26,7 @@ import { formatCurrency } from "src/Helpers/common"
 import { Pie } from "react-chartjs-2"
 import { useTheme } from "src/Admin/Components/Theme-provider/Theme-provider"
 import { toast } from "react-toastify"
+import { StatisticalAPI } from "src/Apis/admin/statistical.api"
 
 type TypeStatistical = {
   title: string
@@ -76,7 +76,7 @@ export default function StatisticalUser() {
       const month = selectedMonth.month() + 1
       const year = isMonthly ? selectedMonth.year() : selectedYear
 
-      return adminAPI.statistical.getStatisticalUser(controller.signal, {
+      return StatisticalAPI.getStatisticalUser(controller.signal, {
         ...(isMonthly ? { month } : {}),
         year
       })

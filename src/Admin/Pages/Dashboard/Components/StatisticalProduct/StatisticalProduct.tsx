@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { ClipboardCheck, Copy } from "lucide-react"
 import { keepPreviousData, useQuery } from "@tanstack/react-query"
-import { adminAPI } from "src/Apis/admin.api"
 import { SuccessResponse } from "src/Types/utils.type"
 import Skeleton from "src/Components/Skeleton"
 import { motion } from "framer-motion"
@@ -25,6 +24,7 @@ import useCopyText from "src/Hook/useCopyText"
 import { useTheme } from "src/Admin/Components/Theme-provider/Theme-provider"
 import { useEffect } from "react"
 import { toast } from "react-toastify"
+import { StatisticalAPI } from "src/Apis/admin/statistical.api"
 
 type TypeStatistical = {
   title: string
@@ -65,7 +65,7 @@ export default function StatisticalProduct() {
         controller.abort()
       }, 10000) // quá 10 giây api chưa trả res về thì timeout sẽ hủy gọi api và api signal nhận tín hiệu hủy
 
-      return adminAPI.statistical.getStatisticalProduct(controller.signal)
+      return StatisticalAPI.getStatisticalProduct(controller.signal)
     },
     placeholderData: keepPreviousData,
     retry: 0, // số lần retry lại khi hủy request (dùng abort signal)

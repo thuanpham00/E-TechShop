@@ -5,7 +5,6 @@ import { useContext, useEffect, useState } from "react"
 import { Helmet } from "react-helmet-async"
 import { toast } from "react-toastify"
 import NavigateBack from "src/Admin/Components/NavigateBack"
-import { adminAPI } from "src/Apis/admin.api"
 import { AppContext } from "src/Context/authContext"
 import { ErrorResponse, MessageResponse, SuccessResponse } from "src/Types/utils.type"
 import "./ManageRoles.css"
@@ -24,6 +23,7 @@ import {
   AlertDialogTrigger
 } from "src/Components/ui/alert-dialog"
 import { Pencil, Trash2 } from "lucide-react"
+import { RolePermissionAPI } from "src/Apis/admin/role.api"
 
 export interface Role {
   _id: string
@@ -44,7 +44,7 @@ export default function ManageRoles() {
       setTimeout(() => {
         controller.abort() // hủy request khi chờ quá lâu // 10 giây sau cho nó hủy // làm tự động
       }, 10000)
-      return adminAPI.role.getRoles(controller.signal)
+      return RolePermissionAPI.getRoles(controller.signal)
     },
     retry: 0, // số lần retry lại khi hủy request (dùng abort signal)
     staleTime: 1 * 60 * 1000, // dưới 3 phút nó không gọi lại api
@@ -58,7 +58,7 @@ export default function ManageRoles() {
 
   const deleteRoleMutation = useMutation({
     mutationFn: (id: string) => {
-      return adminAPI.role.deleteRole(id)
+      return RolePermissionAPI.deleteRole(id)
     }
   })
 

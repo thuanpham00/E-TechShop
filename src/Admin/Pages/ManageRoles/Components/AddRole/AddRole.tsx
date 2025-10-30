@@ -5,7 +5,7 @@ import { AnimatePresence, motion } from "framer-motion"
 import { Plus, X } from "lucide-react"
 import { useForm } from "react-hook-form"
 import { toast } from "react-toastify"
-import { adminAPI } from "src/Apis/admin.api"
+import { RolePermissionAPI } from "src/Apis/admin/role.api"
 import { schemaRole, SchemaRoleType } from "src/Client/Utils/rule"
 import Button from "src/Components/Button"
 import Input from "src/Components/Input"
@@ -31,7 +31,7 @@ export default function AddRole({ setAddItem, addItem }: Props) {
 
   const addRoleMutation = useMutation({
     mutationFn: (body: { name: string; description: string }) => {
-      return adminAPI.role.createRole(body)
+      return RolePermissionAPI.createRole(body)
     }
   })
 

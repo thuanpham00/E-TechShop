@@ -13,13 +13,14 @@ import { motion } from "framer-motion"
 import { collectionAPI } from "src/Apis/collections.api"
 import { SuccessResponse } from "src/Types/utils.type"
 import { ProductDetailType } from "src/Types/product.type"
-import { CalculateSalePrice, formatCurrency, slugify } from "src/Helpers/common"
+import { CalculateSalePrice, formatCurrency, normalize, slugify } from "src/Helpers/common"
 import { getAccessTokenFromLS } from "src/Helpers/auth"
 import { OrderApi } from "src/Apis/order.api"
 import useDebounce from "src/Hook/useDebounce"
 import { categories } from "src/Client/Constants/categories"
 import MenuCategoryItem from "../MenuCategoryItem"
 import CategoryDetail from "../CategoryDetail"
+import { categoryAPI } from "src/Apis/category.api"
 
 export default function Header() {
   const navigate = useNavigate()
@@ -47,6 +48,38 @@ export default function Header() {
       }
     })
   }
+
+  // xử lý danh mục thể loại từ api gọi lên
+  const getListCategoryIsActive = useQuery({
+    queryKey: ["listCategoryIsActive", token],
+    queryFn: () => {
+      const controller = new AbortController()
+      setTimeout(() => {
+        controller.abort() // hủy request khi chờ quá lâu // 10 giây sau cho nó hủy // làm tự động
+      }, 10000)
+      return categoryAPI.getListCategoryIsActive(controller.signal)
+    },
+    retry: 0, // số lần retry lại khi hủy request (dùng abort signal)
+    staleTime: 10 * 60 * 1000, // dưới 5 phút nó không gọi lại api
+    placeholderData: keepPreviousData
+  })
+
+  const dataListCategoryIsActive = (getListCategoryIsActive.data?.data ?? []) as {
+    _id: string
+    name: string
+    is_active: boolean
+  }[]
+
+  const activeNames = dataListCategoryIsActive.map((c) => normalize(c.name))
+
+  // handles variations like "MÀN HÌNH", "Màn hình", "màn hinhhh", etc.
+  const visibleCategories = categories.filter((cat) => {
+    const n = normalize(cat.name)
+    return activeNames.some((apiName) => apiName.includes(n) || n.includes(apiName))
+  })
+
+  // fallback: if API returns nothing, show default first 10
+  const categoriesToShow = visibleCategories.length > 0 ? visibleCategories : categories.slice(0, 10)
 
   // xử lý danh sách yêu thích
   const { data } = useQuery({
@@ -483,7 +516,7 @@ export default function Header() {
         <div className="container">
           <div onMouseLeave={handleExitCategory} className="relative">
             <div className="flex items-center flex-wrap justify-center">
-              {categories.slice(0, 10).map((category) => (
+              {categoriesToShow.slice(0, 10).map((category) => (
                 <MenuCategoryItem
                   showCategoryDetail={showCategoryDetail}
                   index={category.index}

@@ -2,10 +2,9 @@
 import { yupResolver } from "@hookform/resolvers/yup"
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { Plus, X } from "lucide-react"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
 import { toast } from "react-toastify"
-import { adminAPI } from "src/Apis/admin.api"
 import { schemaSupplyUpdate, SchemaSupplyUpdateType } from "src/Client/Utils/rule"
 import Button from "src/Components/Button"
 import Input from "src/Components/Input"
@@ -15,6 +14,9 @@ import DropdownList from "../DropdownList"
 import { AnimatePresence, motion } from "framer-motion"
 import { formatCurrency } from "src/Helpers/common"
 import { SupplyItemType } from "src/Types/product.type"
+import { ProductAPI } from "src/Apis/admin/product.api"
+import { SupplierAPI } from "src/Apis/admin/supplier.api"
+import { SupplyAPI } from "src/Apis/admin/supply.api"
 
 interface Props {
   setAddItem: React.Dispatch<React.SetStateAction<boolean | SupplyItemType | null>>
@@ -42,6 +44,7 @@ export default function AddSupply({ setAddItem, addItem }: Props) {
     register,
     setError,
     setValue,
+    reset,
     formState: { errors }
   } = useForm<FormData>({ resolver: yupResolver(formData) })
 
@@ -54,7 +57,7 @@ export default function AddSupply({ setAddItem, addItem }: Props) {
       leadTimeDays: number
       description: string
     }) => {
-      return adminAPI.supply.createSupply(body)
+      return SupplyAPI.createSupply(body)
     }
   })
 
@@ -64,6 +67,8 @@ export default function AddSupply({ setAddItem, addItem }: Props) {
         onSuccess: () => {
           toast.success("Thêm liên kết cung ứng thành công", { autoClose: 1500 })
           setAddItem(null)
+          reset()
+          setSellPrice(0)
           queryClient.invalidateQueries({ queryKey: ["listSupply"] }) // validate mọi trang liên quan -> sẽ gọi lại api
         },
         onError: (error) => {
@@ -88,7 +93,7 @@ export default function AddSupply({ setAddItem, addItem }: Props) {
   const getNameProducts = useQuery({
     queryKey: ["nameProduct"],
     queryFn: () => {
-      return adminAPI.product.getNameProducts()
+      return ProductAPI.getNameProducts()
     },
     retry: 0, // số lần retry lại khi hủy request (dùng abort signal)
     staleTime: 15 * 60 * 1000, // dưới 1 phút nó không gọi lại api
@@ -103,7 +108,7 @@ export default function AddSupply({ setAddItem, addItem }: Props) {
   const getNameSuppliersBasedOnNameProduct = useQuery({
     queryKey: ["nameSupplierBasedOnNameProduct_Add", inputValueProduct],
     queryFn: () => {
-      return adminAPI.supplier.getNameSuppliersNotLinkedToProduct(inputValueProduct)
+      return SupplierAPI.getNameSuppliersNotLinkedToProduct(inputValueProduct)
     },
     retry: 0, // số lần retry lại khi hủy request (dùng abort signal)
     enabled: !!inputValueProduct // nó chỉ chạy khi có inputValueProduct
@@ -117,12 +122,19 @@ export default function AddSupply({ setAddItem, addItem }: Props) {
   const getPriceProductSelected = useQuery({
     queryKey: ["priceProductSelected", inputValueProduct],
     queryFn: () => {
-      return adminAPI.supply.getPriceSellProduct({ name: inputValueProduct })
+      return SupplyAPI.getPriceSellProduct({ name: inputValueProduct })
     },
     retry: 0, // số lần retry lại khi hủy request (dùng abort signal)
     enabled: !!inputValueProduct // nó chỉ chạy khi có inputValueProduct
   })
   const sellPriceValue = getPriceProductSelected.data?.data?.result
+  const [sellPrice, setSellPrice] = useState<number | null>(null)
+
+  useEffect(() => {
+    if (sellPriceValue) {
+      setSellPrice(sellPriceValue)
+    }
+  }, [sellPriceValue])
 
   return (
     <AnimatePresence>
@@ -139,7 +151,13 @@ export default function AddSupply({ setAddItem, addItem }: Props) {
             exit={{ opacity: 0, scale: 0.8 }}
             className="relative"
           >
-            <button onClick={() => setAddItem(null)} className="absolute right-2 top-2">
+            <button
+              onClick={() => {
+                setAddItem(null)
+                setSellPrice(0)
+              }}
+              className="absolute right-2 top-2"
+            >
               <X color="gray" size={22} />
             </button>
             <form
@@ -185,7 +203,7 @@ export default function AddSupply({ setAddItem, addItem }: Props) {
                     nameInput="Giá nhập"
                   />
                   <Input
-                    value={formatCurrency(Number(sellPriceValue) || 0)}
+                    value={formatCurrency(sellPrice || 0)}
                     classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-white dark:bg-darkSecond focus:border-blue-500 focus:ring-2 outline-none rounded-md text-black dark:text-white"
                     className="relative flex-1"
                     nameInput="Giá bán hiện tại"

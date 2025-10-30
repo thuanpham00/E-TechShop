@@ -6,7 +6,8 @@ import { Controller, useForm } from "react-hook-form"
 import { createSearchParams, useNavigate } from "react-router-dom"
 import { toast } from "react-toastify"
 import DatePicker from "src/Admin/Components/DatePickerRange"
-import { adminAPI } from "src/Apis/admin.api"
+import { BrandAPI } from "src/Apis/admin/brand.api"
+import { CategoryAPI } from "src/Apis/admin/category.api"
 import { schemaProduct, SchemaProductType } from "src/Client/Utils/rule"
 import Button from "src/Components/Button"
 import Input from "src/Components/Input"
@@ -53,7 +54,7 @@ export default function FilterProduct({ queryConfig }: Props) {
   const getNameCategory = useQuery({
     queryKey: ["nameCategory"],
     queryFn: () => {
-      return adminAPI.category.getNameCategory()
+      return CategoryAPI.getNameCategory()
     },
     retry: 0, // số lần retry lại khi hủy request (dùng abort signal)
     staleTime: 10 * 60 * 1000, // dưới 1 phút nó không gọi lại api
@@ -69,7 +70,7 @@ export default function FilterProduct({ queryConfig }: Props) {
   const getNameBrand = useQuery({
     queryKey: ["nameBrand"],
     queryFn: () => {
-      return adminAPI.category.getNameBrand()
+      return BrandAPI.getNameBrand()
     },
     retry: 0, // số lần retry lại khi hủy request (dùng abort signal)
     staleTime: 10 * 60 * 1000, // dưới 1 phút nó không gọi lại api

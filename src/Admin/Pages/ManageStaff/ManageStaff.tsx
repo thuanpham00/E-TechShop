@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { yupResolver } from "@hookform/resolvers/yup"
-import { keepPreviousData, useMutation, useQuery } from "@tanstack/react-query"
+import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { Collapse, CollapseProps, Empty, Image, Modal, Select, Table } from "antd"
 import { isUndefined, omit, omitBy } from "lodash"
 import { ArrowUpNarrowWide, ClipboardCheck, FolderUp, Pencil, Plus, RotateCcw, Search, Trash2 } from "lucide-react"
@@ -10,8 +10,7 @@ import { createSearchParams, useNavigate } from "react-router-dom"
 import { toast } from "react-toastify"
 import DatePicker from "src/Admin/Components/DatePickerRange"
 import { useTheme } from "src/Admin/Components/Theme-provider/Theme-provider"
-import { adminAPI } from "src/Apis/admin.api"
-import { schemaCustomer, SchemaCustomerType } from "src/Client/Utils/rule"
+import { schemaSearchFilterCustomer, SchemaSearchFilterCustomerType } from "src/Client/Utils/rule"
 import Input from "src/Components/Input"
 import Skeleton from "src/Components/Skeleton"
 import { path } from "src/Constants/path"
@@ -30,8 +29,9 @@ import Button from "src/Components/Button"
 import "../ManageOrders/ManageOrders.css"
 import StaffDetail from "./Components/StaffDetail"
 import { ColumnsType } from "antd/es/table"
+import { StaffAPI } from "src/Apis/admin/staff.api"
 
-const formDataSearch = schemaCustomer.pick([
+const formDataSearch = schemaSearchFilterCustomer.pick([
   "email",
   "name",
   "numberPhone",
@@ -43,7 +43,7 @@ const formDataSearch = schemaCustomer.pick([
 ])
 
 type FormDataSearch = Pick<
-  SchemaCustomerType,
+  SchemaSearchFilterCustomerType,
   | "email"
   | "name"
   | "numberPhone"
@@ -56,7 +56,7 @@ type FormDataSearch = Pick<
 
 export default function ManageStaff() {
   const { theme } = useTheme()
-
+  const queryClient = useQueryClient()
   const isDark = theme === "dark" || theme === "system"
   const { downloadExcel } = useDownloadExcel()
   const navigate = useNavigate()
@@ -80,7 +80,7 @@ export default function ManageStaff() {
       setTimeout(() => {
         controller.abort() // hủy request khi chờ quá lâu // 10 giây sau cho nó hủy // làm tự động
       }, 10000)
-      return adminAPI.staff.getStaffs(queryConfig as queryParamConfigCustomer, controller.signal)
+      return StaffAPI.getStaffs(queryConfig as queryParamConfigCustomer, controller.signal)
     },
     retry: 0, // số lần retry lại khi hủy request (dùng abort signal)
     staleTime: 3 * 60 * 1000, // dưới 3 phút nó không gọi lại api
@@ -184,7 +184,7 @@ export default function ManageStaff() {
         <section className="bg-white dark:bg-darkPrimary mb-3 dark:border-darkBorder rounded-2xl">
           <form onSubmit={handleSubmitSearch}>
             <div className="mt-1 grid grid-cols-2">
-              <div className="col-span-1 flex items-center h-14 px-2 bg-[#ececec] dark:bg-darkPrimary border border-[#dadada] rounded-tl-xl">
+              <div className="col-span-1 flex items-center h-14 px-2 bg-[#ececec] dark:bg-darkPrimary border border-[#dadada] rounded-tl-md">
                 <span className="w-1/3 dark:text-white">Email</span>
                 <div className="w-2/3 relative h-full">
                   <Input
@@ -199,7 +199,7 @@ export default function ManageStaff() {
                   <span className="absolute inset-y-0 left-[-5%] w-[1px] bg-[#dadada] h-full"></span>
                 </div>
               </div>
-              <div className="col-span-1 flex items-center h-14 px-2 bg-[#ececec] dark:bg-darkPrimary  border border-[#dadada] rounded-tr-xl">
+              <div className="col-span-1 flex items-center h-14 px-2 bg-[#ececec] dark:bg-darkPrimary  border border-[#dadada] rounded-tr-md">
                 <span className="w-1/3 dark:text-white">Họ tên</span>
                 <div className="w-2/3 relative h-full">
                   <Input
@@ -255,7 +255,7 @@ export default function ManageStaff() {
                   <span className="absolute inset-y-0 left-[-5%] w-[1px] bg-[#dadada] h-full"></span>
                 </div>
               </div>
-              <div className="col-span-1 flex items-center h-14 px-2 bg-[#ececec] dark:bg-darkPrimary border border-[#dadada] rounded-bl-xl border-t-0">
+              <div className="col-span-1 flex items-center h-14 px-2 bg-[#ececec] dark:bg-darkPrimary border border-[#dadada] rounded-bl-md border-t-0">
                 <span className="w-1/3 dark:text-white">Ngày tạo</span>
                 <div className="w-2/3 relative h-full">
                   <div className="mt-2 w-full flex items-center gap-2">
@@ -294,7 +294,7 @@ export default function ManageStaff() {
                   <span className="absolute inset-y-0 left-[-5%] w-[1px] bg-[#dadada] h-full"></span>
                 </div>
               </div>
-              <div className="col-span-1 flex items-center h-14 px-2 bg-[#ececec] dark:bg-darkPrimary  border border-[#dadada] border-t-0 rounded-br-xl">
+              <div className="col-span-1 flex items-center h-14 px-2 bg-[#ececec] dark:bg-darkPrimary  border border-[#dadada] border-t-0 rounded-br-md">
                 <span className="w-1/3 dark:text-white">Ngày cập nhật</span>
                 <div className="w-2/3 relative h-full">
                   <div className="mt-2 w-full flex items-center gap-2">
@@ -340,13 +340,13 @@ export default function ManageStaff() {
                 type="button"
                 icon={<RotateCcw size={15} />}
                 nameButton="Xóa bộ lọc"
-                classNameButton="py-2 px-3 bg-[#f2f2f2] border border-[#dedede] w-full text-black font-medium hover:bg-[#dedede]/80 rounded-3xl duration-200 text-[13px] flex items-center gap-1 h-[35px]"
+                classNameButton="py-2 px-3 bg-[#f2f2f2] border border-[#dedede] w-full text-black font-medium hover:bg-[#dedede]/80 rounded-md duration-200 text-[13px] flex items-center gap-1 h-[35px]"
               />
               <Button
                 type="submit"
                 icon={<Search size={15} />}
                 nameButton="Tìm kiếm"
-                classNameButton="py-2 px-3 bg-blue-500 w-full text-white font-medium hover:bg-blue-500/80 rounded-3xl duration-200 text-[13px] flex items-center gap-1 h-[35px]"
+                classNameButton="py-2 px-3 bg-blue-500 w-full text-white font-medium hover:bg-blue-500/80 rounded-md duration-200 text-[13px] flex items-center gap-1 h-[35px]"
               />
             </div>
           </form>
@@ -358,36 +358,33 @@ export default function ManageStaff() {
   // Gọi api xóa và fetch lại api
   const deleteStaffMutation = useMutation({
     mutationFn: (id: string) => {
-      return adminAPI.staff.deleteProfileStaff(id)
+      return StaffAPI.deleteProfileStaff(id)
     }
   })
 
   const handleDeleteCustomer = (id: string) => {
     deleteStaffMutation.mutate(id, {
       onSuccess: () => {
-        // lấy ra query của trang hiện tại (có queryConfig)
-        // const data = queryClient.getQueryData(["listCustomer", queryConfig])
-        // // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        // const data_2 = (data as any).data as SuccessResponse<{
-        //   result: UserType[]
-        //   total: string
-        //   page: string
-        //   limit: string
-        //   totalOfPage: string
-        //   listTotalProduct: { brand: string; total: string }[]
-        // }>
-        // // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        // if (data && data_2.result.result.length === 1 && Number(queryConfig.page) > 1) {
-        //   navigate({
-        //     pathname: path.AdminCustomers,
-        //     search: createSearchParams({
-        //       ...queryConfig,
-        //       page: (Number(queryConfig.page) - 1).toString()
-        //     }).toString()
-        //   })
-        // }
-        // queryClient.invalidateQueries({ queryKey: ["listCustomer"] })
-        // toast.success("Xóa thành công!", { autoClose: 1500 })
+        const data = queryClient.getQueryData(["listStaffs", queryConfig])
+        const data_2 = (data as any).data as SuccessResponse<{
+          result: UserType[]
+          total: string
+          page: string
+          limit: string
+          totalOfPage: string
+          listTotalProduct: { brand: string; total: string }[]
+        }>
+        if (data && data_2.result.result.length === 1 && Number(queryConfig.page) > 1) {
+          navigate({
+            pathname: path.AdminEmployees,
+            search: createSearchParams({
+              ...queryConfig,
+              page: (Number(queryConfig.page) - 1).toString()
+            }).toString()
+          })
+        }
+        queryClient.invalidateQueries({ queryKey: ["listStaffs", queryConfig] })
+        toast.success("Xóa thành công!", { autoClose: 1500 })
       }
     })
   }

@@ -5,7 +5,6 @@ import { useEffect, useState } from "react"
 import { Helmet } from "react-helmet-async"
 import { createSearchParams, useNavigate } from "react-router-dom"
 import NavigateBack from "src/Admin/Components/NavigateBack"
-import { adminAPI } from "src/Apis/admin.api"
 import Button from "src/Components/Button"
 import Skeleton from "src/Components/Skeleton"
 import { path } from "src/Constants/path"
@@ -31,6 +30,9 @@ import { Collapse, CollapseProps, Empty, Modal, Select, Table } from "antd"
 import "../ManageOrders/ManageOrders.css"
 import { useTheme } from "src/Admin/Components/Theme-provider/Theme-provider"
 import { ColumnsType } from "antd/es/table"
+import { ProductAPI } from "src/Apis/admin/product.api"
+import { SupplierAPI } from "src/Apis/admin/supplier.api"
+import { SupplyAPI } from "src/Apis/admin/supply.api"
 
 type FormDataSearch = Pick<
   SchemaSupplyType,
@@ -77,7 +79,7 @@ export default function ManageSupplies() {
       setTimeout(() => {
         controller.abort() // hủy request khi chờ quá lâu // 10 giây sau cho nó hủy // làm tự động
       }, 10000)
-      return adminAPI.supply.getSupplies(queryConfig as queryParamConfigSupply, controller.signal)
+      return SupplyAPI.getSupplies(queryConfig as queryParamConfigSupply, controller.signal)
     },
     retry: 0, // số lần retry lại khi hủy request (dùng abort signal)
     staleTime: 3 * 60 * 1000, // dưới 3 phút nó không gọi lại api
@@ -97,7 +99,7 @@ export default function ManageSupplies() {
   const getNameProducts = useQuery({
     queryKey: ["nameProduct"],
     queryFn: () => {
-      return adminAPI.product.getNameProducts()
+      return ProductAPI.getNameProducts()
     },
     retry: 0,
     staleTime: 15 * 60 * 1000,
@@ -111,7 +113,7 @@ export default function ManageSupplies() {
   const getNameSuppliers = useQuery({
     queryKey: ["nameSupplier"],
     queryFn: () => {
-      return adminAPI.supplier.getNameSuppliers()
+      return SupplierAPI.getNameSuppliers()
     },
     retry: 0, // số lần retry lại khi hủy request (dùng abort signal)
     staleTime: 15 * 60 * 1000, // dưới 1 phút nó không gọi lại api
@@ -182,7 +184,7 @@ export default function ManageSupplies() {
 
   const deleteSupplyMutation = useMutation({
     mutationFn: (id: string) => {
-      return adminAPI.supply.deleteSupplyDetail(id)
+      return SupplyAPI.deleteSupplyDetail(id)
     }
   })
 
@@ -236,7 +238,7 @@ export default function ManageSupplies() {
           <div className="bg-white dark:bg-darkPrimary mb-3 dark:border-darkBorder rounded-2xl">
             <form onSubmit={handleSubmitSearch}>
               <div className="mt-1 grid grid-cols-2">
-                <div className="col-span-1 flex items-center h-14 px-2 bg-[#fff] dark:bg-darkPrimary border border-[#dadada] rounded-tl-xl">
+                <div className="col-span-1 flex items-center h-14 px-2 bg-[#fff] dark:bg-darkPrimary border border-[#dadada] rounded-tl-md">
                   <span className="w-1/3 dark:text-white">Tên sản phẩm</span>
                   <div className="w-2/3 relative h-full">
                     <DropdownSearch
@@ -251,7 +253,7 @@ export default function ManageSupplies() {
                     <span className="absolute inset-y-0 left-[-5%] w-[1px] bg-[#dadada] h-full"></span>
                   </div>
                 </div>
-                <div className="col-span-1 flex items-center h-14 px-2 bg-[#fff] dark:bg-darkPrimary border border-[#dadada] rounded-tr-xl">
+                <div className="col-span-1 flex items-center h-14 px-2 bg-[#fff] dark:bg-darkPrimary border border-[#dadada] rounded-tr-md">
                   <span className="w-1/3 dark:text-white">Tên nhà cung cấp</span>
                   <div className="w-2/3 relative h-full">
                     <DropdownSearch
@@ -266,7 +268,7 @@ export default function ManageSupplies() {
                     <span className="absolute inset-y-0 left-[-5%] w-[1px] bg-[#dadada] h-full"></span>
                   </div>
                 </div>
-                <div className="col-span-1 flex items-center h-14 px-2 bg-[#fff] dark:bg-darkPrimary border border-[#dadada] border-t-0 rounded-bl-xl">
+                <div className="col-span-1 flex items-center h-14 px-2 bg-[#fff] dark:bg-darkPrimary border border-[#dadada] border-t-0 rounded-bl-md">
                   <span className="w-1/3 dark:text-white">Ngày tạo</span>
                   <div className="w-2/3 relative h-full">
                     <div className="mt-2 w-full flex items-center gap-2">
@@ -305,7 +307,7 @@ export default function ManageSupplies() {
                     <span className="absolute inset-y-0 left-[-5%] w-[1px] bg-[#dadada] h-full"></span>
                   </div>
                 </div>
-                <div className="col-span-1 flex items-center h-14 px-2 bg-[#fff] dark:bg-darkPrimary border border-[#dadada] border-t-0 rounded-br-xl">
+                <div className="col-span-1 flex items-center h-14 px-2 bg-[#fff] dark:bg-darkPrimary border border-[#dadada] border-t-0 rounded-br-md">
                   <span className="w-1/3 dark:text-white">Ngày cập nhật</span>
                   <div className="w-2/3 relative h-full">
                     <div className="mt-2 w-full flex items-center gap-2">
@@ -351,13 +353,13 @@ export default function ManageSupplies() {
                   type="button"
                   icon={<RotateCcw size={15} />}
                   nameButton="Xóa bộ lọc"
-                  classNameButton="py-2 px-3 bg-[#f2f2f2] border border-[#dedede] w-full text-black font-medium hover:bg-[#dedede]/80 rounded-3xl duration-200 text-[13px] flex items-center gap-1 h-[35px]"
+                  classNameButton="py-2 px-3 bg-[#f2f2f2] border border-[#dedede] w-full text-black font-medium hover:bg-[#dedede]/80 rounded-md duration-200 text-[13px] flex items-center gap-1 h-[35px]"
                 />
                 <Button
                   type="submit"
                   icon={<Search size={15} />}
                   nameButton="Tìm kiếm"
-                  classNameButton="py-2 px-3 bg-blue-500 w-full text-white font-medium rounded-3xl hover:bg-blue-500/80 duration-200 text-[13px] flex items-center gap-1 h-[35px]"
+                  classNameButton="py-2 px-3 bg-blue-500 w-full text-white font-medium rounded-md hover:bg-blue-500/80 duration-200 text-[13px] flex items-center gap-1 h-[35px]"
                   className="flex-shrink-0"
                 />
               </div>

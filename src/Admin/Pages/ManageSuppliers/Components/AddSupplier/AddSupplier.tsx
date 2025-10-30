@@ -5,7 +5,7 @@ import { AnimatePresence, motion } from "framer-motion"
 import { Plus, X } from "lucide-react"
 import { useForm } from "react-hook-form"
 import { toast } from "react-toastify"
-import { adminAPI } from "src/Apis/admin.api"
+import { SupplierAPI } from "src/Apis/admin/supplier.api"
 import { schemaSupplierUpdate, SchemaSupplierUpdateType } from "src/Client/Utils/rule"
 import Button from "src/Components/Button"
 import Input from "src/Components/Input"
@@ -38,6 +38,7 @@ export default function AddSupplier({ setAddItem, addItem }: Props) {
     handleSubmit,
     register,
     setError,
+    reset,
     formState: { errors }
   } = useForm<FormData>({ resolver: yupResolver(formData) })
 
@@ -50,7 +51,7 @@ export default function AddSupplier({ setAddItem, addItem }: Props) {
       address: string
       description: string
     }) => {
-      return adminAPI.supplier.createSupplier(body)
+      return SupplierAPI.createSupplier(body)
     }
   })
 
@@ -59,6 +60,7 @@ export default function AddSupplier({ setAddItem, addItem }: Props) {
       onSuccess: () => {
         toast.success("Thêm nhà cung cấp thành công", { autoClose: 1500 })
         setAddItem(null)
+        reset()
         queryClient.invalidateQueries({ queryKey: ["listSupplier"] }) // validate mọi trang liên quan -> sẽ gọi lại api
       },
       onError: (error) => {

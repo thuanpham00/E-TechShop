@@ -13,13 +13,11 @@ import {
   Trash2,
   X
 } from "lucide-react"
-import { Helmet } from "react-helmet-async"
-import { createSearchParams, useLocation, useNavigate, useParams } from "react-router-dom"
-import { adminAPI } from "src/Apis/admin.api"
+import { createSearchParams, useNavigate } from "react-router-dom"
 import { BrandItemType, UpdateCategoryBodyReq } from "src/Types/product.type"
 import { ErrorResponse, MessageResponse, SuccessResponse } from "src/Types/utils.type"
 import { Controller, useForm } from "react-hook-form"
-import { schemaAuth, SchemaAuthType } from "src/Client/Utils/rule"
+import { schemaAuth, SchemaAuthType, schemaSearchFilter, SchemaSearchFilterType } from "src/Client/Utils/rule"
 import useQueryParams from "src/Hook/useQueryParams"
 import { isUndefined, omit, omitBy } from "lodash"
 import { queryParamConfigBrand } from "src/Types/queryParams.type"
@@ -30,23 +28,23 @@ import { cleanObject, convertDateTime } from "src/Helpers/common"
 import { toast } from "react-toastify"
 import { isError400 } from "src/Helpers/utils"
 import { HttpStatusCode } from "src/Constants/httpStatus"
-import NavigateBack from "src/Admin/Components/NavigateBack"
 import Input from "src/Components/Input"
 import Button from "src/Components/Button"
 import Skeleton from "src/Components/Skeleton"
-import AddBrand from "./Components/AddBrand"
+import AddBrand from "../AddBrand"
 import DatePicker from "src/Admin/Components/DatePickerRange"
 import useDownloadExcel from "src/Hook/useDownloadExcel"
 import { motion, AnimatePresence } from "framer-motion"
 import { Collapse, CollapseProps, Empty, Modal, Select, Table } from "antd"
-import "../ManageOrders/ManageOrders.css"
+import "../../../ManageOrders/ManageOrders.css"
 import { useTheme } from "src/Admin/Components/Theme-provider/Theme-provider"
 import { ColumnsType } from "antd/es/table"
+import { BrandAPI } from "src/Apis/admin/brand.api"
 
 type FormDataUpdate = Pick<SchemaAuthType, "name" | "id" | "created_at" | "updated_at">
 const formDataUpdate = schemaAuth.pick(["name", "id", "created_at", "updated_at"])
 
-const formDataSearch = schemaAuth.pick([
+const formDataSearch = schemaSearchFilter.pick([
   "name",
   "created_at_start",
   "created_at_end",
@@ -55,19 +53,17 @@ const formDataSearch = schemaAuth.pick([
 ])
 
 type FormDataSearch = Pick<
-  SchemaAuthType,
+  SchemaSearchFilterType,
   "name" | "created_at_start" | "created_at_end" | "updated_at_start" | "updated_at_end"
 >
 
-export default function ManageBrand() {
+export default function ManageBrand({ idCategory, nameCategory }: { idCategory: string; nameCategory: string }) {
   const { theme } = useTheme()
   const isDark = theme === "dark" || theme === "system"
 
   const navigate = useNavigate()
   const { downloadExcel } = useDownloadExcel()
 
-  const { id } = useParams()
-  const { state } = useLocation()
   const queryClient = useQueryClient()
   const queryParams: queryParamConfigBrand = useQueryParams()
   const queryConfig: queryParamConfigBrand = omitBy(
@@ -75,7 +71,7 @@ export default function ManageBrand() {
       page: queryParams.page || "1", // mặc định page = 1
       limit: queryParams.limit || "10", // mặc định limit =
       name: queryParams.name,
-      id: id,
+      id: idCategory,
       created_at_start: queryParams.created_at_start,
       created_at_end: queryParams.created_at_end,
       updated_at_start: queryParams.updated_at_start,
@@ -93,9 +89,9 @@ export default function ManageBrand() {
       setTimeout(() => {
         controller.abort() // hủy request khi chờ quá lâu // 10 giây sau cho nó hủy // làm tự động
       }, 10000)
-      return adminAPI.category.getBrands(queryConfig, controller.signal)
+      return BrandAPI.getBrands(queryConfig, controller.signal)
     },
-    enabled: Boolean(id),
+    enabled: Boolean(idCategory),
     retry: 0, // số lần retry lại khi hủy request (dùng abort signal)
     staleTime: 3 * 60 * 1000, // dưới 5 phút nó không gọi lại api
     placeholderData: keepPreviousData
@@ -142,7 +138,7 @@ export default function ManageBrand() {
 
   const updateCategoryMutation = useMutation({
     mutationFn: (body: { id: string; body: UpdateCategoryBodyReq }) => {
-      return adminAPI.category.updateBrandDetail(body.id, body.body)
+      return BrandAPI.updateBrandDetail(body.id, body.body)
     }
   })
 
@@ -170,13 +166,13 @@ export default function ManageBrand() {
 
   const deleteBrandMutation = useMutation({
     mutationFn: (body: { id: string; categoryId: string }) => {
-      return adminAPI.category.deleteBrand(body.id, body.categoryId)
+      return BrandAPI.deleteBrand(body.id, body.categoryId)
     }
   })
 
   const handleDeleteBrand = (brandId: string) => {
     deleteBrandMutation.mutate(
-      { id: brandId, categoryId: id as string },
+      { id: brandId, categoryId: idCategory as string },
       {
         onSuccess: () => {
           // lấy ra query của trang hiện tại (có queryConfig)
@@ -193,7 +189,7 @@ export default function ManageBrand() {
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           if (data && data_2.result.result.length === 1 && Number(queryConfig.page) > 1) {
             navigate({
-              pathname: `${path.AdminCategories}/${id}`,
+              pathname: `${path.AdminCategories}/${idCategory}`,
               search: createSearchParams({
                 ...queryConfig,
                 page: (Number(queryConfig.page) - 1).toString()
@@ -239,11 +235,11 @@ export default function ManageBrand() {
       })
       navigate(
         {
-          pathname: `${path.AdminCategories}/${id}`,
+          pathname: `${path.AdminCategories}/${idCategory}`,
           search: createSearchParams(params).toString()
         },
         {
-          state: state
+          state: nameCategory
         }
       )
     },
@@ -267,9 +263,9 @@ export default function ManageBrand() {
     ])
     resetFormSearch()
     navigate(
-      { pathname: `${path.AdminCategories}/${id}`, search: createSearchParams(filteredSearch).toString() },
+      { pathname: `${path.AdminCategories}/${idCategory}`, search: createSearchParams(filteredSearch).toString() },
       {
-        state: state
+        state: nameCategory
       }
     )
   }
@@ -281,7 +277,7 @@ export default function ManageBrand() {
       sortBy: value
     }
     navigate({
-      pathname: `${path.AdminCategories}/${id}`,
+      pathname: `${path.AdminCategories}/${idCategory}`,
       search: createSearchParams(body).toString()
     })
   }
@@ -294,7 +290,7 @@ export default function ManageBrand() {
         <section className="bg-white dark:bg-darkPrimary mb-3 dark:border-darkBorder rounded-2xl">
           <form onSubmit={handleSubmitSearch}>
             <div className="mt-1 grid grid-cols-2">
-              <div className="col-span-1 flex items-center h-14 px-2 bg-[#ececec] dark:bg-darkPrimary border border-[#dadada] rounded-tl-xl">
+              <div className="col-span-1 flex items-center h-14 px-2 bg-[#ececec] dark:bg-darkPrimary border border-[#dadada] rounded-tl-md">
                 <span className="w-1/3 dark:text-white">Ngày đăng</span>
                 <div className="w-2/3 relative h-full">
                   <div className="mt-2 w-full flex items-center gap-2">
@@ -333,7 +329,7 @@ export default function ManageBrand() {
                   <span className="absolute inset-y-0 left-[-5%] w-[1px] bg-[#dadada] h-full"></span>
                 </div>
               </div>
-              <div className="col-span-1 flex items-center h-14 px-2 bg-[#ececec] dark:bg-darkPrimary border border-[#dadada] rounded-tr-xl">
+              <div className="col-span-1 flex items-center h-14 px-2 bg-[#ececec] dark:bg-darkPrimary border border-[#dadada] rounded-tr-md">
                 <span className="w-1/3 dark:text-white">Ngày cập nhật</span>
                 <div className="w-2/3 relative h-full">
                   <div className="mt-2 w-full flex items-center gap-2">
@@ -372,7 +368,7 @@ export default function ManageBrand() {
                   <span className="absolute inset-y-0 left-[-5%] w-[1px] bg-[#dadada] h-full"></span>
                 </div>
               </div>
-              <div className="col-span-1 flex items-center h-14 px-2 bg-[#fff] dark:bg-darkPrimary border border-[#dadada] border-t-0 rounded-bl-xl">
+              <div className="col-span-1 flex items-center h-14 px-2 bg-[#fff] dark:bg-darkPrimary border border-[#dadada] border-t-0 rounded-bl-md">
                 <span className="w-1/3 dark:text-white">Tên thể loại</span>
                 <div className="w-2/3 relative h-full">
                   <div className="mt-2 w-full flex items-center gap-2">
@@ -395,13 +391,13 @@ export default function ManageBrand() {
                 nameButton="Xóa bộ lọc"
                 onClick={handleResetFormSearch}
                 icon={<RotateCcw size={15} color="#adb5bd" />}
-                classNameButton="py-2 px-3 bg-[#f2f2f2] border border-[#dedede] w-full text-black font-medium hover:bg-[#dedede]/80 rounded-3xl duration-200 text-[13px] flex items-center gap-1 h-[35px]"
+                classNameButton="py-2 px-3 bg-[#f2f2f2] border border-[#dedede] w-full text-black font-medium hover:bg-[#dedede]/80 rounded-md duration-200 text-[13px] flex items-center gap-1 h-[35px]"
               />
               <Button
                 type="submit"
                 nameButton="Tìm kiếm"
                 icon={<Search size={15} />}
-                classNameButton="py-2 px-3 bg-blue-500 w-full text-white font-medium rounded-3xl hover:bg-blue-500/80 duration-200 text-[13px] flex items-center gap-1 h-[35px]"
+                classNameButton="py-2 px-3 bg-blue-500 w-full text-white font-medium rounded-md hover:bg-blue-500/80 duration-200 text-[13px] flex items-center gap-1 h-[35px]"
                 className="flex-shrink-0"
               />
             </div>
@@ -496,7 +492,7 @@ export default function ManageBrand() {
           <div className="flex justify-center items-center gap-2">
             <span className="font-semibold text-[#3b82f6]">{total}</span>
             <span className="text-black dark:text-white">|</span>
-            <button onClick={() => navigate(`${path.AdminProducts}?brand=${record.name}&category=${state}`)}>
+            <button onClick={() => navigate(`${path.AdminProducts}?brand=${record.name}&category=${nameCategory}`)}>
               <Eye color="#3b82f6" size={18} />
             </button>
           </div>
@@ -520,18 +516,6 @@ export default function ManageBrand() {
 
   return (
     <div>
-      <Helmet>
-        <title>Chi tiết danh mục</title>
-        <meta
-          name="description"
-          content="Đây là trang TECHZONE | Laptop, PC, Màn hình, điện thoại, linh kiện Chính Hãng"
-        />
-      </Helmet>
-      <NavigateBack />
-      <h1 className="text-2xl font-bold text-gray-800 bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600 my-2">
-        Thương hiệu {state}
-      </h1>
-
       <Collapse items={items} defaultActiveKey={["2"]} className="bg-white dark:bg-darkPrimary dark:border-none" />
 
       <section className="bg-white dark:bg-darkPrimary mb-3 dark:border-darkBorder mt-4">
@@ -579,7 +563,7 @@ export default function ManageBrand() {
                   pageSizeOptions: ["5", "10", "20", "50"],
                   onChange: (page, pageSize) => {
                     navigate({
-                      pathname: `${path.AdminCategories}/${id}`,
+                      pathname: `${path.AdminCategories}/${idCategory}`,
                       search: createSearchParams({
                         ...queryConfig,
                         page: page.toString(),
@@ -674,7 +658,7 @@ export default function ManageBrand() {
                       <Button
                         type="submit"
                         icon={<ArrowUpFromLine size={18} />}
-                        nameButton="Cập nhật"
+                        nameButton="Lưu thay đổi"
                         classNameButton="w-[120px] p-4 py-2 bg-blue-500 mt-2 w-full text-white font-semibold rounded-md hover:bg-blue-500/80 duration-200 flex items-center gap-1 text-[13px]"
                       />
                     </div>
@@ -685,7 +669,7 @@ export default function ManageBrand() {
           )}
         </AnimatePresence>
 
-        <AddBrand setAddItem={setAddItem} addItem={addItem} categoryId={id} />
+        <AddBrand setAddItem={setAddItem} addItem={addItem} categoryId={idCategory} />
       </section>
     </div>
   )

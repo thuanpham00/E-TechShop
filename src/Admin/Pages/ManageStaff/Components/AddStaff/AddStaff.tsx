@@ -5,7 +5,6 @@ import { Plus, X } from "lucide-react"
 import React, { useContext, useEffect, useMemo, useState } from "react"
 import { Controller, useForm } from "react-hook-form"
 import { toast } from "react-toastify"
-import { adminAPI } from "src/Apis/admin.api"
 import { schemaAuth, SchemaAuthType } from "src/Client/Utils/rule"
 import Button from "src/Components/Button"
 import DateSelect from "src/Components/DateSelect"
@@ -20,6 +19,8 @@ import { ErrorResponse, SuccessResponse } from "src/Types/utils.type"
 import { Select } from "antd"
 import { AppContext } from "src/Context/authContext"
 import { Role } from "src/Admin/Pages/ManageRoles/ManageRoles"
+import { RolePermissionAPI } from "src/Apis/admin/role.api"
+import { StaffAPI } from "src/Apis/admin/staff.api"
 
 interface Props {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -71,7 +72,7 @@ export default function AddStaff({ setAddItem }: Props) {
       setTimeout(() => {
         controller.abort() // hủy request khi chờ quá lâu // 10 giây sau cho nó hủy // làm tự động
       }, 10000)
-      return adminAPI.role.getRoles(controller.signal)
+      return RolePermissionAPI.getRoles(controller.signal)
     },
     retry: 0, // số lần retry lại khi hủy request (dùng abort signal)
     staleTime: 1 * 60 * 1000, // dưới 3 phút nó không gọi lại api
@@ -97,7 +98,7 @@ export default function AddStaff({ setAddItem }: Props) {
 
   const addStaffMutation = useMutation({
     mutationFn: (body: CreateStaffBodyReq) => {
-      return adminAPI.staff.createStaff(body)
+      return StaffAPI.createStaff(body)
     }
   })
 
@@ -341,9 +342,9 @@ export default function AddStaff({ setAddItem }: Props) {
                               onChange={field.onChange}
                               className="select-status w-full"
                               options={[
-                                { value: "active", label: "Hoạt động" },
-                                { value: "inactive", label: "Không hoạt động" },
-                                { value: "suspended", label: "Bị tạm dừng" }
+                                { value: "Active", label: "Hoạt động" },
+                                { value: "Inactive", label: "Không hoạt động" },
+                                { value: "Suspended", label: "Bị tạm dừng" }
                               ]}
                             />
                           )}

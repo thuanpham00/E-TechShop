@@ -7,7 +7,7 @@ import { Helmet } from "react-helmet-async"
 import { useForm } from "react-hook-form"
 import { Link } from "react-router-dom"
 import { toast } from "react-toastify"
-import { adminAPI } from "src/Apis/admin.api"
+import { authAPI } from "src/Apis/admin/auth.api"
 import { schemaAuth, SchemaAuthType } from "src/Client/Utils/rule"
 import Button from "src/Components/Button"
 import Input from "src/Components/Input"
@@ -30,7 +30,7 @@ export default function LoginAdmin() {
 
   const loginMutation = useMutation({
     mutationFn: (body: FormData) => {
-      return adminAPI.auth.loginAdmin(body)
+      return authAPI.loginAdmin(body)
     }
   })
 

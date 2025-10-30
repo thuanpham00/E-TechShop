@@ -6,7 +6,6 @@ import { Plus, X } from "lucide-react"
 import React, { useEffect, useMemo, useState } from "react"
 import { Controller, useForm } from "react-hook-form"
 import { toast } from "react-toastify"
-import { adminAPI } from "src/Apis/admin.api"
 import { schemaAuth, SchemaAuthType } from "src/Client/Utils/rule"
 import Button from "src/Components/Button"
 import DateSelect from "src/Components/DateSelect"
@@ -19,6 +18,7 @@ import { ObjectId } from "bson"
 import { isError422 } from "src/Helpers/utils"
 import { ErrorResponse } from "src/Types/utils.type"
 import { rolesForApi } from "src/Helpers/role_permission"
+import { CustomerAPI } from "src/Apis/admin/customer.api"
 
 interface Props {
   setAddItem: React.Dispatch<any>
@@ -50,12 +50,13 @@ export default function AddCustomer({ setAddItem }: Props) {
     watch,
     setError,
     setValue,
+    reset,
     formState: { errors }
   } = useForm<FormDataAdd>({ resolver: yupResolver(formDataAdd) })
 
   const addCustomerMutation = useMutation({
     mutationFn: (body: CreateCustomerBodyReq) => {
-      return adminAPI.customer.createCustomer(body)
+      return CustomerAPI.createCustomer(body)
     }
   })
 
@@ -108,6 +109,7 @@ export default function AddCustomer({ setAddItem }: Props) {
       onSuccess: () => {
         toast.success("Thêm người dùng thành công", { autoClose: 1500 })
         setAddItem(null)
+        reset()
         queryClient.invalidateQueries({ queryKey: ["listCustomer"] }) // validate mọi trang liên quan -> sẽ gọi lại api
       },
       onError: (error) => {

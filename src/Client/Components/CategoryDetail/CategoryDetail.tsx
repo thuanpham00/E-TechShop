@@ -1,14 +1,11 @@
-import { useContext } from "react"
 import { useNavigate } from "react-router-dom"
 import { MenuCategoryDetail } from "src/Client/Constants/categories"
-import { AppContext } from "src/Context/authContext"
 
 interface Props {
   showDetail: string
 }
 
 export default function CategoryDetail({ showDetail }: Props) {
-  const { setIsShowCategory } = useContext(AppContext)
   const navigate = useNavigate()
 
   const handleNavigate = (valueItem: string, type: string) => {
@@ -17,7 +14,6 @@ export default function CategoryDetail({ showDetail }: Props) {
         type_filter: type
       }
     })
-    setIsShowCategory(false)
   }
 
   return (

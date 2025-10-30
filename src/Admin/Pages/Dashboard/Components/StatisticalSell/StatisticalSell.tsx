@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { BarChart3, Boxes, PackageCheck, Wallet } from "lucide-react"
 import { keepPreviousData, useQuery } from "@tanstack/react-query"
-import { adminAPI } from "src/Apis/admin.api"
 import { SuccessResponse } from "src/Types/utils.type"
 import Skeleton from "src/Components/Skeleton"
 import { motion } from "framer-motion"
@@ -26,6 +25,7 @@ import dayjs, { Dayjs } from "dayjs"
 import { useEffect, useState } from "react"
 import { useTheme } from "src/Admin/Components/Theme-provider/Theme-provider"
 import { toast } from "react-toastify"
+import { StatisticalAPI } from "src/Apis/admin/statistical.api"
 
 type TypeStatistical = {
   title: string
@@ -67,7 +67,7 @@ export default function StatisticalSell() {
       const month = selectedMonth.month() + 1
       const year = isMonthly ? selectedMonth.year() : selectedYear
 
-      return adminAPI.statistical.getStatisticalSell(controller.signal, {
+      return StatisticalAPI.getStatisticalSell(controller.signal, {
         ...(isMonthly ? { month } : {}),
         year: year
       })

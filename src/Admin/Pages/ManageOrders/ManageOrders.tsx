@@ -20,7 +20,6 @@ import useQueryParams from "src/Hook/useQueryParams"
 import { isUndefined, omit, omitBy } from "lodash"
 import { queryParamConfigOrder } from "src/Types/queryParams.type"
 import { keepPreviousData, useMutation, useQuery } from "@tanstack/react-query"
-import { adminAPI } from "src/Apis/admin.api"
 import { SuccessResponse } from "src/Types/utils.type"
 import { OrderItemType } from "src/Types/product.type"
 import Skeleton from "src/Components/Skeleton"
@@ -29,7 +28,12 @@ import { Collapse, CollapseProps, Empty, Select, Steps, Table, Tag } from "antd"
 import "./ManageOrders.css"
 import { Controller, useForm } from "react-hook-form"
 import { yupResolver } from "@hookform/resolvers/yup"
-import { schemaOrder, schemaOrderSearch, SchemaOrderSearchType, SchemaOrderType } from "src/Client/Utils/rule"
+import {
+  schemaOrder,
+  SchemaOrderType,
+  schemaSearchFilterOrder,
+  SchemaSearchFilterOrderType
+} from "src/Client/Utils/rule"
 import { cleanObject, convertDateTime, formatCurrency } from "src/Helpers/common"
 import { toast } from "react-toastify"
 import { queryClient } from "src/main"
@@ -37,6 +41,7 @@ import DatePicker from "src/Admin/Components/DatePickerRange"
 import useDownloadExcel from "src/Hook/useDownloadExcel"
 import { useTheme } from "src/Admin/Components/Theme-provider/Theme-provider"
 import { ColumnsType } from "antd/es/table"
+import { OrderAPI } from "src/Apis/admin/order.api"
 
 type FormDataUpdate = Pick<
   SchemaOrderType,
@@ -54,11 +59,11 @@ const formDataUpdate = schemaOrder.pick([
 ])
 
 type FormDataSearch = Pick<
-  SchemaOrderSearchType,
+  SchemaSearchFilterOrderType,
   "created_at_start" | "created_at_end" | "status" | "name" | "address" | "phone" | "price_min" | "price_max"
 >
 
-const formDataSearch = schemaOrderSearch.pick([
+const formDataSearch = schemaSearchFilterOrder.pick([
   "created_at_start",
   "created_at_end",
   "status",
@@ -100,7 +105,7 @@ export default function ManageOrders() {
       setTimeout(() => {
         controller.abort() // hủy request khi chờ quá lâu // 10 giây sau cho nó hủy // làm tự động
       }, 10000)
-      return adminAPI.order.getOrderList(queryConfig as queryParamConfigOrder, controller.signal)
+      return OrderAPI.getOrderList(queryConfig as queryParamConfigOrder, controller.signal)
     },
     retry: 0, // số lần retry lại khi hủy request (dùng abort signal)
     staleTime: 3 * 60 * 1000, // dưới 3 phút nó không gọi lại api
@@ -170,7 +175,7 @@ export default function ManageOrders() {
 
   const updateStatusOrderMutation = useMutation({
     mutationFn: (body: { id: string; status: string }) => {
-      return adminAPI.order.updateOrderStatus(body.id, body.status)
+      return OrderAPI.updateOrderStatus(body.id, body.status)
     }
   })
 
@@ -248,7 +253,7 @@ export default function ManageOrders() {
         <section className="bg-white dark:bg-darkPrimary mb-3 dark:border-darkBorder rounded-2xl">
           <form onSubmit={handleSubmitSearch}>
             <div className="mt-1 grid grid-cols-2">
-              <div className="col-span-1 flex items-center h-14 px-2 bg-[#ececec] dark:bg-darkPrimary border border-[#dadada] rounded-tl-xl">
+              <div className="col-span-1 flex items-center h-14 px-2 bg-[#ececec] dark:bg-darkPrimary border border-[#dadada] rounded-tl-md">
                 <span className="w-1/3 dark:text-white">Tên người nhận</span>
                 <div className="w-2/3 relative h-full">
                   <div className="mt-2 w-full flex items-center gap-2">
@@ -264,7 +269,7 @@ export default function ManageOrders() {
                   <span className="absolute inset-y-0 left-[-5%] w-[1px] bg-[#dadada] h-full"></span>
                 </div>
               </div>
-              <div className="col-span-1 flex items-center h-14 px-2 bg-[#ececec] dark:bg-darkPrimary border border-[#dadada] rounded-tr-xl">
+              <div className="col-span-1 flex items-center h-14 px-2 bg-[#ececec] dark:bg-darkPrimary border border-[#dadada] rounded-tr-md">
                 <span className="w-1/3 dark:text-white">Địa chỉ người nhận</span>
                 <div className="w-2/3 relative h-full">
                   <div className="mt-2 w-full flex items-center gap-2">
@@ -329,7 +334,7 @@ export default function ManageOrders() {
                   <span className="absolute inset-y-0 left-[-5%] w-[1px] bg-[#dadada] h-full"></span>
                 </div>
               </div>
-              <div className="col-span-1 flex items-center h-14 px-2 bg-[#ececec] dark:bg-darkPrimary border border-[#dadada] border-t-0 rounded-bl-xl">
+              <div className="col-span-1 flex items-center h-14 px-2 bg-[#ececec] dark:bg-darkPrimary border border-[#dadada] border-t-0 rounded-bl-md">
                 <span className="w-1/3 dark:text-white">Ngày tạo</span>
                 <div className="w-2/3 relative h-full">
                   <div className="mt-2 w-full flex items-center gap-2">
@@ -376,13 +381,13 @@ export default function ManageOrders() {
                 type="button"
                 icon={<RotateCcw size={15} />}
                 nameButton="Xóa bộ lọc"
-                classNameButton="py-2 px-3 bg-[#f2f2f2] border border-[#dedede] w-full text-black font-medium hover:bg-[#dedede]/80 rounded-3xl duration-200 text-[13px] flex items-center gap-1 h-[35px]"
+                classNameButton="py-2 px-3 bg-[#f2f2f2] border border-[#dedede] w-full text-black font-medium hover:bg-[#dedede]/80 rounded-md duration-200 text-[13px] flex items-center gap-1 h-[35px]"
               />
               <Button
                 type="submit"
                 icon={<Search size={15} />}
                 nameButton="Tìm kiếm"
-                classNameButton="py-2 px-3 bg-blue-500 w-full text-white font-medium rounded-3xl hover:bg-blue-500/80 duration-200 text-[13px] flex items-center gap-1 h-[35px]"
+                classNameButton="py-2 px-3 bg-blue-500 w-full text-white font-medium rounded-md hover:bg-blue-500/80 duration-200 text-[13px] flex items-center gap-1 h-[35px]"
                 className="flex-shrink-0"
               />
             </div>
@@ -814,7 +819,7 @@ export default function ManageOrders() {
                       <Button
                         type="submit"
                         icon={<ArrowUpFromLine size={18} />}
-                        nameButton="Cập nhật"
+                        nameButton="Lưu thay đổi"
                         classNameButton="w-[120px] px-3 py-2 bg-blue-500 mt-2 w-full text-white font-semibold rounded-md hover:bg-blue-500/80 duration-200 flex items-center gap-1 text-[13px]"
                       />
                     </div>

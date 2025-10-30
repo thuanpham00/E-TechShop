@@ -1,34 +1,20 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { yupResolver } from "@hookform/resolvers/yup"
-import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import {
-  ArrowUpFromLine,
-  ArrowUpNarrowWide,
-  ClipboardCheck,
-  Eye,
-  FolderUp,
-  Pencil,
-  Plus,
-  RotateCcw,
-  Search,
-  Trash2,
-  X
-} from "lucide-react"
+import { keepPreviousData, useQuery } from "@tanstack/react-query"
+import { ArrowUpNarrowWide, ClipboardCheck, Eye, FolderUp, Plus, RotateCcw, Search } from "lucide-react"
 import { Helmet } from "react-helmet-async"
 import { Controller, useForm } from "react-hook-form"
-import { adminAPI } from "src/Apis/admin.api"
-import { schemaAuth, SchemaAuthType } from "src/Client/Utils/rule"
+import { schemaSearchFilter, SchemaSearchFilterType } from "src/Client/Utils/rule"
 import useQueryParams from "src/Hook/useQueryParams"
 import { queryParamConfigCategory } from "src/Types/queryParams.type"
-import { ErrorResponse, MessageResponse, SuccessResponse } from "src/Types/utils.type"
+import { SuccessResponse } from "src/Types/utils.type"
 import { path } from "src/Constants/path"
 import { useEffect, useState } from "react"
-import { CategoryItemType, UpdateCategoryBodyReq } from "src/Types/product.type"
+import { CategoryItemType } from "src/Types/product.type"
 import { isUndefined, omit, omitBy } from "lodash"
 import { cleanObject, convertDateTime } from "src/Helpers/common"
 import { toast } from "react-toastify"
-import { isError400 } from "src/Helpers/utils"
-import { createSearchParams, useNavigate } from "react-router-dom"
+import { createSearchParams, Link, useNavigate } from "react-router-dom"
 import { HttpStatusCode } from "src/Constants/httpStatus"
 import NavigateBack from "src/Admin/Components/NavigateBack"
 import Input from "src/Components/Input"
@@ -37,17 +23,13 @@ import Skeleton from "src/Components/Skeleton"
 import AddCategory from "./Components/AddCategory"
 import DatePicker from "src/Admin/Components/DatePickerRange"
 import useDownloadExcel from "src/Hook/useDownloadExcel"
-import { motion, AnimatePresence } from "framer-motion"
-import { Collapse, CollapseProps, Empty, Modal, Select, Table, Tag } from "antd"
+import { Collapse, CollapseProps, Empty, Select, Table, Tag } from "antd"
 import "../ManageOrders/ManageOrders.css"
 import { useTheme } from "src/Admin/Components/Theme-provider/Theme-provider"
 import { ColumnsType } from "antd/es/table"
+import { CategoryAPI } from "src/Apis/admin/category.api"
 
-type FormDataUpdate = Pick<SchemaAuthType, "name" | "id" | "created_at" | "updated_at">
-
-const formDataUpdate = schemaAuth.pick(["name", "id", "created_at", "updated_at"])
-
-const formDataSearch = schemaAuth.pick([
+const formDataSearch = schemaSearchFilter.pick([
   "name",
   "created_at_start",
   "created_at_end",
@@ -56,9 +38,10 @@ const formDataSearch = schemaAuth.pick([
 ])
 
 type FormDataSearch = Pick<
-  SchemaAuthType,
+  SchemaSearchFilterType,
   "name" | "created_at_start" | "created_at_end" | "updated_at_start" | "updated_at_end"
 >
+
 export default function ManageCategories() {
   const { theme } = useTheme()
   const isDark = theme === "dark" || theme === "system"
@@ -66,12 +49,11 @@ export default function ManageCategories() {
   const navigate = useNavigate()
   const { downloadExcel } = useDownloadExcel()
 
-  const queryClient = useQueryClient()
   const queryParams: queryParamConfigCategory = useQueryParams()
   const queryConfig: queryParamConfigCategory = omitBy(
     {
       page: queryParams.page || "1", // mặc định page = 1
-      limit: queryParams.limit || "5", // mặc định limit =
+      limit: queryParams.limit || "5", // mặc định limit = 5
       name: queryParams.name,
       created_at_start: queryParams.created_at_start,
       created_at_end: queryParams.created_at_end,
@@ -90,7 +72,7 @@ export default function ManageCategories() {
       setTimeout(() => {
         controller.abort() // hủy request khi chờ quá lâu // 10 giây sau cho nó hủy // làm tự động
       }, 10000)
-      return adminAPI.category.getCategories(queryConfig as queryParamConfigCategory, controller.signal)
+      return CategoryAPI.getCategories(queryConfig as queryParamConfigCategory, controller.signal)
     },
     retry: 0, // số lần retry lại khi hủy request (dùng abort signal)
     staleTime: 3 * 60 * 1000, // dưới 3 phút nó không gọi lại api
@@ -111,106 +93,16 @@ export default function ManageCategories() {
   const [addItem, setAddItem] = useState<boolean | CategoryItemType | null>(null)
 
   const {
-    register,
-    formState: { errors },
-    setValue,
-    setError,
-    handleSubmit
-  } = useForm<FormDataUpdate>({
-    resolver: yupResolver(formDataUpdate),
-    defaultValues: {
-      id: "",
-      name: "",
-      created_at: "",
-      updated_at: ""
-    } // giá trị khởi tạo
-  })
-
-  useEffect(() => {
-    if (addItem !== null && typeof addItem === "object") {
-      setValue("id", addItem._id)
-      setValue("name", addItem.name)
-      setValue("created_at", convertDateTime(addItem.created_at))
-      setValue("updated_at", convertDateTime(addItem.updated_at))
-    }
-  }, [addItem, setValue])
-
-  const updateCategoryMutation = useMutation({
-    mutationFn: (body: { id: string; body: UpdateCategoryBodyReq }) => {
-      return adminAPI.category.updateCategoryDetail(body.id, body.body)
-    }
-  })
-
-  const handleSubmitUpdate = handleSubmit((data) => {
-    updateCategoryMutation.mutate(
-      { id: (addItem as CategoryItemType)._id as string, body: data },
-      {
-        onSuccess: () => {
-          setAddItem(null)
-          toast.success("Cập nhật thành công", { autoClose: 1500 })
-          queryClient.invalidateQueries({ queryKey: ["listCategory", queryConfig] })
-        },
-        onError: (error) => {
-          if (isError400<ErrorResponse<MessageResponse>>(error)) {
-            const msg = error.response?.data as ErrorResponse<{ message: string }>
-            const msg2 = msg.message
-            setError("name", {
-              message: msg2
-            })
-          }
-        }
-      }
-    )
-  })
-
-  const deleteCategoryMutation = useMutation({
-    mutationFn: (id: string) => {
-      return adminAPI.category.deleteCategory(id)
-    }
-  })
-
-  const handleDeleteCategory = (id: string) => {
-    deleteCategoryMutation.mutate(id, {
-      onSuccess: () => {
-        const data = queryClient.getQueryData(["listCategory", queryConfig])
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const data_2 = (data as any).data as SuccessResponse<{
-          result: CategoryItemType[]
-          total: string
-          page: string
-          limit: string
-          totalOfPage: string
-        }>
-        if (data && data_2.result.result.length === 1 && Number(queryConfig.page) > 1) {
-          navigate({
-            pathname: path.AdminCategories,
-            search: createSearchParams({
-              ...queryConfig,
-              page: (Number(queryConfig.page) - 1).toString()
-            }).toString()
-          })
-        }
-        queryClient.invalidateQueries({ queryKey: ["listCategory"] })
-        toast.success("Xóa thành công!", { autoClose: 1500 })
-      },
-      onError: (error) => {
-        if (isError400<ErrorResponse<MessageResponse>>(error)) {
-          toast.error(error.response?.data.message, {
-            autoClose: 1500
-          })
-        }
-      }
-    })
-  }
-
-  const {
     register: registerFormSearch,
     handleSubmit: handleSubmitFormSearch,
     reset: resetFormSearch,
     control: controlFormSearch,
     trigger
   } = useForm<FormDataSearch>({
-    resolver: yupResolver(formDataSearch)
+    resolver: yupResolver(formDataSearch),
+    defaultValues: {
+      name: ""
+    }
   })
 
   const handleSubmitSearch = handleSubmitFormSearch(
@@ -272,7 +164,7 @@ export default function ManageCategories() {
         <section className="bg-white dark:bg-darkPrimary mb-3 dark:border-darkBorder rounded-2xl">
           <form onSubmit={handleSubmitSearch}>
             <div className="mt-1 grid grid-cols-2">
-              <div className="col-span-1 flex items-center h-14 px-2 bg-[#ececec] dark:bg-darkPrimary border border-[#dadada] rounded-tl-xl">
+              <div className="col-span-1 flex items-center h-14 px-2 bg-[#ececec] dark:bg-darkPrimary border border-[#dadada] rounded-tl-md">
                 <span className="w-1/3 dark:text-white">Ngày tạo</span>
                 <div className="w-2/3 relative h-full">
                   <div className="mt-2 w-full flex items-center gap-2">
@@ -311,7 +203,7 @@ export default function ManageCategories() {
                   <span className="absolute inset-y-0 left-[-5%] w-[1px] bg-[#dadada] h-full"></span>
                 </div>
               </div>
-              <div className="col-span-1 flex items-center h-14 px-2 bg-[#ececec] dark:bg-darkPrimary  border border-[#dadada] rounded-tr-xl">
+              <div className="col-span-1 flex items-center h-14 px-2 bg-[#ececec] dark:bg-darkPrimary  border border-[#dadada] rounded-tr-md">
                 <span className="w-1/3 dark:text-white">Ngày cập nhật</span>
                 <div className="w-2/3 relative h-full">
                   <div className="mt-2 w-full flex items-center gap-2">
@@ -350,7 +242,7 @@ export default function ManageCategories() {
                   <span className="absolute inset-y-0 left-[-5%] w-[1px] bg-[#dadada] h-full"></span>
                 </div>
               </div>
-              <div className="col-span-1 flex items-center h-14 px-2 bg-[#fff] dark:bg-darkPrimary border border-[#dadada] border-t-0 rounded-bl-xl">
+              <div className="col-span-1 flex items-center h-14 px-2 bg-[#fff] dark:bg-darkPrimary border border-[#dadada] border-t-0 rounded-bl-md">
                 <span className="w-1/3 dark:text-white">Tên thể loại</span>
                 <div className="w-2/3 relative h-full">
                   <div className="mt-2 w-full flex items-center gap-2">
@@ -373,13 +265,13 @@ export default function ManageCategories() {
                 type="button"
                 icon={<RotateCcw size={15} />}
                 nameButton="Xóa bộ lọc"
-                classNameButton="py-2 px-3 bg-[#f2f2f2] border border-[#dedede] w-full text-black font-medium hover:bg-[#dedede]/80 rounded-3xl duration-200 text-[13px] flex items-center gap-1 h-[35px]"
+                classNameButton="py-2 px-3 bg-[#f2f2f2] border border-[#dedede] w-full text-black font-medium hover:bg-[#dedede]/80 rounded-md duration-200 text-[13px] flex items-center gap-1 h-[35px]"
               />
               <Button
                 type="submit"
                 icon={<Search size={15} />}
                 nameButton="Tìm kiếm"
-                classNameButton="py-2 px-3 bg-blue-500 w-full text-white font-medium rounded-3xl hover:bg-blue-500/80 duration-200 text-[13px] flex items-center gap-1 h-[35px]"
+                classNameButton="py-2 px-3 bg-blue-500 w-full text-white font-medium rounded-md hover:bg-blue-500/80 duration-200 text-[13px] flex items-center gap-1 h-[35px]"
                 className="flex-shrink-0"
               />
             </div>
@@ -452,24 +344,16 @@ export default function ManageCategories() {
       align: "center",
       render: (_, record) => (
         <div className="flex items-center justify-center gap-2">
-          <button onClick={() => setAddItem(record)} className="p-1">
-            <Pencil color="orange" size={18} />
-          </button>
-          <button
-            onClick={() =>
-              Modal.confirm({
-                title: "Bạn có chắc chắn muốn xóa?",
-                content: "Không thể hoàn tác hành động này. Thao tác này sẽ xóa vĩnh viễn dữ liệu của bạn.",
-                okText: "Xóa",
-                okButtonProps: { danger: true },
-                cancelText: "Hủy",
-                onOk: () => handleDeleteCategory(record._id)
-              })
-            }
-            className="p-1"
+          <Link
+            to={`${path.AdminCategories}/${record._id}`}
+            state={{
+              data: record,
+              queryConfig: queryConfig
+            }}
+            className="p-1 text-blue-500"
           >
-            <Trash2 color="red" size={18} />
-          </button>
+            Xem chi tiết
+          </Link>
         </div>
       )
     },
@@ -590,90 +474,6 @@ export default function ManageCategories() {
         ) : (
           <Skeleton />
         )}
-
-        <AnimatePresence>
-          {addItem !== null && typeof addItem === "object" && (
-            <motion.div
-              initial={{ opacity: 0 }} // khởi tạo là 0
-              animate={{ opacity: 1 }} // xuất hiện dần là 1
-              exit={{ opacity: 0 }} // biến mất là 0
-              className="fixed left-0 top-0 z-10 h-screen w-screen bg-black/60 flex items-center justify-center"
-            >
-              <motion.div
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.8 }}
-                className="relative"
-              >
-                <button onClick={() => setAddItem(null)} className="absolute right-2 top-2">
-                  <X color="gray" size={22} />
-                </button>
-                <form onSubmit={handleSubmitUpdate} className="bg-white dark:bg-darkPrimary rounded-md">
-                  <h3 className="py-2 px-4 text-lg font-semibold tracking-wide rounded-md text-black dark:text-white">
-                    Thông tin danh mục
-                  </h3>
-                  <div className="p-4 pt-0">
-                    <div className="mt-4 flex items-center gap-4">
-                      <Input
-                        name="id"
-                        register={register}
-                        placeholder="Nhập họ tên"
-                        messageErrorInput={errors.id?.message}
-                        classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-darkSecond focus:border-blue-500 focus:ring-2 outline-none rounded-md text-black dark:text-white"
-                        className="relative flex-1"
-                        classNameLabel="text-black dark:text-white"
-                        nameInput="Mã danh mục"
-                        disabled
-                      />
-                      <Input
-                        name="name"
-                        register={register}
-                        placeholder="Nhập họ tên"
-                        messageErrorInput={errors.name?.message}
-                        classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-white dark:bg-darkSecond focus:border-blue-500 focus:ring-2 outline-none rounded-md text-black dark:text-white"
-                        className="relative flex-1"
-                        classNameLabel="text-black dark:text-white"
-                        nameInput="Tên danh mục"
-                      />
-                    </div>
-                    <div className="mt-2 flex items-center gap-4">
-                      <Input
-                        name="created_at"
-                        register={register}
-                        placeholder="Nhập ngày tạo"
-                        messageErrorInput={errors.created_at?.message}
-                        classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-darkSecond focus:border-blue-500 focus:ring-2 outline-none rounded-md text-black dark:text-white"
-                        className="relative flex-1"
-                        classNameLabel="text-black dark:text-white"
-                        nameInput="Ngày tạo"
-                        disabled
-                      />
-                      <Input
-                        name="updated_at"
-                        register={register}
-                        placeholder="Nhập ngày tạo cập nhật"
-                        messageErrorInput={errors.updated_at?.message}
-                        classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-darkSecond focus:border-blue-500 focus:ring-2 outline-none rounded-md text-black dark:text-white"
-                        className="relative flex-1"
-                        classNameLabel="text-black dark:text-white"
-                        nameInput="Ngày cập nhật"
-                        disabled
-                      />
-                    </div>
-                    <div className="flex items-center justify-end">
-                      <Button
-                        type="submit"
-                        icon={<ArrowUpFromLine size={18} />}
-                        nameButton="Cập nhật"
-                        classNameButton="w-[120px] p-4 py-2 bg-blue-500 mt-2 w-full text-white font-semibold rounded-md hover:bg-blue-500/80 duration-200 flex items-center gap-1 text-[12px]"
-                      />
-                    </div>
-                  </div>
-                </form>
-              </motion.div>
-            </motion.div>
-          )}
-        </AnimatePresence>
 
         <AddCategory setAddItem={setAddItem} addItem={addItem} />
       </section>

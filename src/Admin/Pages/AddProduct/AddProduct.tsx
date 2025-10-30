@@ -6,7 +6,6 @@ import no_img from "src/Assets/img/no_image_1.jpg"
 import no_img_1 from "src/Assets/img/no_image.png"
 import Input from "src/Components/Input"
 import { keepPreviousData, useMutation, useQuery } from "@tanstack/react-query"
-import { adminAPI } from "src/Apis/admin.api"
 import { ErrorResponse, SuccessResponse } from "src/Types/utils.type"
 import { Controller, useFieldArray, useForm } from "react-hook-form"
 import { useEffect, useMemo, useRef, useState } from "react"
@@ -19,6 +18,9 @@ import { toast } from "react-toastify"
 import { CreateProductBodyReq } from "src/Types/product.type"
 import { isError400 } from "src/Helpers/utils"
 import { motion } from "framer-motion"
+import { CategoryAPI } from "src/Apis/admin/category.api"
+import { BrandAPI } from "src/Apis/admin/brand.api"
+import { ProductAPI } from "src/Apis/admin/product.api"
 
 const listSpecificationForCategory = {
   Laptop: [
@@ -97,7 +99,7 @@ export default function AddProduct() {
   const getNameCategory = useQuery({
     queryKey: ["nameCategory"],
     queryFn: () => {
-      return adminAPI.category.getNameCategory()
+      return CategoryAPI.getNameCategory()
     },
     retry: 0, // số lần retry lại khi hủy request (dùng abort signal)
     staleTime: 10 * 60 * 1000, // dưới 1 phút nó không gọi lại api
@@ -113,7 +115,7 @@ export default function AddProduct() {
   const getNameBrand = useQuery({
     queryKey: ["nameBrand"],
     queryFn: () => {
-      return adminAPI.category.getNameBrand()
+      return BrandAPI.getNameBrand()
     },
     retry: 0, // số lần retry lại khi hủy request (dùng abort signal)
     staleTime: 10 * 60 * 1000, // dưới 1 phút nó không gọi lại api
@@ -264,7 +266,7 @@ export default function AddProduct() {
   // xử lý thêm sản phẩm
   const addProductMutation = useMutation({
     mutationFn: (data: CreateProductBodyReq) => {
-      return adminAPI.product.addProduct(data)
+      return ProductAPI.addProduct(data)
     }
   })
 
