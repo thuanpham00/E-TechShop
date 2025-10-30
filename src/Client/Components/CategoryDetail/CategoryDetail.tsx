@@ -1,11 +1,12 @@
 import { useNavigate } from "react-router-dom"
-import { MenuCategoryDetail } from "src/Client/Constants/categories"
+import { MenuCategory } from "src/Types/product.type"
 
 interface Props {
   showDetail: string
+  listCategoryMenu: MenuCategory[]
 }
 
-export default function CategoryDetail({ showDetail }: Props) {
+export default function CategoryDetail({ listCategoryMenu }: Props) {
   const navigate = useNavigate()
 
   const handleNavigate = (valueItem: string, type: string) => {
@@ -18,12 +19,12 @@ export default function CategoryDetail({ showDetail }: Props) {
 
   return (
     <div className="flex items-start">
-      {MenuCategoryDetail[Number(showDetail)]?.map((item, index) => (
+      {listCategoryMenu[0]?.sections.map((item, index) => (
         <div key={index} className="mr-20">
-          <span className="text-base tracking-wide font-semibold text-primaryBlue">{item.heading}</span>
-          {item.value.map((valueItem, indexValue) => (
+          <span className="text-base tracking-wide font-semibold text-primaryBlue">{item.name}</span>
+          {item.items.map((valueItem, indexValue) => (
             <button
-              onClick={() => handleNavigate(valueItem.path, valueItem.type_filter as string)}
+              onClick={() => handleNavigate(valueItem.slug, valueItem.type_filter as string)}
               key={indexValue}
               className="block my-3 text-[13px] font-medium cursor-pointer hover:text-primaryBlue"
             >

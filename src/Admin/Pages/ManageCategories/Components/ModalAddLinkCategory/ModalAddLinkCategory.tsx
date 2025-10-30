@@ -27,13 +27,18 @@ export default function ModalAddLinkCategory({
 }) {
   const queryClient = useQueryClient()
 
-  console.log(editItem)
-
   const [file, setFile] = useState<File>()
+  const [bannerUrl, setBannerUrl] = useState<string>("")
 
   const previewImage = useMemo(() => {
     return file ? URL.createObjectURL(file) : ""
   }, [file])
+
+  useEffect(() => {
+    return () => {
+      if (previewImage) URL.revokeObjectURL(previewImage)
+    }
+  }, [previewImage])
 
   const handleChangeImage = (file?: File) => {
     setFile(file)
@@ -41,14 +46,16 @@ export default function ModalAddLinkCategory({
 
   useEffect(() => {
     if (editItem && typeof editItem === "object") {
-      console.log("hihi")
       formAddLinkCategory.setFieldsValue({
-        id_section: "1",
         name: editItem.name,
         slug: editItem.slug,
         type_filter: editItem.type_filter
       })
       setFile(undefined)
+      setBannerUrl(editItem.banner || "")
+    } else {
+      setFile(undefined)
+      setBannerUrl("")
     }
   }, [editItem, formAddLinkCategory])
 
@@ -62,6 +69,19 @@ export default function ModalAddLinkCategory({
       image?: File
     }) => {
       return CategoryMenuAPI.addLinkCategoryMenu(idCategoryMenu, data)
+    }
+  })
+
+  const updateLinkCategoryMutation = useMutation({
+    mutationFn: (data: {
+      id_link: string
+      id_category: string
+      name: string
+      slug: string
+      type_filter: string
+      image?: File
+    }) => {
+      return CategoryMenuAPI.updateCategoryLink(data.id_link, data)
     }
   })
 
@@ -94,15 +114,55 @@ export default function ModalAddLinkCategory({
     })
   }
 
+  const handleUpdateLinkMenuCategory = () => {
+    formAddLinkCategory.validateFields().then((values) => {
+      if (editItem && typeof editItem === "object") {
+        const payload: {
+          id_link: string
+          id_category: string
+          name: string
+          slug: string
+          type_filter: string
+          image?: File
+        } = {
+          id_link: editItem.id_item,
+          id_category: idCategory,
+          name: values.name,
+          slug: values.slug,
+          type_filter: values.type_filter
+        }
+        if (file) payload.image = file
+
+        updateLinkCategoryMutation.mutate(payload, {
+          onSuccess: () => {
+            setShowModalAddLinkCategory(false)
+            formAddLinkCategory.resetFields()
+            setFile(undefined)
+            queryClient.invalidateQueries({ queryKey: ["menuCategory", idCategory] })
+            toast.success("Cập nhật liên kết thành công", { autoClose: 1500 })
+          }
+        })
+      }
+    })
+  }
+
   return (
     <Modal
       title="Thêm liên kết vào nhóm"
       open={showModalAddLinkCategory}
-      onCancel={() => setShowModalAddLinkCategory(false)}
+      onCancel={() => {
+        setEditItem(null)
+        formAddLinkCategory.resetFields()
+        setShowModalAddLinkCategory(false)
+      }}
       footer={null}
       width={900}
     >
-      <Form layout="vertical" form={formAddLinkCategory} onFinish={handleCreateLinkMenuCategory}>
+      <Form
+        layout="vertical"
+        form={formAddLinkCategory}
+        onFinish={typeof editItem === "object" ? handleUpdateLinkMenuCategory : handleCreateLinkMenuCategory}
+      >
         <Row gutter={12}>
           <Form.Item label="Id section" name="id_section" hidden>
             <Input
@@ -128,9 +188,20 @@ export default function ModalAddLinkCategory({
             </Form.Item>
           </Col>
           <Col span={12}>
-            <Form.Item label="Đường dẫn" name="slug" rules={[{ required: true, message: "Vui lòng nhập đường dẫn" }]}>
+            <Form.Item
+              label="Đường dẫn"
+              name="slug"
+              rules={[
+                { required: true, message: "Vui lòng nhập đường dẫn" },
+                {
+                  pattern: /^[a-z0-9]+(?:-[a-z0-9]+)*$/,
+                  message:
+                    "Đường dẫn chỉ chứa chữ thường, số và dấu gạch ngang, không có khoảng trắng hoặc ký tự đặc biệt"
+                }
+              ]}
+            >
               <Input
-                placeholder="Nhập đường dẫn"
+                placeholder="Nhập đường dẫn (vd: laptop-gaming)"
                 classNameInput="p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#fff] dark:bg-darkSecond focus:border-blue-500 focus:ring-2 outline-none rounded-md text-black dark:text-white"
                 className="relative flex-1"
                 classNameLabel="text-black dark:text-white"
@@ -155,8 +226,8 @@ export default function ModalAddLinkCategory({
         </Form.Item>
         <div className="flex items-center justify-center flex-col rounded-sm shadow-sm">
           <div className="mb-2 text-black dark:text-white">Banner</div>
-          {previewImage !== "" ? (
-            <img src={previewImage} className="h-40 w-full rounded-md" alt="avatar default" />
+          {previewImage || bannerUrl ? (
+            <img src={previewImage || bannerUrl} className="h-40 w-full rounded-md object-cover" alt="banner" />
           ) : (
             <div className="h-40 w-full rounded-md bg-white flex items-center justify-center text-gray-400">
               Chưa chọn banner

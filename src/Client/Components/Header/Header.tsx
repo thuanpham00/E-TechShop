@@ -2,7 +2,7 @@ import avatarDefault from "src/Assets/img/avatarDefault.png"
 import { Cpu, Heart, HeartOff, Info, LogOut, PackageSearch, ShoppingCart } from "lucide-react"
 import { Link, useNavigate } from "react-router-dom"
 import { path } from "src/Constants/path"
-import { useCallback, useContext, useEffect, useRef, useState } from "react"
+import { useCallback, useContext, useEffect, useMemo, useRef, useState } from "react"
 import { keepPreviousData, useMutation, useQuery } from "@tanstack/react-query"
 import { userAPI } from "src/Apis/user.api"
 import { toast } from "react-toastify"
@@ -12,12 +12,11 @@ import cartImg from "src/Assets/img/cart.png"
 import { motion } from "framer-motion"
 import { collectionAPI } from "src/Apis/collections.api"
 import { SuccessResponse } from "src/Types/utils.type"
-import { ProductDetailType } from "src/Types/product.type"
-import { CalculateSalePrice, formatCurrency, normalize, slugify } from "src/Helpers/common"
+import { MenuCategory, ProductDetailType } from "src/Types/product.type"
+import { CalculateSalePrice, formatCurrency, slugify } from "src/Helpers/common"
 import { getAccessTokenFromLS } from "src/Helpers/auth"
 import { OrderApi } from "src/Apis/order.api"
 import useDebounce from "src/Hook/useDebounce"
-import { categories } from "src/Client/Constants/categories"
 import MenuCategoryItem from "../MenuCategoryItem"
 import CategoryDetail from "../CategoryDetail"
 import { categoryAPI } from "src/Apis/category.api"
@@ -26,6 +25,8 @@ export default function Header() {
   const navigate = useNavigate()
   const { isAuthenticated, nameUser, avatar, setIsAuthenticated, setNameUser, setRole, setAvatar, setUserId } =
     useContext(AppContext)
+  const [showCategoryDetail, setShowCategoryDetail] = useState<string>("")
+  const [isHover, setIsHover] = useState(false)
 
   const token = getAccessTokenFromLS()
   const logoutMutation = useMutation({
@@ -51,7 +52,7 @@ export default function Header() {
 
   // xử lý danh mục thể loại từ api gọi lên
   const getListCategoryIsActive = useQuery({
-    queryKey: ["listCategoryIsActive", token],
+    queryKey: ["listCategoryIsActive"],
     queryFn: () => {
       const controller = new AbortController()
       setTimeout(() => {
@@ -64,22 +65,34 @@ export default function Header() {
     placeholderData: keepPreviousData
   })
 
-  const dataListCategoryIsActive = (getListCategoryIsActive.data?.data ?? []) as {
+  const dataListCategoryIsActive = (getListCategoryIsActive.data?.data?.data ?? []) as {
     _id: string
     name: string
     is_active: boolean
   }[]
 
-  const activeNames = dataListCategoryIsActive.map((c) => normalize(c.name))
-
-  // handles variations like "MÀN HÌNH", "Màn hình", "màn hinhhh", etc.
-  const visibleCategories = categories.filter((cat) => {
-    const n = normalize(cat.name)
-    return activeNames.some((apiName) => apiName.includes(n) || n.includes(apiName))
+  const getListCategoryMenu = useQuery({
+    queryKey: ["listCategoryMenu"],
+    queryFn: () => {
+      const controller = new AbortController()
+      setTimeout(() => {
+        controller.abort() // hủy request khi chờ quá lâu // 10 giây sau cho nó hủy // làm tự động
+      }, 10000)
+      return categoryAPI.getListCategoryMenu(controller.signal)
+    },
+    retry: 0, // số lần retry lại khi hủy request (dùng abort signal)
+    staleTime: 10 * 60 * 1000, // dưới 5 phút nó không gọi lại api
+    placeholderData: keepPreviousData
   })
 
-  // fallback: if API returns nothing, show default first 10
-  const categoriesToShow = visibleCategories.length > 0 ? visibleCategories : categories.slice(0, 10)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const dataListCategoryMenu = (getListCategoryMenu.data?.data?.data ?? []) as MenuCategory[]
+
+  const listCategoryMenu = useMemo(() => {
+    if (!showCategoryDetail) return []
+    const filtered = dataListCategoryMenu.filter((item) => item.category_id === showCategoryDetail)
+    return filtered.length > 0 ? filtered : []
+  }, [showCategoryDetail, dataListCategoryMenu])
 
   // xử lý danh sách yêu thích
   const { data } = useQuery({
@@ -216,11 +229,8 @@ export default function Header() {
     return () => document.removeEventListener("mousedown", clickOutHideList) // khi component unmount đi thì nó giải phóng bộ nhớ
   }, [])
 
-  const [showCategoryDetail, setShowCategoryDetail] = useState<string>("")
-  const [isHover, setIsHover] = useState(false)
-
-  const handleCategory = useCallback((index: string) => {
-    setShowCategoryDetail(index)
+  const handleCategory = useCallback((idCategory: string) => {
+    setShowCategoryDetail(idCategory)
     setIsHover(true)
   }, [])
 
@@ -516,21 +526,20 @@ export default function Header() {
         <div className="container">
           <div onMouseLeave={handleExitCategory} className="relative">
             <div className="flex items-center flex-wrap justify-center">
-              {categoriesToShow.slice(0, 10).map((category) => (
+              {dataListCategoryIsActive.slice(0, 10).map((category) => (
                 <MenuCategoryItem
+                  key={category._id}
                   showCategoryDetail={showCategoryDetail}
-                  index={category.index}
-                  key={category.index}
-                  onHover={() => handleCategory(category.index)}
+                  idCategory={category._id}
+                  onHover={() => handleCategory(category._id)}
                   nameCategory={category.name}
-                  iconCategory={category.icon}
                 />
               ))}
             </div>
             {isHover && (
               <div className="mx-auto absolute w-full top-22 left-0">
                 <div className="bg-white border border-gray-300 shadow-xl h-[350px] rounded-md p-6">
-                  <CategoryDetail showDetail={showCategoryDetail} />
+                  <CategoryDetail showDetail={showCategoryDetail} listCategoryMenu={listCategoryMenu} />
                 </div>
               </div>
             )}

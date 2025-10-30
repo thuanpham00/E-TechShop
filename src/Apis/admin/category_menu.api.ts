@@ -30,8 +30,12 @@ export const CategoryMenuAPI = {
     })
   },
 
-  updateCategoryLink: (idLink: string, data: { name: string; slug: string; type_filter: string; image?: File }) => {
+  updateCategoryLink: (
+    idLink: string,
+    data: { id_category: string; name: string; slug: string; type_filter: string; image?: File }
+  ) => {
     const formData = new FormData()
+    formData.append("id_category", data.id_category)
     formData.append("name", data.name)
     formData.append("slug", data.slug)
     formData.append("type_filter", data.type_filter)

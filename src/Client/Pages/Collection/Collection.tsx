@@ -3,7 +3,6 @@ import { keepPreviousData, useQuery } from "@tanstack/react-query"
 import { Helmet } from "react-helmet-async"
 import { createSearchParams, useLocation, useNavigate, useParams } from "react-router-dom"
 import { collectionAPI } from "src/Apis/collections.api"
-import { CategoryBanner } from "src/Client/Constants/categories"
 import { HttpStatusCode } from "src/Constants/httpStatus"
 import { path } from "src/Constants/path"
 import { SuccessResponse } from "src/Types/utils.type"
@@ -19,11 +18,12 @@ import type { MenuProps } from "antd"
 import { isUndefined, omit, omitBy } from "lodash"
 import { queryParamsCollection } from "src/Types/queryParams.type"
 import useQueryParams from "src/Hook/useQueryParams"
+import { categoryAPI } from "src/Apis/category.api"
+import { useMemo } from "react"
 
 export default function Collection() {
   const { slug } = useParams()
   const { state } = useLocation()
-  const type_filter = state?.type_filter
 
   const queryParams: queryParamsCollection = useQueryParams()
   const queryConfig: queryParamsCollection = omitBy(
@@ -38,6 +38,32 @@ export default function Collection() {
   )
 
   const navigate = useNavigate()
+
+  // xử lý gọi banner dựa trên slug
+  const getListCategoryMenu = useQuery({
+    queryKey: ["bannerForSlugCategory"],
+    queryFn: () => {
+      const controller = new AbortController()
+      setTimeout(() => {
+        controller.abort() // hủy request khi chờ quá lâu // 10 giây sau cho nó hủy // làm tự động
+      }, 10000)
+      return categoryAPI.getBannerSlugCategory(controller.signal)
+    },
+    retry: 0, // số lần retry lại khi hủy request (dùng abort signal)
+    staleTime: 10 * 60 * 1000, // dưới 5 phút nó không gọi lại api
+    placeholderData: keepPreviousData
+  })
+
+  const bannerUrl = useMemo(() => {
+    const findBanner = getListCategoryMenu.data?.data?.data.find((item: any) => item.slug === slug)
+    return findBanner ? findBanner.banner : ""
+  }, [getListCategoryMenu.data?.data?.data, slug])
+
+  const type_filter = useMemo(() => {
+    const findBanner = getListCategoryMenu.data?.data?.data.find((item: any) => item.slug === slug)
+    return findBanner ? findBanner.type_filter : ""
+  }, [getListCategoryMenu.data?.data?.data, slug])
+
   const { data, isError, isFetching, isLoading, error } = useQuery({
     queryKey: ["collections", slug, queryConfig],
     queryFn: () => {
@@ -70,7 +96,8 @@ export default function Collection() {
       const controller = new AbortController()
       setTimeout(() => controller.abort(), 10000)
       return collectionAPI.getFilterBaseOnCategory(type_filter).then((res) => res)
-    }
+    },
+    enabled: !!type_filter
   })
 
   const itemsStatus: MenuProps["items"] = [
@@ -144,13 +171,7 @@ export default function Collection() {
         {slug && !isLoading && (
           <>
             {/* Banner cố định */}
-            {!slug.includes("ban-phim") && (
-              <img
-                className="rounded-lg shadow-md h-[300px] w-full"
-                src={(CategoryBanner as Record<string, string>)[slug]}
-                alt={`Banner ${slug}`}
-              />
-            )}
+            {<img className="rounded-lg shadow-md h-[300px] w-full" src={bannerUrl} alt={`Banner ${slug}`} />}
 
             {/* Bộ lọc */}
             <div className="bg-white border border-gray-200 p-4 my-4 rounded-lg shadow-md">
@@ -278,24 +299,25 @@ export default function Collection() {
 function ProductList({ result, isFetching }: { result?: SuccessResponse<CollectionItemType[]>; isFetching: boolean }) {
   return (
     <div className="relative">
-      {isFetching && (
+      {isFetching ? (
         <div className="absolute inset-0 bg-white/50 flex justify-center items-center z-10">
           <Spin />
         </div>
-      )}
-      <div className="grid grid-cols-5 gap-2">
-        {result?.result.length ? (
-          result.result.map((item) => (
-            <div key={item._id}>
-              <ProductItem item={item} />
+      ) : (
+        <div className="grid grid-cols-5 gap-2">
+          {result?.result.length ? (
+            result.result.map((item) => (
+              <div key={item._id}>
+                <ProductItem item={item} />
+              </div>
+            ))
+          ) : (
+            <div className="text-center w-full col-span-5">
+              <Empty description="Không có sản phẩm" />
             </div>
-          ))
-        ) : (
-          <div className="text-center w-full col-span-5">
-            <Empty description="Không có sản phẩm" />
-          </div>
-        )}
-      </div>
+          )}
+        </div>
+      )}
     </div>
   )
 }

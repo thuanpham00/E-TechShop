@@ -50,7 +50,7 @@ export default function ProductItem({ item }: { item: CollectionItemType }) {
       onClick={handleNavigate}
     >
       <div className="flex flex-col relative">
-        <div className="absolute top-[-4px] right-[-16px]">
+        <div className="absolute top-[-2px] right-[-12px]">
           {item.status && (
             <span
               className={`${getStatusTagClass(item.status)} text-white px-3 pt-[4px] pb-[6px] rounded-[4px] text-xs font-medium w-fit mb-2`}
@@ -69,7 +69,7 @@ export default function ProductItem({ item }: { item: CollectionItemType }) {
           alt={item.name}
           className="mt-4 object-cover w-full h-[180px] duration-200 transition-all"
         />
-        <span className="text-[14px] font-bold mt-4 mb-2 line-clamp-2 block text-left">{item.name}</span>
+        <span className="text-[14px] font-bold mt-4 mb-2 block text-left line-clamp-2 h-[44px]">{item.name}</span>
         {item.discount ? (
           <Fragment>
             <span className="block text-[14px] text-left line-through text-[#6d7e72] font-semibold">

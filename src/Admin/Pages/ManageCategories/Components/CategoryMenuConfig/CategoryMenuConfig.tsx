@@ -20,7 +20,6 @@ import { queryParamConfigCategory } from "src/Types/queryParams.type"
 import { ErrorResponse, MessageResponse } from "src/Types/utils.type"
 import ModalEditGroupName from "../ModalEditGroupName"
 import ModalAddLinkCategory from "../ModalAddLinkCategory"
-import { set } from "lodash"
 
 type FormDataUpdate = Pick<SchemaAuthType, "name" | "id" | "created_at" | "updated_at"> & {
   is_active?: "active" | "inactive"
@@ -40,6 +39,7 @@ type SectionMenuItemType = {
   id_section: string
   items: MenuItemType[]
   name: string
+  is_active: boolean
 }
 
 export default function ManageCategorySubLink({
@@ -154,7 +154,7 @@ export default function ManageCategorySubLink({
   const categoryMenuId = data?.data?.result?._id as string
 
   // render cột bảng cho từng nhóm (truyền sIdx để xử lý action theo nhóm)
-  const getItemColumns = (sIdx: number): ColumnsType<SectionMenuItemType["items"][number]> => [
+  const getItemColumns: ColumnsType<SectionMenuItemType["items"][number]> = [
     {
       title: "Tên hiển thị",
       dataIndex: "name",
@@ -190,7 +190,13 @@ export default function ManageCategorySubLink({
       width: 160,
       render: (_, record) => (
         <Space>
-          <ButtonAntd size="small" onClick={() => setEditItem(record)}>
+          <ButtonAntd
+            size="small"
+            onClick={() => {
+              setShowModalAddLinkCategory(true)
+              setEditItem(record)
+            }}
+          >
             Sửa
           </ButtonAntd>
           <ButtonAntd
@@ -339,7 +345,7 @@ export default function ManageCategorySubLink({
       </form>
 
       <h1 className="text-xl font-bold text-gray-800 bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600 my-2">
-        Danh sách menu danh mục
+        Danh sách menu danh mục {dataCategory?.name}
       </h1>
 
       {isLoading && <Skeleton />}
@@ -361,6 +367,7 @@ export default function ManageCategorySubLink({
                     <div className="flex items-center gap-2">
                       <span className="text-black dark:text-white font-semibold">{section.name}</span>
                       <Tag color="geekblue">{section.items?.length} link</Tag>
+                      {section.is_active ? <Tag color="green">Hiển thị</Tag> : <Tag color="red">Đang ẩn</Tag>}
                     </div>
                   }
                   extra={
@@ -371,6 +378,7 @@ export default function ManageCategorySubLink({
                           setShowModalEditGroup(true)
                           formEditGroupName.setFieldValue("id_section", section.id_section)
                           formEditGroupName.setFieldValue("name", section.name)
+                          formEditGroupName.setFieldValue("is_active", section.is_active)
                         }}
                       >
                         <Edit2 size={16} />
@@ -410,7 +418,7 @@ export default function ManageCategorySubLink({
                   <Table
                     rowKey={(r) => r.slug}
                     dataSource={section.items}
-                    columns={getItemColumns(sIdx)}
+                    columns={getItemColumns}
                     pagination={false}
                     size="middle"
                     scroll={{ x: "max-content" }}

@@ -127,6 +127,16 @@ a {
   }
 }
 
+@layer utilities {
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
 html {
   scrollbar-width: thin; /* auto, thin, none */
   scrollbar-color: #888 #f0f0f0; /* thumb track */

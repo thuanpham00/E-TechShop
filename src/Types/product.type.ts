@@ -349,3 +349,22 @@ export type EmailLogItemType = {
   created_at: string
   updated_at: string
 }
+
+export type MenuCategory = {
+  _id: string
+  category_id: string
+  sections: {
+    id_section: string
+    name: string
+    is_active: boolean
+    items: {
+      id_item: string
+      name: string
+      slug: string
+      type_filter: string
+      banner: string
+    }[]
+  }[]
+  created_at: string
+  updated_at: string
+}
