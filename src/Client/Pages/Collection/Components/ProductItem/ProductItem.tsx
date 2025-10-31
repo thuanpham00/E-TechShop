@@ -88,7 +88,7 @@ export default function ProductItem({ item }: { item: CollectionItemType }) {
           <Fragment>
             <span className="opacity-0 text-[14px] line-through text-[#6d7e72] font-semibold">1</span>
             <span
-              className="block text-[16px] text-[#e30019] font-semibold text-lè
+              className="block text-[16px] text-[#e30019] font-semibold text-left
             "
             >
               {formatCurrency(item.price)}₫

@@ -40,7 +40,13 @@ export default function ModalEditGroupName({
   }
 
   return (
-    <Modal title="Sửa nhóm menu" open={showModalEditGroup} onCancel={() => setShowModalEditGroup(false)} footer={null}>
+    <Modal
+      maskClosable={false}
+      title="Sửa nhóm menu"
+      open={showModalEditGroup}
+      onCancel={() => setShowModalEditGroup(false)}
+      footer={null}
+    >
       <Form layout="vertical" form={formEditGroupName} onFinish={handleUpdateGroupName}>
         <Form.Item label="id_section" name="id_section" hidden>
           <Input

@@ -22,6 +22,7 @@ export default function VerifyEmail() {
         navigate(path.Home)
       }
     })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
   return <div>VerifyEmail</div>
 }

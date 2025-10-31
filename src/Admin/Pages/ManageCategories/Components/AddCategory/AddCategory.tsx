@@ -82,7 +82,13 @@ export default function AddCategory({ setAddItem, addItem }: Props) {
             exit={{ opacity: 0, scale: 0.8 }}
             className="relative"
           >
-            <button onClick={() => setAddItem(null)} className="absolute right-2 top-2">
+            <button
+              onClick={() => {
+                setAddItem(null)
+                reset()
+              }}
+              className="absolute right-2 top-2"
+            >
               <X color="gray" size={22} />
             </button>
             <form onSubmit={handleAddCategorySubmit} className="bg-white dark:bg-darkPrimary rounded-md">

@@ -10,6 +10,7 @@ const LoginAdmin = lazy(() => import("src/Admin/Pages/LoginAdmin"))
 const NotFound = lazy(() => import("src/Client/Pages/NotFound"))
 const Dashboard = lazy(() => import("src/Admin/Pages/Dashboard"))
 const ManageCustomers = lazy(() => import("src/Admin/Pages/ManageCustomers"))
+const ManagerCustomerOrderHistory = lazy(() => import("src/Admin/Pages/ManagerCustomerOrderHistory"))
 const ManageStaff = lazy(() => import("src/Admin/Pages/ManageStaff"))
 const ManageCategories = lazy(() => import("src/Admin/Pages/ManageCategories"))
 const ManageRoles = lazy(() => import("src/Admin/Pages/ManageRoles"))
@@ -17,8 +18,9 @@ const ManageSuppliers = lazy(() => import("src/Admin/Pages/ManageSuppliers"))
 const ManageSupplies = lazy(() => import("src/Admin/Pages/ManageSupplies"))
 const ManageReceipt = lazy(() => import("src/Admin/Pages/ManageReceipt"))
 const ManageOrders = lazy(() => import("src/Admin/Pages/ManageOrders"))
+const OrderDetail = lazy(() => import("src/Admin/Pages/OrderDetail"))
 const ManageProducts = lazy(() => import("src/Admin/Pages/ManageProducts"))
-const CategoryDetail = lazy(() => import("src/Admin/Pages/ManageCategories/pages/CategoryDetail"))
+const CategoryOverview = lazy(() => import("src/Admin/Pages/CategoryOverview"))
 const ManagePermissions = lazy(() => import("src/Admin/Pages/ManagePermissions"))
 const AddProduct = lazy(() => import("src/Admin/Pages/AddProduct"))
 const AddReceipt = lazy(() => import("src/Admin/Pages/AddReceipt"))
@@ -80,6 +82,14 @@ export default function useRouterAdmin() {
                   )
                 },
                 {
+                  path: path.AdminCustomerOrderHistory,
+                  element: (
+                    <Suspense>
+                      <ManagerCustomerOrderHistory />
+                    </Suspense>
+                  )
+                },
+                {
                   path: path.AdminEmployees,
                   element: (
                     <Suspense>
@@ -99,7 +109,7 @@ export default function useRouterAdmin() {
                   path: path.AdminCategoryDetail,
                   element: (
                     <Suspense>
-                      <CategoryDetail />
+                      <CategoryOverview />
                     </Suspense>
                   )
                 },
@@ -132,6 +142,14 @@ export default function useRouterAdmin() {
                   element: (
                     <Suspense>
                       <ManageOrders />
+                    </Suspense>
+                  )
+                },
+                {
+                  path: path.AdminOrderDetail,
+                  element: (
+                    <Suspense>
+                      <OrderDetail />
                     </Suspense>
                   )
                 },

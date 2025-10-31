@@ -77,6 +77,14 @@ export type queryParamConfigProduct = queryParamConfig & {
   sortBy?: string
 }
 
+export type queryParamConfigVoucher = queryParamConfig & {
+  code?: string
+  status?: string
+  name?: string
+
+  sortBy?: string
+}
+
 export type queryParamsPricePerUnit = {
   name_product: string
   name_supplier: string

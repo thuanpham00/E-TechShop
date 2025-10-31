@@ -417,6 +417,7 @@ export default function ManagePermissions() {
         toast.success("Cập nhật thành công!", {
           autoClose: 1500
         })
+        setUpdatePermissionForRole([])
       }
     })
   }

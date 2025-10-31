@@ -6,9 +6,9 @@ import { toast } from "react-toastify"
 import { CategoryMenuAPI } from "src/Apis/admin/category_menu.api"
 import Input from "src/Components/Input"
 import InputFileImage from "src/Components/InputFileImage"
-import { MenuItemType } from "../CategoryMenuConfig/CategoryMenuConfig"
+import { MenuItemType } from "../ManageCategorySubLink/ManageCategorySubLink"
 
-export default function ModalAddLinkCategory({
+export default function ModalCategoryLink({
   showModalAddLinkCategory,
   setShowModalAddLinkCategory,
   formAddLinkCategory,
@@ -148,6 +148,7 @@ export default function ModalAddLinkCategory({
 
   return (
     <Modal
+      maskClosable={false}
       title="Thêm liên kết vào nhóm"
       open={showModalAddLinkCategory}
       onCancel={() => {

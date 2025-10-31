@@ -75,7 +75,13 @@ export default function AddBrand({ setAddItem, addItem, categoryId }: Props) {
             exit={{ opacity: 0, scale: 0.8 }}
             className="relative"
           >
-            <button onClick={() => setAddItem(null)} className="absolute right-2 top-1">
+            <button
+              onClick={() => {
+                setAddItem(null)
+                reset()
+              }}
+              className="absolute right-2 top-1"
+            >
               <X color="gray" size={22} />
             </button>
             <form onSubmit={handleAddBrandSubmit} className="bg-white dark:bg-darkPrimary rounded-md">

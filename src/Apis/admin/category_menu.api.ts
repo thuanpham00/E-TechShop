@@ -1,6 +1,21 @@
 import Http from "src/Helpers/http"
 
 export const CategoryMenuAPI = {
+  addGroupCategoryMenu: (data: FormData) => {
+    if (data instanceof FormData) {
+      return Http.post(`/admin/category_menus/group`, data, {
+        headers: {
+          "Content-Type": "multipart/form-data"
+        }
+      })
+    }
+    return Http.post(`/admin/category_menus/group`, data)
+  },
+
+  deleteGroupCategoryMenu: (idMenuCategory: string) => {
+    return Http.delete(`/admin/category_menus/group/${idMenuCategory}`)
+  },
+
   getMenuCategoryById: (idCategory: string) => {
     return Http.get(`/admin/category_menus/${idCategory}`)
   },

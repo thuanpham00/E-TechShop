@@ -287,7 +287,7 @@ export const schemaOrder = schemaAuth.pick(["created_at", "updated_at", "id"]).s
 })
 
 export const schemaSearchFilterOrder = schemaSupply
-  .pick(["created_at_start", "created_at_end", "price_max", "price_min"])
+  .pick(["created_at_start", "created_at_end", "updated_at_start", "updated_at_end", "price_max", "price_min"])
   .shape({
     status: yup.string(),
     name: yup.string(),

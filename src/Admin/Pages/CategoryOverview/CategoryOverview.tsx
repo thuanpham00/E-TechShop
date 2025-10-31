@@ -2,18 +2,17 @@ import { Tabs } from "antd"
 import { Helmet } from "react-helmet-async"
 import { useLocation, useParams } from "react-router-dom"
 import NavigateBack from "src/Admin/Components/NavigateBack"
-import ManageBrand from "../../Components/ManageBrand"
-import CategoryMenuConfig from "../../Components/CategoryMenuConfig"
 import { useState } from "react"
+import CategoryDetail from "./Components/CategoryDetail"
+import ManageCategorySubLink from "./Components/ManageCategorySubLink"
+import ManageBrand from "./Components/ManageBrand"
 
-export default function CategoryDetail() {
+export default function CategoryOverview() {
   const { id } = useParams()
   const { state } = useLocation()
   const queryConfig = state?.queryConfig
   const dataCategory = state?.data
   const [tab, setTab] = useState("detail")
-
-  const activeKey = tab === "brand" ? "brand" : "detail"
 
   return (
     <div className="sticky-tabs">
@@ -27,13 +26,18 @@ export default function CategoryDetail() {
       <NavigateBack />
 
       <Tabs
-        activeKey={activeKey}
+        activeKey={tab}
         onChange={(key) => setTab(key)}
         items={[
           {
             key: "detail",
-            label: "Chi tiết danh mục",
-            children: <CategoryMenuConfig dataCategory={dataCategory} queryConfig={queryConfig} />
+            label: "Thông tin danh mục",
+            children: <CategoryDetail dataCategory={dataCategory} queryConfig={queryConfig} />
+          },
+          {
+            key: "list",
+            label: "Danh sách menu danh mục",
+            children: <ManageCategorySubLink dataCategory={dataCategory} />
           },
           {
             key: "brand",

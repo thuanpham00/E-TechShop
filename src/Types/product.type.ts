@@ -202,6 +202,23 @@ export type UpdateBodyReq = {
   }
 }
 
+export type VoucherItemType = {
+  _id: string
+  code: string
+  description: string
+  type: string
+  value: number
+  max_discount: number
+  min_order_value: number
+  usage_limit: number
+  used_count: number
+  start_date: string
+  end_date: string
+  status: string
+  created_at: string
+  updated_at: string
+}
+
 export type UpdateCategoryBodyReq = {
   name?: string
   is_active?: boolean
@@ -350,6 +367,14 @@ export type EmailLogItemType = {
   updated_at: string
 }
 
+export type LinkCategoryItem = {
+  id_item: string
+  name: string
+  slug: string
+  type_filter: string
+  banner?: File
+}
+
 export type MenuCategory = {
   _id: string
   category_id: string
@@ -357,13 +382,7 @@ export type MenuCategory = {
     id_section: string
     name: string
     is_active: boolean
-    items: {
-      id_item: string
-      name: string
-      slug: string
-      type_filter: string
-      banner: string
-    }[]
+    items: LinkCategoryItem[]
   }[]
   created_at: string
   updated_at: string
