@@ -12,12 +12,13 @@ import { convertDateTime } from "src/Helpers/common"
 import { queryClient } from "src/main"
 import { SupplyItemType, UpdateSupplyBodyReq } from "src/Types/product.type"
 import { queryParamConfigSupply } from "src/Types/queryParams.type"
-import { SuccessResponse } from "src/Types/utils.type"
+import { ErrorResponse, SuccessResponse } from "src/Types/utils.type"
 import DropdownList from "../DropdownList"
 import { motion } from "framer-motion"
 import { ProductAPI } from "src/Apis/admin/product.api"
 import { SupplierAPI } from "src/Apis/admin/supplier.api"
 import { SupplyAPI } from "src/Apis/admin/supply.api"
+import { isError422 } from "src/Helpers/utils"
 
 type FormDataUpdate = Pick<
   SchemaSupplyUpdateType,
@@ -59,8 +60,9 @@ export default function SupplyDetail({
     register,
     formState: { errors },
     setValue,
-    // setError,
     handleSubmit,
+    control,
+    setError,
     watch
   } = useForm<FormDataUpdate>({
     resolver: yupResolver(formDataUpdate),
@@ -77,6 +79,7 @@ export default function SupplyDetail({
 
   useEffect(() => {
     if (addItem !== null && typeof addItem === "object") {
+      console.log(addItem)
       setValue("id", addItem._id)
       setValue("productId", addItem.productId[0].name)
       setValue("supplierId", addItem.supplierId[0].name)
@@ -103,6 +106,15 @@ export default function SupplyDetail({
           setAddItem(null)
           toast.success("Cập nhật thành công", { autoClose: 1500 })
           queryClient.invalidateQueries({ queryKey: ["listSupply", queryConfig] })
+        },
+        onError: (error) => {
+          if (isError422<ErrorResponse<FormDataUpdate>>(error)) {
+            const formError = error.response?.data.errors
+            if (formError?.importPrice)
+              setError("importPrice", {
+                message: (formError.importPrice as any).msg // lỗi 422 từ server trả về
+              })
+          }
         }
       }
     )
@@ -155,7 +167,7 @@ export default function SupplyDetail({
         <button onClick={() => setAddItem(null)} className="absolute right-2 top-2">
           <X color="gray" size={22} />
         </button>
-        <form onSubmit={handleSubmitUpdate} className="bg-white dark:bg-darkPrimary rounded-md w-[700px]">
+        <form onSubmit={handleSubmitUpdate} className="bg-white dark:bg-darkPrimary rounded-md w-[800px]">
           <h3 className="py-2 px-4 text-lg font-semibold tracking-wide rounded-md text-black dark:text-white">
             Thông tin cung ứng
           </h3>
@@ -165,7 +177,6 @@ export default function SupplyDetail({
                 name="id"
                 register={register}
                 placeholder="Nhập mã cung ứng"
-                messageErrorInput={errors.importPrice?.message}
                 classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-darkSecond focus:border-blue-500 focus:ring-2 outline-none rounded-md text-black dark:text-white"
                 className="relative flex-1"
                 classNameLabel="text-black dark:text-white"
@@ -206,6 +217,9 @@ export default function SupplyDetail({
                 className="relative flex-1"
                 classNameLabel="text-black dark:text-white"
                 nameInput="Giá nhập"
+                control={control}
+                isCurrency={true} // ✅ Bật format currency
+                currencySuffix="đ" // ✅ Hiển thị suffix
               />
               <Input
                 name="warrantyMonths"
@@ -215,7 +229,7 @@ export default function SupplyDetail({
                 classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-white dark:bg-darkSecond focus:border-blue-500 focus:ring-2 outline-none rounded-md text-black dark:text-white"
                 className="relative flex-1"
                 classNameLabel="text-black dark:text-white"
-                nameInput="Thời gian bảo hành"
+                nameInput="Thời gian bảo hành (tháng)"
               />
               <Input
                 name="leadTimeDays"
@@ -225,7 +239,7 @@ export default function SupplyDetail({
                 classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-white dark:bg-darkSecond focus:border-blue-500 focus:ring-2 outline-none rounded-md text-black dark:text-white"
                 className="relative flex-1"
                 classNameLabel="text-black dark:text-white"
-                nameInput="Thời gian cung ứng"
+                nameInput="Thời gian cung ứng (ngày)"
               />
             </div>
             <div className="mt-4 flex items-center gap-4">

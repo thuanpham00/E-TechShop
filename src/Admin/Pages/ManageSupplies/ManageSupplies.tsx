@@ -33,6 +33,7 @@ import { ColumnsType } from "antd/es/table"
 import { ProductAPI } from "src/Apis/admin/product.api"
 import { SupplierAPI } from "src/Apis/admin/supplier.api"
 import { SupplyAPI } from "src/Apis/admin/supply.api"
+import useSortList from "src/Hook/useSortList"
 
 type FormDataSearch = Pick<
   SchemaSupplyType,
@@ -54,6 +55,7 @@ export default function ManageSupplies() {
 
   const navigate = useNavigate()
   const { downloadExcel } = useDownloadExcel()
+  const { handleSort } = useSortList()
 
   const queryParams: queryParamConfigSupply = useQueryParams()
   const queryConfig: queryParamConfigSupply = omitBy(
@@ -216,18 +218,6 @@ export default function ManageSupplies() {
   }
 
   const [addItem, setAddItem] = useState<null | SupplyItemType | boolean>(null)
-
-  // xử lý sort ds
-  const handleChangeSortListOrder = (value: string) => {
-    const body = {
-      ...queryConfig,
-      sortBy: value
-    }
-    navigate({
-      pathname: `${path.AdminSupplies}`,
-      search: createSearchParams(body).toString()
-    })
-  }
 
   const items: CollapseProps["items"] = [
     {
@@ -513,7 +503,7 @@ export default function ManageSupplies() {
               <Select
                 defaultValue="Mới nhất"
                 className="select-sort"
-                onChange={handleChangeSortListOrder}
+                onChange={(value) => handleSort(value, queryConfig, path.AdminSupplies)}
                 suffixIcon={<ArrowUpNarrowWide color={isDarkMode ? "white" : "black"} />}
                 options={[
                   { value: "old", label: "Cũ nhất" },
@@ -574,7 +564,7 @@ export default function ManageSupplies() {
             )}
           </AnimatePresence>
 
-          <AddSupply setAddItem={setAddItem} addItem={addItem} />
+          <AddSupply setAddItem={setAddItem} addItem={addItem} queryConfig={queryConfig} />
         </div>
       </section>
     </div>

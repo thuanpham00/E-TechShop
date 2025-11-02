@@ -1,5 +1,14 @@
-import { Steps } from "antd"
-import { ChevronLeft } from "lucide-react"
+import { Steps, Card, Divider, Button, Typography } from "antd"
+import {
+  ShoppingCart,
+  Package,
+  CreditCard,
+  Tag as TagIcon,
+  CheckCircle2,
+  Calendar,
+  Building2,
+  Wallet
+} from "lucide-react"
 import { Helmet } from "react-helmet-async"
 import { Link } from "react-router-dom"
 import { path } from "src/Constants/path"
@@ -8,12 +17,13 @@ import useQueryParams from "src/Hook/useQueryParams"
 import { motion } from "framer-motion"
 import { useEffect, useRef } from "react"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
-import { OrderApi } from "src/Apis/order.api"
 import { getAccessTokenFromLS } from "src/Helpers/auth"
+import { OrderApi } from "src/Apis/client/order.api"
+
+const { Text } = Typography
 
 export default function PaymentSuccessVNPay() {
   const queryClient = useQueryClient()
-
   const paramsUrl = useQueryParams()
   const calledRef = useRef(false)
   const token = getAccessTokenFromLS()
@@ -29,143 +39,170 @@ export default function PaymentSuccessVNPay() {
   })
 
   useEffect(() => {
+    window.scroll(0, 0)
+  }, [])
+
+  useEffect(() => {
     if (calledRef.current) return
     const vnp_responseCode = paramsUrl?.vnp_ResponseCode
     if (vnp_responseCode === "00") {
       mutate(paramsUrl.vnp_TxnRef)
       calledRef.current = true
-    } // eslint-disable-next-line react-hooks/exhaustive-deps
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   return (
-    <div>
+    <div className="bg-gray-50 min-h-screen">
       <Helmet>
-        <title>Thanh toán thành công</title>
+        <title>Thanh toán thành công - TechZone</title>
         <meta
           name="description"
           content="Đơn hàng của bạn đã được thanh toán thành công tại TechZone. Chúng tôi sẽ xử lý và giao hàng trong thời gian sớm nhất."
         />
       </Helmet>
 
-      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-        <div className="my-4">
-          <div className="container" style={{ maxWidth: "70rem" }}>
-            <Link to={"/home"} className="flex items-center gap-[2px] cursor-pointer">
-              <ChevronLeft size={16} color="blue" />
-              <span className="text-[14px] font-medium text-blue-500">Mua thêm sản phẩm khác</span>
-            </Link>
+      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="py-6">
+        <div className="container mx-auto px-4" style={{ maxWidth: "900px" }}>
+          {/* Main Content */}
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+            {/* Progress Steps */}
+            <div className="bg-gradient-to-r from-blue-50 to-blue-100 px-8 py-6">
+              <Steps
+                current={3}
+                items={[
+                  {
+                    title: <span className="text-blue-600 font-semibold">Giỏ hàng</span>,
+                    icon: <ShoppingCart className="text-blue-600" size={20} />
+                  },
+                  {
+                    title: <span className="text-blue-600 font-semibold">Thông tin đặt hàng</span>,
+                    icon: <Package className="text-blue-600" size={20} />
+                  },
+                  {
+                    title: <span className="text-blue-600 font-semibold">Thanh toán</span>,
+                    icon: <CreditCard className="text-blue-600" size={20} />
+                  },
+                  {
+                    title: <span className="text-blue-600 font-semibold">Hoàn tất</span>,
+                    icon: <TagIcon className="text-blue-600" size={20} />
+                  }
+                ]}
+              />
+            </div>
 
-            <div className="p-4 bg-white rounded-md mt-4">
-              <div className="relative">
-                <div className="bg-red-50 px-4 py-6">
-                  <Steps
-                    size="small"
-                    current={3}
-                    type="default"
-                    items={[
-                      {
-                        title: <span style={{ color: "red", fontWeight: "500" }}>Giỏ hàng</span>
-                      },
-                      {
-                        title: <span style={{ color: "red", fontWeight: "500" }}>Thông tin đặt hàng</span>
-                      },
-                      {
-                        title: <span style={{ color: "red", fontWeight: "500" }}>Thanh toán</span>
-                      },
-                      {
-                        title: <span style={{ color: "red", fontWeight: "500" }}>Hoàn tất</span>
-                      }
-                    ]}
-                  />
+            {/* Success Message */}
+            <div className="px-6 py-8">
+              <div className="flex flex-col items-center mb-8">
+                <div className="bg-green-100 p-4 rounded-full mb-4">
+                  <CheckCircle2 size={48} className="text-green-500" />
                 </div>
+                <h2 className="text-2xl font-bold text-green-600 mb-2">Thanh toán thành công!</h2>
+                <p className="text-gray-600 text-center max-w-md mb-4">
+                  Đơn hàng của bạn đã được thanh toán thành công qua VNPay. Cảm ơn bạn đã tin tưởng TechZone!
+                </p>
+                <div className="text-3xl font-bold text-red-500">
+                  {formatCurrency(Number(paramsUrl.vnp_Amount.slice(0, -2)))}đ
+                </div>
+              </div>
 
-                <div>
-                  <div className="flex items-center justify-center bg-gray-100">
-                    <div className="my-8 w-full max-w-[480px] bg-white rounded-2xl shadow-xl p-8">
-                      <div className="flex flex-col items-center">
-                        <div className="bg-green-100 p-4 rounded-full ">
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            strokeWidth={2}
-                            stroke="#22c55e"
-                            className="h-10 w-10"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0Z"
-                            />
-                          </svg>
-                        </div>
-                        <h2 className="text-xl font-semibold text-green-600 mt-4">Đặt hàng thành công</h2>
-                        <p className="text-lg font-bold text-gray-800 mt-2">
-                          -{formatCurrency(Number(paramsUrl.vnp_Amount.slice(0, -2)))}đ
-                        </p>
-                        <p className="text-sm text-gray-400">{paramsUrl.vnp_PayDate}</p>
-                      </div>
-
-                      <div className="border-t border-gray-200 mt-6 pt-4 space-y-3 text-sm text-gray-600">
-                        <div className="flex justify-between">
-                          <span>Mã đơn hàng:</span>
-                          <span className="text-gray-800">{paramsUrl.vnp_TxnRef}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span>Phương thức thanh toán:</span>
-                          <span className="text-gray-800">
-                            {paramsUrl.vnp_CardType === "ATM" ? "Thanh toán online" : ""}
-                          </span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span>Ngân hàng giao dịch:</span>
-                          <span className="text-gray-800">{paramsUrl.vnp_BankCode}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span>Diễn giải:</span>
-                          <span className="text-gray-800 text-right">{paramsUrl.vnp_OrderInfo}</span>
-                        </div>
-                        {/* <div className="flex justify-between">
-                          <span>Khách hàng:</span>
-                          <span className="text-gray-800 text-right">{paramsUrl.vnp_name_customer}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span>Số điện thoại:</span>
-                          <span className="text-gray-800 text-right">{paramsUrl.vnp_email_customer}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span>Địa chỉ nhận hàng:</span>
-                          <span className="text-gray-800 text-right">{paramsUrl.vnp_phone_customer}</span>
-                        </div> */}
-                        <div className="flex justify-between font-semibold text-base text-black pt-2 border-t border-gray-100">
-                          <span>Tổng số tiền (đ):</span>
-                          <span>{formatCurrency(Number(paramsUrl.vnp_Amount.slice(0, -2)))}đ</span>
-                        </div>
-                      </div>
-
-                      <Link
-                        to={path.Home}
-                        className="mt-6 w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 rounded-full flex items-center justify-center gap-2 transition"
-                      >
-                        Tiếp tục mua sắm
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          strokeWidth={1.5}
-                          stroke="currentColor"
-                          className="w-5 h-5"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6A2.25 2.25 0 005.25 5.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15m3 0l3-3m0 0l-3-3m3 3H9"
-                          />
-                        </svg>
-                      </Link>
+              {/* Transaction Details */}
+              <Card className="bg-gray-50 border-gray-200 mb-6">
+                <div className="space-y-4">
+                  {/* Order ID */}
+                  <div className="flex items-center justify-between pb-3 border-b border-gray-200">
+                    <div className="flex items-center gap-2">
+                      <Package size={18} className="text-blue-500" />
+                      <Text className="text-gray-600">Mã đơn hàng:</Text>
                     </div>
+                    <Text strong className="text-blue-600 font-mono">
+                      #{paramsUrl.vnp_TxnRef}
+                    </Text>
+                  </div>
+
+                  {/* Payment Method */}
+                  <div className="flex items-center justify-between pb-3 border-b border-gray-200">
+                    <div className="flex items-center gap-2">
+                      <CreditCard size={18} className="text-blue-500" />
+                      <Text className="text-gray-600">Phương thức thanh toán:</Text>
+                    </div>
+                    <Text strong className="text-gray-800">
+                      {paramsUrl.vnp_CardType === "ATM" ? "Thanh toán qua VNPay" : "Thanh toán online"}
+                    </Text>
+                  </div>
+
+                  {/* Bank Code */}
+                  <div className="flex items-center justify-between pb-3 border-b border-gray-200">
+                    <div className="flex items-center gap-2">
+                      <Building2 size={18} className="text-blue-500" />
+                      <Text className="text-gray-600">Ngân hàng:</Text>
+                    </div>
+                    <Text strong className="text-gray-800 uppercase">
+                      {paramsUrl.vnp_BankCode}
+                    </Text>
+                  </div>
+
+                  {/* Transaction Date */}
+                  <div className="flex items-center justify-between pb-3 border-b border-gray-200">
+                    <div className="flex items-center gap-2">
+                      <Calendar size={18} className="text-blue-500" />
+                      <Text className="text-gray-600">Thời gian giao dịch:</Text>
+                    </div>
+                    <Text strong className="text-gray-800">
+                      {paramsUrl.vnp_PayDate}
+                    </Text>
+                  </div>
+
+                  {/* Order Info */}
+                  <div className="flex items-start justify-between">
+                    <div className="flex items-center gap-2">
+                      <Wallet size={18} className="text-blue-500 mt-1" />
+                      <Text className="text-gray-600">Diễn giải:</Text>
+                    </div>
+                    <Text strong className="text-gray-800 text-right max-w-md">
+                      {paramsUrl.vnp_OrderInfo}
+                    </Text>
                   </div>
                 </div>
+              </Card>
+
+              {/* Total Amount */}
+              <Card className="bg-gradient-to-r from-green-50 to-emerald-50 border-green-200">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <CheckCircle2 size={20} className="text-green-500" />
+                    <Text className="text-lg font-semibold text-gray-800">Số tiền đã thanh toán:</Text>
+                  </div>
+                  <Text className="text-3xl font-bold text-green-600">
+                    {formatCurrency(Number(paramsUrl.vnp_Amount.slice(0, -2)))}đ
+                  </Text>
+                </div>
+                <Divider className="my-3" />
+                <div className="flex items-start gap-2 text-sm">
+                  <CheckCircle2 size={16} className="text-green-500 mt-0.5" />
+                  <Text className="text-gray-600">
+                    Giao dịch của bạn đã được xử lý thành công. Chúng tôi sẽ chuẩn bị và giao hàng trong thời gian sớm
+                    nhất!
+                  </Text>
+                </div>
+              </Card>
+
+              {/* Action Buttons */}
+              <div className="mt-8 flex gap-4 justify-center">
+                <Link to={path.Order}>
+                  <Button size="large" className="px-8">
+                    Xem đơn hàng
+                  </Button>
+                </Link>
+                <Link to={path.Home}>
+                  <Button
+                    type="primary"
+                    size="large"
+                    className="bg-blue-500 hover:!bg-blue-600 border-none px-8 font-bold shadow-lg"
+                  >
+                    Tiếp tục mua sắm
+                  </Button>
+                </Link>
               </div>
             </div>
           </div>

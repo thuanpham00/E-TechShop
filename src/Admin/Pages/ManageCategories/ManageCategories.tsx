@@ -28,6 +28,7 @@ import "../ManageOrders/ManageOrders.css"
 import { useTheme } from "src/Admin/Components/Theme-provider/Theme-provider"
 import { ColumnsType } from "antd/es/table"
 import { CategoryAPI } from "src/Apis/admin/category.api"
+import useSortList from "src/Hook/useSortList"
 
 const formDataSearch = schemaSearchFilter.pick([
   "name",
@@ -48,6 +49,7 @@ export default function ManageCategories() {
 
   const navigate = useNavigate()
   const { downloadExcel } = useDownloadExcel()
+  const { handleSort } = useSortList()
 
   const queryParams: queryParamConfigCategory = useQueryParams()
   const queryConfig: queryParamConfigCategory = omitBy(
@@ -142,18 +144,6 @@ export default function ManageCategories() {
     ])
     resetFormSearch()
     navigate({ pathname: path.AdminCategories, search: createSearchParams(filteredSearch).toString() })
-  }
-
-  // xử lý sort ds
-  const handleChangeSortListOrder = (value: string) => {
-    const body = {
-      ...queryConfig,
-      sortBy: value
-    }
-    navigate({
-      pathname: `${path.AdminCategories}`,
-      search: createSearchParams(body).toString()
-    })
   }
 
   const items: CollapseProps["items"] = [
@@ -417,7 +407,7 @@ export default function ManageCategories() {
             <Select
               defaultValue="Mới nhất"
               className="select-sort rounded-md"
-              onChange={handleChangeSortListOrder}
+              onChange={(value) => handleSort(value, queryConfig, path.AdminCategories)}
               suffixIcon={<ArrowUpNarrowWide color={isDark ? "white" : "black"} />}
               options={[
                 { value: "old", label: "Cũ nhất" },

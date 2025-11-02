@@ -54,6 +54,7 @@ import "../ManageOrders/ManageOrders.css"
 import { useTheme } from "src/Admin/Components/Theme-provider/Theme-provider"
 import { ColumnsType } from "antd/es/table"
 import { CustomerAPI } from "src/Apis/admin/customer.api"
+import useSortList from "src/Hook/useSortList"
 
 const formDataUpdate = schemaAuth.pick([
   "id",
@@ -101,7 +102,7 @@ export default function ManageCustomers() {
   const { downloadExcel } = useDownloadExcel()
   const navigate = useNavigate()
   const queryClient = useQueryClient()
-
+  const { handleSort } = useSortList()
   // xử lý lấy query-params
   const queryParams: queryParamConfigCustomer = useQueryParams()
   const queryConfig: queryParamConfigCustomer = omitBy(
@@ -374,18 +375,6 @@ export default function ManageCustomers() {
       updated_at_end: undefined
     })
     navigate({ pathname: path.AdminCustomers, search: createSearchParams(filteredSearch).toString() })
-  }
-
-  // xử lý sort ds
-  const handleChangeSortListOrder = (value: string) => {
-    const body = {
-      ...queryConfig,
-      sortBy: value
-    }
-    navigate({
-      pathname: `${path.AdminCustomers}`,
-      search: createSearchParams(body).toString()
-    })
   }
 
   const items: CollapseProps["items"] = [
@@ -715,7 +704,7 @@ export default function ManageCustomers() {
             <Select
               defaultValue="Mới nhất"
               className="select-sort"
-              onChange={handleChangeSortListOrder}
+              onChange={(value) => handleSort(value, queryConfig, path.AdminCustomers)}
               suffixIcon={<ArrowUpNarrowWide color={isDark ? "white" : "black"} />}
               options={[
                 { value: "old", label: "Cũ nhất" },

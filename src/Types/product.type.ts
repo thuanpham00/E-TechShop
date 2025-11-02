@@ -163,6 +163,9 @@ export type OrderItemType = {
   note: string
   created_at: string // hoặc Date nếu bạn muốn parse
   updated_at: string // hoặc Date nếu bạn muốn parse
+  voucher_id?: string
+  voucher_code?: string
+  discount_amount?: number
 }
 
 export type ProductItemType = {
@@ -353,6 +356,9 @@ export type OrderType = {
   shipping_fee: number
   totalAmount: number
   note?: string
+  voucher_id?: string
+  voucher_code?: string
+  discount_amount?: number
 }
 
 export type EmailLogItemType = {

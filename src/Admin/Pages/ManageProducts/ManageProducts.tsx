@@ -23,6 +23,7 @@ import { useEffect } from "react"
 import { ColumnsType } from "antd/es/table"
 import { convertDateTime, formatCurrency } from "src/Helpers/common"
 import { ProductAPI } from "src/Apis/admin/product.api"
+import useSortList from "src/Hook/useSortList"
 
 export default function ManageProducts() {
   const { theme } = useTheme()
@@ -30,6 +31,8 @@ export default function ManageProducts() {
 
   const navigate = useNavigate()
   const { downloadExcel } = useDownloadExcel()
+  const { handleSort } = useSortList()
+
   const queryParams: queryParamConfigProduct = useQueryParams()
   const queryConfig: queryParamConfigProduct = omitBy(
     {
@@ -73,18 +76,6 @@ export default function ManageProducts() {
     totalOfPage: string
   }>
   const listProduct = result?.result?.result
-
-  // xử lý sort ds
-  const handleChangeSortListOrder = (value: string) => {
-    const body = {
-      ...queryConfig,
-      sortBy: value
-    }
-    navigate({
-      pathname: `${path.AdminProducts}`,
-      search: createSearchParams(body).toString()
-    })
-  }
 
   const items: CollapseProps["items"] = [
     {
@@ -283,7 +274,7 @@ export default function ManageProducts() {
             <Select
               defaultValue="Mới nhất"
               className="select-sort"
-              onChange={handleChangeSortListOrder}
+              onChange={(value) => handleSort(value, queryConfig, path.AdminProducts)}
               suffixIcon={<ArrowUpNarrowWide color={isDarkMode ? "white" : "black"} />}
               options={[
                 { value: "old", label: "Cũ nhất" },

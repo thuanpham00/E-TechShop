@@ -1,4 +1,4 @@
-import { ArrowLeft, Package, User, MapPin, Phone, Calendar, CreditCard, Truck, Save } from "lucide-react"
+import { ArrowLeft, Package, User, MapPin, Phone, Calendar, CreditCard, Truck, Save, TagIcon } from "lucide-react"
 import { useLocation, useNavigate } from "react-router-dom"
 import { Helmet } from "react-helmet-async"
 import { Steps, Tag, Divider, Select, Button } from "antd"
@@ -179,6 +179,7 @@ export default function OrderDetail() {
                 <Package size={20} className="text-blue-500" />
                 Sản phẩm ({orderData.products.length})
               </h3>
+
               <div className="space-y-3">
                 {orderData.products.map((item, index) => {
                   const discountedPrice = item.discount ? item.price - item.price * (item.discount / 100) : item.price
@@ -225,7 +226,7 @@ export default function OrderDetail() {
               <Divider />
 
               {/* Payment Summary */}
-              <div className="space-y-3 bg-gray-50 dark:bg-darkSecond p-4 rounded-lg">
+              <div className="space-y-3 bg-gray-50 dark:bg-darkSecond p-2 rounded-lg">
                 <div className="flex justify-between text-sm text-gray-600 dark:text-gray-400">
                   <span>Tạm tính</span>
                   <span className="font-medium text-gray-800 dark:text-white">
@@ -241,7 +242,30 @@ export default function OrderDetail() {
                     {formatCurrency(orderData.shipping_fee)}đ
                   </span>
                 </div>
+
+                {orderData.voucher_code && (
+                  <div className="mb-3 p-3 bg-gradient-to-r from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/20 border border-green-200 dark:border-green-800 rounded-lg">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
+                          <TagIcon size={16} className="text-white" />
+                        </div>
+                        <div>
+                          <p className="text-xs text-green-700 dark:text-green-400 font-medium">Mã giảm giá</p>
+                          <p className="text-sm font-bold text-green-800 dark:text-green-300 font-mono">
+                            {orderData.voucher_code}
+                          </p>
+                        </div>
+                      </div>
+                      <span className="text-base font-bold text-green-600 dark:text-green-400">
+                        -{formatCurrency(orderData.discount_amount || 0)}đ
+                      </span>
+                    </div>
+                  </div>
+                )}
+
                 <Divider className="my-2" />
+
                 <div className="flex justify-between items-center">
                   <span className="text-base font-semibold text-gray-800 dark:text-white flex items-center gap-2">
                     <CreditCard size={18} />

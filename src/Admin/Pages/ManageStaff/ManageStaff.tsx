@@ -30,6 +30,7 @@ import "../ManageOrders/ManageOrders.css"
 import StaffDetail from "./Components/StaffDetail"
 import { ColumnsType } from "antd/es/table"
 import { StaffAPI } from "src/Apis/admin/staff.api"
+import useSortList from "src/Hook/useSortList"
 
 const formDataSearch = schemaSearchFilterCustomer.pick([
   "email",
@@ -59,6 +60,8 @@ export default function ManageStaff() {
   const queryClient = useQueryClient()
   const isDark = theme === "dark" || theme === "system"
   const { downloadExcel } = useDownloadExcel()
+  const { handleSort } = useSortList()
+
   const navigate = useNavigate()
 
   // xử lý lấy query-params
@@ -163,18 +166,6 @@ export default function ManageStaff() {
   }
 
   const [addItem, setAddItem] = useState<null | UserType | boolean>(null)
-
-  // xử lý sort ds
-  const handleChangeSortListOrder = (value: string) => {
-    const body = {
-      ...queryConfig,
-      sortBy: value
-    }
-    navigate({
-      pathname: `${path.AdminEmployees}`,
-      search: createSearchParams(body).toString()
-    })
-  }
 
   const items: CollapseProps["items"] = [
     {
@@ -570,7 +561,7 @@ export default function ManageStaff() {
               <Select
                 defaultValue="Mới nhất"
                 className="select-sort"
-                onChange={handleChangeSortListOrder}
+                onChange={(value) => handleSort(value, queryConfig, path.AdminEmployees)}
                 suffixIcon={<ArrowUpNarrowWide color={isDark ? "white" : "black"} />}
                 options={[
                   { value: "old", label: "Cũ nhất" },

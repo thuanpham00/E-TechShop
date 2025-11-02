@@ -40,6 +40,7 @@ import "../../../ManageOrders/ManageOrders.css"
 import { useTheme } from "src/Admin/Components/Theme-provider/Theme-provider"
 import { ColumnsType } from "antd/es/table"
 import { BrandAPI } from "src/Apis/admin/brand.api"
+import useSortList from "src/Hook/useSortList"
 
 type FormDataUpdate = Pick<SchemaAuthType, "name" | "id" | "created_at" | "updated_at">
 const formDataUpdate = schemaAuth.pick(["name", "id", "created_at", "updated_at"])
@@ -63,6 +64,7 @@ export default function ManageBrand({ idCategory, nameCategory }: { idCategory: 
 
   const navigate = useNavigate()
   const { downloadExcel } = useDownloadExcel()
+  const { handleSort } = useSortList()
 
   const queryClient = useQueryClient()
   const queryParams: queryParamConfigBrand = useQueryParams()
@@ -268,18 +270,6 @@ export default function ManageBrand({ idCategory, nameCategory }: { idCategory: 
         state: nameCategory
       }
     )
-  }
-
-  // xử lý sort ds
-  const handleChangeSortListOrder = (value: string) => {
-    const body = {
-      ...queryConfig,
-      sortBy: value
-    }
-    navigate({
-      pathname: `${path.AdminCategories}/${idCategory}`,
-      search: createSearchParams(body).toString()
-    })
   }
 
   const items: CollapseProps["items"] = [
@@ -531,7 +521,7 @@ export default function ManageBrand({ idCategory, nameCategory }: { idCategory: 
             <Select
               defaultValue="Mới nhất"
               className="select-sort"
-              onChange={handleChangeSortListOrder}
+              onChange={(value) => handleSort(value, queryConfig, `${path.AdminCategories}/${idCategory}`)}
               suffixIcon={<ArrowUpNarrowWide color={isDark ? "white" : "black"} />}
               options={[
                 { value: "old", label: "Cũ nhất" },

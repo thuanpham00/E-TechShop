@@ -2,7 +2,6 @@
 import { keepPreviousData, useQuery } from "@tanstack/react-query"
 import { Helmet } from "react-helmet-async"
 import { createSearchParams, useLocation, useNavigate, useParams } from "react-router-dom"
-import { collectionAPI } from "src/Apis/collections.api"
 import { HttpStatusCode } from "src/Constants/httpStatus"
 import { path } from "src/Constants/path"
 import { SuccessResponse } from "src/Types/utils.type"
@@ -18,8 +17,9 @@ import type { MenuProps } from "antd"
 import { isUndefined, omit, omitBy } from "lodash"
 import { queryParamsCollection } from "src/Types/queryParams.type"
 import useQueryParams from "src/Hook/useQueryParams"
-import { categoryAPI } from "src/Apis/category.api"
 import { useMemo } from "react"
+import { collectionAPI } from "src/Apis/client/collections.api"
+import { categoryAPI } from "src/Apis/client/category.api"
 
 export default function Collection() {
   const { slug } = useParams()

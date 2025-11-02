@@ -19,6 +19,7 @@ import { path } from "src/Constants/path"
 import { cleanObject, convertDateTime, formatCurrency } from "src/Helpers/common"
 import useDownloadExcel from "src/Hook/useDownloadExcel"
 import useQueryParams from "src/Hook/useQueryParams"
+import useSortList from "src/Hook/useSortList"
 import { OrderItemType } from "src/Types/product.type"
 import { queryParamConfigOrder } from "src/Types/queryParams.type"
 import { SuccessResponse } from "src/Types/utils.type"
@@ -55,6 +56,8 @@ export default function OrderList({ type }: { type: "process" | "completed" | "c
   const isDark = theme === "dark" || theme === "system"
   const navigate = useNavigate()
   const { downloadExcel } = useDownloadExcel()
+  const { handleSort } = useSortList()
+
   const queryParams: queryParamConfigOrder = useQueryParams()
   const queryConfig: queryParamConfigOrder = omitBy(
     {
@@ -102,18 +105,6 @@ export default function OrderList({ type }: { type: "process" | "completed" | "c
     totalOfPage: string
   }>
   const listOrder = result?.result?.result
-
-  // xử lý sort ds
-  const handleChangeSortListOrder = (value: string) => {
-    const body = {
-      ...queryConfig,
-      sortBy: value
-    }
-    navigate({
-      pathname: `${path.AdminOrders}`,
-      search: createSearchParams(body).toString()
-    })
-  }
 
   const copyId = async (id: string) => {
     try {
@@ -265,7 +256,6 @@ export default function OrderList({ type }: { type: "process" | "completed" | "c
 
   const handleSubmitSearch = handleSubmitFormSearch(
     (data) => {
-      console.log(data)
       const params = cleanObject({
         ...queryConfig,
         page: 1,
@@ -524,7 +514,7 @@ export default function OrderList({ type }: { type: "process" | "completed" | "c
           <Select
             defaultValue="Mới nhất"
             className="select-sort"
-            onChange={handleChangeSortListOrder}
+            onChange={(value) => handleSort(value, queryConfig, path.AdminOrders)}
             suffixIcon={<ArrowUpNarrowWide color={isDark ? "white" : "black"} />}
             options={[
               { value: "old", label: "Cũ nhất" },

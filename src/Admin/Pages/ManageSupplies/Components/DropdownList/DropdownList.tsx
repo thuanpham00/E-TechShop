@@ -54,7 +54,7 @@ export default function DropdownList({
           name={name}
           register={register}
           placeholder={placeholderName}
-          classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-darkSecond focus:border-blue-500 focus:ring-1 outline-none rounded-md h-[35px] text-black dark:text-white"
+          classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#fff] dark:bg-darkSecond focus:border-blue-500 focus:ring-1 outline-none rounded-md h-[35px] text-black dark:text-white"
           className="relative flex-grow"
           classNameError="hidden"
           nameInput={nameInput}
@@ -70,7 +70,7 @@ export default function DropdownList({
           name={name}
           register={register}
           placeholder="Nhập tên sản phẩm"
-          classNameInput="p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-darkSecond focus:border-blue-500 focus:ring-1 outline-none rounded-md h-[35px] text-black dark:text-white"
+          classNameInput="p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#fff] dark:bg-darkSecond focus:border-blue-500 focus:ring-1 outline-none rounded-md h-[35px] text-black dark:text-white"
           className="relative flex-grow"
           classNameError="hidden"
           value={inputValue}

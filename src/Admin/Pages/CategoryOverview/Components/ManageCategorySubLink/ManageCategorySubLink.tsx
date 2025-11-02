@@ -31,7 +31,7 @@ export default function ManageCategorySubLink({ dataCategory }: { dataCategory: 
 
   // xử lý gọi danh sách menu con
   const { data, isFetching, isLoading } = useQuery({
-    queryKey: ["menuCategory", dataCategory._id],
+    queryKey: ["menuCategory", dataCategory?._id],
     queryFn: () => {
       const controller = new AbortController()
       setTimeout(() => {
@@ -39,7 +39,7 @@ export default function ManageCategorySubLink({ dataCategory }: { dataCategory: 
       }, 10000)
       return CategoryMenuAPI.getMenuCategoryById(dataCategory._id as string)
     },
-    enabled: Boolean(dataCategory._id),
+    enabled: Boolean(dataCategory?._id),
     retry: 0, // số lần retry lại khi hủy request (dùng abort signal)
     staleTime: 3 * 60 * 1000, // dưới 5 phút nó không gọi lại api
     placeholderData: keepPreviousData
@@ -247,14 +247,14 @@ export default function ManageCategorySubLink({ dataCategory }: { dataCategory: 
       <ModalAddGroupLinkCategory
         showModalAddGroupCategory={showModalAddGroupCategory}
         setShowModalAddGroupCategory={setShowModalAddGroupCategory}
-        idCategory={dataCategory._id as string}
+        idCategory={dataCategory?._id as string}
       />
 
       <ModalEditGroupName
         showModalEditGroup={showModalEditGroup}
         setShowModalEditGroup={setShowModalEditGroup}
         idCategoryMenu={categoryMenuId}
-        idCategory={dataCategory._id as string}
+        idCategory={dataCategory?._id as string}
         formEditGroupName={formEditGroupName}
       />
 
@@ -263,7 +263,7 @@ export default function ManageCategorySubLink({ dataCategory }: { dataCategory: 
         setShowModalAddLinkCategory={setShowModalAddLinkCategory}
         formAddLinkCategory={formAddLinkCategory}
         idCategoryMenu={categoryMenuId}
-        idCategory={dataCategory._id as string}
+        idCategory={dataCategory?._id as string}
         editItem={editItem}
         setEditItem={setEditItem}
       />

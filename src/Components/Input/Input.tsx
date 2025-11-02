@@ -1,7 +1,8 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Eye, EyeOff } from "lucide-react"
-import { InputHTMLAttributes, useState } from "react"
-import { UseFormRegister } from "react-hook-form"
+import { InputHTMLAttributes, useEffect, useState } from "react"
+import { Control, UseFormRegister, useWatch } from "react-hook-form"
 import { Link, useLocation } from "react-router-dom"
 import { path } from "src/Constants/path"
 
@@ -16,6 +17,9 @@ interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   name?: string
   messageErrorInput?: string
   register?: UseFormRegister<any>
+  control?: Control<any>
+  isCurrency?: boolean // ✅ Thêm prop format currency
+  currencySuffix?: string // ✅ Thêm prop suffix (đ, VNĐ, etc)
 }
 
 export default function Input({
@@ -28,10 +32,13 @@ export default function Input({
   messageErrorInput,
   name,
   register,
+  control,
+  isCurrency = false, // ✅ Default false
+  currencySuffix = "đ", // ✅ Default "đ"
   ...rest
 }: InputProps) {
   const { pathname } = useLocation()
-  const registerInput = name && register ? { ...register(name) } : {}
+  const [displayValue, setDisplayValue] = useState("")
   const [openEye, setOpenEye] = useState(false)
 
   const toggle = () => {
@@ -45,24 +52,102 @@ export default function Input({
     return rest.type
   }
 
+  const formatCurrencyInput = (value: string) => {
+    // Loại bỏ tất cả ký tự không phải số
+    const numericValue = value.replace(/\D/g, "")
+
+    if (!numericValue) return ""
+
+    // Format thêm dấu chấm phân cách hàng nghìn
+    return numericValue.replace(/\B(?=(\d{3})+(?!\d))/g, ".")
+  }
+
+  // ✅ Parse currency về số thuần (1.000 -> 1000)
+  const parseCurrencyToNumber = (value: string) => {
+    return value.replace(/\./g, "")
+  }
+
+  // ✅ Handle onChange cho currency input
+  const handleCurrencyChange = (e: React.ChangeEvent<HTMLInputElement>, onChange?: (...event: any[]) => void) => {
+    const inputValue = e.target.value
+    const numericValue = parseCurrencyToNumber(inputValue)
+    const formattedValue = formatCurrencyInput(numericValue)
+
+    setDisplayValue(formattedValue)
+
+    // Gửi giá trị số thuần về form (không có dấu chấm)
+    if (onChange) {
+      onChange(numericValue)
+    }
+  }
+
+  const registerInput = name && register ? { ...register(name) } : {}
+
+  const currencyRegister =
+    name && register && isCurrency
+      ? {
+          ...register(name, {
+            onChange: (e) => handleCurrencyChange(e, register(name).onChange)
+          })
+        }
+      : {}
+
+  const formValue = control && name ? useWatch({ control, name }) : undefined
+
+  useEffect(() => {
+    if (!isCurrency) return
+
+    // ✅ Xử lý tất cả trường hợp "empty"
+    if (formValue === undefined || formValue === null || formValue === "") {
+      setDisplayValue("")
+      return
+    }
+
+    // ✅ Format giá trị hợp lệ
+    const strValue = String(formValue)
+    const cleaned = parseCurrencyToNumber(strValue)
+    setDisplayValue(formatCurrencyInput(cleaned))
+  }, [formValue, isCurrency])
+
   return (
     <div className={className}>
       <span className={classNameLabel}>{nameInput}</span>
-      <input className={classNameInput} {...registerInput} {...rest} type={handleType()} />
-      {rest.type === "password" && !openEye ? (
-        <button onClick={toggle} className={classNameEye}>
-          <EyeOff color="#393636" size={22} />
-        </button>
+
+      {isCurrency ? (
+        <div className="relative">
+          <input
+            className={classNameInput}
+            {...currencyRegister}
+            {...rest}
+            type="text"
+            value={displayValue}
+            onChange={(e) => handleCurrencyChange(e, (currencyRegister as any).onChange)}
+            placeholder={rest.placeholder}
+          />
+          {currencySuffix && (
+            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 dark:text-gray-400 pointer-events-none">
+              {currencySuffix}
+            </span>
+          )}
+        </div>
       ) : (
-        ""
+        <>
+          <input className={classNameInput} {...registerInput} {...rest} type={handleType()} />
+
+          {rest.type === "password" && !openEye && (
+            <button onClick={toggle} className={classNameEye} type="button">
+              <EyeOff color="#393636" size={22} />
+            </button>
+          )}
+
+          {rest.type === "password" && openEye && (
+            <button onClick={toggle} className={classNameEye} type="button">
+              <Eye color="#393636" size={22} />
+            </button>
+          )}
+        </>
       )}
-      {rest.type === "password" && openEye ? (
-        <button onClick={toggle} className={classNameEye}>
-          <Eye color="#393636" size={22} />
-        </button>
-      ) : (
-        ""
-      )}
+
       {rest.type === "password" && pathname === "/login" ? (
         <div className="mt-1 flex justify-between">
           <span className={classNameError + " w-[70%]"}>{messageErrorInput}</span>

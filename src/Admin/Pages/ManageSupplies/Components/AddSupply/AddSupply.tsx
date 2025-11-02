@@ -17,10 +17,12 @@ import { SupplyItemType } from "src/Types/product.type"
 import { ProductAPI } from "src/Apis/admin/product.api"
 import { SupplierAPI } from "src/Apis/admin/supplier.api"
 import { SupplyAPI } from "src/Apis/admin/supply.api"
+import { queryParamConfigSupply } from "src/Types/queryParams.type"
 
 interface Props {
   setAddItem: React.Dispatch<React.SetStateAction<boolean | SupplyItemType | null>>
   addItem: boolean | SupplyItemType | null
+  queryConfig: queryParamConfigSupply
 }
 
 type FormData = Pick<
@@ -37,7 +39,7 @@ const formData = schemaSupplyUpdate.pick([
   "description"
 ])
 
-export default function AddSupply({ setAddItem, addItem }: Props) {
+export default function AddSupply({ setAddItem, addItem, queryConfig }: Props) {
   const queryClient = useQueryClient()
   const {
     handleSubmit,
@@ -45,6 +47,7 @@ export default function AddSupply({ setAddItem, addItem }: Props) {
     setError,
     setValue,
     reset,
+    control,
     formState: { errors }
   } = useForm<FormData>({ resolver: yupResolver(formData) })
 
@@ -66,10 +69,23 @@ export default function AddSupply({ setAddItem, addItem }: Props) {
       addSupplyMutation.mutate(data, {
         onSuccess: () => {
           toast.success("Thêm liên kết cung ứng thành công", { autoClose: 1500 })
-          setAddItem(null)
-          reset()
+          reset({
+            productId: "",
+            supplierId: "",
+            importPrice: "" as any, // ✅ Empty string thay vì undefined
+            warrantyMonths: "" as any,
+            leadTimeDays: "" as any,
+            description: ""
+          })
+
+          setTimeout(() => {
+            setAddItem(null)
+          }, 100)
+
           setSellPrice(0)
-          queryClient.invalidateQueries({ queryKey: ["listSupply"] }) // validate mọi trang liên quan -> sẽ gọi lại api
+          setInputValueProduct("")
+
+          queryClient.invalidateQueries({ queryKey: ["listSupply", queryConfig] }) // validate mọi trang liên quan -> sẽ gọi lại api
         },
         onError: (error) => {
           // lỗi từ server trả về
@@ -155,6 +171,14 @@ export default function AddSupply({ setAddItem, addItem }: Props) {
               onClick={() => {
                 setAddItem(null)
                 setSellPrice(0)
+                reset({
+                  productId: "",
+                  supplierId: "",
+                  importPrice: "" as any,
+                  warrantyMonths: "" as any,
+                  leadTimeDays: "" as any,
+                  description: ""
+                })
               }}
               className="absolute right-2 top-2"
             >
@@ -163,7 +187,7 @@ export default function AddSupply({ setAddItem, addItem }: Props) {
             <form
               autoComplete="off"
               onSubmit={handleAddSupplySubmit}
-              className="bg-white dark:bg-darkPrimary rounded-md w-[700px]"
+              className="bg-white dark:bg-darkPrimary rounded-md w-[800px]"
             >
               <h3 className="py-2 px-4 text-lg font-semibold tracking-wide rounded-md text-black dark:text-white">
                 Thông tin cung ứng
@@ -201,10 +225,13 @@ export default function AddSupply({ setAddItem, addItem }: Props) {
                     className="relative flex-1"
                     classNameLabel="text-black dark:text-white"
                     nameInput="Giá nhập"
+                    control={control}
+                    isCurrency={true} // ✅ Bật format currency
+                    currencySuffix="đ" // ✅ Hiển thị suffix
                   />
                   <Input
                     value={formatCurrency(sellPrice || 0)}
-                    classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-white dark:bg-darkSecond focus:border-blue-500 focus:ring-2 outline-none rounded-md text-black dark:text-white"
+                    classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-darkSecond focus:border-blue-500 focus:ring-2 outline-none rounded-md text-black dark:text-white"
                     className="relative flex-1"
                     nameInput="Giá bán hiện tại"
                     classNameLabel="text-black dark:text-white"
@@ -220,7 +247,7 @@ export default function AddSupply({ setAddItem, addItem }: Props) {
                     classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-white dark:bg-darkSecond focus:border-blue-500 focus:ring-2 outline-none rounded-md text-black dark:text-white"
                     className="relative flex-1"
                     classNameLabel="text-black dark:text-white"
-                    nameInput="Thời gian cung ứng"
+                    nameInput="Thời gian cung ứng (ngày)"
                   />
                   <Input
                     name="warrantyMonths"

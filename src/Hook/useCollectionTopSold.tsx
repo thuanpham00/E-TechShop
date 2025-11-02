@@ -1,5 +1,5 @@
 import { keepPreviousData, useQuery } from "@tanstack/react-query"
-import { collectionAPI } from "src/Apis/collections.api"
+import { collectionAPI } from "src/Apis/client/collections.api"
 
 export default function useCollectionTopSold(slug: string, queryKey: string) {
   return useQuery({

@@ -1,10 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { keepPreviousData, useQuery } from "@tanstack/react-query"
-import { Empty, Select, Table, Tag } from "antd"
+import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
+import { DatePicker, Empty, Form, Input, InputNumber, Modal, Radio, Select, Table, Tag } from "antd"
 import { ColumnsType } from "antd/es/table"
+import dayjs from "dayjs"
 import { isUndefined, omitBy } from "lodash"
-import { ArrowUpNarrowWide, Edit, FolderUp, Plus, Trash2 } from "lucide-react"
-import { useEffect } from "react"
+import { ArrowUpNarrowWide, Edit, FolderUp, Plus, Trash2, Tag as TagIcon, Percent, DollarSign } from "lucide-react"
+import { useEffect, useState } from "react"
 import { Helmet } from "react-helmet-async"
 import { createSearchParams, useNavigate } from "react-router-dom"
 import { toast } from "react-toastify"
@@ -22,42 +23,51 @@ import useSortList from "src/Hook/useSortList"
 import { VoucherItemType } from "src/Types/product.type"
 import { queryParamConfigVoucher } from "src/Types/queryParams.type"
 import { SuccessResponse } from "src/Types/utils.type"
+import "../ManageOrders/ManageOrders.css"
+
+const { RangePicker } = DatePicker
+const { TextArea } = Input
 
 export default function ManageVoucher() {
   const { theme } = useTheme()
   const isDarkMode = theme === "dark" || theme === "system"
   const navigate = useNavigate()
   const { downloadExcel } = useDownloadExcel()
-  // const queryClient = useQueryClient()
+  const { handleSort } = useSortList()
+  const queryClient = useQueryClient()
+  const [form] = Form.useForm()
+
+  // Modal states
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [editingVoucher, setEditingVoucher] = useState<VoucherItemType | null>(null)
+  const [voucherType, setVoucherType] = useState<"percentage" | "fixed">("percentage")
+
   const queryParams: queryParamConfigVoucher = useQueryParams()
   const queryConfig: queryParamConfigVoucher = omitBy(
     {
-      page: queryParams.page || "1", // mặc định page = 1
-      limit: queryParams.limit || "5", // mặc định limit =
+      page: queryParams.page || "1",
+      limit: queryParams.limit || "5",
       name: queryParams.name,
-
       created_at_start: queryParams.created_at_start,
       created_at_end: queryParams.created_at_end,
       updated_at_start: queryParams.updated_at_start,
       updated_at_end: queryParams.updated_at_end,
-
-      sortBy: queryParams.sortBy || "new" // mặc định sort mới nhất
+      sortBy: queryParams.sortBy || "new"
     },
     isUndefined
   )
 
   const { data, isFetching, isLoading, isError, error } = useQuery({
-    queryKey: ["listSupplier", queryConfig],
+    queryKey: ["listVoucher", queryConfig],
     queryFn: () => {
       const controller = new AbortController()
       setTimeout(() => {
-        controller.abort() // hủy request khi chờ quá lâu // 10 giây sau cho nó hủy // làm tự động
+        controller.abort()
       }, 10000)
       return VoucherAPI.getVouchers(queryConfig as queryParamConfigVoucher, controller.signal)
     },
-    retry: 0, // số lần retry lại khi hủy request (dùng abort signal)
-    staleTime: 3 * 60 * 1000, // dưới 3 phút nó không gọi lại api
-
+    retry: 0,
+    staleTime: 3 * 60 * 1000,
     placeholderData: keepPreviousData
   })
 
@@ -68,9 +78,95 @@ export default function ManageVoucher() {
     limit: string
     totalOfPage: string
   }>
-  const listSupplier = result?.result?.result
+  const listVoucher = result?.result?.result
 
-  const { handleSort } = useSortList()
+  // Create/Update mutation
+  const mutation = useMutation({
+    mutationFn: (body: any) => {
+      if (editingVoucher) {
+        return VoucherAPI.updateVoucher(editingVoucher._id, body)
+      }
+      return VoucherAPI.createVoucher(body)
+    },
+    onSuccess: () => {
+      toast.success(editingVoucher ? "Cập nhật voucher thành công!" : "Thêm voucher thành công!", {
+        autoClose: 1500
+      })
+      queryClient.invalidateQueries({ queryKey: ["listVoucher", queryConfig] })
+      handleCloseModal()
+    },
+    onError: (error: any) => {
+      toast.error(error.response?.data?.message || "Có lỗi xảy ra!")
+    }
+  })
+
+  // Delete mutation
+  const deleteMutation = useMutation({
+    mutationFn: (id: string) => VoucherAPI.deleteVoucher(id),
+    onSuccess: () => {
+      toast.success("Xóa voucher thành công!")
+      queryClient.invalidateQueries({ queryKey: ["listVoucher", queryConfig] })
+    },
+    onError: (error: any) => {
+      toast.error(error.response?.data?.message || "Có lỗi xảy ra!")
+    }
+  })
+
+  const handleOpenModal = (voucher?: VoucherItemType) => {
+    if (voucher) {
+      setEditingVoucher(voucher)
+      setVoucherType(voucher.type as "percentage" | "fixed")
+      form.setFieldsValue({
+        code: voucher.code,
+        description: voucher.description,
+        type: voucher.type,
+        value: voucher.value,
+        max_discount: voucher.max_discount,
+        min_order_value: voucher.min_order_value,
+        usage_limit: voucher.usage_limit,
+        date_range: [dayjs(voucher.start_date), dayjs(voucher.end_date)],
+        status: voucher.status
+      })
+    } else {
+      setEditingVoucher(null)
+      setVoucherType("percentage")
+      form.resetFields()
+    }
+    setIsModalOpen(true)
+  }
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false)
+    setEditingVoucher(null)
+    form.resetFields()
+  }
+
+  const handleSubmit = (values: any) => {
+    const body = {
+      code: values.code.toUpperCase(),
+      description: values.description,
+      type: values.type,
+      value: values.value,
+      max_discount: values.max_discount || 0,
+      min_order_value: values.min_order_value,
+      usage_limit: values.usage_limit,
+      start_date: values.date_range[0].toISOString(),
+      end_date: values.date_range[1].toISOString(),
+      status: values.status
+    }
+    mutation.mutate(body)
+  }
+
+  const handleDelete = (id: string) => {
+    Modal.confirm({
+      title: "Xác nhận xóa voucher",
+      content: "Bạn có chắc chắn muốn xóa voucher này?",
+      okText: "Xóa",
+      cancelText: "Hủy",
+      okButtonProps: { danger: true },
+      onOk: () => deleteMutation.mutate(id)
+    })
+  }
 
   const columns: ColumnsType<VoucherItemType> = [
     {
@@ -110,9 +206,7 @@ export default function ManageVoucher() {
       width: 120,
       align: "center",
       render: (type: string) => (
-        <Tag color={type === "percentage" ? "blue" : "green"}>
-          {type === "percentage" ? "Phần trăm" : "Số tiền cố định"}
-        </Tag>
+        <Tag color={type === "percentage" ? "blue" : "green"}>{type === "percentage" ? "Phần trăm" : "Số tiền"}</Tag>
       )
     },
     {
@@ -134,9 +228,7 @@ export default function ManageVoucher() {
       width: 120,
       align: "right",
       render: (value: number) => (
-        <span className="text-gray-700 dark:text-gray-300">
-          {value > 0 ? `${formatCurrency(value)}đ` : "Không giới hạn"}
-        </span>
+        <span className="text-gray-700 dark:text-gray-300">{value > 0 ? `${formatCurrency(value)}đ` : "—"}</span>
       )
     },
     {
@@ -159,7 +251,7 @@ export default function ManageVoucher() {
           </span>
           <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
             <div
-              className="bg-blue-500 h-2 rounded-full"
+              className="bg-blue-500 h-2 rounded-full transition-all"
               style={{
                 width: `${Math.min((record.used_count / record.usage_limit) * 100, 100)}%`
               }}
@@ -193,7 +285,7 @@ export default function ManageVoucher() {
       align: "center",
       render: (status: string) => {
         const statusConfig = {
-          active: { color: "green", text: "Đang hoạt động" },
+          active: { color: "green", text: "Hoạt động" },
           inactive: { color: "orange", text: "Chưa bắt đầu" },
           expired: { color: "red", text: "Hết hạn" }
         }
@@ -202,29 +294,22 @@ export default function ManageVoucher() {
       }
     },
     {
-      title: "Ngày tạo",
-      dataIndex: "created_at",
-      key: "created_at",
-      width: 180,
-      render: (date: string) => <span className="text-gray-600 dark:text-gray-400">{convertDateTime(date)}</span>
-    },
-    {
       title: "Hành động",
       key: "action",
       width: 120,
       fixed: "right",
       align: "center",
-      render: () => (
+      render: (_, record) => (
         <div className="flex items-center justify-center gap-2">
           <button
-            // onClick={() => handleEdit(record)}
+            onClick={() => handleOpenModal(record)}
             className="text-blue-500 hover:text-blue-700 transition-colors"
             title="Chỉnh sửa"
           >
             <Edit size={18} />
           </button>
           <button
-            // onClick={() => handleDelete(record._id)}
+            onClick={() => handleDelete(record._id)}
             className="text-red-500 hover:text-red-700 transition-colors"
             title="Xóa"
           >
@@ -242,7 +327,6 @@ export default function ManageVoucher() {
       if (message === "Không có quyền truy cập!") {
         toast.error(message, { autoClose: 1500 })
       }
-
       if (status === HttpStatusCode.NotFound) {
         navigate(path.AdminNotFound, { replace: true })
       }
@@ -253,28 +337,26 @@ export default function ManageVoucher() {
     <div>
       <Helmet>
         <title>Quản lý voucher</title>
-        <meta
-          name="description"
-          content="Đây là trang TECHZONE | Laptop, PC, Màn hình, điện thoại, linh kiện Chính Hãng"
-        />
       </Helmet>
       <NavigateBack />
       <h1 className="text-2xl font-bold text-gray-800 bg-clip-text text-transparent bg-gradient-to-r from-green-600 to-green-600 my-2">
-        Quản lý voucher
+        Quản lý Voucher
       </h1>
+
       <section className="mt-4">
         <div className="bg-white dark:bg-darkPrimary mb-3 dark:border-darkBorder rounded-2xl">
           {isLoading && <Skeleton />}
-          <div className="flex items-center justify-between mb-2">
+
+          <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
               <Button
-                onClick={() => downloadExcel(listSupplier)}
+                onClick={() => downloadExcel(listVoucher)}
                 icon={<FolderUp size={15} />}
                 nameButton="Export"
                 classNameButton="py-2 px-3 border border-[#E2E7FF] bg-[#E2E7FF] w-full text-[#3A5BFF] font-medium rounded-md hover:bg-blue-500/40 duration-200 text-[13px] flex items-center gap-1"
               />
               <Select
-                defaultValue="Mới nhất"
+                defaultValue="new"
                 className="select-sort"
                 onChange={(value) => handleSort(value, queryConfig, path.AdminVoucher)}
                 suffixIcon={<ArrowUpNarrowWide color={isDarkMode ? "white" : "black"} />}
@@ -284,21 +366,20 @@ export default function ManageVoucher() {
                 ]}
               />
             </div>
-            <div>
-              <Button
-                // onClick={() => setAddItem(true)}
-                icon={<Plus size={15} />}
-                nameButton="Thêm mới"
-                classNameButton="py-2 px-3 bg-blue-500 w-full text-white font-medium rounded-md hover:bg-blue-500/80 duration-200 text-[13px] flex items-center gap-1"
-              />
-            </div>
+            <Button
+              onClick={() => handleOpenModal()}
+              icon={<Plus size={15} />}
+              nameButton="Thêm voucher"
+              classNameButton="py-2 px-3 bg-blue-500 w-full text-white font-medium rounded-md hover:bg-blue-500/80 duration-200 text-[13px] flex items-center gap-1"
+            />
           </div>
+
           {!isFetching ? (
             <div>
-              {listSupplier?.length > 0 ? (
+              {listVoucher?.length > 0 ? (
                 <Table
                   rowKey={(r) => r._id}
-                  dataSource={listSupplier}
+                  dataSource={listVoucher}
                   columns={columns}
                   loading={isLoading}
                   pagination={{
@@ -309,7 +390,7 @@ export default function ManageVoucher() {
                     pageSizeOptions: ["5", "10", "20", "50"],
                     onChange: (page, pageSize) => {
                       navigate({
-                        pathname: path.AdminSuppliers,
+                        pathname: path.AdminVoucher,
                         search: createSearchParams({
                           ...queryConfig,
                           page: page.toString(),
@@ -318,13 +399,13 @@ export default function ManageVoucher() {
                       })
                     }
                   }}
-                  rowClassName={(_, index) => (index % 2 === 0 ? "bg-[#f2f2f2]" : "bg-white")}
+                  rowClassName={(_, index) =>
+                    index % 2 === 0 ? "bg-[#f2f2f2] dark:bg-darkSecond" : "bg-white dark:bg-darkPrimary"
+                  }
                   scroll={{ x: "max-content" }}
                 />
               ) : (
-                <div className="text-center mt-4">
-                  <Empty />
-                </div>
+                <Empty description="Chưa có voucher nào" />
               )}
             </div>
           ) : (
@@ -332,6 +413,170 @@ export default function ManageVoucher() {
           )}
         </div>
       </section>
+
+      {/* Modal Add/Edit Voucher */}
+      <Modal
+        title={
+          <div className="flex items-center gap-2 text-lg font-semibold">
+            <TagIcon size={20} className="text-blue-500" />
+            {editingVoucher ? "Chỉnh sửa voucher" : "Thêm voucher mới"}
+          </div>
+        }
+        open={isModalOpen}
+        onCancel={handleCloseModal}
+        footer={null}
+        width={700}
+        centered
+      >
+        <Form
+          form={form}
+          layout="vertical"
+          onFinish={handleSubmit}
+          className="mt-4"
+          initialValues={{
+            type: "percentage",
+            status: "active",
+            usage_limit: 100
+          }}
+        >
+          <div className="grid grid-cols-2 gap-4">
+            {/* Mã voucher */}
+            <Form.Item
+              label="Mã voucher"
+              name="code"
+              rules={[
+                { required: true, message: "Vui lòng nhập mã voucher!" },
+                { pattern: /^[A-Z0-9]+$/, message: "Chỉ chữ in hoa và số!" }
+              ]}
+            >
+              <Input
+                prefix={<TagIcon size={16} className="text-gray-400" />}
+                placeholder="VD: TECHZONE10"
+                className="uppercase"
+                disabled={!!editingVoucher}
+              />
+            </Form.Item>
+
+            {/* Loại voucher */}
+            <Form.Item label="Loại giảm giá" name="type" rules={[{ required: true }]}>
+              <Radio.Group onChange={(e) => setVoucherType(e.target.value)} buttonStyle="solid">
+                <Radio.Button value="percentage">
+                  <Percent size={14} className="inline mr-1" />
+                  Phần trăm
+                </Radio.Button>
+                <Radio.Button value="fixed">
+                  <DollarSign size={14} className="inline mr-1" />
+                  Số tiền
+                </Radio.Button>
+              </Radio.Group>
+            </Form.Item>
+          </div>
+
+          {/* Mô tả */}
+          <Form.Item label="Mô tả" name="description">
+            <TextArea rows={2} placeholder="Mô tả về voucher (không bắt buộc)" />
+          </Form.Item>
+
+          <div className="grid grid-cols-2 gap-4">
+            {/* Giá trị giảm */}
+            <Form.Item
+              label={voucherType === "percentage" ? "Giá trị giảm (%)" : "Số tiền giảm (VNĐ)"}
+              name="value"
+              rules={[{ required: true, message: "Vui lòng nhập giá trị!" }]}
+            >
+              <InputNumber
+                min={0}
+                max={voucherType === "percentage" ? 100 : undefined}
+                className="w-full"
+                formatter={(value) =>
+                  voucherType === "percentage" ? `${value}` : `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+                }
+                parser={(value) => (value ? value.replace(/\$\s?|(,*)/g, "") : "") as any}
+                suffix={voucherType === "percentage" ? "%" : "đ"}
+              />
+            </Form.Item>
+
+            {/* Giảm tối đa (chỉ hiện khi type = percentage) */}
+            {voucherType === "percentage" && (
+              <Form.Item label="Giảm tối đa (VNĐ)" name="max_discount">
+                <InputNumber
+                  min={0}
+                  className="w-full"
+                  placeholder="0 = không giới hạn"
+                  formatter={(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
+                  parser={(value) => value!.replace(/\$\s?|(,*)/g, "") as any}
+                  suffix="đ"
+                />
+              </Form.Item>
+            )}
+
+            {voucherType === "fixed" && <div />}
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            {/* Đơn hàng tối thiểu */}
+            <Form.Item
+              label="Đơn hàng tối thiểu (VNĐ)"
+              name="min_order_value"
+              rules={[{ required: true, message: "Vui lòng nhập giá trị tối thiểu!" }]}
+            >
+              <InputNumber
+                min={0}
+                className="w-full"
+                formatter={(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
+                parser={(value) => value!.replace(/\$\s?|(,*)/g, "") as any}
+                suffix="đ"
+              />
+            </Form.Item>
+
+            {/* Số lượt sử dụng */}
+            <Form.Item
+              label="Số lượt sử dụng"
+              name="usage_limit"
+              rules={[{ required: true, message: "Vui lòng nhập số lượt!" }]}
+            >
+              <InputNumber min={1} className="w-full" placeholder="VD: 100" />
+            </Form.Item>
+          </div>
+
+          {/* Thời gian hiệu lực */}
+          <Form.Item
+            label="Thời gian hiệu lực"
+            name="date_range"
+            rules={[{ required: true, message: "Vui lòng chọn thời gian!" }]}
+          >
+            <RangePicker
+              showTime
+              format="DD/MM/YYYY HH:mm"
+              className="w-full"
+              placeholder={["Ngày bắt đầu", "Ngày kết thúc"]}
+            />
+          </Form.Item>
+
+          {/* Trạng thái */}
+          <Form.Item label="Trạng thái" name="status" rules={[{ required: true }]}>
+            <Radio.Group>
+              <Radio value="active">Hoạt động</Radio>
+              <Radio value="inactive">Chưa bắt đầu</Radio>
+            </Radio.Group>
+          </Form.Item>
+
+          {/* Buttons */}
+          <div className="flex justify-end gap-2 mt-6">
+            <Button
+              onClick={handleCloseModal}
+              nameButton="Hủy"
+              classNameButton="px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50"
+            />
+            <Button
+              type="submit"
+              nameButton={editingVoucher ? "Cập nhật" : "Thêm mới"}
+              classNameButton="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
+              disabled={mutation.isPending}
+            />
+          </div>
+        </Form>
+      </Modal>
     </div>
   )
 }

@@ -2,7 +2,6 @@
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { Helmet } from "react-helmet-async"
 import { useLocation, useNavigate, useParams } from "react-router-dom"
-import { collectionAPI } from "src/Apis/collections.api"
 import Breadcrumb from "src/Client/Components/Breadcrumb"
 import Skeleton from "src/Components/Skeleton"
 import { HttpStatusCode } from "src/Constants/httpStatus"
@@ -19,6 +18,7 @@ import { getAccessTokenFromLS } from "src/Helpers/auth"
 import InputNumberQuantity from "src/Client/Components/InputNumberQuantity"
 import { motion } from "framer-motion"
 import { Modal } from "antd"
+import { collectionAPI } from "src/Apis/client/collections.api"
 
 export default function ProductDetail() {
   const queryClient = useQueryClient()

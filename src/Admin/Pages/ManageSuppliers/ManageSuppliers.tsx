@@ -47,6 +47,7 @@ import "../ManageOrders/ManageOrders.css"
 import { useTheme } from "src/Admin/Components/Theme-provider/Theme-provider"
 import { ColumnsType } from "antd/es/table"
 import { SupplierAPI } from "src/Apis/admin/supplier.api"
+import useSortList from "src/Hook/useSortList"
 
 type FormDataUpdate = Pick<
   SchemaSupplierUpdateType,
@@ -102,6 +103,7 @@ export default function ManageSuppliers() {
   const { theme } = useTheme()
   const isDarkMode = theme === "dark" || theme === "system"
   const navigate = useNavigate()
+  const { handleSort } = useSortList()
   const { downloadExcel } = useDownloadExcel()
   // const queryClient = useQueryClient()
   const queryParams: queryParamConfigSupplier = useQueryParams()
@@ -313,18 +315,6 @@ export default function ManageSuppliers() {
     ])
     resetFormSearch()
     navigate({ pathname: path.AdminSuppliers, search: createSearchParams(filteredSearch).toString() })
-  }
-
-  // xử lý sort ds
-  const handleChangeSortListOrder = (value: string) => {
-    const body = {
-      ...queryConfig,
-      sortBy: value
-    }
-    navigate({
-      pathname: `${path.AdminSuppliers}`,
-      search: createSearchParams(body).toString()
-    })
   }
 
   const items: CollapseProps["items"] = [
@@ -643,7 +633,7 @@ export default function ManageSuppliers() {
               <Select
                 defaultValue="Mới nhất"
                 className="select-sort"
-                onChange={handleChangeSortListOrder}
+                onChange={(value) => handleSort(value, queryConfig, path.AdminSuppliers)}
                 suffixIcon={<ArrowUpNarrowWide color={isDarkMode ? "white" : "black"} />}
                 options={[
                   { value: "old", label: "Cũ nhất" },

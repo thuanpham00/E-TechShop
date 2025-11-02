@@ -45,8 +45,8 @@ export const schemaAuth = yup
       }),
     salary: yup
       .number()
-      .typeError("Lương phải là số!") // nếu nhập ký tự chữ hoặc không phải số
       .required("Lương bắt buộc!")
+      .transform((value, originalValue) => (originalValue === "" ? undefined : value))
       .min(0, "Lương không được nhỏ hơn 0"),
     created_at: yup.string(),
     updated_at: yup.string(),
@@ -155,10 +155,10 @@ export const schemaAddProduct = yup.object({
   brand: yup.string().required("Thương hiệu bắt buộc!"),
   price: yup
     .number()
-    .transform((value, originalValue) => (originalValue === "" ? undefined : value))
+    .transform((value, originalValue) => (originalValue === "" ? undefined : value)) // number thì cần đi kèm với transform trường hợp ko nhập thì báo lỗi
+    .required("Giá bắt buộc!")
     .typeError("Giá phải là số!")
-    .min(0, "Giá không được nhỏ hơn 0!")
-    .required("Giá bắt buộc!"),
+    .min(0, "Giá không được nhỏ hơn 0!"),
   discount: yup
     .number()
     .transform((value, originalValue) => (originalValue === "" ? undefined : value))
@@ -169,7 +169,7 @@ export const schemaAddProduct = yup.object({
     .number()
     .typeError("Số lượng phải là số!")
     .required("Số lượng bắt buộc!")
-    .min(-1, "% giảm giá không được nhỏ hơn 0!"),
+    .min(0, "Số lượng không được nhỏ hơn 0!"),
   isFeatured: yup.string(),
   description: yup.string().required("Mô tả sản phẩm bắt buộc!"),
   banner: yup.string().max(1000, "Độ dài tối đa 1000 kí tự!").required("Ảnh đại diện sản phẩm bắt buộc!"),
@@ -237,9 +237,37 @@ export const schemaSupply = schemaSearchFilter
 export const schemaSupplyUpdate = schemaAuth.pick(["created_at", "updated_at", "id"]).shape({
   productId: yup.string().required("Tên sản phẩm bắt buộc!"),
   supplierId: yup.string().required("Nhà cung cấp bắt buộc!"),
-  importPrice: yup.number().required("Giá nhập bắt buộc!"),
-  warrantyMonths: yup.number().required("Thời gian bảo hành bắt buộc!"),
-  leadTimeDays: yup.number().required("Thời gian cung ứng bắt buộc!"),
+  importPrice: yup
+    .number()
+    .required("Giá nhập bắt buộc!")
+    .transform((value, originalValue) => {
+      // value: giá trị sau khi đã parse (có thể là NaN)
+      // originalValue: giá trị gốc từ input (string "6.599.999")
+
+      if (typeof originalValue === "string") {
+        const cleaned = originalValue.replace(/\./g, "") // "6599999"
+        return cleaned ? Number(cleaned) : undefined
+      }
+      return value
+    }),
+  warrantyMonths: yup
+    .number()
+    .transform((value, originalValue) => {
+      // ✅ Nếu empty string -> return undefined để trigger required
+      return originalValue === "" ? undefined : value
+    })
+    .required("Thời gian bảo hành bắt buộc!")
+    .min(0, "Thời gian bảo hành phải >= 0")
+    .typeError("Thời gian bảo hành phải là số"),
+  leadTimeDays: yup
+    .number()
+    .transform((value, originalValue) => {
+      // ✅ Nếu empty string -> return undefined để trigger required
+      return originalValue === "" ? undefined : value
+    })
+    .required("Thời gian cung ứng bắt buộc!")
+    .min(0, "Thời gian cung ứng phải >= 0")
+    .typeError("Thời gian cung ứng phải là số"),
   description: yup.string().default("")
 })
 

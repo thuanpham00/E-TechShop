@@ -1,20 +1,20 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import { ChevronLeft } from "lucide-react"
+import { ChevronLeft, ShoppingCart, Trash2, Package, Tag as TagIcon, CreditCard } from "lucide-react"
 import { Helmet } from "react-helmet-async"
 import { Link, useLocation, useNavigate } from "react-router-dom"
-import { collectionAPI } from "src/Apis/collections.api"
 import { getAccessTokenFromLS } from "src/Helpers/auth"
 import { CartType, ProductDetailType } from "src/Types/product.type"
 import { SuccessResponse } from "src/Types/utils.type"
 import cartImg from "src/Assets/img/cart.png"
-import { Table, Checkbox, Image, Typography, Button, InputNumber, Steps } from "antd"
+import { Table, Checkbox, Image, Typography, Button, InputNumber, Steps, Empty, Spin, Tag } from "antd"
 import { useEffect, useMemo, useState } from "react"
 import { CalculateSalePrice, formatCurrency, slugify } from "src/Helpers/common"
 import { debounce } from "lodash"
 import { toast } from "react-toastify"
 import { motion } from "framer-motion"
 import { path } from "src/Constants/path"
+import { collectionAPI } from "src/Apis/client/collections.api"
 
 const { Text } = Typography
 
@@ -36,12 +36,38 @@ export default function Cart() {
   const token = getAccessTokenFromLS()
   const [listCart, setListCart] = useState<CartList>([])
   const [listCheck, setListCheck] = useState<Record<string, boolean>>({})
-  const [selectedProducts, setSelectedProducts] = useState<CartList>([]) // sản phẩm selected
+  const [selectedProducts, setSelectedProducts] = useState<CartList>([])
   const [flag, setFlag] = useState<boolean>(false)
+
+  const handleCheckAllProduct = () => {
+    const checkValue = !flag
+    const newCheck: Record<string, boolean> = {}
+    const selectedProduct: CartList = []
+    listCart.map((item) => {
+      newCheck[item.key] = checkValue
+      selectedProduct.push(item)
+    })
+    if (flag) {
+      setSelectedProducts([])
+    } else {
+      setSelectedProducts(selectedProduct)
+    }
+    setFlag(checkValue)
+    setListCheck(newCheck)
+  }
+
+  const isAllSelected = useMemo(() => {
+    return listCart.length > 0 && selectedProducts.length === listCart.length
+  }, [selectedProducts.length, listCart.length])
 
   const columns = [
     {
-      title: "Chọn",
+      title: (
+        <Checkbox checked={isAllSelected} onChange={handleCheckAllProduct} className="font-medium">
+          Chọn tất cả
+        </Checkbox>
+      ),
+      align: "center" as const,
       dataIndex: "select",
       render: (_: any, record: any) => (
         <Checkbox
@@ -60,7 +86,7 @@ export default function Cart() {
           }}
         />
       ),
-      width: 50
+      width: 150
     },
     {
       title: "Sản phẩm",
@@ -70,88 +96,121 @@ export default function Cart() {
           to={{
             pathname: `/products/${slugify(record.name)}-i-${record.key}`
           }}
-          style={{ display: "flex", gap: 16, alignItems: "center" }}
+          className="flex gap-4 items-center hover:opacity-80 transition-opacity"
         >
-          <Image src={record.image} width={80} />
-          <div>
-            <Text>{record.name}</Text>
+          <div className="relative">
+            <Image
+              src={record.image}
+              width={80}
+              height={80}
+              className="rounded-lg border-2 border-gray-100"
+              preview={false}
+            />
+            {record.discount > 0 && (
+              <Tag color="red" className="absolute -top-2 -right-2 text-xs font-bold">
+                -{record.discount}%
+              </Tag>
+            )}
+          </div>
+          <div className="flex-1">
+            <Text strong className="text-gray-800 line-clamp-2">
+              {record.name}
+            </Text>
           </div>
         </Link>
-      )
+      ),
+      width: 400
     },
     {
       title: "Đơn giá",
       render: (_: any, record: any) => (
-        <div>
-          {record.discount === 0 ? (
-            <Text strong>{record.price.toLocaleString()}₫</Text>
+        <div className="text-center">
+          {record.discount > 0 ? (
+            <>
+              <Text delete className="text-gray-400 text-sm block">
+                {formatCurrency(record.price)}đ
+              </Text>
+              <Text strong className="text-red-500 text-base">
+                {CalculateSalePrice(record.price, record.discount)}đ
+              </Text>
+            </>
           ) : (
-            <Text delete style={{ color: "#aaa" }}>
-              {record.price.toLocaleString()}₫
+            <Text strong className="text-gray-800 text-base">
+              {formatCurrency(record.price)}đ
             </Text>
           )}
-
-          <br />
-          {record.discount !== 0 ? <Text strong>{CalculateSalePrice(record.price, record.discount)}đ</Text> : ""}
         </div>
       ),
-      width: 150
+      width: 150,
+      align: "center" as const
     },
     {
       title: "Số lượng",
       render: (_: any, record: any) => (
-        <InputNumber
-          min={1}
-          value={record.quantity}
-          onChange={(value) => {
-            if (value) {
-              debouncedUpdateProductToCart(record.key, value)
-              // Cập nhật UI tạm thời nếu muốn
-              setListCart((prev) => prev.map((item) => (item.key === record.key ? { ...item, quantity: value } : item)))
-            }
-          }}
-        />
+        <div className="flex justify-center">
+          <InputNumber
+            min={1}
+            max={99}
+            value={record.quantity}
+            onChange={(value) => {
+              if (value) {
+                debouncedUpdateProductToCart(record.key, value)
+                setListCart((prev) =>
+                  prev.map((item) => (item.key === record.key ? { ...item, quantity: value } : item))
+                )
+              }
+            }}
+            className="w-24"
+          />
+        </div>
       ),
-      width: 120
+      width: 150,
+      align: "center" as const
     },
     {
-      title: "Giá",
+      title: "Thành tiền",
       render: (_: any, record: any) => {
+        const finalPrice = record.discount !== 0 ? record.price - record.price * (record.discount / 100) : record.price
         return (
-          <Text type="danger" strong>
-            {record.discount !== 0
-              ? formatCurrency((record.price - record.price * (record.discount / 100)) * record.quantity)
-              : formatCurrency(record.price * record.quantity)}
-            ₫
+          <Text strong className="text-red-500 text-lg">
+            {formatCurrency(finalPrice * record.quantity)}đ
           </Text>
         )
       },
-      width: 150
+      width: 150,
+      align: "center" as const
     },
     {
       title: "Thao tác",
       render: (_: any, record: any) => {
         return (
-          <Button type="link" danger onClick={() => removeProductToCart(record.key)}>
+          <Button
+            type="text"
+            danger
+            icon={<Trash2 size={16} />}
+            onClick={() => removeProductToCart(record.key)}
+            className="hover:bg-red-50"
+          >
             Xóa
           </Button>
         )
       },
-      width: 100
+      width: 100,
+      align: "center" as const
     }
   ]
 
-  const { data } = useQuery({
+  const { data, isLoading } = useQuery({
     queryKey: ["listCart", token],
     queryFn: () => {
       const controller = new AbortController()
       setTimeout(() => {
-        controller.abort() // hủy request khi chờ quá lâu // 10 giây sau cho nó hủy // làm tự động
+        controller.abort()
       }, 10000)
       return collectionAPI.getProductInCart(controller.signal)
     },
-    retry: 0, // số lần retry lại khi hủy request (dùng abort signal)
-    staleTime: 10 * 60 * 1000, // dưới 5 phút nó không gọi lại api
+    retry: 0,
+    staleTime: 10 * 60 * 1000,
     placeholderData: keepPreviousData
   })
 
@@ -190,7 +249,6 @@ export default function Cart() {
     }
   }, [listProductCart, productSelectedBuyNow])
 
-  // cập nhật số lượng sản phẩm giỏ hàng
   const updateProductToCartMutation = useMutation({
     mutationFn: (body: CartType) => {
       return collectionAPI.updateQuantityProductInCart(body)
@@ -201,7 +259,7 @@ export default function Cart() {
     updateProductToCartMutation
       .mutateAsync({ product_id: productId, quantity: quantity, added_at: new Date() })
       .then(() => {
-        queryClient.invalidateQueries({ queryKey: ["listCart", token] }) // đồng bộ
+        queryClient.invalidateQueries({ queryKey: ["listCart", token] })
       })
       .catch((err) => console.log(err))
   }
@@ -214,7 +272,6 @@ export default function Cart() {
     []
   )
 
-  // xóa 1 sản phẩm giỏ hàng
   const removeProductToCartMutation = useMutation({
     mutationFn: (body: string) => {
       return collectionAPI.removeProductToCart(body)
@@ -228,7 +285,6 @@ export default function Cart() {
     })
   }
 
-  // clear giỏ hàng
   const clearProductInCartMutation = useMutation({
     mutationFn: () => {
       return collectionAPI.clearProductToCart()
@@ -239,31 +295,10 @@ export default function Cart() {
     clearProductInCartMutation.mutate(undefined, {
       onSuccess: (res) => {
         toast.success(res.data.message, { autoClose: 1500 })
-        queryClient.invalidateQueries({ queryKey: ["listCart", token] }) // đồng bộ
+        queryClient.invalidateQueries({ queryKey: ["listCart", token] })
       }
     })
   }
-
-  const handleCheckAllProduct = () => {
-    const checkValue = !flag
-    const newCheck: Record<string, boolean> = {}
-    const selectedProduct: CartList = []
-    listCart.map((item) => {
-      newCheck[item.key] = checkValue
-      selectedProduct.push(item)
-    })
-    if (flag) {
-      setSelectedProducts([])
-    } else {
-      setSelectedProducts(selectedProduct)
-    }
-    setFlag(checkValue)
-    setListCheck(newCheck)
-  }
-
-  const isAllSelected = useMemo(() => {
-    return listCart.length > 0 && selectedProducts.length === listCart.length
-  }, [selectedProducts.length, listCart.length])
 
   const totalPriceProducts = useMemo(() => {
     return selectedProducts.reduce((total, product) => {
@@ -295,125 +330,167 @@ export default function Cart() {
   }
 
   return (
-    <div>
+    <div className="bg-gray-50">
       <Helmet>
-        <title>Giỏ hàng mua sắm</title>
+        <title>Giỏ hàng mua sắm - TechZone</title>
         <meta
           name="description"
           content="Giỏ hàng TechZone - Hoàn tất đơn hàng laptop, PC, linh kiện và phụ kiện công nghệ. Thanh toán nhanh, bảo mật, giao hàng toàn quốc."
         />
       </Helmet>
-      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-        <div className="my-4">
-          <div className="container" style={{ maxWidth: "70rem" }}>
-            <Link to={"/home"} className="flex items-center gap-[2px] cursor-pointer">
-              <ChevronLeft size={16} color="blue" />
-              <span className="text-[14px] font-medium text-blue-500">Mua thêm sản phẩm khác</span>
+
+      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="py-6">
+        <div className="container mx-auto px-4" style={{ maxWidth: "1200px" }}>
+          {/* Header */}
+          <div className="mb-6">
+            <Link
+              to="/home"
+              className="inline-flex items-center gap-2 text-blue-500 hover:text-blue-600 transition-colors"
+            >
+              <ChevronLeft size={18} />
+              <span className="text-sm font-medium">Tiếp tục mua sắm</span>
             </Link>
+          </div>
 
-            <div className="p-4 bg-white rounded-md mt-4">
-              {lengthCart > 0 ? (
-                <div className="relative">
-                  <div className="bg-red-50 px-4 py-6">
-                    <Steps
-                      size="small"
-                      current={0}
-                      type="default"
-                      items={[
-                        {
-                          title: <span style={{ color: "red", fontWeight: "500" }}>Giỏ hàng</span>
-                        },
-                        {
-                          title: <span className="text-gray-500">Thông tin đặt hàng</span>
-                        },
-                        {
-                          title: <span className="text-gray-500">Thanh toán</span>
-                        },
-                        {
-                          title: <span className="text-gray-500">Hoàn tất</span>
-                        }
-                      ]}
-                    />
+          {/* Main Content */}
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+            {isLoading ? (
+              <div className="flex justify-center items-center py-20">
+                <Spin size="large" />
+              </div>
+            ) : lengthCart > 0 ? (
+              <div>
+                {/* Progress Steps */}
+                <div className="bg-gradient-to-r from-blue-50 to-blue-100 px-8 py-6">
+                  <Steps
+                    current={0}
+                    items={[
+                      {
+                        title: <span className="text-blue-600 font-semibold">Giỏ hàng</span>,
+                        icon: <ShoppingCart className="text-blue-600" size={20} />
+                      },
+                      {
+                        title: <span className="text-gray-500">Thông tin đặt hàng</span>,
+                        icon: <Package className="text-gray-400" size={20} />
+                      },
+                      {
+                        title: <span className="text-gray-500">Thanh toán</span>,
+                        icon: <CreditCard className="text-gray-400" size={20} />
+                      },
+                      {
+                        title: <span className="text-gray-500">Hoàn tất</span>,
+                        icon: <TagIcon className="text-gray-400" size={20} />
+                      }
+                    ]}
+                  />
+                </div>
+
+                {/* Cart Header */}
+                <div className="px-6 py-4 bg-gray-50 border-b border-gray-200">
+                  <div className="flex items-center justify-between">
+                    <h1 className="text-xl font-bold text-gray-800 flex items-center gap-2">
+                      <ShoppingCart className="text-blue-500" size={24} />
+                      Giỏ hàng của bạn
+                      <span className="text-blue-500">({lengthCart} sản phẩm)</span>
+                    </h1>
+                    {listCart.length > 0 && (
+                      <Button
+                        danger
+                        icon={<Trash2 size={16} />}
+                        onClick={clearProductInCart}
+                        loading={clearProductInCartMutation.isPending}
+                      >
+                        Xóa tất cả
+                      </Button>
+                    )}
                   </div>
+                </div>
 
-                  <div className="mt-4">
-                    <Table columns={columns} dataSource={listCart} pagination={false} bordered />
-                  </div>
+                {/* Products Table */}
+                <div className="p-6">
+                  <Table columns={columns} dataSource={listCart} pagination={false} bordered className="cart-table" />
+                </div>
 
-                  <div
-                    style={{
-                      position: "sticky",
-                      bottom: "0"
-                    }}
-                  >
-                    <div
-                      style={{
-                        border: "1px solid #f0f0f0",
-                        padding: "16px",
-                        display: "flex",
-                        justifyContent: "space-between",
-                        alignItems: "center",
-                        borderRadius: "4px",
-                        background: "#fff",
-                        boxShadow: "0 1px 2px rgba(0,0,0,0.05)",
-                        width: "100%"
-                      }}
-                    >
-                      {/* Left */}
-                      <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
-                        <Checkbox checked={isAllSelected} onClick={handleCheckAllProduct}>
-                          Chọn tất cả
-                        </Checkbox>
-                        <Text onClick={clearProductInCart} type="danger" strong className="cursor-pointer">
-                          Xóa tất cả
-                        </Text>
-                      </div>
-
-                      {/* Right */}
-                      <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
-                        <div style={{ textAlign: "right" }}>
-                          <div style={{ fontSize: "16px" }}>
-                            <span>Tổng tiền ({selectedProducts.length})</span>
-                            <span style={{ padding: "0 4px" }}>sản phẩm:</span>
-                            <span style={{ color: "#ff4d4f", fontSize: "18px", fontWeight: 500 }}>
+                {/* Sticky Footer */}
+                <div className="sticky bottom-0 bg-white border-t-2 border-gray-200 shadow-lg">
+                  <div className="px-6 py-4">
+                    <div className="flex justify-end items-center">
+                      {/* Right - Summary & Checkout */}
+                      <div className="flex items-center gap-6">
+                        {/* Price Summary */}
+                        <div className="text-right">
+                          <div className="flex items-center gap-2 mb-1">
+                            <span className="text-gray-600">Tổng thanh toán ({selectedProducts.length} sản phẩm):</span>
+                            <span className="text-2xl font-bold text-red-500">
                               {formatCurrency(totalPriceProducts)}đ
                             </span>
                           </div>
-                          <div style={{ fontSize: "12px", color: "#888" }}>
-                            Tiết kiệm
-                            <span style={{ color: "#ff4d4f", marginLeft: 4 }}>
-                              {formatCurrency(saveMoneyProducts - totalPriceProducts)}đ
-                            </span>
-                          </div>
+                          {saveMoneyProducts - totalPriceProducts > 0 && (
+                            <div className="flex items-center gap-1 justify-end">
+                              <TagIcon size={14} className="text-green-500" />
+                              <span className="text-sm text-gray-600">Tiết kiệm:</span>
+                              <span className="text-sm font-semibold text-green-500">
+                                {formatCurrency(saveMoneyProducts - totalPriceProducts)}đ
+                              </span>
+                            </div>
+                          )}
                         </div>
+
+                        {/* Checkout Button */}
                         <Button
-                          onClick={handleOrderProduct}
                           type="primary"
-                          className="custom-button"
-                          style={{
-                            background: "red",
-                            border: "none",
-                            padding: "0 20px",
-                            height: "40px",
-                            fontWeight: "bold"
-                          }}
+                          size="large"
+                          onClick={handleOrderProduct}
+                          disabled={selectedProducts.length === 0}
+                          className="bg-red-500 hover:!bg-red-600 border-none px-8 h-12 text-base font-bold shadow-lg"
                         >
-                          Đặt hàng ngay
+                          Mua hàng ({selectedProducts.length})
                         </Button>
                       </div>
                     </div>
                   </div>
                 </div>
-              ) : (
-                <div className="p-4 flex items-center justify-center flex-col">
-                  <img src={cartImg} alt="ảnh lỗi" className="w-[150px]" />
-                  <span className="text-sm">Chưa có sản phẩm!</span>
-                </div>
-              )}
-            </div>
+              </div>
+            ) : (
+              <div className="flex items-center justify-center py-6">
+                <Empty
+                  image={<img src={cartImg} alt="Empty cart" style={{ height: 150, margin: "0 auto" }} />}
+                  description={
+                    <div className="text-center py-4 mt-8">
+                      <p className="text-gray-500 text-lg mb-2">Giỏ hàng của bạn đang trống</p>
+                      <p className="text-gray-400 text-sm">Hãy khám phá và thêm sản phẩm yêu thích vào giỏ hàng!</p>
+                    </div>
+                  }
+                >
+                  <Link
+                    to="/home"
+                    className="inline-block px-8 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors font-medium"
+                  >
+                    Khám phá sản phẩm
+                  </Link>
+                </Empty>
+              </div>
+            )}
           </div>
         </div>
       </motion.div>
+
+      <style>{`
+        .cart-table .ant-table-thead > tr > th {
+          background: #f8fafc;
+          font-weight: 600;
+          color: #1e293b;
+          padding: 16px;
+        }
+        
+        .cart-table .ant-table-tbody > tr > td {
+          padding: 16px;
+        }
+        
+        .cart-table .ant-table-tbody > tr:hover > td {
+          background: #f8fafc;
+        }
+      `}</style>
     </div>
   )
 }

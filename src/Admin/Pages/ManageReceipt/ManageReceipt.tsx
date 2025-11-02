@@ -33,6 +33,7 @@ import { HttpStatusCode } from "src/Constants/httpStatus"
 import { ProductAPI } from "src/Apis/admin/product.api"
 import { SupplierAPI } from "src/Apis/admin/supplier.api"
 import { ReceiptAPI } from "src/Apis/admin/receipt.api"
+import useSortList from "src/Hook/useSortList"
 
 type FormDataSearch = Pick<
   SchemaSupplyType,
@@ -65,6 +66,7 @@ export default function ManageReceipt() {
 
   const navigate = useNavigate()
   const { downloadExcel } = useDownloadExcel()
+  const { handleSort } = useSortList()
 
   const queryParams: queryParamConfigReceipt = useQueryParams()
   const queryConfig: queryParamConfigReceipt = omitBy(
@@ -202,18 +204,6 @@ export default function ManageReceipt() {
     ])
     resetFormSearch()
     navigate({ pathname: path.AdminReceipts, search: createSearchParams(filteredSearch).toString() })
-  }
-
-  // xử lý sort ds
-  const handleChangeSortListOrder = (value: string) => {
-    const body = {
-      ...queryConfig,
-      sortBy: value
-    }
-    navigate({
-      pathname: `${path.AdminReceipts}`,
-      search: createSearchParams(body).toString()
-    })
   }
 
   const items: CollapseProps["items"] = [
@@ -470,7 +460,7 @@ export default function ManageReceipt() {
                 <Select
                   defaultValue="Mới nhất"
                   className="select-sort"
-                  onChange={handleChangeSortListOrder}
+                  onChange={(value) => handleSort(value, queryConfig, path.AdminReceipts)}
                   suffixIcon={<ArrowUpNarrowWide color={isDarkMode ? "white" : "black"} />}
                   options={[
                     { value: "old", label: "Cũ nhất" },
