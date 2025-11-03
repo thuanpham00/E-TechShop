@@ -45,6 +45,7 @@ export const clearLS = () => {
   localStorage.removeItem("name_user")
   localStorage.removeItem("role")
   localStorage.removeItem("avatar")
+  localStorage.removeItem("userId")
   const ClearLSEvent = new Event("ClearLS")
   LocalStorageEventTarget.dispatchEvent(ClearLSEvent) // phát sự kiện
 }

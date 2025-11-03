@@ -44,13 +44,13 @@ export default function ProductItem({ item }: { item: CollectionItemType }) {
 
   return (
     <button
-      className="col-span-1 block border border-[#dedede] rounded-[4px] p-4 pt-[6px] bg-white transition-all duration-200 ease-in cursor-pointer"
+      className="col-span-1 block border border-[#dedede] rounded-[8px] p-4 pt-[6px] bg-white transition-all duration-200 ease-in cursor-pointer"
       onMouseEnter={() => handleHoverProduct(item._id)}
       onMouseLeave={() => handleHoverProduct("")}
       onClick={handleNavigate}
     >
       <div className="flex flex-col relative">
-        <div className="absolute top-[-2px] right-[-12px]">
+        <div className="absolute top-[4px] right-[-10px]">
           {item.status && (
             <span
               className={`${getStatusTagClass(item.status)} text-white px-3 pt-[4px] pb-[6px] rounded-[4px] text-xs font-medium w-fit mb-2`}

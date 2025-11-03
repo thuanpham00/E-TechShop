@@ -96,6 +96,7 @@ export type queryParamConfigEmail = {
 }
 
 export type queryParamsCollection = {
+  sort?: string
   status?: string
   screen_size?: string
   cpu?: string

@@ -106,9 +106,6 @@ export default function ManageVoucher() {
     onSuccess: () => {
       toast.success("Xóa voucher thành công!")
       queryClient.invalidateQueries({ queryKey: ["listVoucher", queryConfig] })
-    },
-    onError: (error: any) => {
-      toast.error(error.response?.data?.message || "Có lỗi xảy ra!")
     }
   })
 

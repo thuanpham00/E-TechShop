@@ -1,12 +1,12 @@
 import { Navigate, Outlet, useLocation, useRoutes, useSearchParams } from "react-router-dom"
 import MainLayout from "../Layout/MainLayout"
-import { path } from "../../Constants/path"
-import { lazy, Suspense, useContext } from "react"
-import MainLayoutAuth from "../Layout/MainLayoutAuth"
-import { AppContext } from "src/Context/authContext"
 import UserLayout from "../Pages/User/Layout/UserLayout"
+import MainLayoutAuth from "../Layout/MainLayoutAuth"
+import { path } from "../../Constants/path"
+import { lazy, Suspense, useContext, useEffect, useRef } from "react"
+import { AppContext } from "src/Context/authContext"
 import { rolesForApi } from "src/Helpers/role_permission"
-import PaymentMethod from "../Pages/PaymentMethod"
+import { toast } from "react-toastify"
 
 const Home = lazy(() => import("../Pages/Home"))
 const Login = lazy(() => import("../Pages/Login"))
@@ -25,10 +25,23 @@ const PaymentSuccessVNPay = lazy(() => import("../Pages/PaymentSuccessVNPay"))
 const PaymentSuccessCod = lazy(() => import("../Pages/PaymentSuccessCod"))
 const ChangePassword = lazy(() => import("../Pages/User/Pages/ChangePassword"))
 const Profile = lazy(() => import("../Pages/User/Pages/Profile"))
+const PaymentMethod = lazy(() => import("../Pages/PaymentMethod"))
 
 const ProjectRouter = () => {
   const { isAuthenticated } = useContext(AppContext)
   const { pathname } = useLocation()
+  const hasShowToast = useRef(false)
+
+  useEffect(() => {
+    // chỉ chạy khi chưa login & chưa hiển thị toast
+    if (!isAuthenticated && !hasShowToast.current) {
+      toast.error("Vui lòng đăng nhập để tiếp tục", {
+        autoClose: 1500
+      })
+    }
+    hasShowToast.current = true
+  }, [isAuthenticated])
+
   return isAuthenticated ? <Outlet /> : <Navigate to={`${path.Login}?redirect_url=${encodeURIComponent(pathname)}`} />
 }
 
@@ -36,6 +49,7 @@ const RejectRouter = () => {
   const { isAuthenticated } = useContext(AppContext)
   const [searchParams] = useSearchParams()
   if (!isAuthenticated) {
+    // isAuthenticated = false
     return <Outlet />
   }
   const navigate = searchParams.get("redirect_url") || path.Home

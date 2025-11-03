@@ -226,7 +226,7 @@ export default function Order() {
           {/* Main Content */}
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
             {isLoading ? (
-              <div className="flex justify-center items-center py-20">
+              <div className="flex justify-center items-center py-28">
                 <Spin size="large" />
               </div>
             ) : lengthOrder > 0 ? (

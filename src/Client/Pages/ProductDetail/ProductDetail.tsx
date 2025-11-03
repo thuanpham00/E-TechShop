@@ -140,7 +140,15 @@ export default function ProductDetail() {
 
   const addProductToCart = async (productId: string, quantity: number) => {
     addProductToCartMutation
-      .mutateAsync({ product_id: productId, quantity: quantity, added_at: new Date() })
+      .mutateAsync(
+        { product_id: productId, quantity: quantity, added_at: new Date() },
+        {
+          onError: () => {
+            toast.error("Vui lòng đăng nhập để tiếp tục", { autoClose: 1500 })
+            navigate(`${path.Login}?redirect_url=${encodeURIComponent(`/products/${name}`)}`)
+          }
+        }
+      )
       .then((res) => {
         queryClient.invalidateQueries({ queryKey: ["listCart", token] })
         toast.success(res.data.message, { autoClose: 1500 })
@@ -150,7 +158,15 @@ export default function ProductDetail() {
 
   const handleBuyNow = (productId: string, quantity: number) => {
     addProductToCartMutation
-      .mutateAsync({ product_id: productId, quantity: quantity, added_at: new Date() })
+      .mutateAsync(
+        { product_id: productId, quantity: quantity, added_at: new Date() },
+        {
+          onError: () => {
+            toast.error("Vui lòng đăng nhập để tiếp tục", { autoClose: 1500 })
+            navigate(`${path.Login}?redirect_url=${encodeURIComponent(`/products/${name}`)}`)
+          }
+        }
+      )
       .then((res) => {
         navigate(path.Cart, {
           state: {
@@ -387,40 +403,83 @@ export default function ProductDetail() {
               </div>
             </div>
             <div className="mt-2 bg-white border border-gray-200 rounded-lg shadow-md my-4 p-6">
-              <h4 className="text-xl font-medium">Thông tin sản phẩm</h4>
-              <div className="mt-2 text-lg font-bold">Thông số kĩ thuật:</div>
-              <div className="mt-2">
+              <h4 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-cyan-500 bg-clip-text text-transparent mb-6">
+                Thông tin sản phẩm
+              </h4>
+
+              <div className="mt-6">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="h-8 w-1 bg-gradient-to-b from-blue-500 to-cyan-400 rounded-full"></div>
+                  <h5 className="text-xl font-bold text-gray-800">Thông số kỹ thuật</h5>
+                </div>
+
                 {productDetail?.specifications.length > 0 ? (
-                  <div>
-                    {productDetail.specifications?.map((item) => {
-                      return (
-                        <div key={item.name} className="flex items-stretch">
-                          <div className="w-1/3 flex items-center bg-[#f2f2f2] p-4 text-base text-[#428bca] font-bold border border-[#dedede] not-first:border-t-0 first:border-t-[#dedede]">
-                            {item.name}
-                          </div>
-                          <div className="w-2/3 p-4 text-base border border-[#dedede] not-first:border-t-0 first:border-t-[#dedede]">
-                            {item.value}
-                          </div>
-                        </div>
-                      )
-                    })}
+                  <div className="overflow-hidden rounded-xl border border-gray-200 shadow-sm">
+                    <table className="w-full">
+                      <tbody>
+                        {productDetail.specifications?.map((item, index) => {
+                          const isEven = index % 2 === 0
+
+                          return (
+                            <tr
+                              key={item.name}
+                              className={`group transition-colors duration-200 ${isEven ? "bg-gray-50" : "bg-white"}`}
+                            >
+                              <td className="w-1/3 p-4 border-r border-gray-200">
+                                <div className="flex items-center gap-3">
+                                  <span className="font-bold text-blue-600 uppercase tracking-wide text-sm">
+                                    {item.name}
+                                  </span>
+                                </div>
+                              </td>
+                              <td className="w-2/3 p-4">
+                                <div className="flex items-center justify-between">
+                                  <span className="text-gray-700 font-medium text-base">{item.value}</span>
+                                </div>
+                              </td>
+                            </tr>
+                          )
+                        })}
+                      </tbody>
+                    </table>
                   </div>
                 ) : (
-                  <div className="text-center font-base">Hiện tại sản phẩm chưa có thông số kĩ thuật</div>
+                  <div className="text-center py-12 bg-gray-50 rounded-xl border-2 border-dashed border-gray-300">
+                    <div className="text-6xl mb-4">📋</div>
+                    <p className="text-gray-500 font-medium">Hiện tại sản phẩm chưa có thông số kỹ thuật</p>
+                  </div>
                 )}
               </div>
 
-              {productDetail?.description === "<p>Đợi cập nhật</p>" ? (
-                <div
-                  className="mt-4 prose max-w-none text-center font-semibold"
-                  dangerouslySetInnerHTML={{ __html: productDetail.description }}
-                />
-              ) : (
-                <div
-                  className="mt-4 prose max-w-none"
-                  dangerouslySetInnerHTML={{ __html: productDetail?.description }}
-                />
-              )}
+              <div className="mt-8">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="h-8 w-1 bg-gradient-to-b from-blue-500 to-cyan-400 rounded-full"></div>
+                  <h5 className="text-xl font-bold text-gray-800">Mô tả chi tiết</h5>
+                </div>
+
+                {productDetail?.description === "<p>Đợi cập nhật</p>" ? (
+                  <div className="text-center py-12 bg-gradient-to-br from-purple-50 to-pink-50 rounded-xl border border-purple-200">
+                    <div className="text-6xl mb-4">⏳</div>
+                    <div
+                      className="prose max-w-none text-purple-600 font-semibold"
+                      dangerouslySetInnerHTML={{ __html: productDetail.description }}
+                    />
+                  </div>
+                ) : (
+                  <div
+                    className="prose prose-lg max-w-none 
+          prose-headings:text-gray-800 prose-headings:font-bold
+          prose-p:text-gray-600 prose-p:leading-relaxed
+          prose-a:text-blue-600 prose-a:no-underline hover:prose-a:underline
+          prose-strong:text-gray-800 prose-strong:font-bold
+          prose-ul:list-disc prose-ul:ml-6
+          prose-ol:list-decimal prose-ol:ml-6
+          prose-img:rounded-xl prose-img:shadow-md
+          bg-gray-50 p-6 rounded-xl border border-gray-200"
+                    dangerouslySetInnerHTML={{ __html: productDetail?.description }}
+                  />
+                )}
+              </div>
             </div>
           </motion.div>
 

@@ -73,7 +73,7 @@ export default function Home() {
 
             <div>
               {recentlyViewed.length > 0 && (
-                <div className="relative bg-white rounded-lg shadow-md my-4 p-4">
+                <div className="relative bg-white rounded-lg border border-gray-200 shadow-md my-4 p-4">
                   <Fragment>
                     <div className="flex justify-between items-center">
                       <h1 className="text-xl font-semibold mb-2">Sản phẩm vừa xem</h1>
@@ -108,7 +108,7 @@ export default function Home() {
                 </div>
               )}
 
-              <div className="relative bg-white rounded-lg shadow-md my-4 p-4">
+              <div className="relative bg-white rounded-lg border border-gray-200 shadow-md my-4 p-4">
                 {getCollectionLaptopTopSold.isLoading && <Skeleton />}
                 {!getCollectionLaptopTopSold.isFetching && (
                   <Fragment>
@@ -151,7 +151,7 @@ export default function Home() {
                 )}
               </div>
 
-              <div className="relative bg-white rounded-lg shadow-md my-4 p-4">
+              <div className="relative bg-white rounded-lg border border-gray-200 shadow-md my-4 p-4">
                 {getCollectionLaptopGamingTopSold.isLoading && <Skeleton />}
                 {!getCollectionLaptopGamingTopSold.isFetching && (
                   <Fragment>
@@ -203,7 +203,7 @@ export default function Home() {
                 </Col>
               </Row>
 
-              <div className="relative bg-white rounded-lg shadow-md my-4 p-4">
+              <div className="relative bg-white rounded-lg border border-gray-200 shadow-md my-4 p-4">
                 {getCollectionPCTopSold.isLoading && <Skeleton />}
                 {!getCollectionPCTopSold.isFetching && (
                   <Fragment>
@@ -250,7 +250,7 @@ export default function Home() {
                 <img src={bannerMonitor} alt="banner" className="w-full h-[300px] rounded-md shadow-3xl" />
               </div>
 
-              <div className="relative bg-white rounded-lg shadow-md my-4 p-4">
+              <div className="relative bg-white rounded-lg border border-gray-200 shadow-md my-4 p-4">
                 {getCollectionMonitorTopSold.isLoading && <Skeleton />}
                 {!getCollectionMonitorTopSold.isFetching && (
                   <Fragment>
