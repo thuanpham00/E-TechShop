@@ -1,19 +1,16 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { PencilLine, Trash2, Upload } from "lucide-react"
+import { PencilLine } from "lucide-react"
 import { Helmet } from "react-helmet-async"
 import NavigateBack from "src/Admin/Components/NavigateBack"
-import no_img from "src/Assets/img/no_image_1.jpg"
-import no_img_1 from "src/Assets/img/no_image.png"
 import Input from "src/Components/Input"
-import { keepPreviousData, useMutation, useQuery } from "@tanstack/react-query"
+import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { ErrorResponse, SuccessResponse } from "src/Types/utils.type"
 import { Controller, useFieldArray, useForm } from "react-hook-form"
-import { useEffect, useMemo, useRef, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import Button from "src/Components/Button"
 import { schemaAddProduct, SchemaAddProductType } from "src/Client/Utils/rule"
 import { yupResolver } from "@hookform/resolvers/yup"
 import TextEditor from "src/Admin/Components/TextEditor"
-import { config } from "src/Constants/config"
 import { toast } from "react-toastify"
 import { CreateProductBodyReq, ProductItemType } from "src/Types/product.type"
 import { isError400 } from "src/Helpers/utils"
@@ -24,6 +21,9 @@ import { ProductAPI } from "src/Apis/admin/product.api"
 import { Select } from "antd"
 import { LoadingOutlined } from "@ant-design/icons"
 import { useLocation } from "react-router-dom"
+import InputBanner from "./Components/InputBanner/InputBanner"
+import InputGallery from "./Components/InputGallery"
+import { queryParamConfigProduct } from "src/Types/queryParams.type"
 
 const listSpecificationForCategory = {
   Laptop: [
@@ -76,11 +76,11 @@ const formData = schemaAddProduct.pick([
   "price",
   "discount",
   "stock",
-  "banner",
   "isFeatured",
   "description",
-  "medias",
-  "specifications"
+  "specifications",
+  "banner",
+  "medias"
 ])
 
 type FormData = Pick<
@@ -91,26 +91,27 @@ type FormData = Pick<
   | "price"
   | "discount"
   | "stock"
-  | "banner"
   | "isFeatured"
   | "description"
-  | "medias"
   | "specifications"
+  | "banner"
+  | "medias"
 >
 
 export default function AddProduct() {
   const { state } = useLocation()
+  const queryClient = useQueryClient()
   const editItem = state?.editItem as boolean | ProductItemType
-  console.log(editItem)
+  const queryConfig = state?.queryConfig as queryParamConfigProduct
 
   const getNameCategory = useQuery({
     queryKey: ["nameCategory"],
     queryFn: () => {
       return CategoryAPI.getNameCategory()
     },
-    retry: 0, // số lần retry lại khi hủy request (dùng abort signal)
-    staleTime: 10 * 60 * 1000, // dưới 1 phút nó không gọi lại api
-    placeholderData: keepPreviousData // giữ data cũ trong 1p
+    retry: 0,
+    staleTime: 10 * 60 * 1000,
+    placeholderData: keepPreviousData
   })
 
   const listNameCategory = getNameCategory.data?.data as SuccessResponse<{
@@ -124,9 +125,9 @@ export default function AddProduct() {
     queryFn: () => {
       return BrandAPI.getNameBrand()
     },
-    retry: 0, // số lần retry lại khi hủy request (dùng abort signal)
-    staleTime: 10 * 60 * 1000, // dưới 1 phút nó không gọi lại api
-    placeholderData: keepPreviousData // giữ data cũ trong 1p
+    retry: 0,
+    staleTime: 10 * 60 * 1000,
+    placeholderData: keepPreviousData
   })
 
   const listNameBrand = getNameBrand.data?.data as SuccessResponse<{
@@ -143,6 +144,7 @@ export default function AddProduct() {
     setValue,
     reset,
     setError,
+    getValues,
     formState: { errors }
   } = useForm<FormData>({ resolver: yupResolver(formData) })
 
@@ -153,42 +155,64 @@ export default function AddProduct() {
   }) // thiết kế để quản lý các trường dạng mảng trong form. Nó giúp bạn dễ dàng thêm, xóa, cập nhật, hoặc thay thế các phần tử trong mảng mà không cần dùng useState thủ công.
 
   const [selectedCategory, setSelectedCategory] = useState<CategoryType | null>(null)
-
-  // useEffect(() => {
-  //   if (editItem && typeof editItem === "object") {
-  //     const category = editItem.category[0].name
-  //     setSelectedCategory(category as CategoryType)
-  //     setValue("name", editItem.name)
-  //     setValue("brand", editItem.brand[0].name)
-  //     setValue("category", editItem.category[0].name)
-  //     setValue("price", editItem.price)
-  //     setValue("discount", editItem.discount)
-  //     setValue("isFeatured", editItem.isFeatured.toString())
-  //     setValue("description", editItem.description)
-  //     replace(editItem.specifications.map((item) => ({ name: item.name, value: item.value })) || [])
-  //   }
-  // }, [editItem, setValue, replace])
+  const initialSpecsRef = useRef<{ name: string; value: string }[]>([])
+  const bootstrappedRef = useRef(false)
+  const [existingBannerUrl, setExistingBannerUrl] = useState<string>("")
+  const [existingGalleryUrls, setExistingGalleryUrls] = useState<string[]>([])
 
   useEffect(() => {
-    if (selectedCategory) {
-      const array = listSpecificationForCategory[selectedCategory].map((item) => ({
-        name: item,
-        value: ""
+    if (editItem && typeof editItem === "object") {
+      const category = editItem.category.name
+      setSelectedCategory(category as CategoryType)
+      setValue("name", editItem.name)
+      setValue("brand", editItem.brand.name)
+      setValue("category", editItem.category.name)
+      setValue("price", editItem.price)
+      setValue("discount", editItem.discount)
+      setValue("isFeatured", editItem.isFeatured.toString())
+      setValue("description", editItem.description)
+      setValue("banner", editItem.banner.url)
+
+      if (editItem.banner.url) {
+        setExistingBannerUrl(editItem.banner.url)
+      }
+
+      if (editItem.medias?.length > 0) {
+        const urls = editItem.medias.map((item) => item.url)
+        setExistingGalleryUrls(urls)
+      }
+
+      const mapped = (editItem as ProductItemType).specifications.map((item) => ({
+        name: item.name,
+        value: item.value
       }))
-      console.log(array)
-      replace(array)
-    } else {
-      replace([])
+
+      initialSpecsRef.current = mapped
+      replace(mapped)
+      bootstrappedRef.current = false
     }
-  }, [selectedCategory, replace])
+  }, [editItem, setValue, replace])
+
+  useEffect(() => {
+    if (!selectedCategory) {
+      replace([])
+      return
+    }
+
+    const source = !bootstrappedRef.current ? initialSpecsRef.current || [] : getValues("specifications")
+
+    const dict = new Map(source.map((item) => [item.name, item.value]))
+    const array = listSpecificationForCategory[selectedCategory].map((name) => ({
+      name,
+      value: dict.get(name) ?? ""
+    }))
+
+    replace(array)
+    bootstrappedRef.current = true
+  }, [selectedCategory, replace, getValues])
 
   // xử lý banner
-  const [file, setFile] = useState<File | null>()
-  const previewImage = useMemo(() => {
-    if (file) {
-      return file ? URL.createObjectURL(file) : ""
-    }
-  }, [file])
+  const [file, setFile] = useState<File | null>(null)
 
   useEffect(() => {
     if (file) {
@@ -196,87 +220,23 @@ export default function AddProduct() {
     }
   }, [setValue, file])
 
-  const refBanner = useRef<HTMLInputElement>(null)
-  const handleChangeBanner = () => {
-    if (refBanner) {
-      refBanner.current?.click()
-    }
-  }
-
-  const onChangeImageBanner = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const fileFormLocal = event.target.files?.[0]
-
-    if (fileFormLocal && (fileFormLocal.size >= config.maxSizeUploadImage || !fileFormLocal.type.includes("image"))) {
-      toast.error("File vượt quá kích thước và không đúng định dạng ", {
-        autoClose: 1500
-      })
-    } else {
-      toast.success("File upload thành công", {
-        autoClose: 1500
-      })
-    }
-
-    setFile(fileFormLocal)
-  }
-
-  // xử lý danh mục ảnh
-  const refGallery = useRef<(HTMLInputElement | null)[]>([])
-  useEffect(() => {
-    refGallery.current = galleryFiles.map((_, index) => refGallery.current[index] || null)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [refGallery])
-  /**
-   * đảm bảo rằng refGallery.current luôn có cùng độ dài với galleryFiles, và các phần tử trong refGallery.current được giữ nguyên nếu đã tồn tại, hoặc được gán null nếu chưa có.
-   */
-
   const [galleryFiles, setGalleryFiles] = useState<(File | null)[]>([null, null, null, null])
-  const previewGallery = useMemo(() => {
-    return galleryFiles.map((file) => (file ? URL.createObjectURL(file) : null))
-  }, [galleryFiles])
-
-  useEffect(() => {
-    return () => {
-      previewGallery.forEach((preview) => {
-        if (preview) {
-          return URL.revokeObjectURL(preview) // useEffect giúp bạn quản lý việc giải phóng bộ nhớ bằng URL.revokeObjectURL() một cách tự động và an toàn.
-        }
-      })
-    }
-  }, [previewGallery])
-
-  const onChangeImageGallery = (index: number) => (event: React.ChangeEvent<HTMLInputElement>) => {
-    const fileFormLocal = event.target.files?.[0]
-
-    if (!fileFormLocal) {
-      toast.error("Không có file nào được chọn", { autoClose: 1500 })
-      return
-    }
-
-    if (fileFormLocal.size >= config.maxSizeUploadImage || !fileFormLocal.type.includes("image")) {
-      toast.error("File vượt quá kích thước hoặc không đúng định dạng", { autoClose: 1500 })
-      return
-    }
-
-    const newGalleryFiles = [...galleryFiles]
-    newGalleryFiles[index] = fileFormLocal
-    setGalleryFiles(newGalleryFiles)
-  }
 
   useEffect(() => {
     const mediaNames = galleryFiles.filter((file) => file !== null).map((item) => item.name)
     setValue("medias", mediaNames)
-    // khi mảng này có item nào đó khác null (là có ảnh) thì lấy setValue nếu mảng [] thì nó vi phạm yup min (1) 0 yc có ít nhất là 1 ảnh
   }, [setValue, galleryFiles])
 
   // xử lý thêm sản phẩm
-  const addProductMutation = useMutation({
-    mutationFn: (data: CreateProductBodyReq) => {
-      return ProductAPI.addProduct(data)
+  const saveProductMutation = useMutation({
+    mutationFn: (payload: { body: CreateProductBodyReq; id?: string }) => {
+      return payload.id ? ProductAPI.updateProduct(payload.body, payload.id) : ProductAPI.addProduct(payload.body)
     }
   })
 
   const handleSubmitAddProduct = handleSubmit(
     (data) => {
+      const isEdit = !!(editItem && typeof editItem === "object")
       const body: CreateProductBodyReq = {
         name: data.name,
         category: data.category,
@@ -290,45 +250,53 @@ export default function AddProduct() {
         medias: galleryFiles as File[],
         specifications: data.specifications
       }
-      addProductMutation.mutate(body, {
-        onSuccess: () => {
-          toast.success("Thêm sản phẩm thành công!", {
-            autoClose: 1500
-          })
-          reset({
-            name: "",
-            brand: "",
-            category: "",
-            price: "" as any,
-            discount: "" as any,
-            stock: undefined,
-            banner: "",
-            isFeatured: "false",
-            description: "",
-            medias: [],
-            specifications: []
-          })
-          setFile(null)
-          setGalleryFiles([null, null, null, null])
-
-          setSelectedCategory(null)
+      saveProductMutation.mutate(
+        {
+          body,
+          id: isEdit ? (editItem as ProductItemType)._id : undefined
         },
-        onError: (error) => {
-          if (isError400<ErrorResponse<FormData>>(error)) {
-            const formError = error.response?.data
-            setError("name", {
-              message: (formError as any).message
+        {
+          onSuccess: () => {
+            toast.success(isEdit ? "Cập nhật sản phẩm thành công!" : "Thêm sản phẩm thành công!", {
+              autoClose: 1500
             })
+            queryClient.invalidateQueries({ queryKey: ["listProduct", queryConfig] })
+            if (!isEdit) {
+              reset({
+                name: "",
+                brand: "",
+                category: "",
+                price: "" as any,
+                discount: "" as any,
+                stock: undefined,
+                banner: "",
+                isFeatured: "false",
+                description: "",
+                medias: [],
+                specifications: []
+              })
+              setFile(null)
+              setGalleryFiles([null, null, null, null])
+              setSelectedCategory(null)
+            }
+          },
+          onError: (error) => {
+            if (isError400<ErrorResponse<FormData>>(error)) {
+              const formError = error.response?.data
+              setError("name", {
+                message: (formError as any).message
+              })
+            }
           }
         }
-      })
+      )
     },
     (error) => {
       console.log(error)
     }
   )
 
-  const isSubmitting = addProductMutation.isPending
+  const isSubmitting = saveProductMutation.isPending
 
   return (
     <div>
@@ -349,89 +317,18 @@ export default function AddProduct() {
             <div className="p-4 text-base font-semibold">Ảnh sản phẩm</div>
             <div className="h-[2px] w-full bg-[#f2f2f2]"></div>
             <div className="p-4 pt-2">
-              <h2 className="font-medium">Ảnh đại diện</h2>
-              <div className="relative">
-                <img
-                  src={previewImage || no_img}
-                  alt="ảnh đại diện"
-                  className={`rounded-md mt-2 ${previewImage ? "object-contain" : "object-cover"}  h-[400px] w-full`}
-                />
-                <input
-                  className="hidden"
-                  type="file"
-                  accept=".jpg,.jpeg,.png,.webp"
-                  ref={refBanner}
-                  onChange={onChangeImageBanner}
-                />
-                {file ? (
-                  <button onClick={() => setFile(null)} className="p-1 absolute top-2 right-2 bg-[#f1f1f1] rounded-sm">
-                    <Trash2 color="red" size={18} />
-                  </button>
-                ) : (
-                  ""
-                )}
-              </div>
-              <button
-                type="button"
-                onClick={handleChangeBanner}
-                className="mt-2 bg-[#f2f2f2] border border-[#dadada] py-2 px-4 rounded-md text-black text-[13px] shadow-sm hover:bg-[#dedede] duration-200 flex items-center gap-1"
-              >
-                <Upload size={14} />
-                Thêm ảnh
-              </button>
-              <span className="mt-1 text-red-500 text-[13px] font-semibold min-h-[1.25rem] block">
-                {errors.banner?.message}
-              </span>
-              <h2 className="mt-2 font-medium">Danh mục ảnh</h2>
-              <div className="mt-2 grid grid-cols-4 gap-2">
-                {galleryFiles.map((file, index) => {
-                  const handleChangeGalleryImage = () => {
-                    refGallery.current[index]?.click()
-                  }
-
-                  const handleRemoveImage = () => {
-                    const newGalleryFiles = [...galleryFiles]
-                    newGalleryFiles[index] = null
-                    setGalleryFiles(newGalleryFiles)
-                  }
-
-                  return (
-                    <div key={index} className="relative col-span-2">
-                      <img
-                        className="rounded-md w-full object-cover"
-                        src={previewGallery[index] || no_img_1}
-                        alt={`ảnh sản phẩm ${index + 1}`}
-                      />
-                      <input
-                        className="hidden"
-                        type="file"
-                        accept=".jpg,.jpeg,.png,.webp"
-                        ref={(el) => (refGallery.current[index] = el)}
-                        onChange={onChangeImageGallery(index)}
-                      />
-                      {file ? (
-                        <button
-                          onClick={handleRemoveImage}
-                          className="absolute top-0 right-0 bg-[#f2f2f2] p-1 rounded-sm"
-                        >
-                          <Trash2 color="red" size={18} />
-                        </button>
-                      ) : (
-                        <button
-                          type="button"
-                          onClick={handleChangeGalleryImage}
-                          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-[#fff] p-1 rounded-md text-black text-[13px] shadow-sm hover:bg-[#dedede] duration-200 flex items-center gap-1"
-                        >
-                          <Upload size={14} />
-                        </button>
-                      )}
-                    </div>
-                  )
-                })}
-              </div>
-              <span className="mt-1 text-red-500 text-[13px] font-semibold min-h-[1.25rem] block">
-                {errors.medias?.message}
-              </span>
+              <InputBanner
+                errors={errors.banner?.message}
+                file={file}
+                setFile={setFile}
+                existingBannerUrl={existingBannerUrl}
+              />
+              <InputGallery
+                errors={errors.medias?.message}
+                galleryFiles={galleryFiles}
+                setGalleryFiles={setGalleryFiles}
+                existingGalleryUrls={existingGalleryUrls}
+              />
             </div>
           </div>
           <div className="col-span-4 bg-white dark:bg-darkPrimary border border-[#dedede] dark:border-darkBorder rounded-2xl shadow-xl">
@@ -447,7 +344,6 @@ export default function AddProduct() {
                 nameInput="Tên sản phẩm"
                 classNameInput="mt-1 p-2 w-full border border-[#dedede] rounded-sm focus:border-blue-500 focus:ring-2 outline-none text-black dark:text-white dark:bg-darkSecond dark:border-0"
               />
-
               <div className="flex items-center gap-4">
                 <div className="flex-1">
                   <span className="font-semibold">Danh mục</span>
@@ -528,7 +424,6 @@ export default function AddProduct() {
                   </span>
                 </div>
               </div>
-
               <div className="flex items-center gap-4">
                 <div className="flex-1">
                   <Input
@@ -556,7 +451,6 @@ export default function AddProduct() {
                   />
                 </div>
               </div>
-
               <div className="hidden">
                 <Input
                   name="stock"
@@ -572,7 +466,18 @@ export default function AddProduct() {
 
               <div className="flex items-center gap-2">
                 <h2 className="font-semibold">Sản phẩm nổi bật</h2>
-                <input type="checkbox" className="w-4 h-4" {...register("isFeatured")} />
+                <Controller
+                  name="isFeatured"
+                  control={control}
+                  render={({ field }) => (
+                    <input
+                      type="checkbox"
+                      className="w-4 h-4"
+                      checked={field.value === "true"} // ✅ So sánh string
+                      onChange={(e) => field.onChange(e.target.checked ? "true" : "false")} // ✅ Gán string
+                    />
+                  )}
+                />
               </div>
 
               <div className="mt-4">
@@ -601,7 +506,6 @@ export default function AddProduct() {
                   )}
                 </div>
               </div>
-
               <div className="mt-4">
                 <h2 className="font-semibold">Mô tả sản phẩm</h2>
                 <div className="mt-2">
@@ -624,7 +528,6 @@ export default function AddProduct() {
                   </span>
                 </div>
               </div>
-
               <div className="flex items-center justify-end gap-2">
                 <Button
                   classNameButton="mt-1 p-2 px-3 bg-red-500 text-white font-semibold rounded-sm hover:bg-red-500/80 duration-200"
@@ -653,7 +556,7 @@ export default function AddProduct() {
                 <Button
                   icon={isSubmitting ? <LoadingOutlined spin /> : undefined}
                   classNameButton="mt-1 p-2 px-3 bg-blue-500 text-white font-semibold rounded-sm hover:bg-blue-500/80 duration-200"
-                  nameButton="Thêm sản phẩm"
+                  nameButton={editItem && typeof editItem === "object" ? "Cập nhật sản phẩm" : "Thêm sản phẩm"}
                   type="submit"
                   disabled={isSubmitting}
                 />

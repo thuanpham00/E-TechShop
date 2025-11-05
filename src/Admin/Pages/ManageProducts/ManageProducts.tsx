@@ -284,7 +284,8 @@ export default function ManageProducts() {
             <Link
               to={path.AddProduct}
               state={{
-                editItem: true
+                editItem: true,
+                queryConfig: queryConfig
               }}
               className="py-2 px-3 bg-blue-500 w-full text-white font-medium rounded-md hover:bg-blue-500/80 duration-200 text-[13px] flex items-center gap-1"
             >

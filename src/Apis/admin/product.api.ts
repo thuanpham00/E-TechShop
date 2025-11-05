@@ -34,7 +34,9 @@ export const ProductAPI = {
     }
 
     body.medias.forEach((file) => {
-      formData.append("medias", file)
+      if (file instanceof File) {
+        formData.append("medias", file)
+      }
     })
 
     formData.append("specifications", JSON.stringify(body.specifications))
@@ -42,6 +44,38 @@ export const ProductAPI = {
     // JSON.stringify giúp giữ nguyên cấu trúc kiểu mảng đối tượng khi bạn gửi qua FormData.
 
     return Http.post(`/admin/products`, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data"
+      }
+    })
+  },
+
+  updateProduct: (body: CreateProductBodyReq, idProduct: string) => {
+    const formData = new FormData()
+
+    // formData: dùng để vừa gửi dữ liệu dạng text + file xuống server
+    formData.append("name", body.name)
+    formData.append("category", body.category)
+    formData.append("brand", body.brand)
+    formData.append("price", String(body.price))
+    formData.append("discount", String(body.discount))
+    formData.append("stock", String(body.stock))
+    formData.append("isFeatured", body.isFeatured)
+    formData.append("description", body.description)
+
+    if (body.banner) {
+      formData.append("banner", body.banner)
+    }
+
+    body.medias.forEach((file) => {
+      if (file instanceof File) {
+        formData.append("medias", file)
+      }
+    })
+
+    formData.append("specifications", JSON.stringify(body.specifications))
+
+    return Http.put(`/admin/products/${idProduct}`, formData, {
       headers: {
         "Content-Type": "multipart/form-data"
       }

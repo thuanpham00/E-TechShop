@@ -179,10 +179,12 @@ export type ProductItemType = {
   }
   created_at: string
   medias: {
+    id: string
     url: string
     type: number
   }[]
   banner: {
+    id: string
     url: string
     type: number
   }
