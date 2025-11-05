@@ -38,7 +38,7 @@ export default function ProductItem({ item }: { item: CollectionItemType }) {
   }, [item.medias, imageDefault])
 
   const handleNavigate = () => {
-    navigate(`/products/${slugify(item.name)}-i-${item._id}`, { state: item.category[0] })
+    navigate(`/products/${slugify(item.name)}-i-${item._id}`)
     setRecentlyViewed((prev) => [...prev, item])
   }
 

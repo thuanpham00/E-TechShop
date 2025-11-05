@@ -621,7 +621,6 @@ export default function ManageSuppliers() {
 
       <section className="mt-4">
         <div className="bg-white dark:bg-darkPrimary mb-3 dark:border-darkBorder rounded-2xl">
-          {isLoading && <Skeleton />}
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-2">
               <Button
@@ -650,42 +649,39 @@ export default function ManageSuppliers() {
               />
             </div>
           </div>
-          {!isFetching ? (
-            <div>
-              {listSupplier?.length > 0 ? (
-                <Table
-                  rowKey={(r) => r._id}
-                  dataSource={listSupplier}
-                  columns={columns}
-                  loading={isLoading}
-                  pagination={{
-                    current: Number(queryConfig.page),
-                    pageSize: Number(queryConfig.limit),
-                    total: Number(result?.result.total || 0),
-                    showSizeChanger: true,
-                    pageSizeOptions: ["5", "10", "20", "50"],
-                    onChange: (page, pageSize) => {
-                      navigate({
-                        pathname: path.AdminSuppliers,
-                        search: createSearchParams({
-                          ...queryConfig,
-                          page: page.toString(),
-                          limit: pageSize.toString()
-                        }).toString()
-                      })
-                    }
-                  }}
-                  rowClassName={(_, index) => (index % 2 === 0 ? "bg-[#f2f2f2]" : "bg-white")}
-                  scroll={{ x: "max-content" }}
-                />
-              ) : (
-                <div className="text-center mt-4">
-                  <Empty />
-                </div>
-              )}
-            </div>
-          ) : (
+
+          {isLoading ? (
             <Skeleton />
+          ) : listSupplier && listSupplier.length > 0 ? (
+            <Table
+              rowKey={(r) => r._id}
+              dataSource={listSupplier}
+              columns={columns}
+              loading={isFetching}
+              pagination={{
+                current: Number(queryConfig.page),
+                pageSize: Number(queryConfig.limit),
+                total: Number(result?.result.total || 0),
+                showSizeChanger: true,
+                pageSizeOptions: ["5", "10", "20", "50"],
+                onChange: (page, pageSize) => {
+                  navigate({
+                    pathname: path.AdminSuppliers,
+                    search: createSearchParams({
+                      ...queryConfig,
+                      page: page.toString(),
+                      limit: pageSize.toString()
+                    }).toString()
+                  })
+                }
+              }}
+              rowClassName={(_, index) => (index % 2 === 0 ? "bg-[#f2f2f2]" : "bg-white")}
+              scroll={{ x: "max-content" }}
+            />
+          ) : (
+            <div className="text-center mt-4">
+              <Empty description="Chưa có nhà cung cấp nào" />
+            </div>
           )}
 
           <AnimatePresence>

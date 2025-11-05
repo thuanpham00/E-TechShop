@@ -95,7 +95,7 @@ export default function ManageSupplies() {
     limit: string
     totalOfPage: string
   }>
-  const listSupplier = result?.result?.result
+  const listSupply = result?.result?.result
 
   // xử lý tìm kiếm
   const getNameProducts = useQuery({
@@ -491,11 +491,10 @@ export default function ManageSupplies() {
 
       <section className="mt-4">
         <div className="bg-white dark:bg-darkPrimary mb-3 dark:border-darkBorder rounded-2xl">
-          {isLoading && <Skeleton />}
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-2">
               <Button
-                onClick={() => downloadExcel(listSupplier)}
+                onClick={() => downloadExcel(listSupply)}
                 icon={<FolderUp size={15} />}
                 nameButton="Export"
                 classNameButton="py-2 px-3 border border-[#E2E7FF] bg-[#E2E7FF] w-full text-[#3A5BFF] font-medium rounded-md hover:bg-blue-500/40 duration-200 text-[13px] flex items-center gap-1 text-[13px]"
@@ -520,42 +519,41 @@ export default function ManageSupplies() {
               />
             </div>
           </div>
-          {!isFetching ? (
-            <div>
-              {listSupplier?.length > 0 ? (
-                <Table
-                  rowKey={(r) => r._id}
-                  dataSource={listSupplier}
-                  columns={columns}
-                  loading={isLoading}
-                  pagination={{
-                    current: Number(queryConfig.page),
-                    pageSize: Number(queryConfig.limit),
-                    total: Number(result?.result.total || 0),
-                    showSizeChanger: true,
-                    pageSizeOptions: ["5", "10", "20", "50"],
-                    onChange: (page, pageSize) => {
-                      navigate({
-                        pathname: path.AdminSupplies,
-                        search: createSearchParams({
-                          ...queryConfig,
-                          page: page.toString(),
-                          limit: pageSize.toString()
-                        }).toString()
-                      })
-                    }
-                  }}
-                  rowClassName={(_, index) => (index % 2 === 0 ? "bg-[#f2f2f2]" : "bg-white")}
-                  scroll={{ x: "max-content" }}
-                />
-              ) : (
-                <div className="text-center mt-4">
-                  <Empty />
-                </div>
-              )}
-            </div>
-          ) : (
+
+          {isLoading ? (
             <Skeleton />
+          ) : listSupply && listSupply.length > 0 ? (
+            <Table
+              rowKey={(r) => r._id}
+              dataSource={listSupply}
+              columns={columns}
+              loading={isFetching}
+              pagination={{
+                current: Number(queryConfig.page),
+                pageSize: Number(queryConfig.limit),
+                total: Number(result?.result.total || 0),
+                showSizeChanger: true,
+                pageSizeOptions: ["5", "10", "20", "50"],
+                onChange: (page, pageSize) => {
+                  navigate({
+                    pathname: path.AdminSupplies,
+                    search: createSearchParams({
+                      ...queryConfig,
+                      page: page.toString(),
+                      limit: pageSize.toString()
+                    }).toString()
+                  })
+                }
+              }}
+              rowClassName={(_, index) => (index % 2 === 0 ? "bg-[#f2f2f2]" : "bg-white")}
+              scroll={{ x: "max-content" }}
+            />
+          ) : (
+            !isFetching && (
+              <div className="text-center mt-4">
+                <Empty description="Chưa có liên kết cung ứng nào" />
+              </div>
+            )
           )}
 
           <AnimatePresence>

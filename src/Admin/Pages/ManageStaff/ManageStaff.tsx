@@ -70,7 +70,14 @@ export default function ManageStaff() {
     {
       page: queryParams.page || "1", // mặc định page = 1
       limit: queryParams.limit || "5", // mặc định limit = 5
-      sortBy: queryParams.sortBy || "new" // mặc định sort mới nhất
+      sortBy: queryParams.sortBy || "new", // mặc định sort mới nhất,
+      email: queryParams.email,
+      name: queryParams.name,
+      phone: queryParams.phone,
+      created_at_start: queryParams.created_at_start,
+      created_at_end: queryParams.created_at_end,
+      updated_at_start: queryParams.updated_at_start,
+      updated_at_end: queryParams.updated_at_end
     },
     isUndefined
   )
@@ -412,13 +419,7 @@ export default function ManageStaff() {
       render: (_, record) => (
         <div className="flex items-center gap-2 min-w-0">
           <div className="w-[48px] h-[48px] rounded overflow-hidden">
-            <Image
-              src={record.avatar || "/images/avatar-default.png"}
-              alt={record.name}
-              width={48}
-              height={48}
-              preview={false}
-            />
+            <Image src={record.avatar || "/images/avatar-default.png"} alt={record.name} width={48} height={48} />
           </div>
           <div className="min-w-0">
             <div className="font-medium text-black dark:text-white break-words whitespace-normal">{record.name}</div>
@@ -459,6 +460,7 @@ export default function ManageStaff() {
         return <div className={`text-[13px] font-medium py-1 px-2 border ${bg} text-center rounded-full`}>{s}</div>
       }
     },
+
     {
       title: "Lương",
       dataIndex: ["employeeInfo", "salary"],
@@ -476,8 +478,24 @@ export default function ManageStaff() {
       title: "Loại hợp đồng",
       dataIndex: ["employeeInfo", "contract_type"],
       key: "contract_type",
-      width: 160,
+      width: 140,
       render: (_, record) => <div>{record.employeeInfo?.contract_type || ""}</div>
+    },
+    {
+      title: "Xác thực",
+      dataIndex: "verify",
+      key: "verify",
+      align: "center",
+      render: (verify: number) =>
+        verify === 1 ? (
+          <div className=" text-[13px] font-medium py-1 px-2 border border-[#b2ffb4] bg-[#b2ffb4] text-[#04710c] text-center rounded-full">
+            Verified
+          </div>
+        ) : (
+          <div className="text-[13px] font-medium py-1 px-2 border border-[#ffdcdc] bg-[#ffdcdc] text-[#f00] text-center rounded-full">
+            Unverified
+          </div>
+        )
     },
     {
       title: "Ngày vào làm",
@@ -485,6 +503,20 @@ export default function ManageStaff() {
       key: "hire_date",
       width: 160,
       render: (_, record) => <div>{convertDateTime((record.employeeInfo?.hire_date as Date).toString())}</div>
+    },
+    {
+      title: "Ngày tạo",
+      dataIndex: "created_at",
+      key: "created_at",
+      width: 160,
+      render: (_, record) => <div>{convertDateTime(record.created_at)}</div>
+    },
+    {
+      title: "Ngày cập nhật",
+      dataIndex: "updated_at",
+      key: "updated_at",
+      width: 160,
+      render: (_, record) => <div>{convertDateTime(record.updated_at)}</div>
     },
     {
       title: "Hành động",
@@ -549,7 +581,6 @@ export default function ManageStaff() {
 
       <section className="bg-white dark:bg-darkPrimary mb-3 dark:border-darkBorder rounded-2xl mt-4">
         <div>
-          {isLoading && <Skeleton />}
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-2">
               <Button
@@ -578,43 +609,39 @@ export default function ManageStaff() {
               />
             </div>
           </div>
-          {!isFetching ? (
-            <div>
-              <div>
-                {listStaffs?.length > 0 ? (
-                  <Table
-                    rowKey={(r) => r._id}
-                    dataSource={listStaffs}
-                    columns={columns}
-                    loading={isLoading}
-                    pagination={{
-                      current: Number(queryConfig.page),
-                      pageSize: Number(queryConfig.limit),
-                      total: Number(result?.result.total || 0),
-                      showSizeChanger: true,
-                      pageSizeOptions: ["5", "10", "20", "50"],
-                      onChange: (page, pageSize) =>
-                        navigate({
-                          pathname: path.AdminEmployees,
-                          search: createSearchParams({
-                            ...queryConfig,
-                            page: page.toString(),
-                            limit: pageSize.toString()
-                          }).toString()
-                        })
-                    }}
-                    rowClassName={(_, index) => (index % 2 === 0 ? "bg-[#f2f2f2]" : "bg-white")}
-                    scroll={{ x: "max-content" }}
-                  />
-                ) : (
-                  <div className="text-center mt-4">
-                    <Empty />
-                  </div>
-                )}
-              </div>
-            </div>
-          ) : (
+          {isLoading ? (
             <Skeleton />
+          ) : listStaffs && listStaffs.length > 0 ? (
+            <Table
+              rowKey={(r) => r._id}
+              dataSource={listStaffs}
+              columns={columns}
+              loading={isFetching}
+              pagination={{
+                current: Number(queryConfig.page),
+                pageSize: Number(queryConfig.limit),
+                total: Number(result?.result.total || 0),
+                showSizeChanger: true,
+                pageSizeOptions: ["5", "10", "20", "50"],
+                onChange: (page, pageSize) =>
+                  navigate({
+                    pathname: path.AdminEmployees,
+                    search: createSearchParams({
+                      ...queryConfig,
+                      page: page.toString(),
+                      limit: pageSize.toString()
+                    }).toString()
+                  })
+              }}
+              rowClassName={(_, index) => (index % 2 === 0 ? "bg-[#f2f2f2]" : "bg-white")}
+              scroll={{ x: "max-content" }}
+            />
+          ) : (
+            !isFetching && (
+              <div className="text-center mt-4">
+                <Empty description="Chưa có nhân viên nào" />
+              </div>
+            )
           )}
 
           <AnimatePresence>

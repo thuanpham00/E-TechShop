@@ -395,7 +395,6 @@ export default function ManageCategories() {
       <Collapse items={items} defaultActiveKey={["2"]} className="bg-white dark:bg-darkPrimary dark:border-none" />
 
       <section className="bg-white dark:bg-darkPrimary mb-3 dark:border-darkBorder mt-4">
-        {isLoading && <Skeleton />}
         <div className="flex items-center justify-between mb-2">
           <div className="flex items-center gap-2">
             <Button
@@ -424,45 +423,44 @@ export default function ManageCategories() {
             />
           </div>
         </div>
-        {!isFetching ? (
-          <div>
-            {listCategory?.length > 0 ? (
-              <Table
-                rowKey={(record) => record._id}
-                dataSource={listCategory}
-                columns={columns}
-                loading={isLoading}
-                pagination={{
-                  current: Number(queryConfig.page),
-                  pageSize: Number(queryConfig.limit),
-                  total: Number(result?.result.total || 0),
-                  showSizeChanger: true,
-                  pageSizeOptions: ["5", "10", "20", "50"],
-                  onChange: (page, pageSize) => {
-                    navigate({
-                      pathname: path.AdminCategories,
-                      search: createSearchParams({
-                        ...queryConfig,
-                        page: page.toString(),
-                        limit: pageSize.toString()
-                      }).toString()
-                    })
-                  }
-                }}
-                rowClassName={(_, index) =>
-                  index % 2 === 0
-                    ? "bg-[#f2f2f2] hover:bg-none transition-colors"
-                    : "bg-white hover:bg-none transition-colors"
-                }
-              />
-            ) : (
-              <div className="text-center mt-4">
-                <Empty />
-              </div>
-            )}
-          </div>
-        ) : (
+
+        {isLoading ? (
           <Skeleton />
+        ) : listCategory && listCategory.length > 0 ? (
+          <Table
+            rowKey={(record) => record._id}
+            dataSource={listCategory}
+            columns={columns}
+            loading={isFetching}
+            pagination={{
+              current: Number(queryConfig.page),
+              pageSize: Number(queryConfig.limit),
+              total: Number(result?.result.total || 0),
+              showSizeChanger: true,
+              pageSizeOptions: ["5", "10", "20", "50"],
+              onChange: (page, pageSize) => {
+                navigate({
+                  pathname: path.AdminCategories,
+                  search: createSearchParams({
+                    ...queryConfig,
+                    page: page.toString(),
+                    limit: pageSize.toString()
+                  }).toString()
+                })
+              }
+            }}
+            rowClassName={(_, index) =>
+              index % 2 === 0
+                ? "bg-[#f2f2f2] hover:bg-none transition-colors"
+                : "bg-white hover:bg-none transition-colors"
+            }
+          />
+        ) : (
+          !isFetching && (
+            <div className="text-center mt-4">
+              <Empty description="Chưa có danh mục nào" />
+            </div>
+          )
         )}
 
         <AddCategory setAddItem={setAddItem} addItem={addItem} />

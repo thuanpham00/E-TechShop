@@ -100,19 +100,14 @@ export default function ManageProducts() {
 
   const columns: ColumnsType<ProductItemType> = [
     {
-      title: "Hình ảnh",
+      title: <div className="text-center">Hình ảnh</div>,
       dataIndex: "banner",
       key: "product",
       fixed: "left",
       width: 250,
       render: (_: any, record: ProductItemType) => (
         <div className="flex items-center gap-3">
-          <Image
-            src={record.banner?.url}
-            alt={record._id}
-            preview={false}
-            style={{ width: 200, height: 120, objectFit: "cover" }}
-          />
+          <Image src={record.banner?.url} alt={record._id} style={{ width: 200, height: 120, objectFit: "cover" }} />
         </div>
       )
     },
@@ -146,17 +141,15 @@ export default function ManageProducts() {
       dataIndex: "brand",
       key: "brand",
       width: 140,
-      render: (brand: any[]) => (
-        <div className="text-black dark:text-white">{<Tag color="green">{brand?.[0]?.name}</Tag>}</div>
-      )
+      render: (brand: any) => <div className="text-black dark:text-white">{<Tag color="green">{brand?.name}</Tag>}</div>
     },
     {
       title: "Thể loại",
       dataIndex: "category",
       key: "category",
       width: 140,
-      render: (category: any[]) => (
-        <div className="text-black dark:text-white">{<Tag color="blue">{category?.[0]?.name}</Tag>}</div>
+      render: (category: any) => (
+        <div className="text-black dark:text-white">{<Tag color="blue">{category?.name}</Tag>}</div>
       )
     },
     {
@@ -209,9 +202,15 @@ export default function ManageProducts() {
       align: "center",
       render: (_, record) => (
         <div className="flex items-center justify-center gap-2">
-          <button onClick={() => navigate(`${path.AdminProducts}/${record._id}`)} className="p-1">
+          <Link
+            to={path.AddProduct}
+            state={{
+              editItem: record
+            }}
+            className=""
+          >
             <Pencil color="orange" size={18} />
-          </button>
+          </Link>
           <button
             onClick={() =>
               Modal.confirm({
@@ -262,7 +261,6 @@ export default function ManageProducts() {
       <Collapse items={items} defaultActiveKey={["2"]} className="bg-white dark:bg-darkPrimary dark:border-none" />
 
       <section className="mt-4">
-        {isLoading && <Skeleton />}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Button
@@ -285,6 +283,9 @@ export default function ManageProducts() {
           <div>
             <Link
               to={path.AddProduct}
+              state={{
+                editItem: true
+              }}
               className="py-2 px-3 bg-blue-500 w-full text-white font-medium rounded-md hover:bg-blue-500/80 duration-200 text-[13px] flex items-center gap-1"
             >
               <Plus size={15} />
@@ -292,43 +293,41 @@ export default function ManageProducts() {
             </Link>
           </div>
         </div>
-        {!isFetching ? (
-          <div>
-            {listProduct?.length > 0 ? (
-              <Table
-                rowKey={(r) => r._id}
-                dataSource={listProduct}
-                loading={isLoading}
-                scroll={{
-                  x: "max-content"
-                }}
-                pagination={{
-                  current: Number(queryConfig.page),
-                  pageSize: Number(queryConfig.limit),
-                  total: Number(result?.result.total || 0),
-                  showSizeChanger: true,
-                  pageSizeOptions: ["5", "10", "20", "50"],
-                  onChange: (page, pageSize) =>
-                    navigate({
-                      pathname: path.AdminProducts,
-                      search: createSearchParams({
-                        ...queryConfig,
-                        page: page.toString(),
-                        limit: pageSize.toString()
-                      }).toString()
-                    })
-                }}
-                columns={columns}
-                rowClassName={(_, index) => (index % 2 === 0 ? "bg-[#f2f2f2]" : "bg-white")}
-              />
-            ) : (
-              <div className="text-center mt-4">
-                <Empty />
-              </div>
-            )}
-          </div>
-        ) : (
+        {isLoading ? (
           <Skeleton />
+        ) : listProduct && listProduct.length > 0 ? (
+          <Table
+            rowKey={(r) => r._id}
+            dataSource={listProduct}
+            loading={isFetching}
+            scroll={{
+              x: "max-content"
+            }}
+            pagination={{
+              current: Number(queryConfig.page),
+              pageSize: Number(queryConfig.limit),
+              total: Number(result?.result.total || 0),
+              showSizeChanger: true,
+              pageSizeOptions: ["5", "10", "20", "50"],
+              onChange: (page, pageSize) =>
+                navigate({
+                  pathname: path.AdminProducts,
+                  search: createSearchParams({
+                    ...queryConfig,
+                    page: page.toString(),
+                    limit: pageSize.toString()
+                  }).toString()
+                })
+            }}
+            columns={columns}
+            rowClassName={(_, index) => (index % 2 === 0 ? "bg-[#f2f2f2]" : "bg-white")}
+          />
+        ) : (
+          !isFetching && (
+            <div className="text-center mt-4">
+              <Empty description="Chưa có sản phẩm nào" />
+            </div>
+          )
         )}
       </section>
     </div>

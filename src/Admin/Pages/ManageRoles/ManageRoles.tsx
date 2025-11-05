@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import { Button, Table, Tag } from "antd"
+import { Button, Empty, Table, Tag } from "antd"
 import { useContext, useEffect, useState } from "react"
 import { Helmet } from "react-helmet-async"
 import { toast } from "react-toastify"
@@ -24,6 +24,7 @@ import {
 } from "src/Components/ui/alert-dialog"
 import { Pencil, Trash2 } from "lucide-react"
 import { RolePermissionAPI } from "src/Apis/admin/role.api"
+import Skeleton from "src/Components/Skeleton"
 
 export interface Role {
   _id: string
@@ -37,7 +38,7 @@ export default function ManageRoles() {
   const queryClient = useQueryClient()
 
   const { userId } = useContext(AppContext)
-  const { data, isError, error } = useQuery({
+  const { data, isError, error, isLoading, isFetching } = useQuery({
     queryKey: ["listRole", userId],
     queryFn: () => {
       const controller = new AbortController()
@@ -165,8 +166,19 @@ export default function ManageRoles() {
         </Button>
       </div>
       <div className="mt-4">
-        <Table rowKey="_id" dataSource={listRole} columns={columns} />
+        {isLoading ? (
+          <Skeleton />
+        ) : listRole && listRole.length > 0 ? (
+          <Table rowKey="_id" dataSource={listRole} columns={columns} loading={isFetching} />
+        ) : (
+          !isFetching && (
+            <div className="text-center mt-4">
+              <Empty description="Chưa có vai trò nào" />
+            </div>
+          )
+        )}
       </div>
+
       <AddRole setAddItem={setAddItem} addItem={addItem} />
 
       {typeof addItem === "object" && addItem !== null && <RoleDetail setAddItem={setAddItem} dataItem={addItem} />}

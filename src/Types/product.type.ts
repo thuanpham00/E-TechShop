@@ -173,10 +173,10 @@ export type ProductItemType = {
   name: string
   brand: {
     name: string
-  }[]
+  }
   category: {
     name: string
-  }[]
+  }
   created_at: string
   medias: {
     url: string
@@ -188,7 +188,12 @@ export type ProductItemType = {
   }
   price: number
   status: StatusProduct
+  specifications: any[]
+  stock: number
+  description: string
   updated_at: string
+  discount: number
+  isFeatured: boolean
 }
 
 export type UpdateBodyReq = {
@@ -249,8 +254,14 @@ export type ProductDetailType = {
   _id: string
   name: string
   averageRating: number
-  brand: string
-  category: string
+  brand: {
+    _id: string
+    name: string
+  }
+  category: {
+    _id: string
+    name: string
+  }
   created_at: string
   description: string
   discount: number

@@ -65,7 +65,6 @@ const BlockAdminForClient = () => {
 }
 
 export default function useRouterClient() {
-  const { role } = useContext(AppContext)
   const routerElement = useRoutes([
     {
       path: "",
@@ -112,14 +111,6 @@ export default function useRouterClient() {
               element: (
                 <Suspense>
                   <VerifyEmail />
-                </Suspense>
-              )
-            },
-            {
-              path: path.NotFound,
-              element: (
-                <Suspense>
-                  <NotFound role={role} />
                 </Suspense>
               )
             }
@@ -258,6 +249,14 @@ export default function useRouterClient() {
               ]
             }
           ]
+        },
+        {
+          path: path.NotFound,
+          element: (
+            <Suspense>
+              <NotFound />
+            </Suspense>
+          )
         }
       ]
     }

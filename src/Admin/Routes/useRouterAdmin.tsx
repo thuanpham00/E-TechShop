@@ -7,10 +7,9 @@ import LayoutAuthAdmin from "../Layouts/LayoutAuthAdmin"
 import { rolesForApi } from "src/Helpers/role_permission"
 
 const LoginAdmin = lazy(() => import("src/Admin/Pages/LoginAdmin"))
-const NotFound = lazy(() => import("src/Client/Pages/NotFound"))
+const AdminNotFound = lazy(() => import("src/Admin/Pages/AdminNotFound"))
 const Dashboard = lazy(() => import("src/Admin/Pages/Dashboard"))
 const ManageCustomers = lazy(() => import("src/Admin/Pages/ManageCustomers"))
-const ManagerCustomerOrderHistory = lazy(() => import("src/Admin/Pages/ManagerCustomerOrderHistory"))
 const ManageStaff = lazy(() => import("src/Admin/Pages/ManageStaff"))
 const ManageCategories = lazy(() => import("src/Admin/Pages/ManageCategories"))
 const ManageRoles = lazy(() => import("src/Admin/Pages/ManageRoles"))
@@ -51,7 +50,6 @@ const BlockClientForAdmin = () => {
 }
 
 export default function useRouterAdmin() {
-  const { role } = useContext(AppContext)
   const useRouterElement = useRoutes([
     {
       path: "",
@@ -78,14 +76,6 @@ export default function useRouterAdmin() {
                   element: (
                     <Suspense>
                       <ManageCustomers />
-                    </Suspense>
-                  )
-                },
-                {
-                  path: path.AdminCustomerOrderHistory,
-                  element: (
-                    <Suspense>
-                      <ManagerCustomerOrderHistory />
                     </Suspense>
                   )
                 },
@@ -224,24 +214,16 @@ export default function useRouterAdmin() {
                       <AdminProfile />
                     </Suspense>
                   )
-                },
-                {
-                  path: path.NotFound,
-                  element: (
-                    <Suspense>
-                      <NotFound role={role} />
-                    </Suspense>
-                  )
-                },
-                {
-                  path: path.AdminNotFound,
-                  element: (
-                    <Suspense>
-                      <NotFound role={role} />
-                    </Suspense>
-                  )
                 }
               ]
+            },
+            {
+              path: "*", // dành cho các đường dẫn không tồn tại trong /admin
+              element: (
+                <Suspense>
+                  <AdminNotFound />
+                </Suspense>
+              )
             }
           ]
         },
@@ -264,6 +246,14 @@ export default function useRouterAdmin() {
               ]
             }
           ]
+        },
+        {
+          path: path.AdminNotFound, // dành cho redirect từ BlockClientForAdmin
+          element: (
+            <Suspense>
+              <AdminNotFound />
+            </Suspense>
+          )
         }
       ]
     }

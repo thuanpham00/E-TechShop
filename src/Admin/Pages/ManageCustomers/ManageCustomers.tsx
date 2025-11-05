@@ -692,7 +692,6 @@ export default function ManageCustomers() {
       <Collapse items={items} defaultActiveKey={["2"]} className="bg-white dark:bg-darkPrimary dark:border-none" />
 
       <section className="bg-white dark:bg-darkPrimary mb-3 dark:border-darkBorder mt-4">
-        {isLoading && <Skeleton />}
         <div className="flex items-center justify-between mb-2">
           <div className="flex items-center gap-2">
             <Button
@@ -727,45 +726,44 @@ export default function ManageCustomers() {
             />
           </div>
         </div>
-        {!isFetching ? (
-          <div>
-            {listCustomer?.length > 0 ? (
-              <Table
-                rowKey={(record) => record._id}
-                dataSource={listCustomer}
-                loading={isLoading}
-                columns={columns}
-                pagination={{
-                  current: Number(queryConfig.page),
-                  pageSize: Number(queryConfig.limit),
-                  total: Number(result?.result.total || 0),
-                  showSizeChanger: true,
-                  pageSizeOptions: ["5", "10", "20", "50"],
-                  onChange: (page, pageSize) => {
-                    navigate({
-                      pathname: path.AdminCustomers,
-                      search: createSearchParams({
-                        ...queryConfig,
-                        page: page.toString(),
-                        limit: pageSize.toString()
-                      }).toString()
-                    })
-                  }
-                }}
-                rowClassName={(_, index) =>
-                  index % 2 === 0
-                    ? "bg-[#f2f2f2] hover:bg-blue-50 transition-colors"
-                    : "bg-white hover:bg-blue-50 transition-colors"
-                }
-              />
-            ) : (
-              <div className="text-center mt-4">
-                <Empty />
-              </div>
-            )}
-          </div>
-        ) : (
+
+        {isLoading ? (
           <Skeleton />
+        ) : listCustomer && listCustomer.length > 0 ? (
+          <Table
+            rowKey={(record) => record._id}
+            dataSource={listCustomer}
+            loading={isFetching}
+            columns={columns}
+            pagination={{
+              current: Number(queryConfig.page),
+              pageSize: Number(queryConfig.limit),
+              total: Number(result?.result.total || 0),
+              showSizeChanger: true,
+              pageSizeOptions: ["5", "10", "20", "50"],
+              onChange: (page, pageSize) => {
+                navigate({
+                  pathname: path.AdminCustomers,
+                  search: createSearchParams({
+                    ...queryConfig,
+                    page: page.toString(),
+                    limit: pageSize.toString()
+                  }).toString()
+                })
+              }
+            }}
+            rowClassName={(_, index) =>
+              index % 2 === 0
+                ? "bg-[#f2f2f2] hover:bg-blue-50 transition-colors"
+                : "bg-white hover:bg-blue-50 transition-colors"
+            }
+          />
+        ) : (
+          !isFetching && (
+            <div className="text-center mt-4">
+              <Empty description="Chưa có khách hàng nào" />
+            </div>
+          )
         )}
 
         <AnimatePresence>
@@ -789,126 +787,142 @@ export default function ManageCustomers() {
                   <h3 className="py-2 px-4 text-lg font-semibold tracking-wide rounded-md text-black dark:text-white">
                     Thông tin khách hàng
                   </h3>
-                  <div className="p-4 pt-0">
-                    <div className="mt-4 flex justify-between gap-8">
-                      <div className="grid grid-cols-12 flex-wrap gap-4">
-                        <div className="col-span-6">
-                          <Input
-                            name="id"
-                            register={register}
-                            placeholder="Nhập họ tên"
-                            messageErrorInput={errors.id?.message}
-                            classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-darkSecond focus:border-blue-500 focus:ring-2 outline-none rounded-md text-black dark:text-white"
-                            className="relative flex-1"
-                            classNameLabel="text-black dark:text-white"
-                            nameInput="Mã khách hàng"
-                            disabled
-                          />
-                        </div>
-                        <div className="col-span-6">
-                          <Input
-                            name="name"
-                            register={register}
-                            placeholder="Nhập họ tên"
-                            messageErrorInput={errors.name?.message}
-                            classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-white dark:bg-darkSecond focus:border-blue-500 focus:ring-2 outline-none rounded-md text-black dark:text-white"
-                            className="relative flex-1"
-                            classNameLabel="text-black dark:text-white"
-                            nameInput="Họ tên"
-                          />
-                        </div>
-                        <div className="col-span-6">
-                          <Input
-                            name="email"
-                            register={register}
-                            placeholder="Nhập họ tên"
-                            messageErrorInput={errors.email?.message}
-                            classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-darkSecond focus:border-blue-500 focus:ring-2 outline-none rounded-md text-black dark:text-white"
-                            className="relative flex-1"
-                            classNameLabel="text-black dark:text-white"
-                            nameInput="Email"
-                            disabled
-                          />
-                        </div>
-                        <div className="col-span-6">
-                          <Input
-                            name="verify"
-                            register={register}
-                            messageErrorInput={errors.verify?.message}
-                            classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-darkSecond focus:border-blue-500 focus:ring-2 outline-none rounded-md text-black dark:text-white"
-                            className="relative flex-1"
-                            nameInput="Trạng thái"
-                            classNameLabel="text-black dark:text-white"
-                            disabled
-                            value={addItem?.verify === 1 ? "Verified" : "Unverified"}
-                          />
-                        </div>
-                        <div className="col-span-6">
-                          <Input
-                            name="numberPhone"
-                            register={register}
-                            placeholder="Nhập số điện thoại"
-                            messageErrorInput={errors.numberPhone?.message}
-                            classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-white dark:bg-darkSecond focus:border-blue-500 focus:ring-2 outline-none rounded-md text-black dark:text-white"
-                            className="relative flex-1"
-                            classNameLabel="text-black dark:text-white"
-                            nameInput="Số điện thoại"
-                          />
-                        </div>
-                        <div className="col-span-6">
-                          {/* dùng <Controller/> khi và chỉ khi component không hỗ trợ register (register giúp theo dõi giá trị trong form) */}
-                          {/* control giúp theo dõi giá trị, validate và đồng bộ dữ liệu giữa form và component tùy chỉnh  */}
-                          <Controller
-                            name="date_of_birth"
-                            control={control}
-                            render={({ field }) => {
-                              return (
-                                <DateSelect
-                                  value={date_of_birth}
-                                  onChange={field.onChange}
-                                  errorMessage={errors.date_of_birth?.message}
-                                />
-                              )
-                            }}
-                          />
-                        </div>
+                  <div className="p-4">
+                    <div className="flex items-start gap-4">
+                      <div className="w-2/3">
+                        <div className="grid grid-cols-12 flex-wrap gap-4">
+                          <div className="col-span-6">
+                            <Input
+                              name="id"
+                              register={register}
+                              placeholder="Nhập họ tên"
+                              messageErrorInput={errors.id?.message}
+                              classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-darkSecond focus:border-blue-500 focus:ring-2 outline-none rounded-md text-black dark:text-white"
+                              className="relative flex-1"
+                              classNameLabel="text-black dark:text-white"
+                              nameInput="Mã khách hàng"
+                              disabled
+                            />
+                          </div>
+                          <div className="col-span-6">
+                            <Input
+                              name="name"
+                              register={register}
+                              placeholder="Nhập họ tên"
+                              messageErrorInput={errors.name?.message}
+                              classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-white dark:bg-darkSecond focus:border-blue-500 focus:ring-2 outline-none rounded-md text-black dark:text-white"
+                              className="relative flex-1"
+                              classNameLabel="text-black dark:text-white"
+                              nameInput="Họ tên"
+                            />
+                          </div>
+                          <div className="col-span-6">
+                            <Input
+                              name="email"
+                              register={register}
+                              placeholder="Nhập họ tên"
+                              messageErrorInput={errors.email?.message}
+                              classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-darkSecond focus:border-blue-500 focus:ring-2 outline-none rounded-md text-black dark:text-white"
+                              className="relative flex-1"
+                              classNameLabel="text-black dark:text-white"
+                              nameInput="Email"
+                              disabled
+                            />
+                          </div>
+                          <div className="col-span-6">
+                            <Input
+                              name="verify"
+                              register={register}
+                              messageErrorInput={errors.verify?.message}
+                              classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-darkSecond focus:border-blue-500 focus:ring-2 outline-none rounded-md text-black dark:text-white"
+                              className="relative flex-1"
+                              nameInput="Trạng thái"
+                              classNameLabel="text-black dark:text-white"
+                              disabled
+                              value={addItem?.verify === 1 ? "Verified" : "Unverified"}
+                            />
+                          </div>
+                          <div className="col-span-6">
+                            <Input
+                              name="numberPhone"
+                              register={register}
+                              placeholder="Nhập số điện thoại"
+                              messageErrorInput={errors.numberPhone?.message}
+                              classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-white dark:bg-darkSecond focus:border-blue-500 focus:ring-2 outline-none rounded-md text-black dark:text-white"
+                              className="relative flex-1"
+                              classNameLabel="text-black dark:text-white"
+                              nameInput="Số điện thoại"
+                            />
+                          </div>
+                          <div className="col-span-6">
+                            {/* dùng <Controller/> khi và chỉ khi component không hỗ trợ register (register giúp theo dõi giá trị trong form) */}
+                            {/* control giúp theo dõi giá trị, validate và đồng bộ dữ liệu giữa form và component tùy chỉnh  */}
+                            <Controller
+                              name="date_of_birth"
+                              control={control}
+                              render={({ field }) => {
+                                return (
+                                  <DateSelect
+                                    value={date_of_birth}
+                                    onChange={field.onChange}
+                                    errorMessage={errors.date_of_birth?.message}
+                                  />
+                                )
+                              }}
+                            />
+                          </div>
 
-                        <div className="col-span-6">
-                          <Input
-                            name="created_at"
-                            register={register}
-                            placeholder="Nhập ngày khởi tạo"
-                            messageErrorInput={errors.created_at?.message}
-                            classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-darkSecond focus:border-blue-500 focus:ring-2 outline-none rounded-md text-black dark:text-white"
-                            className="relative flex-1"
-                            classNameLabel="text-black dark:text-white"
-                            nameInput="Ngày tạo"
-                            disabled
-                          />
-                        </div>
-                        <div className="col-span-6">
-                          <Input
-                            name="updated_at"
-                            register={register}
-                            placeholder="Nhập ngày cập nhật"
-                            messageErrorInput={errors.updated_at?.message}
-                            classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-darkSecond focus:border-blue-500 focus:ring-2 outline-none rounded-md text-black dark:text-white"
-                            className="relative flex-1"
-                            classNameLabel="text-black dark:text-white"
-                            nameInput="Ngày cập nhật"
-                            disabled
-                          />
+                          <div className="col-span-6">
+                            <Input
+                              name="created_at"
+                              register={register}
+                              placeholder="Nhập ngày khởi tạo"
+                              messageErrorInput={errors.created_at?.message}
+                              classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-darkSecond focus:border-blue-500 focus:ring-2 outline-none rounded-md text-black dark:text-white"
+                              className="relative flex-1"
+                              classNameLabel="text-black dark:text-white"
+                              nameInput="Ngày tạo"
+                              disabled
+                            />
+                          </div>
+                          <div className="col-span-6">
+                            <Input
+                              name="updated_at"
+                              register={register}
+                              placeholder="Nhập ngày cập nhật"
+                              messageErrorInput={errors.updated_at?.message}
+                              classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-darkSecond focus:border-blue-500 focus:ring-2 outline-none rounded-md text-black dark:text-white"
+                              className="relative flex-1"
+                              classNameLabel="text-black dark:text-white"
+                              nameInput="Ngày cập nhật"
+                              disabled
+                            />
+                          </div>
                         </div>
                       </div>
 
-                      <div className="flex items-center justify-center flex-col bg-[#dadada] rounded-sm px-4 shadow-sm">
-                        <div className="mb-2 text-black dark:text-white">Ảnh đại diện</div>
-                        <img
-                          src={previewImage || avatarWatch}
-                          className="h-28 w-28 rounded-full mx-auto"
-                          alt="avatar default"
-                        />
-                        <InputFileImage onChange={handleChangeImage} />
+                      <div className="w-1/3 flex justify-center flex-col items-center px-4">
+                        <div className="mb-2 text-black dark:text-white font-semibold">Ảnh đại diện</div>
+                        <div className="relative w-full h-[340px] border border-gray-200 rounded-md shadow-sm">
+                          <div
+                            className="absolute top-0 left-0 w-full h-full z-1 rounded-md"
+                            style={{
+                              backgroundImage: `url(${previewImage || avatarWatch})`,
+                              backgroundSize: "cover",
+                              backgroundPosition: "center",
+                              filter: "blur(2px)"
+                            }}
+                          ></div>
+                          <img
+                            src={previewImage || avatarWatch}
+                            className="absolute z-10 top-[40%] left-1/2 -translate-x-1/2 -translate-y-1/2 z-1 h-44 w-44 rounded-md mx-auto"
+                            alt="avatar default"
+                          />
+                          <InputFileImage
+                            onChange={handleChangeImage}
+                            classNameWrapper="text-center absolute z-30 top-[70%] left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80%]"
+                          />
+                        </div>
                       </div>
                     </div>
                     <div className="flex items-center justify-end">

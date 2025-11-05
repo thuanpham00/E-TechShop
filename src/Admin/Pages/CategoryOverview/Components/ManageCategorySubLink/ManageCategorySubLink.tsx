@@ -236,7 +236,7 @@ export default function ManageCategorySubLink({ dataCategory }: { dataCategory: 
             />
           ) : (
             <div className="py-6">
-              <Empty />
+              <Empty description="Chưa có liên kết nào" />
             </div>
           )}
         </div>

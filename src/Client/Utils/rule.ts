@@ -155,16 +155,22 @@ export const schemaAddProduct = yup.object({
   brand: yup.string().required("Thương hiệu bắt buộc!"),
   price: yup
     .number()
-    .transform((value, originalValue) => (originalValue === "" ? undefined : value)) // number thì cần đi kèm với transform trường hợp ko nhập thì báo lỗi
+    .transform((value, originalValue) => {
+      if (typeof originalValue === "string") {
+        const cleaned = originalValue.replace(/\./g, "") // "6599999"
+        return cleaned ? Number(cleaned) : undefined
+      }
+      return value
+    })
     .required("Giá bắt buộc!")
     .typeError("Giá phải là số!")
     .min(0, "Giá không được nhỏ hơn 0!"),
   discount: yup
     .number()
     .transform((value, originalValue) => (originalValue === "" ? undefined : value))
-    .typeError("% giảm giá phải là số!")
+    .typeError("Giảm giá phải là số!")
     .min(0, "% giảm giá không được nhỏ hơn 0!")
-    .required("% giảm giá bắt buộc!"),
+    .required("Giảm giá bắt buộc!"),
   stock: yup
     .number()
     .typeError("Số lượng phải là số!")
@@ -173,7 +179,7 @@ export const schemaAddProduct = yup.object({
   isFeatured: yup.string(),
   description: yup.string().required("Mô tả sản phẩm bắt buộc!"),
   banner: yup.string().max(1000, "Độ dài tối đa 1000 kí tự!").required("Ảnh đại diện sản phẩm bắt buộc!"),
-  medias: yup.array().required("Danh mục ảnh bắt buộc!").min(1, "Danh mục ảnh bắt buộc!"),
+  medias: yup.array(),
   specifications: yup.array().required("Thông số kỹ thuật bắt buộc!").min(1, "Thông số kỹ thuật bắt buộc!")
 })
 

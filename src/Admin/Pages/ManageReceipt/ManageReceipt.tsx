@@ -19,7 +19,7 @@ import { queryParamConfigReceipt } from "src/Types/queryParams.type"
 import { SuccessResponse } from "src/Types/utils.type"
 import ReceiptItem from "./Components/ReceiptItem"
 import DropdownSearch from "../ManageSupplies/Components/DropdownSearch"
-import { useEffect, useState } from "react"
+import { Fragment, useEffect, useState } from "react"
 import { cleanObject } from "src/Helpers/common"
 import { toast } from "react-toastify"
 import { motion } from "framer-motion"
@@ -445,62 +445,64 @@ export default function ManageReceipt() {
 
       <Collapse items={items} defaultActiveKey={["2"]} className="bg-white dark:bg-darkPrimary dark:border-none" />
 
+      <div className="mt-4 flex items-center justify-between gap-2 mb-2">
+        <div className="flex items-center gap-2">
+          <Button
+            onClick={() => downloadExcel(listReceipt)}
+            icon={<FolderUp size={15} />}
+            nameButton="Export"
+            classNameButton="py-2 px-3 border border-[#E2E7FF] bg-[#E2E7FF] w-full text-[#3A5BFF] font-medium rounded-md hover:bg-blue-500/40 duration-200 text-[13px] flex items-center gap-1 text-[13px]"
+          />
+          <Select
+            defaultValue="Mới nhất"
+            className="select-sort"
+            onChange={(value) => handleSort(value, queryConfig, path.AdminReceipts)}
+            suffixIcon={<ArrowUpNarrowWide color={isDarkMode ? "white" : "black"} />}
+            options={[
+              { value: "old", label: "Cũ nhất" },
+              { value: "new", label: "Mới nhất" }
+            ]}
+          />
+        </div>
+        <div>
+          <Link
+            to={path.AddReceipt}
+            className="py-2 px-3 bg-blue-500 w-full text-white font-medium rounded-md hover:bg-blue-500/80 duration-200 text-[13px] flex items-center gap-1"
+          >
+            <Plus size={15} />
+            <span>Thêm mới</span>
+          </Link>
+        </div>
+      </div>
+
       <section className="mt-4">
-        {isLoading && <Skeleton />}
-        {!isFetching && (
-          <div>
-            <div className="flex items-center justify-between gap-2 mb-2">
-              <div className="flex items-center gap-2">
-                <Button
-                  onClick={() => downloadExcel(listReceipt)}
-                  icon={<FolderUp size={15} />}
-                  nameButton="Export"
-                  classNameButton="py-2 px-3 border border-[#E2E7FF] bg-[#E2E7FF] w-full text-[#3A5BFF] font-medium rounded-md hover:bg-blue-500/40 duration-200 text-[13px] flex items-center gap-1 text-[13px]"
-                />
-                <Select
-                  defaultValue="Mới nhất"
-                  className="select-sort"
-                  onChange={(value) => handleSort(value, queryConfig, path.AdminReceipts)}
-                  suffixIcon={<ArrowUpNarrowWide color={isDarkMode ? "white" : "black"} />}
-                  options={[
-                    { value: "old", label: "Cũ nhất" },
-                    { value: "new", label: "Mới nhất" }
-                  ]}
-                />
-              </div>
-              <div>
-                <Link
-                  to={path.AddReceipt}
-                  className="py-2 px-3 bg-blue-500 w-full text-white font-medium rounded-md hover:bg-blue-500/80 duration-200 text-[13px] flex items-center gap-1"
-                >
-                  <Plus size={15} />
-                  <span>Thêm mới</span>
-                </Link>
-              </div>
-            </div>
-            {listReceipt?.length > 0 ? (
-              listReceipt.map((item, index) => (
-                <motion.div
-                  key={item._id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.1 }}
-                >
-                  <ReceiptItem item={item} />
-                </motion.div>
-              ))
-            ) : (
-              <div className="text-center mt-4">
-                <Empty />
-              </div>
-            )}
+        {isLoading ? (
+          <Skeleton />
+        ) : listReceipt && listReceipt.length > 0 ? (
+          <Fragment>
+            {listReceipt.map((item, index) => (
+              <motion.div
+                key={item._id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.1 }}
+              >
+                <ReceiptItem item={item} />
+              </motion.div>
+            ))}
             <Pagination
               data={result}
               queryConfig={queryConfig}
               page_size={page_size}
               pathNavigate={path.AdminReceipts}
             />
-          </div>
+          </Fragment>
+        ) : (
+          isFetching && (
+            <div className="text-center mt-4">
+              <Empty description="Chưa có đơn nhập hàng nào" />
+            </div>
+          )
         )}
       </section>
     </div>

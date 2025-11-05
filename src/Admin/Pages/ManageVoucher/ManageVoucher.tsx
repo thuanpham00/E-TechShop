@@ -7,7 +7,7 @@ import { isUndefined, omitBy } from "lodash"
 import { ArrowUpNarrowWide, Edit, FolderUp, Plus, Trash2, Tag as TagIcon, Percent, DollarSign } from "lucide-react"
 import { useEffect, useState } from "react"
 import { Helmet } from "react-helmet-async"
-import { createSearchParams, useNavigate } from "react-router-dom"
+import { createSearchParams, Link, useNavigate } from "react-router-dom"
 import { toast } from "react-toastify"
 import NavigateBack from "src/Admin/Components/NavigateBack"
 import { useTheme } from "src/Admin/Components/Theme-provider/Theme-provider"
@@ -20,7 +20,7 @@ import { convertDateTime, formatCurrency } from "src/Helpers/common"
 import useDownloadExcel from "src/Hook/useDownloadExcel"
 import useQueryParams from "src/Hook/useQueryParams"
 import useSortList from "src/Hook/useSortList"
-import { VoucherItemType } from "src/Types/product.type"
+import { OrderItemType, VoucherItemType } from "src/Types/product.type"
 import { queryParamConfigVoucher } from "src/Types/queryParams.type"
 import { SuccessResponse } from "src/Types/utils.type"
 import "../ManageOrders/ManageOrders.css"
@@ -40,6 +40,9 @@ export default function ManageVoucher() {
   // Modal states
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [editingVoucher, setEditingVoucher] = useState<VoucherItemType | null>(null)
+
+  const [isModalOrderOpen, setIsModalOrderOpen] = useState(false)
+  const [selectedVouchers, setSelectedVouchers] = useState<string | null>(null)
   const [voucherType, setVoucherType] = useState<"percentage" | "fixed">("percentage")
 
   const queryParams: queryParamConfigVoucher = useQueryParams()
@@ -291,6 +294,26 @@ export default function ManageVoucher() {
       }
     },
     {
+      title: "Áp dụng",
+      width: 130,
+      fixed: "right",
+      align: "center",
+      render: (_: any, record: VoucherItemType) => {
+        return (
+          <button
+            onClick={() => {
+              setSelectedVouchers(record._id)
+              setIsModalOrderOpen(true)
+            }}
+            type="button"
+            className="text-blue-500"
+          >
+            Xem đơn hàng
+          </button>
+        )
+      }
+    },
+    {
       title: "Hành động",
       key: "action",
       width: 120,
@@ -317,6 +340,42 @@ export default function ManageVoucher() {
     }
   ]
 
+  const [orderLimit, setOrderLimit] = useState<number>(5)
+  const [orderPage, setOrderPage] = useState<number>(1)
+
+  const {
+    data: voucherApplyOrders,
+    isFetching: isFetchingVoucherApplyOrders,
+    isLoading: isLoadingVoucherApplyOrders
+  } = useQuery({
+    queryKey: ["voucherApplyOrders", selectedVouchers, orderLimit, orderPage],
+    queryFn: () => {
+      const controller = new AbortController()
+      setTimeout(() => {
+        controller.abort()
+      }, 10000)
+      return VoucherAPI.getVoucherApplyOrders(
+        selectedVouchers as string,
+        { limit: orderLimit.toString(), page: orderPage.toString() },
+        controller.signal
+      )
+    },
+    retry: 0,
+    staleTime: 3 * 60 * 1000,
+    placeholderData: keepPreviousData,
+    enabled: Boolean(selectedVouchers)
+  })
+
+  const resultOrder = voucherApplyOrders?.data as SuccessResponse<{
+    result: OrderItemType[]
+    total: string
+    page: string
+    limit: string
+    totalOfPage: string
+  }>
+  console.log(resultOrder?.result?.limit)
+  const listOrderApplyVoucher = resultOrder?.result?.result
+
   useEffect(() => {
     if (isError) {
       const message = (error as any).response?.data?.message
@@ -342,8 +401,6 @@ export default function ManageVoucher() {
 
       <section className="mt-4">
         <div className="bg-white dark:bg-darkPrimary mb-3 dark:border-darkBorder rounded-2xl">
-          {isLoading && <Skeleton />}
-
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
               <Button
@@ -371,47 +428,46 @@ export default function ManageVoucher() {
             />
           </div>
 
-          {!isFetching ? (
-            <div>
-              {listVoucher?.length > 0 ? (
-                <Table
-                  rowKey={(r) => r._id}
-                  dataSource={listVoucher}
-                  columns={columns}
-                  loading={isLoading}
-                  pagination={{
-                    current: Number(queryConfig.page),
-                    pageSize: Number(queryConfig.limit),
-                    total: Number(result?.result.total || 0),
-                    showSizeChanger: true,
-                    pageSizeOptions: ["5", "10", "20", "50"],
-                    onChange: (page, pageSize) => {
-                      navigate({
-                        pathname: path.AdminVoucher,
-                        search: createSearchParams({
-                          ...queryConfig,
-                          page: page.toString(),
-                          limit: pageSize.toString()
-                        }).toString()
-                      })
-                    }
-                  }}
-                  rowClassName={(_, index) =>
-                    index % 2 === 0 ? "bg-[#f2f2f2] dark:bg-darkSecond" : "bg-white dark:bg-darkPrimary"
-                  }
-                  scroll={{ x: "max-content" }}
-                />
-              ) : (
-                <Empty description="Chưa có voucher nào" />
-              )}
-            </div>
-          ) : (
+          {isLoading ? (
             <Skeleton />
+          ) : listVoucher && listVoucher.length > 0 ? (
+            <Table
+              rowKey={(r) => r._id}
+              dataSource={listVoucher}
+              columns={columns}
+              loading={isFetching}
+              pagination={{
+                current: Number(queryConfig.page),
+                pageSize: Number(queryConfig.limit),
+                total: Number(result?.result.total || 0),
+                showSizeChanger: true,
+                pageSizeOptions: ["5", "10", "20", "50"],
+                onChange: (page, pageSize) => {
+                  navigate({
+                    pathname: path.AdminVoucher,
+                    search: createSearchParams({
+                      ...queryConfig,
+                      page: page.toString(),
+                      limit: pageSize.toString()
+                    }).toString()
+                  })
+                }
+              }}
+              rowClassName={(_, index) =>
+                index % 2 === 0 ? "bg-[#f2f2f2] dark:bg-darkSecond" : "bg-white dark:bg-darkPrimary"
+              }
+              scroll={{ x: "max-content" }}
+            />
+          ) : (
+            !isFetching && (
+              <div className="text-center mt-4">
+                <Empty description="Chưa có voucher nào" />
+              </div>
+            )
           )}
         </div>
       </section>
 
-      {/* Modal Add/Edit Voucher */}
       <Modal
         title={
           <div className="flex items-center gap-2 text-lg font-semibold">
@@ -573,6 +629,174 @@ export default function ManageVoucher() {
             />
           </div>
         </Form>
+      </Modal>
+
+      <Modal
+        title={
+          <div className="flex items-center gap-2 text-lg font-semibold">
+            <TagIcon size={20} className="text-blue-500" />
+            Danh sách đơn hàng áp dụng voucher
+          </div>
+        }
+        open={isModalOrderOpen}
+        onCancel={() => {
+          setIsModalOrderOpen(false)
+          setSelectedVouchers(null)
+        }}
+        footer={null}
+        width={1200}
+        style={{ top: 50 }}
+      >
+        {isLoadingVoucherApplyOrders ? (
+          <Skeleton />
+        ) : (
+          <div className="mt-4">
+            {listOrderApplyVoucher && listOrderApplyVoucher.length > 0 ? (
+              <Table
+                rowKey={(record) => record._id}
+                dataSource={listOrderApplyVoucher}
+                pagination={{
+                  current: Number(resultOrder?.result?.page || 1),
+                  pageSize: Number(resultOrder?.result?.limit || 5),
+                  total: Number(resultOrder?.result?.total || 0),
+                  showSizeChanger: true,
+                  pageSizeOptions: ["5", "10", "20"],
+                  onChange: (page, pageSize) => {
+                    setOrderPage(page)
+                    setOrderLimit(pageSize)
+                  }
+                }}
+                loading={isFetchingVoucherApplyOrders}
+                scroll={{ x: "max-content" }}
+                columns={[
+                  {
+                    title: "STT",
+                    key: "index",
+                    width: 60,
+                    align: "center",
+                    render: (_, __, index) => {
+                      const currentPage = Number(resultOrder?.result?.page) || 1
+                      const pageSize = Number(resultOrder?.result?.limit) || 5
+                      return (currentPage - 1) * pageSize + index + 1
+                    }
+                  },
+                  {
+                    title: "Mã đơn hàng",
+                    dataIndex: "_id",
+                    key: "_id",
+                    width: 150,
+                    render: (orderId: string) => (
+                      <code className="bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 px-2 py-1 rounded font-mono text-sm">
+                        {orderId}
+                      </code>
+                    )
+                  },
+                  {
+                    title: "Khách hàng",
+                    dataIndex: "user_id",
+                    key: "user_id",
+                    width: 160,
+                    render: (_: any, record: OrderItemType) => (
+                      <div className="space-y-1">
+                        <div className="font-medium text-gray-800 dark:text-gray-200">
+                          {record?.customer_info.name || "—"}
+                        </div>
+                        <div className="text-xs text-gray-500 dark:text-gray-400">
+                          {record?.customer_info.phone || "—"}
+                        </div>
+                      </div>
+                    )
+                  },
+                  {
+                    title: "Tổng tiền (Bao gồm phí vận chuyển)",
+                    dataIndex: "total_amount",
+                    key: "total_amount",
+                    width: 170,
+                    align: "right",
+                    render: (_: number, record: OrderItemType) => (
+                      <span className="font-semibold text-gray-700 dark:text-gray-300">
+                        {formatCurrency(record.subTotal + record.shipping_fee)}đ
+                      </span>
+                    )
+                  },
+                  {
+                    title: "Giảm giá",
+                    dataIndex: "discount_amount",
+                    key: "discount_amount",
+                    width: 120,
+                    align: "right",
+                    render: (discount: number) => (
+                      <span className="font-medium text-red-500">-{formatCurrency(discount)}đ</span>
+                    )
+                  },
+                  {
+                    title: "Thanh toán",
+                    dataIndex: "totalAmount",
+                    key: "totalAmount",
+                    width: 130,
+                    align: "right",
+                    render: (final: number) => (
+                      <span className="font-bold text-green-600 dark:text-green-400">{formatCurrency(final)}đ</span>
+                    )
+                  },
+                  {
+                    title: "Trạng thái",
+                    dataIndex: "status",
+                    key: "status",
+                    width: 130,
+                    align: "center",
+                    render: (status: string) => {
+                      const statusConfig: Record<string, { color: string; text: string }> = {
+                        "Chờ xác nhận": { color: "orange", text: "Chờ xác nhận" },
+                        "Đang xử lý": { color: "blue", text: "Đang xử lý" },
+                        "Đang vận chuyển": { color: "cyan", text: "Đang vận chuyển" },
+                        "Đã giao hàng": { color: "green", text: "Đã giao hàng" },
+                        "Đã hủy": { color: "red", text: "Đã hủy" }
+                      }
+                      const config = statusConfig[status]
+                      return <Tag color={config.color}>{config.text}</Tag>
+                    }
+                  },
+                  {
+                    title: "Ngày đặt",
+                    dataIndex: "created_at",
+                    key: "created_at",
+                    width: 160,
+                    render: (date: string) => (
+                      <span className="text-gray-600 dark:text-gray-400 text-sm">{convertDateTime(date)}</span>
+                    )
+                  },
+                  {
+                    title: "Hành động",
+                    key: "action",
+                    width: 120,
+                    fixed: "right",
+                    align: "center",
+                    render: (_, record) => (
+                      <div className="flex items-center justify-center">
+                        <Link
+                          className="text-blue-500"
+                          to={`/admin/orders/${record._id}`}
+                          state={{
+                            orderData: record,
+                            type: record.status === "Đã giao hàng" ? "completed" : "processing"
+                          }}
+                        >
+                          Xem chi tiết
+                        </Link>
+                      </div>
+                    )
+                  }
+                ]}
+                rowClassName={(_, index) =>
+                  index % 2 === 0 ? "bg-[#f9fafb] dark:bg-darkSecond" : "bg-white dark:bg-darkPrimary"
+                }
+              />
+            ) : (
+              <Empty description="Chưa có đơn hàng nào sử dụng voucher này" image={Empty.PRESENTED_IMAGE_SIMPLE} />
+            )}
+          </div>
+        )}
       </Modal>
     </div>
   )

@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { Helmet } from "react-helmet-async"
-import { useLocation, useNavigate, useParams } from "react-router-dom"
+import { useNavigate, useParams } from "react-router-dom"
 import Breadcrumb from "src/Client/Components/Breadcrumb"
 import Skeleton from "src/Components/Skeleton"
 import { HttpStatusCode } from "src/Constants/httpStatus"
@@ -23,7 +23,6 @@ import { collectionAPI } from "src/Apis/client/collections.api"
 export default function ProductDetail() {
   const queryClient = useQueryClient()
   const token = getAccessTokenFromLS()
-  const { state: nameCategory } = useLocation()
   const { name } = useParams()
   const id = getNameFromNameId(name as string)
   const imgRef = useRef<HTMLImageElement>(null)
@@ -59,8 +58,8 @@ export default function ProductDetail() {
     queryKey: ["productRelated", idProduct], // nếu name khác gì thì cái query này sẽ fetch lại // kiểu đánh dấu
     queryFn: () => {
       return collectionAPI.getProductRelated({
-        brand: brandProduct,
-        category: categoryProduct,
+        brand: brandProduct._id,
+        category: categoryProduct._id,
         idProduct: idProduct
       })
     },
@@ -197,6 +196,8 @@ export default function ProductDetail() {
     setIsModalOpen(false)
   }
 
+  console.log(productDetail)
+
   return (
     <div className="container">
       {isLoading && <Skeleton />}
@@ -213,18 +214,20 @@ export default function ProductDetail() {
               }
             />
           </Helmet>
-          <Breadcrumb slug_1={nameCategory} slug_2={productDetail?.name} />
+          <Breadcrumb slug_1={productDetail?.category.name} slug_2={productDetail?.name} />
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
             <div className="bg-white rounded-lg border border-gray-200 shadow-md my-4 grid grid-cols-6 gap-6 p-6 pt-4">
               <div className="col-span-3">
                 <div className="flex items-center">
-                  <button
-                    className="hover:bg-gray-200 p-2 duration-200 transition-all ease-linear
+                  {productDetail?.medias.length > 0 && (
+                    <button
+                      className="hover:bg-gray-200 p-2 duration-200 transition-all ease-linear
                    rounded-full"
-                    onClick={() => chooseImage((imageCurrent || 0) - 1)}
-                  >
-                    <ChevronLeft />
-                  </button>
+                      onClick={() => chooseImage((imageCurrent || 0) - 1)}
+                    >
+                      <ChevronLeft />
+                    </button>
+                  )}
                   <button
                     onClick={() => showModal(imageCurrent as number)}
                     className="cursor-pointer flex justify-center w-full"
@@ -232,17 +235,23 @@ export default function ProductDetail() {
                     <img
                       ref={imgRef}
                       loading="lazy"
-                      src={productDetail?.medias[Number(imageCurrent)]?.url}
+                      src={
+                        productDetail?.medias.length > 0
+                          ? productDetail?.medias[Number(imageCurrent)]?.url
+                          : productDetail?.banner.url
+                      }
                       alt={productDetail?.name}
                       className="object-cover w-[60%] h-[300px] pointer-events-none"
                     />
                   </button>
-                  <button
-                    className="hover:bg-gray-200 p-2 duration-200 transition-all ease-linear
+                  {productDetail?.medias.length > 0 && (
+                    <button
+                      className="hover:bg-gray-200 p-2 duration-200 transition-all ease-linear
                    rounded-full"
-                  >
-                    <ChevronRight onClick={() => chooseImage((imageCurrent || 0) + 1)} />
-                  </button>
+                    >
+                      <ChevronRight onClick={() => chooseImage((imageCurrent || 0) + 1)} />
+                    </button>
+                  )}
                 </div>
                 <div className="mt-6 grid grid-cols-4 gap-4">
                   {productDetail?.medias.map((item, index) => {
@@ -490,8 +499,12 @@ export default function ProductDetail() {
             footer={null}
           >
             <img
-              src={productDetail.medias[imgProductSelected].url}
-              alt={productDetail.medias[imgProductSelected].url}
+              src={
+                productDetail?.medias.length > 0
+                  ? productDetail.medias[imgProductSelected].url
+                  : productDetail?.banner.url
+              }
+              alt={productDetail?.medias.length > 0 ? productDetail.medias[imgProductSelected].url : ""}
             />
           </Modal>
         </div>

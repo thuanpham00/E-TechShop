@@ -227,7 +227,7 @@ export default function OrderList({ type }: { type: "process" | "completed" | "c
       fixed: "right",
       align: "center",
       render: (_, record) => (
-        <div className="flex items-center justify-center gap-2">
+        <div className="flex items-center justify-center">
           <Link
             className="text-blue-500"
             to={`/admin/orders/${record._id}`}
@@ -503,7 +503,6 @@ export default function OrderList({ type }: { type: "process" | "completed" | "c
       <Collapse items={items} defaultActiveKey={["2"]} className="bg-white dark:bg-darkPrimary dark:border-none" />
 
       <section className="bg-white dark:bg-darkPrimary mb-3 dark:border-darkBorder mt-4">
-        {isLoading && <Skeleton />}
         <div className="flex items-center gap-2">
           <Button
             onClick={() => downloadExcel(listOrder)}
@@ -522,41 +521,40 @@ export default function OrderList({ type }: { type: "process" | "completed" | "c
             ]}
           />
         </div>
-        {!isFetching ? (
-          <div>
-            {listOrder?.length > 0 ? (
-              <Table
-                rowKey={(r) => r._id}
-                dataSource={listOrder}
-                columns={columns}
-                loading={isLoading}
-                pagination={{
-                  current: Number(queryConfig.page),
-                  pageSize: Number(queryConfig.limit),
-                  total: Number(result?.result.total || 0),
-                  showSizeChanger: true,
-                  pageSizeOptions: ["5", "10", "20", "50"],
-                  onChange: (page, pageSize) =>
-                    navigate({
-                      pathname: path.AdminOrders,
-                      search: createSearchParams({
-                        ...queryConfig,
-                        page: page.toString(),
-                        limit: pageSize.toString()
-                      }).toString()
-                    })
-                }}
-                rowClassName={(_, index) => (index % 2 === 0 ? "bg-[#f2f2f2]" : "bg-white")}
-                scroll={{ x: "max-content" }}
-              />
-            ) : (
-              <div className="text-center mt-4">
-                <Empty />
-              </div>
-            )}
-          </div>
-        ) : (
+
+        {isLoading ? (
           <Skeleton />
+        ) : listOrder && listOrder.length > 0 ? (
+          <Table
+            rowKey={(r) => r._id}
+            dataSource={listOrder}
+            columns={columns}
+            loading={isFetching}
+            pagination={{
+              current: Number(queryConfig.page),
+              pageSize: Number(queryConfig.limit),
+              total: Number(result?.result.total || 0),
+              showSizeChanger: true,
+              pageSizeOptions: ["5", "10", "20", "50"],
+              onChange: (page, pageSize) =>
+                navigate({
+                  pathname: path.AdminOrders,
+                  search: createSearchParams({
+                    ...queryConfig,
+                    page: page.toString(),
+                    limit: pageSize.toString()
+                  }).toString()
+                })
+            }}
+            rowClassName={(_, index) => (index % 2 === 0 ? "bg-[#f2f2f2]" : "bg-white")}
+            scroll={{ x: "max-content" }}
+          />
+        ) : (
+          !isFetching && (
+            <div className="text-center mt-4">
+              <Empty description="Chưa có đơn hàng nào" />
+            </div>
+          )
         )}
       </section>
     </div>

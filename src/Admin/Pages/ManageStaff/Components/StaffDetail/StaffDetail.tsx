@@ -245,7 +245,7 @@ export default function StaffDetail({
           </h3>
           <div className="p-4 pt-0">
             <h2 className="text-black dark:text-white font-semibold">Thông tin cơ bản</h2>
-            <div className="flex justify-between gap-8">
+            <div className="flex justify-between gap-4">
               <div className="w-2/3">
                 <div className="mt-2 grid grid-cols-12 flex-wrap gap-4">
                   <div className="col-span-6">
@@ -462,14 +462,28 @@ export default function StaffDetail({
                   </div>
                 </div>
               </div>
-              <div className="w-1/3 flex items-center justify-center flex-col bg-[#dadada] rounded-sm px-4 shadow-sm">
-                <div className="mb-2 text-black dark:text-white">Ảnh đại diện</div>
-                <img
-                  src={previewImage || avatarWatch}
-                  className="h-28 w-28 rounded-full mx-auto"
-                  alt="avatar default"
-                />
-                <InputFileImage onChange={handleChangeImage} />
+              <div className="w-1/3 flex items-center justify-center flex-col px-4">
+                <div className="mb-2 text-black dark:text-white font-semibold">Ảnh đại diện</div>
+                <div className="relative w-full h-full border border-gray-200 rounded-md shadow">
+                  <div
+                    className="absolute top-0 left-0 w-full h-full z-1 rounded-md"
+                    style={{
+                      backgroundImage: `url(${previewImage || avatarWatch})`,
+                      backgroundSize: "cover",
+                      backgroundPosition: "center",
+                      filter: "blur(2px)"
+                    }}
+                  ></div>
+                  <img
+                    src={previewImage || avatarWatch}
+                    className="absolute z-10 top-[40%] left-1/2 -translate-x-1/2 -translate-y-1/2 z-1 h-44 w-44 rounded-md mx-auto"
+                    alt="avatar default"
+                  />
+                  <InputFileImage
+                    onChange={handleChangeImage}
+                    classNameWrapper="text-center absolute z-30 top-[70%] left-1/2 -translate-x-1/2 -translate-y-1/2 w-[90%]"
+                  />
+                </div>
               </div>
             </div>
             <div className="flex items-center justify-end">

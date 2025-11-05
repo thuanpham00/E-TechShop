@@ -509,7 +509,6 @@ export default function ManageBrand({ idCategory, nameCategory }: { idCategory: 
       <Collapse items={items} defaultActiveKey={["2"]} className="bg-white dark:bg-darkPrimary dark:border-none" />
 
       <section className="bg-white dark:bg-darkPrimary mb-3 dark:border-darkBorder mt-4">
-        {isLoading && <Skeleton />}
         <div className="flex items-center justify-between mb-2">
           <div className="flex items-center gap-2">
             <Button
@@ -538,41 +537,39 @@ export default function ManageBrand({ idCategory, nameCategory }: { idCategory: 
             />
           </div>
         </div>
-        {!isFetching ? (
-          <div>
-            {listBrandOfCategory?.length > 0 ? (
-              <Table
-                rowKey={(r) => r._id}
-                dataSource={listBrandOfCategory}
-                loading={isLoading}
-                pagination={{
-                  current: Number(queryConfig.page),
-                  pageSize: Number(queryConfig.limit),
-                  total: Number(result?.result.total || 0),
-                  showSizeChanger: true,
-                  pageSizeOptions: ["5", "10", "20", "50"],
-                  onChange: (page, pageSize) => {
-                    navigate({
-                      pathname: `${path.AdminCategories}/${idCategory}`,
-                      search: createSearchParams({
-                        ...queryConfig,
-                        page: page.toString(),
-                        limit: pageSize.toString()
-                      }).toString()
-                    })
-                  }
-                }}
-                columns={columns}
-                rowClassName={(_, index) => (index % 2 === 0 ? "bg-[#f2f2f2]" : "bg-white")}
-              />
-            ) : (
-              <div className="text-center mt-4">
-                <Empty />
-              </div>
-            )}
-          </div>
-        ) : (
+        {isLoading ? (
           <Skeleton />
+        ) : listBrandOfCategory && listBrandOfCategory.length > 0 ? (
+          <Table
+            rowKey={(r) => r._id}
+            dataSource={listBrandOfCategory}
+            loading={isFetching}
+            pagination={{
+              current: Number(queryConfig.page),
+              pageSize: Number(queryConfig.limit),
+              total: Number(result?.result.total || 0),
+              showSizeChanger: true,
+              pageSizeOptions: ["5", "10", "20", "50"],
+              onChange: (page, pageSize) => {
+                navigate({
+                  pathname: `${path.AdminCategories}/${idCategory}`,
+                  search: createSearchParams({
+                    ...queryConfig,
+                    page: page.toString(),
+                    limit: pageSize.toString()
+                  }).toString()
+                })
+              }
+            }}
+            columns={columns}
+            rowClassName={(_, index) => (index % 2 === 0 ? "bg-[#f2f2f2]" : "bg-white")}
+          />
+        ) : (
+          !isFetching && (
+            <div className="text-center mt-4">
+              <Empty description="Chưa có thương hiệu nào" />
+            </div>
+          )
         )}
 
         <AnimatePresence>

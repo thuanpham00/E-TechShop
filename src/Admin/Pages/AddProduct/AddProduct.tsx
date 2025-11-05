@@ -15,12 +15,15 @@ import { yupResolver } from "@hookform/resolvers/yup"
 import TextEditor from "src/Admin/Components/TextEditor"
 import { config } from "src/Constants/config"
 import { toast } from "react-toastify"
-import { CreateProductBodyReq } from "src/Types/product.type"
+import { CreateProductBodyReq, ProductItemType } from "src/Types/product.type"
 import { isError400 } from "src/Helpers/utils"
 import { motion } from "framer-motion"
 import { CategoryAPI } from "src/Apis/admin/category.api"
 import { BrandAPI } from "src/Apis/admin/brand.api"
 import { ProductAPI } from "src/Apis/admin/product.api"
+import { Select } from "antd"
+import { LoadingOutlined } from "@ant-design/icons"
+import { useLocation } from "react-router-dom"
 
 const listSpecificationForCategory = {
   Laptop: [
@@ -96,6 +99,10 @@ type FormData = Pick<
 >
 
 export default function AddProduct() {
+  const { state } = useLocation()
+  const editItem = state?.editItem as boolean | ProductItemType
+  console.log(editItem)
+
   const getNameCategory = useQuery({
     queryKey: ["nameCategory"],
     queryFn: () => {
@@ -146,36 +153,34 @@ export default function AddProduct() {
   }) // thiết kế để quản lý các trường dạng mảng trong form. Nó giúp bạn dễ dàng thêm, xóa, cập nhật, hoặc thay thế các phần tử trong mảng mà không cần dùng useState thủ công.
 
   const [selectedCategory, setSelectedCategory] = useState<CategoryType | null>(null)
-  // const [specifications, setSpecifications] = useState<{ name: string; value: string }[]>([])
+
+  // useEffect(() => {
+  //   if (editItem && typeof editItem === "object") {
+  //     const category = editItem.category[0].name
+  //     setSelectedCategory(category as CategoryType)
+  //     setValue("name", editItem.name)
+  //     setValue("brand", editItem.brand[0].name)
+  //     setValue("category", editItem.category[0].name)
+  //     setValue("price", editItem.price)
+  //     setValue("discount", editItem.discount)
+  //     setValue("isFeatured", editItem.isFeatured.toString())
+  //     setValue("description", editItem.description)
+  //     replace(editItem.specifications.map((item) => ({ name: item.name, value: item.value })) || [])
+  //   }
+  // }, [editItem, setValue, replace])
 
   useEffect(() => {
     if (selectedCategory) {
-      // const array: { name: string; value: string }[] = []
-      // listSpecificationForCategory[selectedCategory].map((item) => {
-      //   array.push({
-      //     name: item,
-      //     value: ""
-      //   })
-      // })
-      // setSpecifications(array)
       const array = listSpecificationForCategory[selectedCategory].map((item) => ({
         name: item,
         value: ""
       }))
+      console.log(array)
       replace(array)
     } else {
       replace([])
     }
   }, [selectedCategory, replace])
-
-  // const handleChangeInput = (index: number) => (event: React.ChangeEvent<HTMLInputElement>) => {
-  //   const newSpecifications = [...specifications]
-  //   newSpecifications[index] = {
-  //     name: newSpecifications[index].name,
-  //     value: event.target.value
-  //   }
-  //   setSpecifications(newSpecifications)
-  // }
 
   // xử lý banner
   const [file, setFile] = useState<File | null>()
@@ -184,6 +189,12 @@ export default function AddProduct() {
       return file ? URL.createObjectURL(file) : ""
     }
   }, [file])
+
+  useEffect(() => {
+    if (file) {
+      setValue("banner", file.name) // tên ảnh
+    }
+  }, [setValue, file])
 
   const refBanner = useRef<HTMLInputElement>(null)
   const handleChangeBanner = () => {
@@ -207,12 +218,6 @@ export default function AddProduct() {
 
     setFile(fileFormLocal)
   }
-
-  useEffect(() => {
-    if (file) {
-      setValue("banner", file.name) // tên ảnh
-    }
-  }, [setValue, file])
 
   // xử lý danh mục ảnh
   const refGallery = useRef<(HTMLInputElement | null)[]>([])
@@ -270,41 +275,60 @@ export default function AddProduct() {
     }
   })
 
-  const handleSubmitAddProduct = handleSubmit((data) => {
-    const body: CreateProductBodyReq = {
-      name: data.name,
-      category: data.category,
-      brand: data.brand,
-      price: data.price,
-      discount: data.discount,
-      stock: data.stock,
-      isFeatured: data.isFeatured as string,
-      description: data.description,
-      banner: file as File,
-      medias: galleryFiles as File[],
-      specifications: data.specifications
-    }
-    addProductMutation.mutate(body, {
-      onSuccess: () => {
-        toast.success("Thêm sản phẩm thành công!", {
-          autoClose: 1500
-        })
-        reset()
-        setFile(null)
-        setGalleryFiles([null, null, null, null])
-
-        setSelectedCategory(null)
-      },
-      onError: (error) => {
-        if (isError400<ErrorResponse<FormData>>(error)) {
-          const formError = error.response?.data
-          setError("name", {
-            message: (formError as any).message
-          })
-        }
+  const handleSubmitAddProduct = handleSubmit(
+    (data) => {
+      const body: CreateProductBodyReq = {
+        name: data.name,
+        category: data.category,
+        brand: data.brand,
+        price: data.price,
+        discount: data.discount,
+        stock: data.stock,
+        isFeatured: data.isFeatured as string,
+        description: data.description,
+        banner: file as File,
+        medias: galleryFiles as File[],
+        specifications: data.specifications
       }
-    })
-  })
+      addProductMutation.mutate(body, {
+        onSuccess: () => {
+          toast.success("Thêm sản phẩm thành công!", {
+            autoClose: 1500
+          })
+          reset({
+            name: "",
+            brand: "",
+            category: "",
+            price: "" as any,
+            discount: "" as any,
+            stock: undefined,
+            banner: "",
+            isFeatured: "false",
+            description: "",
+            medias: [],
+            specifications: []
+          })
+          setFile(null)
+          setGalleryFiles([null, null, null, null])
+
+          setSelectedCategory(null)
+        },
+        onError: (error) => {
+          if (isError400<ErrorResponse<FormData>>(error)) {
+            const formError = error.response?.data
+            setError("name", {
+              message: (formError as any).message
+            })
+          }
+        }
+      })
+    },
+    (error) => {
+      console.log(error)
+    }
+  )
+
+  const isSubmitting = addProductMutation.isPending
 
   return (
     <div>
@@ -317,7 +341,7 @@ export default function AddProduct() {
       </Helmet>
       <NavigateBack />
       <h1 className="text-2xl font-bold text-gray-800 bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600 my-2">
-        Thêm sản phẩm
+        {editItem && typeof editItem === "object" ? "Cập nhật sản phẩm" : "Thêm sản phẩm mới"}
       </h1>
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
         <form onSubmit={handleSubmitAddProduct} className="grid grid-cols-7 gap-4">
@@ -433,27 +457,27 @@ export default function AddProduct() {
                       control={control}
                       render={({ field }) => {
                         return (
-                          <select
+                          <Select
                             // {...field}
+                            style={{ width: "100%" }}
                             value={field.value ?? ""} // ✅ Giá trị từ form
-                            onChange={(e) => {
-                              const selected = e.target.value || undefined
+                            onChange={(value) => {
+                              const selected = value || undefined
                               field.onChange(selected)
                               setSelectedCategory(selected as "Laptop" | "Laptop Gaming" | "PC GVN" | "Màn hình") // set state danh mục đã chọn
                             }} // ✅ Cập nhật vào form
-                            className="p-2 border border-gray-300 dark:border-darkBorder bg-[#f2f2f2] dark:bg-darkSecond w-full mt-2 rounded-md"
                           >
-                            <option value="" disabled>
+                            <Select.Option value="" disabled>
                               -- Chọn danh mục --
-                            </option>
+                            </Select.Option>
                             {listNameCategoryResult?.map((item, index) => {
                               return (
-                                <option key={index} value={item}>
+                                <Select.Option key={index} value={item}>
                                   {item}
-                                </option>
+                                </Select.Option>
                               )
                             })}
-                          </select>
+                          </Select>
                         )
                       }}
                     />
@@ -474,23 +498,23 @@ export default function AddProduct() {
                       control={control}
                       render={({ field }) => {
                         return (
-                          <select
+                          <Select
                             // {...field}
+                            style={{ width: "100%" }}
                             value={field.value ?? ""} // ✅ Giá trị từ form
-                            onChange={(e) => field.onChange(e.target.value ? e.target.value : undefined)} // ✅ Cập nhật vào form
-                            className="p-2 border border-gray-300 dark:border-darkBorder bg-[#f2f2f2] dark:bg-darkSecond w-full mt-2 rounded-md"
+                            onChange={(value) => field.onChange(value ? value : undefined)} // ✅ Cập nhật vào form
                           >
-                            <option value="" disabled>
+                            <Select.Option value="" disabled>
                               -- Chọn thương hiệu --
-                            </option>
+                            </Select.Option>
                             {listNameBrandResult?.map((item, index) => {
                               return (
-                                <option key={index} value={item}>
+                                <Select.Option key={index} value={item}>
                                   {item}
-                                </option>
+                                </Select.Option>
                               )
                             })}
-                          </select>
+                          </Select>
                         )
                       }}
                     />
@@ -505,7 +529,7 @@ export default function AddProduct() {
                 </div>
               </div>
 
-              <div className="mt-2 flex items-center gap-4">
+              <div className="flex items-center gap-4">
                 <div className="flex-1">
                   <Input
                     name="price"
@@ -515,6 +539,9 @@ export default function AddProduct() {
                     messageErrorInput={errors.price?.message}
                     nameInput="Giá sản phẩm (đ)"
                     classNameInput="mt-1 p-2 w-full border border-[#dedede] rounded-sm focus:border-blue-500 focus:ring-2 outline-none text-black dark:text-white dark:bg-darkSecond dark:border-0"
+                    control={control}
+                    isCurrency={true}
+                    currencySuffix="đ"
                   />
                 </div>
                 <div className="flex-1">
@@ -530,16 +557,19 @@ export default function AddProduct() {
                 </div>
               </div>
 
-              <Input
-                name="stock"
-                classNameLabel="font-semibold"
-                register={register}
-                placeholder="Nhập số lượng sản phẩm"
-                nameInput="Số lượng"
-                classNameInput="mt-1 p-2 w-full border border-[#dedede] rounded-sm focus:border-blue-500 focus:ring-2 outline-none text-black dark:text-white bg-[#f2f2f2] dark:bg-darkSecond dark:border-0"
-                value="0"
-                disabled
-              />
+              <div className="hidden">
+                <Input
+                  name="stock"
+                  classNameLabel="font-semibold"
+                  register={register}
+                  placeholder="Nhập số lượng sản phẩm"
+                  nameInput="Số lượng"
+                  classNameInput="mt-1 p-2 w-full border border-[#dedede] rounded-sm focus:border-blue-500 focus:ring-2 outline-none text-black dark:text-white bg-[#f2f2f2] dark:bg-darkSecond dark:border-0"
+                  value="0"
+                  disabled
+                />
+              </div>
+
               <div className="flex items-center gap-2">
                 <h2 className="font-semibold">Sản phẩm nổi bật</h2>
                 <input type="checkbox" className="w-4 h-4" {...register("isFeatured")} />
@@ -560,11 +590,7 @@ export default function AddProduct() {
                             className="w-2/3 p-2 border border-gray-300 dark:bg-darkPrimary rounded-tr-md rounded-br-md border-l-0"
                             placeholder={`Nhập ${spec.name.toLowerCase()}`}
                             {...register(`specifications.${index}.value`)}
-                            // onChange={handleChangeInput(index)}
                           />
-                          {/* <div className="mt-2">
-                          <span>{errors.specifications[index]?.value?.message}</span>
-                        </div> */}
                         </div>
                       )
                     })
@@ -603,12 +629,33 @@ export default function AddProduct() {
                 <Button
                   classNameButton="mt-1 p-2 px-3 bg-red-500 text-white font-semibold rounded-sm hover:bg-red-500/80 duration-200"
                   nameButton="Xóa"
-                  type="submit"
+                  type="button"
+                  onClick={() => {
+                    reset({
+                      name: "",
+                      brand: "",
+                      category: "",
+                      price: "" as any,
+                      discount: "" as any,
+                      stock: undefined,
+                      banner: "",
+                      isFeatured: "false",
+                      description: "",
+                      medias: [],
+                      specifications: []
+                    })
+                    setFile(null)
+                    setGalleryFiles([null, null, null, null])
+
+                    setSelectedCategory(null)
+                  }}
                 />
                 <Button
+                  icon={isSubmitting ? <LoadingOutlined spin /> : undefined}
                   classNameButton="mt-1 p-2 px-3 bg-blue-500 text-white font-semibold rounded-sm hover:bg-blue-500/80 duration-200"
                   nameButton="Thêm sản phẩm"
                   type="submit"
+                  disabled={isSubmitting}
                 />
               </div>
             </div>
