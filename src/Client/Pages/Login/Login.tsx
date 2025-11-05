@@ -9,7 +9,7 @@ import { toast } from "react-toastify"
 import { userAPI } from "src/Apis/user.api"
 import { path } from "src/Constants/path"
 import { schemaAuth, SchemaAuthType } from "src/Client/Utils/rule"
-import { isError422 } from "src/Helpers/utils"
+import { isError422, isError429 } from "src/Helpers/utils"
 import { ErrorResponse } from "src/Types/utils.type"
 import { AppContext } from "src/Context/authContext"
 import Button from "src/Components/Button"
@@ -82,6 +82,11 @@ export default function Login() {
               message: (formError.password as any).msg
             })
           }
+        }
+        if (isError429<ErrorResponse<string>>(error)) {
+          toast.error(error.response?.data.message, {
+            autoClose: 1500
+          })
         }
       }
     })
