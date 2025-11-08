@@ -140,17 +140,18 @@ export default function ProductDetail() {
   const addProductToCart = async (productId: string, quantity: number) => {
     addProductToCartMutation
       .mutateAsync(
-        { product_id: productId, quantity: quantity, added_at: new Date() },
+        { product_id: productId, quantity: quantity },
         {
           onError: () => {
-            toast.error("Vui lòng đăng nhập để tiếp tục", { autoClose: 1500 })
-            navigate(`${path.Login}?redirect_url=${encodeURIComponent(`/products/${name}`)}`)
+            toast.error("Thêm vào giỏ hàng thất bại", { autoClose: 1500 })
           }
         }
       )
       .then((res) => {
         queryClient.invalidateQueries({ queryKey: ["listCart", token] })
         toast.success(res.data.message, { autoClose: 1500 })
+
+        window.dispatchEvent(new Event("cart-updated"))
       })
       .catch((err) => console.log(err))
   }
@@ -158,11 +159,10 @@ export default function ProductDetail() {
   const handleBuyNow = (productId: string, quantity: number) => {
     addProductToCartMutation
       .mutateAsync(
-        { product_id: productId, quantity: quantity, added_at: new Date() },
+        { product_id: productId, quantity: quantity },
         {
           onError: () => {
-            toast.error("Vui lòng đăng nhập để tiếp tục", { autoClose: 1500 })
-            navigate(`${path.Login}?redirect_url=${encodeURIComponent(`/products/${name}`)}`)
+            toast.error("Thêm vào giỏ hàng thất bại", { autoClose: 1500 })
           }
         }
       )
@@ -174,6 +174,8 @@ export default function ProductDetail() {
         })
         queryClient.invalidateQueries({ queryKey: ["listCart", token] })
         toast.success(res.data.message, { autoClose: 1500 })
+
+        window.dispatchEvent(new Event("cart-updated"))
       })
       .catch((err) => console.log(err))
   }

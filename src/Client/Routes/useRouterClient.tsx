@@ -113,6 +113,14 @@ export default function useRouterClient() {
                   <VerifyEmail />
                 </Suspense>
               )
+            },
+            {
+              path: path.Cart,
+              element: (
+                <Suspense>
+                  <Cart />
+                </Suspense>
+              )
             }
           ]
         },
@@ -124,14 +132,6 @@ export default function useRouterClient() {
               path: "",
               element: <MainLayout />,
               children: [
-                {
-                  path: path.Cart,
-                  element: (
-                    <Suspense>
-                      <Cart />
-                    </Suspense>
-                  )
-                },
                 {
                   path: path.InfoOrder,
                   element: (

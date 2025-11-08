@@ -25,6 +25,10 @@ module.exports = {
     },
     // Nói ESLint cách xử lý các import
     "import/resolver": {
+      typescript: {
+        alwaysTryTypes: true,
+        project: path.resolve(__dirname, "tsconfig.json")
+      },
       node: {
         paths: [path.resolve(__dirname, "")],
         extensions: [".js", ".jsx", ".ts", ".tsx"]

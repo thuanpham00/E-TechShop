@@ -3,7 +3,7 @@ import { Cpu, Heart, HeartOff, Info, LogOut, PackageSearch, ShoppingCart } from 
 import { Link, useNavigate } from "react-router-dom"
 import { path } from "src/Constants/path"
 import { useCallback, useContext, useEffect, useMemo, useRef, useState } from "react"
-import { keepPreviousData, useMutation, useQuery } from "@tanstack/react-query"
+import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { userAPI } from "src/Apis/user.api"
 import { toast } from "react-toastify"
 import { AppContext } from "src/Context/authContext"
@@ -22,6 +22,7 @@ import { OrderApi } from "src/Apis/client/order.api"
 import { categoryAPI } from "src/Apis/client/category.api"
 
 export default function Header() {
+  const queryClient = useQueryClient()
   const navigate = useNavigate()
   const { isAuthenticated, nameUser, avatar, setIsAuthenticated, setNameUser, setRole, setAvatar, setUserId } =
     useContext(AppContext)
@@ -128,15 +129,32 @@ export default function Header() {
     },
     retry: 0, // số lần retry lại khi hủy request (dùng abort signal)
     staleTime: 10 * 60 * 1000, // dưới 5 phút nó không gọi lại api
-    placeholderData: keepPreviousData,
-    enabled: !!isAuthenticated
+    placeholderData: keepPreviousData
   })
 
+  useEffect(() => {
+    const handleCartUpdate = () => {
+      // Refetch cart khi có event cart-updated
+      queryClient.invalidateQueries({ queryKey: ["listCart", token] })
+    }
+
+    window.addEventListener("cart-updated", handleCartUpdate)
+    return () => window.removeEventListener("cart-updated", handleCartUpdate)
+  }, [token, queryClient])
+
   const resultCart = data2?.data as SuccessResponse<{
-    total: number
-    products: {
-      products: ProductDetailType[]
+    items: {
+      product_id: string
+      name: string
+      price: number
+      image: string
+      quantity: number
+      added_at: number
+      discount: number
+      priceAfterDiscount: number
     }[]
+    count: number
+    total: number
   }>
 
   const { data: data3 } = useQuery({
@@ -155,9 +173,9 @@ export default function Header() {
   })
 
   const listFavourite = result?.result?.products[0]?.products
-  const listCart = resultCart?.result?.products[0]?.products
+  const listCart = resultCart?.result?.items
   const lengthFavourite = result?.result?.total
-  const lengthCart = resultCart?.result?.total
+  const lengthCart = resultCart?.result?.count
   const lengthOrder = data3?.data?.total
 
   const [searchText, setSearchText] = useState("")
@@ -416,10 +434,10 @@ export default function Header() {
                                     className=" transition-colors"
                                   >
                                     <Link
-                                      to={`/products/${slugify(item.name)}-i-${item._id}`}
+                                      to={`/products/${slugify(item.name)}-i-${item.product_id}`}
                                       className="flex items-center gap-1 hover:bg-gray-100 duration-200 p-2"
                                     >
-                                      <img src={item.banner.url} alt={item.name} className="w-[80px] h-[80px]" />
+                                      <img src={item.image} alt={item.name} className="w-[80px] h-[80px]" />
                                       <div>
                                         <span className="block text-[13px] line-clamp-2">{item.name}</span>
                                         <div className="flex items-center justify-between">

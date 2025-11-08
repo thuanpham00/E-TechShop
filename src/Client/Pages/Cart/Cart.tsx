@@ -4,7 +4,7 @@ import { ChevronLeft, ShoppingCart, Trash2, Package, Tag as TagIcon, CreditCard 
 import { Helmet } from "react-helmet-async"
 import { Link, useLocation, useNavigate } from "react-router-dom"
 import { getAccessTokenFromLS } from "src/Helpers/auth"
-import { CartType, ProductDetailType } from "src/Types/product.type"
+import { CartType } from "src/Types/product.type"
 import { SuccessResponse } from "src/Types/utils.type"
 import cartImg from "src/Assets/img/cart.png"
 import { Table, Checkbox, Image, Typography, Button, InputNumber, Steps, Empty, Spin, Tag } from "antd"
@@ -26,6 +26,17 @@ type CartList = {
   discount: number
   quantity: number
 }[]
+
+type CartItem = {
+  productId: string
+  name: string
+  price: number
+  image: string
+  quantity: number
+  added_at: number
+  discount: number
+  priceAfterDiscount: number
+}
 
 export default function Cart() {
   const navigate = useNavigate()
@@ -155,6 +166,7 @@ export default function Cart() {
             onChange={(value) => {
               if (value) {
                 debouncedUpdateProductToCart(record.key, value)
+                console.log(record)
                 setListCart((prev) =>
                   prev.map((item) => (item.key === record.key ? { ...item, quantity: value } : item))
                 )
@@ -214,27 +226,26 @@ export default function Cart() {
     placeholderData: keepPreviousData
   })
 
-  const listProductCart = data?.data?.result?.products[0]?.products as ProductDetailType[]
+  const listProductCart = data?.data?.result?.items as CartItem[]
   const resultCart = data?.data as SuccessResponse<{
+    items: CartItem[]
+    count: number
     total: number
-    products: {
-      products: ProductDetailType[]
-    }[]
   }>
 
-  const lengthCart = resultCart?.result?.total
+  const lengthCart = resultCart?.result?.count || 0
 
   useEffect(() => {
     if (listProductCart) {
       const initialCheck: Record<string, boolean> = {}
       const list: CartList = listProductCart?.map((item) => {
-        const isSelected = item._id === productSelectedBuyNow
-        initialCheck[item._id] = isSelected
+        const isSelected = item.productId === productSelectedBuyNow
+        initialCheck[item.productId] = isSelected
 
         return {
-          key: item._id,
+          key: item.productId,
           name: item.name,
-          image: item.banner.url,
+          image: item.image,
           price: item.price,
           discount: item.discount,
           quantity: Number(item.quantity)
@@ -256,12 +267,19 @@ export default function Cart() {
   })
 
   const updateProductToCart = async (productId: string, quantity: number) => {
-    updateProductToCartMutation
-      .mutateAsync({ product_id: productId, quantity: quantity, added_at: new Date() })
-      .then(() => {
-        queryClient.invalidateQueries({ queryKey: ["listCart", token] })
+    try {
+      await updateProductToCartMutation.mutateAsync({
+        product_id: productId,
+        quantity: quantity
       })
-      .catch((err) => console.log(err))
+
+      queryClient.invalidateQueries({ queryKey: ["listCart", token] })
+
+      window.dispatchEvent(new Event("cart-updated"))
+    } catch (err) {
+      console.error("Update cart error:", err)
+      toast.error("Cập nhật số lượng thất bại", { autoClose: 1500 })
+    }
   }
 
   const debouncedUpdateProductToCart = useMemo(
@@ -279,10 +297,16 @@ export default function Cart() {
   })
 
   const removeProductToCart = async (productId: string) => {
-    removeProductToCartMutation.mutateAsync(productId).then((res) => {
+    try {
+      const res = await removeProductToCartMutation.mutateAsync(productId)
       toast.success(res.data.message, { autoClose: 1500 })
       queryClient.invalidateQueries({ queryKey: ["listCart", token] })
-    })
+
+      window.dispatchEvent(new Event("cart-updated"))
+    } catch (err) {
+      console.error("Remove product error:", err)
+      toast.error("Xóa sản phẩm thất bại", { autoClose: 1500 })
+    }
   }
 
   const clearProductInCartMutation = useMutation({
@@ -296,6 +320,12 @@ export default function Cart() {
       onSuccess: (res) => {
         toast.success(res.data.message, { autoClose: 1500 })
         queryClient.invalidateQueries({ queryKey: ["listCart", token] })
+
+        window.dispatchEvent(new Event("cart-updated"))
+      },
+      onError: (err) => {
+        console.error("Clear cart error:", err)
+        toast.error("Xóa giỏ hàng thất bại", { autoClose: 1500 })
       }
     })
   }

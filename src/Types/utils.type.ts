@@ -17,4 +17,5 @@ export type MessageResponse = {
 export type AuthResponse = SuccessResponse<{
   accessToken: string
   userInfo: UserType
+  clearGuestId: boolean
 }>

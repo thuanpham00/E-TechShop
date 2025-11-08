@@ -13,6 +13,7 @@ import { AuthResponse, MessageResponse, SuccessResponse } from "src/Types/utils.
 import { isAxiosExpiredTokenError, isError401, isError403, isError404 } from "./utils"
 import { toast } from "react-toastify"
 import { HttpStatusCode } from "src/Constants/httpStatus"
+import { guestCartHelper } from "src/utils/guestCart"
 
 class http {
   // khai báo các thuộc tính của class
@@ -38,6 +39,11 @@ class http {
           config.headers.Authorization = `Bearer ${this.accessToken}`
           // config > headers > Authorization
           return config
+        } else if (config.headers && !this.accessToken) {
+          // ✅ Guest chưa login → Gửi X-Guest-ID header
+          const guestId = guestCartHelper.getGuestId()
+          config.headers["X-Guest-ID"] = guestId
+          return config
         }
         return config // nếu ko có AT thì không cần gửi lên server (tùy api)
       },
@@ -56,6 +62,13 @@ class http {
           setAvatarImageToLS(data.result.userInfo.avatar)
           setUserIdToLS(data.result.userInfo._id)
           // ở server sẽ tự động lưu RT vào cookie ở trình duyệt
+
+          // ✅ MERGE GUEST CART: Check clearGuestId flag from backend
+          if (data.result.clearGuestId) {
+            guestCartHelper.clearGuestId()
+
+            window.dispatchEvent(new Event("cart-updated"))
+          }
         }
         if (response.config.url === "users/logout") {
           clearLS()

@@ -351,7 +351,6 @@ export type FavouriteType = {
 export type CartType = {
   product_id: string
   quantity: number
-  added_at?: Date
 }
 
 export type OrderType = {
