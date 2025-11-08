@@ -179,21 +179,26 @@ export type ProductItemType = {
   }
   created_at: string
   medias: {
+    id: string
     url: string
     type: number
   }[]
   banner: {
+    id: string
     url: string
     type: number
   }
   price: number
+  priceAfterDiscount: number
   status: StatusProduct
   specifications: any[]
-  stock: number
   description: string
   updated_at: string
   discount: number
   isFeatured: boolean
+  stock: number
+  sold: number
+  viewCount: number
 }
 
 export type UpdateBodyReq = {
@@ -296,12 +301,13 @@ export type CreateProductBodyReq = {
   brand: string
   price: number
   discount: number
-  stock: number
+  priceAfterDiscount: number
   isFeatured: string
   description: string
   banner: File
   medias: File[]
   specifications: { name: string; value: string }[]
+  id_url_gallery_update?: string[]
 }
 
 export type CreateReceiptBodyReq = {

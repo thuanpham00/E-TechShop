@@ -84,7 +84,7 @@ export default function AddBrand({ setAddItem, addItem, categoryId }: Props) {
             >
               <X color="gray" size={22} />
             </button>
-            <form onSubmit={handleAddBrandSubmit} className="bg-white dark:bg-darkPrimary rounded-md">
+            <form onSubmit={handleAddBrandSubmit} className="bg-white dark:bg-darkPrimary rounded-md w-[400px]">
               <h3 className="py-2 px-4 text-lg font-semibold tracking-wide rounded-md text-black dark:text-white">
                 Thông tin thương hiệu
               </h3>

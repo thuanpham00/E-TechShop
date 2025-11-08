@@ -24,8 +24,8 @@ export const ProductAPI = {
     formData.append("category", body.category)
     formData.append("brand", body.brand)
     formData.append("price", String(body.price))
+    formData.append("priceAfterDiscount", String(body.priceAfterDiscount))
     formData.append("discount", String(body.discount))
-    formData.append("stock", String(body.stock))
     formData.append("isFeatured", body.isFeatured)
     formData.append("description", body.description)
 
@@ -34,7 +34,9 @@ export const ProductAPI = {
     }
 
     body.medias.forEach((file) => {
-      formData.append("medias", file)
+      if (file instanceof File) {
+        formData.append("medias", file)
+      }
     })
 
     formData.append("specifications", JSON.stringify(body.specifications))
@@ -46,5 +48,45 @@ export const ProductAPI = {
         "Content-Type": "multipart/form-data"
       }
     })
+  },
+
+  updateProduct: (body: CreateProductBodyReq, idProduct: string) => {
+    const formData = new FormData()
+
+    // formData: dùng để vừa gửi dữ liệu dạng text + file xuống server
+    formData.append("name", body.name)
+    formData.append("category", body.category)
+    formData.append("brand", body.brand)
+    formData.append("price", String(body.price))
+    formData.append("priceAfterDiscount", String(body.priceAfterDiscount))
+    formData.append("discount", String(body.discount))
+    formData.append("isFeatured", body.isFeatured)
+    formData.append("description", body.description)
+
+    if (body.banner) {
+      formData.append("banner", body.banner)
+    }
+
+    body.medias.forEach((file) => {
+      if (file instanceof File) {
+        formData.append("medias", file)
+      }
+    })
+    formData.append(
+      "id_url_gallery_update",
+      JSON.stringify(body.id_url_gallery_update?.filter((item) => item !== null) || [])
+    )
+
+    formData.append("specifications", JSON.stringify(body.specifications))
+
+    return Http.put(`/admin/products/${idProduct}`, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data"
+      }
+    })
+  },
+
+  deleteProduct: (idProduct: string) => {
+    return Http.delete(`/admin/products/${idProduct}`)
   }
 }

@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { keepPreviousData, useQuery } from "@tanstack/react-query"
+import { useQuery } from "@tanstack/react-query"
 import { isUndefined, omitBy } from "lodash"
 import { Helmet } from "react-helmet-async"
 import { path } from "src/Constants/path"
@@ -12,9 +12,9 @@ import Skeleton from "src/Components/Skeleton"
 import { createSearchParams, Link, useNavigate } from "react-router-dom"
 import { HttpStatusCode } from "src/Constants/httpStatus"
 import FilterProduct from "./Components/FilterProduct"
-import { Collapse, CollapseProps, Empty, Image, Modal, Select, Table, Tag } from "antd"
+import { Collapse, CollapseProps, Empty, Image, Select, Table, Tag } from "antd"
 import "../ManageOrders/ManageOrders.css"
-import { ArrowUpNarrowWide, ClipboardCheck, FolderUp, Pencil, Plus, Trash2 } from "lucide-react"
+import { ArrowUpNarrowWide, ClipboardCheck, FolderUp, Plus } from "lucide-react"
 import Button from "src/Components/Button"
 import useDownloadExcel from "src/Hook/useDownloadExcel"
 import { useTheme } from "src/Admin/Components/Theme-provider/Theme-provider"
@@ -62,10 +62,10 @@ export default function ManageProducts() {
         controller.abort() // hủy request khi chờ quá lâu // 10 giây sau cho nó hủy // làm tự động
       }, 10000)
       return ProductAPI.getProducts(queryConfig as queryParamConfigCategory, controller.signal)
-    },
-    retry: 0, // số lần retry lại khi hủy request (dùng abort signal)
-    staleTime: 3 * 60 * 1000, // dưới 5 phút nó không gọi lại api
-    placeholderData: keepPreviousData
+    }
+    // retry: 0, // số lần retry lại khi hủy request (dùng abort signal)
+    // staleTime: 3 * 60 * 1000, // dưới 5 phút nó không gọi lại api
+    // placeholderData: keepPreviousData
   })
 
   const result = data?.data as SuccessResponse<{
@@ -160,6 +160,15 @@ export default function ManageProducts() {
       render: (price: number) => <div className="text-red-600 font-semibold">{formatCurrency(price)}đ</div>
     },
     {
+      title: "Giá sau khi giảm",
+      dataIndex: "priceAfterDiscount",
+      key: "priceAfterDiscount",
+      width: 120,
+      render: (priceAfterDiscount: number) => (
+        <div className="text-red-600 font-semibold">{formatCurrency(priceAfterDiscount)}đ</div>
+      )
+    },
+    {
       title: "Trạng thái",
       dataIndex: "status",
       key: "status",
@@ -207,11 +216,11 @@ export default function ManageProducts() {
             state={{
               editItem: record
             }}
-            className=""
+            className="text-blue-500"
           >
-            <Pencil color="orange" size={18} />
+            Xem chi tiết
           </Link>
-          <button
+          {/* <button
             onClick={() =>
               Modal.confirm({
                 title: "Bạn có chắc chắn muốn xóa?",
@@ -225,7 +234,7 @@ export default function ManageProducts() {
             className="p-1"
           >
             <Trash2 color="red" size={18} />
-          </button>
+          </button> */}
         </div>
       )
     }
@@ -284,7 +293,8 @@ export default function ManageProducts() {
             <Link
               to={path.AddProduct}
               state={{
-                editItem: true
+                editItem: true,
+                queryConfig: queryConfig
               }}
               className="py-2 px-3 bg-blue-500 w-full text-white font-medium rounded-md hover:bg-blue-500/80 duration-200 text-[13px] flex items-center gap-1"
             >
