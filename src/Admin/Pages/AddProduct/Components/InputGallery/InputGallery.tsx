@@ -3,17 +3,16 @@ import { useEffect, useMemo, useRef } from "react"
 import { toast } from "react-toastify"
 import no_img_1 from "src/Assets/img/no_image.png"
 import { config } from "src/Constants/config"
+import { GalleryFileItem } from "../../AddProduct"
 
 export default function InputGallery({
   errors,
   galleryFiles,
-  setGalleryFiles,
-  existingGalleryUrls
+  setGalleryFiles
 }: {
   errors?: string
-  galleryFiles: (File | null)[]
-  setGalleryFiles: React.Dispatch<React.SetStateAction<(File | null)[]>>
-  existingGalleryUrls: string[]
+  galleryFiles: GalleryFileItem[]
+  setGalleryFiles: React.Dispatch<React.SetStateAction<GalleryFileItem[]>>
 }) {
   const refGallery = useRef<(HTMLInputElement | null)[]>([])
   useEffect(() => {
@@ -35,18 +34,18 @@ export default function InputGallery({
     }
 
     const newGalleryFiles = [...galleryFiles]
-    newGalleryFiles[index] = fileFormLocal
+    newGalleryFiles[index].file = fileFormLocal
     setGalleryFiles(newGalleryFiles)
   }
 
   const previewGallery = useMemo(() => {
     return galleryFiles.map((file, index) => {
-      if (file) {
-        return URL.createObjectURL(file)
+      if (file.file) {
+        return URL.createObjectURL(file.file as File)
       }
-      return existingGalleryUrls[index] || null
+      return galleryFiles[index].existingUrl || null
     })
-  }, [galleryFiles, existingGalleryUrls])
+  }, [galleryFiles])
 
   useEffect(() => {
     return () => {
@@ -69,7 +68,21 @@ export default function InputGallery({
 
           const handleRemoveImage = () => {
             const newGalleryFiles = [...galleryFiles]
-            newGalleryFiles[index] = null
+
+            if (file.file !== null) {
+              // case 1: có file mới và remove file mới -> quay lại ảnh cũ (existingUrl + id)
+              newGalleryFiles[index] = {
+                ...newGalleryFiles[index],
+                file: null
+              }
+            } else if (file.existingUrl !== null) {
+              // case 2: không có file mới và remove ảnh cũ -> xóa ảnh cũ (existingUrl = null)
+              newGalleryFiles[index] = {
+                file: null,
+                existingUrl: null,
+                id: file.id // ✅ GIỮ LẠI id để backend xóa ảnh trên Cloudinary
+              }
+            }
             setGalleryFiles(newGalleryFiles)
           }
 
@@ -87,7 +100,7 @@ export default function InputGallery({
                 ref={(el) => (refGallery.current[index] = el)}
                 onChange={onChangeImageGallery(index)}
               />
-              {file ? (
+              {file.file !== null || file.existingUrl !== null ? (
                 <button onClick={handleRemoveImage} className="absolute top-0 right-0 bg-[#f2f2f2] p-1 rounded-sm">
                   <Trash2 color="red" size={18} />
                 </button>

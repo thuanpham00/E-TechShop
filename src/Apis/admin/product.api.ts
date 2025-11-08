@@ -24,8 +24,8 @@ export const ProductAPI = {
     formData.append("category", body.category)
     formData.append("brand", body.brand)
     formData.append("price", String(body.price))
+    formData.append("priceAfterDiscount", String(body.priceAfterDiscount))
     formData.append("discount", String(body.discount))
-    formData.append("stock", String(body.stock))
     formData.append("isFeatured", body.isFeatured)
     formData.append("description", body.description)
 
@@ -58,8 +58,8 @@ export const ProductAPI = {
     formData.append("category", body.category)
     formData.append("brand", body.brand)
     formData.append("price", String(body.price))
+    formData.append("priceAfterDiscount", String(body.priceAfterDiscount))
     formData.append("discount", String(body.discount))
-    formData.append("stock", String(body.stock))
     formData.append("isFeatured", body.isFeatured)
     formData.append("description", body.description)
 
@@ -72,6 +72,10 @@ export const ProductAPI = {
         formData.append("medias", file)
       }
     })
+    formData.append(
+      "id_url_gallery_update",
+      JSON.stringify(body.id_url_gallery_update?.filter((item) => item !== null) || [])
+    )
 
     formData.append("specifications", JSON.stringify(body.specifications))
 
@@ -80,5 +84,9 @@ export const ProductAPI = {
         "Content-Type": "multipart/form-data"
       }
     })
+  },
+
+  deleteProduct: (idProduct: string) => {
+    return Http.delete(`/admin/products/${idProduct}`)
   }
 }

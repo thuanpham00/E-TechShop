@@ -34,7 +34,7 @@ export default function Input({
   register,
   control,
   isCurrency = false, // ✅ Default false
-  currencySuffix = "đ", // ✅ Default "đ"
+  currencySuffix, // ✅ Default "đ"
   ...rest
 }: InputProps) {
   const { pathname } = useLocation()
@@ -67,30 +67,46 @@ export default function Input({
     return value.replace(/\./g, "")
   }
 
+  const registerInput = name && register ? { ...register(name) } : null
+  /**
+   * const registerInput = register("price")
+    // registerInput = {
+    //   name: "price",
+    //   ref: (element) =>  lưu DOM reference
+    //   onChange: (e) =>  setValue("price", e.target.value) },
+    //   onBlur: (e) =>  trigger validation }
+    // }
+
+    <input {...registerInput} />
+
+    // ↓ Spread operator chuyển thành:
+
+    <input
+      name="price"
+      ref={callbackRef}
+      onChange={handleChange}
+      onBlur={handleBlur}
+    />
+   */
+  // à vậy nên tôi dùng ... (spread operator) để lấy hết các thuộc tính object của register truyền vào input đúng ko, nên đó là lí do vì sao register(name) có thể theo dõi được value của 1 field
+
   // ✅ Handle onChange cho currency input
-  const handleCurrencyChange = (e: React.ChangeEvent<HTMLInputElement>, onChange?: (...event: any[]) => void) => {
+  const handleCurrencyChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const inputValue = e.target.value
     const numericValue = parseCurrencyToNumber(inputValue)
     const formattedValue = formatCurrencyInput(numericValue)
 
-    setDisplayValue(formattedValue)
+    setDisplayValue(formattedValue) // hiển thị thì "1.000"
 
-    // Gửi giá trị số thuần về form (không có dấu chấm)
-    if (onChange) {
-      onChange(numericValue)
+    if (registerInput?.onChange) {
+      registerInput.onChange({
+        target: {
+          name: e.target.name,
+          value: numericValue // Gửi số thuần về form
+        }
+      })
     }
   }
-
-  const registerInput = name && register ? { ...register(name) } : {}
-
-  const currencyRegister =
-    name && register && isCurrency
-      ? {
-          ...register(name, {
-            onChange: (e) => handleCurrencyChange(e, register(name).onChange)
-          })
-        }
-      : {}
 
   const formValue = control && name ? useWatch({ control, name }) : undefined
 
@@ -117,11 +133,11 @@ export default function Input({
         <div className="relative">
           <input
             className={classNameInput}
-            {...currencyRegister}
+            {...registerInput}
             {...rest}
             type="text"
             value={displayValue}
-            onChange={(e) => handleCurrencyChange(e, (currencyRegister as any).onChange)}
+            onChange={handleCurrencyChange}
             placeholder={rest.placeholder}
           />
           {currencySuffix && (
@@ -131,7 +147,7 @@ export default function Input({
           )}
         </div>
       ) : (
-        <>
+        <div className="relative">
           <input className={classNameInput} {...registerInput} {...rest} type={handleType()} />
 
           {rest.type === "password" && !openEye && (
@@ -145,7 +161,14 @@ export default function Input({
               <Eye color="#393636" size={22} />
             </button>
           )}
-        </>
+
+          {/* ✅ Hiển thị suffix cho input thường (nếu có) */}
+          {currencySuffix && rest.type !== "password" && (
+            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 dark:text-gray-400 pointer-events-none">
+              {currencySuffix}
+            </span>
+          )}
+        </div>
       )}
 
       {rest.type === "password" && pathname === "/login" ? (

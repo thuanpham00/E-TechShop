@@ -3,17 +3,16 @@ import { useMemo, useRef } from "react"
 import { toast } from "react-toastify"
 import { config } from "src/Constants/config"
 import no_img from "src/Assets/img/no_image_1.jpg"
+import { GalleryFileItem } from "../../AddProduct"
 
 export default function InputBanner({
   errors,
-  file,
-  setFile,
-  existingBannerUrl
+  banner,
+  setBanner
 }: {
   errors?: string
-  file: File | null
-  setFile: React.Dispatch<React.SetStateAction<File | null>>
-  existingBannerUrl: string
+  banner: GalleryFileItem
+  setBanner: React.Dispatch<React.SetStateAction<GalleryFileItem>>
 }) {
   const refBanner = useRef<HTMLInputElement>(null)
   const handleChangeBanner = () => {
@@ -35,15 +34,18 @@ export default function InputBanner({
       })
     }
 
-    setFile(fileFormLocal as File)
+    setBanner({
+      ...banner,
+      file: fileFormLocal as File
+    })
   }
 
   const previewImage = useMemo(() => {
-    if (file) {
-      return file ? URL.createObjectURL(file) : ""
+    if (banner.file) {
+      return banner.file ? URL.createObjectURL(banner.file) : ""
     }
-    return existingBannerUrl || no_img
-  }, [file, existingBannerUrl])
+    return banner.existingUrl || no_img
+  }, [banner])
 
   return (
     <div>
@@ -61,8 +63,11 @@ export default function InputBanner({
           ref={refBanner}
           onChange={onChangeImageBanner}
         />
-        {file ? (
-          <button onClick={() => setFile(null)} className="p-1 absolute top-2 right-2 bg-[#f1f1f1] rounded-sm">
+        {banner.file ? (
+          <button
+            onClick={() => setBanner({ ...banner, file: null })}
+            className="p-1 absolute top-2 right-2 bg-[#f1f1f1] rounded-sm"
+          >
             <Trash2 color="red" size={18} />
           </button>
         ) : (
