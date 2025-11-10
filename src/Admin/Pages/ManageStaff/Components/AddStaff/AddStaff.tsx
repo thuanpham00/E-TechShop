@@ -2,7 +2,7 @@ import { yupResolver } from "@hookform/resolvers/yup"
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { motion } from "framer-motion"
 import { Plus, X } from "lucide-react"
-import React, { useContext, useEffect, useMemo, useState } from "react"
+import React, { useContext, useEffect, useState } from "react"
 import { Controller, useForm } from "react-hook-form"
 import { toast } from "react-toastify"
 import { schemaAuth, SchemaAuthType } from "src/Client/Utils/rule"
@@ -21,6 +21,7 @@ import { AppContext } from "src/Context/authContext"
 import { Role } from "src/Admin/Pages/ManageRoles/ManageRoles"
 import { RolePermissionAPI } from "src/Apis/admin/role.api"
 import { StaffAPI } from "src/Apis/admin/staff.api"
+import { FileAvatarType } from "src/Admin/Pages/ManageCustomers/ManageCustomers"
 
 interface Props {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -108,21 +109,17 @@ export default function AddStaff({ setAddItem }: Props) {
     }
   })
 
-  const [file, setFile] = useState<File>()
-
-  const previewImage = useMemo(() => {
-    return file ? URL.createObjectURL(file) : ""
-  }, [file])
-
-  const handleChangeImage = (file?: File) => {
-    setFile(file)
-  }
+  const [file, setFile] = useState<FileAvatarType>({
+    file: null, // ảnh mới
+    existingUrl: null // ảnh từ server
+  })
 
   useEffect(() => {
-    setValue("avatar", avatarDefault)
-  }, [setValue])
+    if (file.file !== null) {
+      setValue("avatar", file.file.name)
+    }
+  }, [file, setValue])
 
-  const avatarWatch = watch("avatar")
   const date_of_birth = watch("date_of_birth")
 
   const handleAddStaffSubmit = handleSubmit(async (data) => {
@@ -131,7 +128,7 @@ export default function AddStaff({ setAddItem }: Props) {
     let avatarName = avatarDefault
     if (file) {
       const avatar = await updateImageProfileMutation.mutateAsync({
-        file: file as File,
+        file: file.file as File,
         userId: idUser as string
       })
       avatarName = avatar.data.result.url
@@ -411,26 +408,11 @@ export default function AddStaff({ setAddItem }: Props) {
               </div>
               <div className="w-1/3 flex items-center justify-center flex-col px-4">
                 <div className="mb-2 text-black dark:text-white font-semibold">Ảnh đại diện</div>
-                <div className="relative w-full h-full border border-gray-200 rounded-md shadow">
-                  <div
-                    className="absolute top-0 left-0 w-full h-full z-1 rounded-md"
-                    style={{
-                      backgroundImage: `url(${previewImage || avatarWatch})`,
-                      backgroundSize: "cover",
-                      backgroundPosition: "center",
-                      filter: "blur(2px)"
-                    }}
-                  ></div>
-                  <img
-                    src={previewImage || avatarWatch}
-                    className="absolute z-10 top-[40%] left-1/2 -translate-x-1/2 -translate-y-1/2 z-1 h-44 w-44 rounded-md mx-auto"
-                    alt="avatar default"
-                  />
-                  <InputFileImage
-                    onChange={handleChangeImage}
-                    classNameWrapper="text-center absolute z-30 top-[70%] left-1/2 -translate-x-1/2 -translate-y-1/2 w-[90%]"
-                  />
-                </div>
+                <InputFileImage
+                  file={file}
+                  setFile={setFile}
+                  classNameWrapper="text-center absolute z-30 top-[70%] left-1/2 -translate-x-1/2 -translate-y-1/2 w-[90%]"
+                />
               </div>
             </div>
             <div className="flex items-center justify-end">

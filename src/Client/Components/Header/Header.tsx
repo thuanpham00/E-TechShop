@@ -71,6 +71,10 @@ export default function Header() {
     is_active: boolean
   }[]
 
+  const dataListCategoryIsActiveSortAZ = dataListCategoryIsActive.sort((a, b) => {
+    return a.name.localeCompare(b.name) // so sánh 2 chuỗi theo thứ tự a-z
+  })
+
   const getListCategoryMenu = useQuery({
     queryKey: ["listCategoryMenu"],
     queryFn: () => {
@@ -526,7 +530,7 @@ export default function Header() {
         <div className="container">
           <div onMouseLeave={handleExitCategory} className="relative">
             <div className="flex items-center flex-wrap justify-center">
-              {dataListCategoryIsActive.slice(0, 10).map((category) => (
+              {dataListCategoryIsActiveSortAZ.slice(0, 10).map((category) => (
                 <MenuCategoryItem
                   key={category._id}
                   showCategoryDetail={showCategoryDetail}

@@ -3,7 +3,7 @@ import { yupResolver } from "@hookform/resolvers/yup"
 import { Select } from "antd"
 import { motion } from "framer-motion"
 import { ArrowUpFromLine, X } from "lucide-react"
-import { useContext, useEffect, useMemo, useState } from "react"
+import { useContext, useEffect, useState } from "react"
 import { Controller, useForm } from "react-hook-form"
 import { schemaAuth, SchemaAuthType } from "src/Client/Utils/rule"
 import Button from "src/Components/Button"
@@ -11,7 +11,6 @@ import DateSelect from "src/Components/DateSelect"
 import Input from "src/Components/Input"
 import InputFileImage from "src/Components/InputFileImage"
 import { queryParamConfigCustomer } from "src/Types/queryParams.type"
-import avatarDefault from "src/Assets/img/avatarDefault.png"
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { ErrorResponse, SuccessResponse } from "src/Types/utils.type"
 import { Role } from "src/Admin/Pages/ManageRoles/ManageRoles"
@@ -24,6 +23,7 @@ import { toast } from "react-toastify"
 import { isError422 } from "src/Helpers/utils"
 import { RolePermissionAPI } from "src/Apis/admin/role.api"
 import { StaffAPI } from "src/Apis/admin/staff.api"
+import { FileAvatarType } from "src/Admin/Pages/ManageCustomers/ManageCustomers"
 
 const formDataAdd = schemaAuth.pick([
   "name",
@@ -109,10 +109,11 @@ export default function StaffDetail({
 
   useEffect(() => {
     if (addItem !== null && typeof addItem === "object") {
-      if (addItem.avatar === "") {
-        setValue("avatar", avatarDefault)
-      } else {
-        setValue("avatar", addItem.avatar)
+      if (addItem.avatar !== "") {
+        setFile({
+          file: null,
+          existingUrl: addItem.avatar
+        })
       }
       setValue("id", addItem._id)
       setValue("name", addItem.name)
@@ -130,17 +131,19 @@ export default function StaffDetail({
     }
   }, [addItem, setValue])
 
-  const [file, setFile] = useState<File>()
+  const [file, setFile] = useState<FileAvatarType>({
+    file: null, // ảnh mới
+    existingUrl: null // ảnh từ server
+  })
 
-  const previewImage = useMemo(() => {
-    return file ? URL.createObjectURL(file) : ""
-  }, [file])
+  useEffect(() => {
+    if (file.file !== null) {
+      setValue("avatar", file.file.name)
+    } else if (file.existingUrl !== null) {
+      setValue("avatar", file.existingUrl)
+    }
+  }, [file, setValue])
 
-  const handleChangeImage = (file?: File) => {
-    setFile(file)
-  }
-
-  const avatarWatch = watch("avatar")
   const date_of_birth = watch("date_of_birth")
 
   // Gọi api cập nhật và fetch lại api
@@ -159,10 +162,10 @@ export default function StaffDetail({
   const handleSubmitUpdate = handleSubmit(
     async (data) => {
       try {
-        let avatarName = avatarWatch
+        let avatarName = file.existingUrl
         if (file) {
           const avatar = await updateImageProfileMutation.mutateAsync({
-            file: file as File,
+            file: file.file as File,
             userId: (addItem as UserType)._id as string
           })
           avatarName = avatar.data.result.url
@@ -464,26 +467,11 @@ export default function StaffDetail({
               </div>
               <div className="w-1/3 flex items-center justify-center flex-col px-4">
                 <div className="mb-2 text-black dark:text-white font-semibold">Ảnh đại diện</div>
-                <div className="relative w-full h-full border border-gray-200 rounded-md shadow">
-                  <div
-                    className="absolute top-0 left-0 w-full h-full z-1 rounded-md"
-                    style={{
-                      backgroundImage: `url(${previewImage || avatarWatch})`,
-                      backgroundSize: "cover",
-                      backgroundPosition: "center",
-                      filter: "blur(2px)"
-                    }}
-                  ></div>
-                  <img
-                    src={previewImage || avatarWatch}
-                    className="absolute z-10 top-[40%] left-1/2 -translate-x-1/2 -translate-y-1/2 z-1 h-44 w-44 rounded-md mx-auto"
-                    alt="avatar default"
-                  />
-                  <InputFileImage
-                    onChange={handleChangeImage}
-                    classNameWrapper="text-center absolute z-30 top-[70%] left-1/2 -translate-x-1/2 -translate-y-1/2 w-[90%]"
-                  />
-                </div>
+                <InputFileImage
+                  file={file}
+                  setFile={setFile}
+                  classNameWrapper="text-center absolute z-30 top-[70%] left-1/2 -translate-x-1/2 -translate-y-1/2 w-[90%]"
+                />
               </div>
             </div>
             <div className="flex items-center justify-end">
