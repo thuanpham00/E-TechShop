@@ -180,46 +180,6 @@ export default function Sidebar() {
         }
       : null
 
-  const sub3Menu = [
-    hasPermission(permissions.VIEW_EMAIL) && {
-      key: path.AdminEmail,
-      label: (
-        <SidebarItem
-          className={`${checkActive(sideBarList[10].path) ? "text-[14px] text-[#3b82f6] font-semibold" : "text-[14px] text-white font-normal hover:text-[#495057] duration-200 ease-in"}`}
-          classNameWrapper={`flex items-center gap-2 cursor-pointer`}
-          icon={React.createElement(sideBarList[10].icon, {
-            color: checkActive(sideBarList[10].path) ? "#3b82f6" : "white"
-          })}
-          nameSideBar={sideBarList[10].name}
-          path={sideBarList[10].path}
-        />
-      )
-    },
-    hasPermission(permissions.VIEW_CHAT) && {
-      key: path.AdminChat,
-      label: (
-        <SidebarItem
-          className={`${checkActive(sideBarList[11].path) ? "text-[14px] text-[#3b82f6] font-semibold" : "text-[14px] text-white font-normal hover:text-[#495057] duration-200 ease-in"}`}
-          classNameWrapper={`flex items-center gap-2 cursor-pointer`}
-          icon={React.createElement(sideBarList[11].icon, {
-            color: checkActive(sideBarList[11].path) ? "#3b82f6" : "white"
-          })}
-          nameSideBar={sideBarList[11].name}
-          path={sideBarList[11].path}
-        />
-      )
-    }
-  ]
-
-  const sub3 =
-    sub3Menu.length > 0
-      ? {
-          key: "sub3",
-          label: <div className="font-semibold text-[15px] text-white">Quản lý Giao tiếp</div>,
-          children: sub3Menu
-        }
-      : null
-
   const sub4Menu = [
     hasPermission(permissions.VIEW_RECEIPT) && {
       key: path.AdminReceipts,
@@ -269,7 +229,7 @@ export default function Sidebar() {
     sub4Menu.length > 0
       ? {
           key: "sub4",
-          label: <div className="font-semibold text-[15px] text-white">Quản lý Nhập hàng và Cung ứng</div>,
+          label: <div className="font-semibold text-[15px] text-white">Quản lý Nhập hàng</div>,
           children: sub4Menu
         }
       : null
@@ -345,7 +305,25 @@ export default function Sidebar() {
     {
       type: "divider"
     },
-    sub3,
+    {
+      key: path.AdminChat, // key trùng pathname
+      label: hasPermission(permissions.VIEW_CHAT) && (
+        <Link to={path.AdminChat} className="font-semibold text-white block text-[15px]">
+          Hệ thống tư vấn
+        </Link>
+      )
+    },
+    {
+      type: "divider"
+    },
+    {
+      key: path.AdminEmail, // key trùng pathname
+      label: hasPermission(permissions.VIEW_EMAIL) && (
+        <Link to={path.AdminEmail} className="font-semibold text-white block text-[15px]">
+          Thông báo email
+        </Link>
+      )
+    },
     {
       type: "divider"
     },

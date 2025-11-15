@@ -39,6 +39,13 @@ module.exports = {
     "react/react-in-jsx-scope": "off",
     // Cảnh báo khi thẻ <a target='_blank'> mà không có rel="noreferrer"
     "react/jsx-no-target-blank": "warn",
+    // Tắt rule kiểm tra CSS imports (vì ESLint không cần validate CSS)
+    "import/no-unresolved": [
+      "error",
+      {
+        ignore: ["\\.css$", "\\.scss$", "\\.less$"]
+      }
+    ],
     // Tăng cường một số rule prettier (copy từ file .prettierrc qua)
     "prettier/prettier": [
       "warn",

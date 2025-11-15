@@ -70,7 +70,7 @@ module.exports = {
     plugin(function ({ addComponents }) {
       addComponents({
         ".container": {
-          maxWidth: "80rem",
+          maxWidth: "76rem",
           width: "100%",
           marginLeft: "auto",
           marginRight: "auto",
