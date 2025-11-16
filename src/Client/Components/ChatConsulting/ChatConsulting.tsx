@@ -123,6 +123,20 @@ export default function ChatConsulting() {
     return navigate(path.Login)
   }
 
+  useEffect(() => {
+    const getConversationNew = async () => {
+      try {
+        await getDataConversation.refetch()
+      } catch (error) {
+        console.error("Lỗi khi lấy danh sách message:", error)
+      }
+    }
+    socket.on("reload_reservation", getConversationNew)
+    return () => {
+      socket.off("reload_reservation", getConversationNew)
+    }
+  }, [getDataConversation])
+
   const [checkFile, setCheckFile] = useState(false)
 
   return (

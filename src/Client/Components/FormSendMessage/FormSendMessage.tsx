@@ -103,10 +103,12 @@ export default function FormSendMessage({
         }, // append binary ArrayBuffers as following args
         ...fileMetas.map((f) => f.buffer)
       )
+      const contentForUI = conversation.content === "" ? null : conversation.content
       setConversations((prev) => [
         {
           ...{
             ...conversation,
+            content: contentForUI,
             sender_id: userId,
             attachments: files.map((f) => ({
               type: 0,

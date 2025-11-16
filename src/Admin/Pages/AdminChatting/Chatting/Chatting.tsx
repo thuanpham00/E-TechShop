@@ -265,8 +265,10 @@ export default function Chatting({
         open={showModalConfirmSupport}
         onOk={() => {
           socket.emit("admin:assign_ticket", {
-            ticket_id: selectedTicket._id,
-            status: TicketStatus.ASSIGNED
+            payload: {
+              ticket_id: selectedTicket._id,
+              assigned_to: userId
+            }
           })
           queryClient.invalidateQueries({ queryKey: ["listTicket", activeTab] })
           setShowModalConfirmSupport(false)

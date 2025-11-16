@@ -8,12 +8,6 @@ export const TicketAPI = {
     })
   },
 
-  updateStatusTicket: (idTicket: string, status: string) => {
-    return Http.put(`/tickets/status/${idTicket}`, {
-      status
-    })
-  },
-
   getMessageTicketAdmin: (signal: AbortSignal, id: string, params: { limit: number; page: number }) => {
     return Http.get(`/tickets/${id}/messages`, {
       params,
