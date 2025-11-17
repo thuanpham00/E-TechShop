@@ -1,7 +1,7 @@
 import { Helmet } from "react-helmet-async"
 import { motion } from "framer-motion"
 import { useContext, useEffect, useMemo, useState } from "react"
-import { Empty, Input, Skeleton, Space, Tabs } from "antd"
+import { Empty, Input, Modal, Skeleton, Space, Tabs } from "antd"
 import { useQuery, useQueryClient } from "@tanstack/react-query"
 import avatarDefault from "src/Assets/img/avatarDefault.png"
 import "./AdminChatting.css"
@@ -12,7 +12,7 @@ import { convertDateTime } from "src/Helpers/common"
 import Chatting from "./Chatting"
 import useCheckConnectSocket from "src/Hook/useCheckConnectSocket"
 import socket from "src/socket"
-import { RefreshCw } from "lucide-react"
+import { EllipsisVertical, RefreshCw } from "lucide-react"
 import { AppContext } from "src/Context/authContext"
 
 export const LIMIT = 20
@@ -24,6 +24,7 @@ export default function AdminChatting() {
   const queryClient = useQueryClient()
   const [activeTab, setActiveTab] = useState<TicketStatus>(TicketStatus.PENDING)
   const [selectedTicket, setSelectedTicket] = useState<TicketItemType>()
+  const [listImagesChat, setListImagesChat] = useState<string[]>([])
 
   const getUserListTypeQuery = useQuery({
     queryKey: ["listTicket", activeTab],
@@ -86,6 +87,8 @@ export default function AdminChatting() {
       queryClient.invalidateQueries({ queryKey: ["listTicket", activeTab] })
     }
   }
+
+  const [showModalHistoryAssigned, setShowModalHistoryAssigned] = useState(false)
 
   return (
     <div className="AdminChatting">
@@ -233,7 +236,11 @@ export default function AdminChatting() {
               ))}
           </div>
           <div className="w-2/4 border border-gray-300 dark:border-darkBorder border-l-0">
-            <Chatting selectedTicket={selectedTicket as TicketItemType} activeTab={activeTab} />
+            <Chatting
+              selectedTicket={selectedTicket as TicketItemType}
+              setListImagesChat={setListImagesChat}
+              activeTab={activeTab}
+            />
           </div>
           <div className="w-1/4 p-4 bg-white dark:bg-darkPrimary rounded-tr-md rounded-br-md border border-gray-200 dark:border-darkBorder shadow-sm">
             <div className="flex flex-col items-center text-center">
@@ -250,44 +257,57 @@ export default function AdminChatting() {
             </div>
 
             <div className="mt-4">
-              <h5 className="text-sm font-semibold text-gray-700 dark:text-gray-200">Lịch sử tiếp nhận</h5>
-              <div className="mt-3 space-y-3">
-                {selectedTicket && selectedTicket.served_by.length > 0 ? (
-                  selectedTicket.served_by.map((item) => (
-                    <div
-                      key={item.admin_id}
-                      className="relative p-3 rounded-lg bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700"
-                    >
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <div className="text-xs text-gray-500">Người xử lý</div>
-                          <div className="font-medium text-sm">{item.admin_name}</div>
-                          <div className="text-xs text-gray-400 mt-1">Id: {item.admin_id}</div>
-                        </div>
-                        <div className="text-right">
-                          <div
-                            className={`text-xs font-semibold ${item.is_active ? "text-green-600" : "text-red-500"}`}
-                          >
-                            {item.is_active ? "Đang xử lý" : "Đã kết thúc"}
-                          </div>
-                          <div className="text-xs text-gray-400 mt-1">
-                            {convertDateTime(item.started_at.toString())}
-                          </div>
-                          {item.ended_at && (
-                            <div className="text-xs text-gray-400">{convertDateTime(item.ended_at.toString())}</div>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                  ))
-                ) : (
-                  <div className="text-sm text-gray-500">Chưa có lịch sử</div>
-                )}
-              </div>
+              <button
+                className="text-sm font-semibold text-gray-700 dark:text-gray-200 flex justify-between items-center w-full"
+                onClick={() => setShowModalHistoryAssigned(true)}
+              >
+                <span>Lịch sử tiếp nhận</span>
+                <EllipsisVertical className="inline-block ml-1 mb-1" size={12} />
+              </button>
+
+              <div className="text-sm font-semibold text-gray-700 mt-4">Ảnh đoạn chat</div>
             </div>
           </div>
         </section>
       </motion.div>
+
+      <Modal
+        open={showModalHistoryAssigned}
+        onCancel={() => setShowModalHistoryAssigned(false)}
+        title="Lịch sử tiếp nhận"
+        width={600}
+        footer={null}
+      >
+        <div className="mt-3 space-y-3">
+          {selectedTicket && selectedTicket.served_by.length > 0 ? (
+            selectedTicket.served_by.map((item) => (
+              <div
+                key={item.admin_id}
+                className="relative p-3 rounded-lg bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700"
+              >
+                <div className="flex items-center justify-between">
+                  <div>
+                    <div className="text-xs text-gray-500">Người xử lý</div>
+                    <div className="font-medium text-sm">{item.admin_name}</div>
+                    <div className="text-xs text-gray-400 mt-1">Id: {item.admin_id}</div>
+                  </div>
+                  <div className="text-right">
+                    <div className={`text-xs font-semibold ${item.is_active ? "text-green-600" : "text-red-500"}`}>
+                      {item.is_active ? "Đang xử lý" : "Đã kết thúc"}
+                    </div>
+                    <div className="text-xs text-gray-400 mt-1">{convertDateTime(item.started_at.toString())}</div>
+                    {item.ended_at && (
+                      <div className="text-xs text-gray-400">{convertDateTime(item.ended_at.toString())}</div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            ))
+          ) : (
+            <div className="text-sm text-gray-500">Chưa có lịch sử</div>
+          )}
+        </div>
+      </Modal>
     </div>
   )
 }

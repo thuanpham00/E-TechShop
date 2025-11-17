@@ -1,24 +1,30 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useState } from "react"
-import { Fragment } from "react/jsx-runtime"
-import { MessageType } from "src/Constants/enum"
-import socket from "src/socket"
-import { GalleryFileItem } from "../../AddProduct/AddProduct"
-import { TicketItemType } from "src/Types/product.type"
-import ShowPreviewImage from "src/Components/ShowPreviewImage"
+import { Fragment, useContext, useState } from "react"
+import { GalleryFileItem } from "src/Admin/Pages/AddProduct/AddProduct"
 import FormSendMessage from "src/Components/FormSendMessage"
+import ShowPreviewImage from "src/Components/ShowPreviewImage"
+import { MessageType } from "src/Constants/enum"
+import { AppContext } from "src/Context/authContext"
+import socket from "src/socket"
 
-export default function SendMessageAdmin({
+type MessageSend = {
+  content: string // REQUIRED - Nội dung tin nhắn
+  type: MessageType
+  sender_type: "customer" | "admin" // Optional - loại người gửi
+  attachments?: string[] // Optional - URLs ảnh/file đính kèm
+}
+
+export default function SendMessageClient({
   setConversations,
-  setCheckFile,
-  selectedTicket
+  setCheckFile
 }: {
   setConversations: React.Dispatch<React.SetStateAction<any[]>>
   setCheckFile: React.Dispatch<React.SetStateAction<boolean>>
-  selectedTicket: TicketItemType
 }) {
-  const [valueInput, setValueInput] = useState("")
+  const { userId } = useContext(AppContext) // người gửi tin nhắn
+
   const [files, setFiles] = useState<GalleryFileItem[]>([])
+  const [valueInput, setValueInput] = useState("")
 
   const removeImage = (id: string) => {
     setFiles((prev) => {
@@ -31,6 +37,7 @@ export default function SendMessageAdmin({
   const handleSendMessage = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     if (valueInput.trim() === "" && files.length === 0) return
+
     try {
       // chuẩn bị metaData + buffers
       const fileMetas = await Promise.all(
@@ -47,24 +54,26 @@ export default function SendMessageAdmin({
           }
         })
       )
-      const conversation = {
-        content: valueInput,
+      const conversation: MessageSend = {
+        content: valueInput.trim() !== "" ? valueInput.trim() : "",
         type: files.length > 0 ? MessageType.FILE_TEXT : MessageType.TEXT,
-        sender_type: "staff",
-        ticket_id: selectedTicket._id
+        sender_type: "customer"
       }
       socket.emit(
-        "admin:send_message",
+        "send_message",
         {
-          payload: conversation,
-          files: fileMetas.map((f) => f.meta)
-        },
+          payload: { ...conversation, content: conversation.content === "" ? null : conversation.content },
+          files: fileMetas.map((f) => f.meta) // metadata để server biết tên/mime/size
+        }, // append binary ArrayBuffers as following args
         ...fileMetas.map((f) => f.buffer)
       )
+      const contentForUI = conversation.content === "" ? null : conversation.content
       setConversations((prev) => [
         {
           ...{
             ...conversation,
+            content: contentForUI,
+            sender_id: userId,
             attachments: files.map((f) => ({
               type: 0,
               id: f.id,
@@ -75,7 +84,6 @@ export default function SendMessageAdmin({
         },
         ...prev
       ])
-
       setValueInput("")
       setFiles([])
       setCheckFile(false)
@@ -95,6 +103,7 @@ export default function SendMessageAdmin({
         files={files}
         setFiles={setFiles}
         setCheckFile={setCheckFile}
+        classNameButton="bg-white border border-[#dadada] border-l-0 px-4 hover:bg-[#f2f2f2] duration-200"
       />
     </Fragment>
   )

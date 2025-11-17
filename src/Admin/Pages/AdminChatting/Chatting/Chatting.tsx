@@ -9,17 +9,19 @@ import { ConversationType } from "src/Client/Components/ChatConsulting/ChatConsu
 import { keepPreviousData, useQuery, useQueryClient } from "@tanstack/react-query"
 import { LIMIT, PAGE } from "../AdminChatting"
 import { TicketStatus } from "src/Constants/enum"
-import { Alert, Button, Modal, Tag } from "antd"
+import { Alert, Button, Image, Modal, Tag } from "antd"
 import { TicketAPI } from "src/Apis/ticket.api"
 import { convertDateTime } from "src/Helpers/common"
 import SendMessageAdmin from "../SendMessageAdmin"
 
 export default function Chatting({
   selectedTicket,
-  activeTab
+  activeTab,
+  setListImagesChat
 }: {
   selectedTicket: TicketItemType
   activeTab: TicketStatus
+  setListImagesChat: React.Dispatch<React.SetStateAction<string[]>>
 }) {
   const queryClient = useQueryClient()
   const { userId } = useContext(AppContext) // người gửi tin nhắn
@@ -57,11 +59,14 @@ export default function Chatting({
   const page = getDataConversation.data?.data.result.page
   const total_page = getDataConversation.data?.data.result.total_page
 
+  console.log(conversationListData)
+
   useEffect(() => {
     setConversations([]) // clear old messages
+    setListImagesChat([]) // clear old images
     setQuery({ page: PAGE, limit: LIMIT }) // reset pagination
     setPagination({ page: PAGE, total_page: 0 })
-  }, [selectedTicket?._id])
+  }, [selectedTicket?._id, setListImagesChat])
 
   useEffect(() => {
     if (!conversationListData) return
@@ -201,7 +206,7 @@ export default function Chatting({
                         {item.attachments.map((att) => (
                           <div key={att.id} className="w-32 h-32 border border-gray-300 rounded-md overflow-hidden">
                             {att.type === 0 ? (
-                              <img src={att.url} alt="attachment" className="w-full h-full object-cover" />
+                              <Image src={att.url} alt="attachment" className="w-full h-full object-cover" />
                             ) : (
                               <a
                                 href={att.url}

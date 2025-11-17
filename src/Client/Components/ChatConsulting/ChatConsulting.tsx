@@ -10,7 +10,8 @@ import { useNavigate } from "react-router-dom"
 import { path } from "src/Constants/path"
 import { toast } from "react-toastify"
 import useCheckConnectSocket from "src/Hook/useCheckConnectSocket"
-import FormSendMessage from "../FormSendMessage"
+import FormSendMessage from "../SendMessageClient"
+import { Image } from "antd"
 
 const LIMIT = 10
 const PAGE = 1
@@ -233,10 +234,9 @@ export default function ChatConsulting() {
                 scrollableTarget="scrollableDiv"
               >
                 {conversations.map((item: ConversationType) => {
-                  console.log("hi")
                   return (
                     <div key={item._id}>
-                      <div className={`${item.sender_id === userId ? "text-right" : "text-left"} block mb-2`}>
+                      <div className={`${item.sender_id === userId ? "text-right" : "text-left"} block mb-2 pr-2`}>
                         {item.content !== null && (
                           <div
                             className={`${item.sender_id === userId ? "bg-blue-500 text-white" : "bg-gray-300 text-black"} py-2 px-3 inline-block rounded-sm text-sm max-w-[170px] break-words`}
@@ -251,7 +251,7 @@ export default function ChatConsulting() {
                             {item.attachments.map((att) => (
                               <div key={att.id} className="w-32 h-32 border border-gray-300 rounded-md overflow-hidden">
                                 {att.type === 0 ? (
-                                  <img src={att.url} alt="attachment" className="w-full h-full object-cover" />
+                                  <Image src={att.url} alt="attachment" className="w-full h-full object-cover" />
                                 ) : (
                                   <a
                                     href={att.url}
