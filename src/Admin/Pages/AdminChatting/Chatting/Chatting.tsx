@@ -16,12 +16,10 @@ import SendMessageAdmin from "../SendMessageAdmin"
 
 export default function Chatting({
   selectedTicket,
-  activeTab,
-  setListImagesChat
+  activeTab
 }: {
   selectedTicket: TicketItemType
   activeTab: TicketStatus
-  setListImagesChat: React.Dispatch<React.SetStateAction<string[]>>
 }) {
   const queryClient = useQueryClient()
   const { userId } = useContext(AppContext) // người gửi tin nhắn
@@ -59,14 +57,11 @@ export default function Chatting({
   const page = getDataConversation.data?.data.result.page
   const total_page = getDataConversation.data?.data.result.total_page
 
-  console.log(conversationListData)
-
   useEffect(() => {
     setConversations([]) // clear old messages
-    setListImagesChat([]) // clear old images
     setQuery({ page: PAGE, limit: LIMIT }) // reset pagination
     setPagination({ page: PAGE, total_page: 0 })
-  }, [selectedTicket?._id, setListImagesChat])
+  }, [selectedTicket?._id])
 
   useEffect(() => {
     if (!conversationListData) return

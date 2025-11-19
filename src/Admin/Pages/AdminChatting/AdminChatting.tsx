@@ -1,8 +1,8 @@
 import { Helmet } from "react-helmet-async"
 import { motion } from "framer-motion"
 import { useContext, useEffect, useMemo, useState } from "react"
-import { Empty, Input, Modal, Skeleton, Space, Tabs } from "antd"
-import { useQuery, useQueryClient } from "@tanstack/react-query"
+import { Empty, Image, Input, Modal, Skeleton, Space, Tabs } from "antd"
+import { keepPreviousData, useQuery, useQueryClient } from "@tanstack/react-query"
 import avatarDefault from "src/Assets/img/avatarDefault.png"
 import "./AdminChatting.css"
 import { TicketStatus } from "src/Constants/enum"
@@ -24,9 +24,8 @@ export default function AdminChatting() {
   const queryClient = useQueryClient()
   const [activeTab, setActiveTab] = useState<TicketStatus>(TicketStatus.PENDING)
   const [selectedTicket, setSelectedTicket] = useState<TicketItemType>()
-  const [listImagesChat, setListImagesChat] = useState<string[]>([])
 
-  const getUserListTypeQuery = useQuery({
+  const getListTicket = useQuery({
     queryKey: ["listTicket", activeTab],
     queryFn: () => {
       const controller = new AbortController()
@@ -34,10 +33,29 @@ export default function AdminChatting() {
         controller.abort() // hủy request khi chờ quá lâu // 10 giây sau cho nó hủy // làm tự động
       }, 10000)
       return TicketAPI.getListTicket(controller.signal, { status: activeTab })
-    }
+    },
+    staleTime: 5 * 60 * 1000, // 5 phút
+    placeholderData: keepPreviousData
   })
 
-  const listTicket = getUserListTypeQuery.data?.data.data as TicketItemType[]
+  const getListImagesChat = useQuery({
+    queryKey: ["listImagesChat", selectedTicket?._id],
+    queryFn: () => {
+      const controller = new AbortController()
+      setTimeout(() => {
+        controller.abort() // hủy request khi chờ quá lâu // 10 giây sau cho nó hủy // làm tự động
+      }, 10000)
+      return TicketAPI.getImageTicketAdmin(controller.signal, selectedTicket?._id as string)
+    },
+    enabled: !!selectedTicket?._id,
+    staleTime: 5 * 60 * 1000, // 5 phút
+    placeholderData: keepPreviousData
+  })
+
+  const listDataImagesChat = getListImagesChat.data?.data.data as string[]
+  console.log(listDataImagesChat)
+
+  const listTicket = getListTicket.data?.data.data as TicketItemType[]
   useEffect(() => {
     if (!listTicket || listTicket.length === 0) {
       setSelectedTicket(undefined)
@@ -59,7 +77,7 @@ export default function AdminChatting() {
   useEffect(() => {
     const getListTicketAPI = async () => {
       try {
-        await getUserListTypeQuery.refetch()
+        await getListTicket.refetch()
       } catch (error) {
         console.error("Lỗi khi lấy danh sách ticket:", error)
       }
@@ -68,7 +86,7 @@ export default function AdminChatting() {
     return () => {
       socket.off("reload_ticket_list", getListTicketAPI)
     }
-  }, [getUserListTypeQuery])
+  }, [getListTicket])
 
   const handleUpdateReadMessageFromAdmin = (ticket: TicketItemType) => {
     setSelectedTicket(ticket)
@@ -174,8 +192,8 @@ export default function AdminChatting() {
               />
             </Space>
 
-            {getUserListTypeQuery.isLoading && <Skeleton />}
-            {getUserListTypeQuery.isFetched &&
+            {getListTicket.isLoading && <Skeleton />}
+            {getListTicket.isFetched &&
               (listTicket?.length > 0 ? (
                 <div className="mt-3 h-[calc(100vh-300px)] overflow-y-auto">
                   {filteredList.map((item) => (
@@ -236,11 +254,7 @@ export default function AdminChatting() {
               ))}
           </div>
           <div className="w-2/4 border border-gray-300 dark:border-darkBorder border-l-0">
-            <Chatting
-              selectedTicket={selectedTicket as TicketItemType}
-              setListImagesChat={setListImagesChat}
-              activeTab={activeTab}
-            />
+            <Chatting selectedTicket={selectedTicket as TicketItemType} activeTab={activeTab} />
           </div>
           <div className="w-1/4 p-4 bg-white dark:bg-darkPrimary rounded-tr-md rounded-br-md border border-gray-200 dark:border-darkBorder shadow-sm">
             <div className="flex flex-col items-center text-center">
@@ -266,6 +280,23 @@ export default function AdminChatting() {
               </button>
 
               <div className="text-sm font-semibold text-gray-700 mt-4">Ảnh đoạn chat</div>
+              <div className="mt-2 h-[calc(100vh-330px)] overflow-y-auto border border-gray-200 dark:border-darkBorder p-2">
+                {listDataImagesChat && listDataImagesChat.length > 0 ? (
+                  <div className="grid grid-cols-3 gap-1">
+                    {listDataImagesChat.map((imgUrl, index) => (
+                      <div key={index} className="w-full rounded-md">
+                        <Image
+                          src={imgUrl}
+                          alt={`Ảnh chat ${index + 1}`}
+                          className="w-full h-full object-cover hover:scale-110 duration-200 cursor-pointer border border-gray-200 rounded-md"
+                        />
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-sm text-gray-500">Chưa có ảnh nào được gửi trong đoạn chat này.</div>
+                )}
+              </div>
             </div>
           </div>
         </section>

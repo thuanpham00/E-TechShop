@@ -15,6 +15,12 @@ export const TicketAPI = {
     })
   },
 
+  getImageTicketAdmin: (signal: AbortSignal, id: string) => {
+    return Http.get(`/tickets/${id}/images`, {
+      signal
+    })
+  },
+
   getMessageTicketClient: (signal: AbortSignal, params: { limit: number; page: number }) => {
     return Http.get(`/users/tickets/messages`, {
       params,
