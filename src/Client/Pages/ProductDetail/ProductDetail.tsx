@@ -19,6 +19,7 @@ import InputNumberQuantity from "src/Client/Components/InputNumberQuantity"
 import { motion } from "framer-motion"
 import { Modal } from "antd"
 import { collectionAPI } from "src/Apis/client/collections.api"
+import ProductRecently from "src/Client/Components/ProductRecently"
 
 export default function ProductDetail() {
   const queryClient = useQueryClient()
@@ -198,7 +199,23 @@ export default function ProductDetail() {
     setIsModalOpen(false)
   }
 
-  console.log(productDetail)
+  const MAX_LINES = 20
+  const LINE_HEIGHT = 28 // prose-lg có line-height ~28px
+  const COLLAPSED_HEIGHT = MAX_LINES * LINE_HEIGHT // 560px
+
+  const descriptionRef = useRef<HTMLDivElement>(null)
+  const [isExpanded, setIsExpanded] = useState<boolean>(false)
+  const [showButton, setShowButton] = useState<boolean>(false)
+
+  useEffect(() => {
+    if (productDetail?.description && descriptionRef.current) {
+      setTimeout(() => {
+        const actualHeight = descriptionRef.current?.scrollHeight || 0
+
+        setShowButton(actualHeight > COLLAPSED_HEIGHT)
+      }, 1000)
+    }
+  }, [productDetail?.description, COLLAPSED_HEIGHT])
 
   return (
     <div className="container">
@@ -216,9 +233,11 @@ export default function ProductDetail() {
               }
             />
           </Helmet>
+
           <Breadcrumb slug_1={productDetail?.category.name} slug_2={productDetail?.name} />
+
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-            <div className="bg-white rounded-lg border border-gray-200 shadow-md my-4 grid grid-cols-6 gap-6 p-6 pt-4">
+            <div className="bg-white rounded-lg border border-gray-200 my-4 grid grid-cols-6 gap-6 p-6 pt-4">
               <div className="col-span-3">
                 <div className="flex items-center">
                   {productDetail?.medias.length > 0 && (
@@ -274,7 +293,7 @@ export default function ProductDetail() {
               </div>
               <div className="col-span-3">
                 <div className="flex items-center gap-2">
-                  <h1 className="text-2xl font-semibold max-w-[500px]">{productDetail?.name}</h1>
+                  <h1 className="text-2xl font-semibold max-w-[450px]">{productDetail?.name}</h1>
                   {productDetail?.isFeatured === "true" ? (
                     <span className="bg-gradient-to-r from-orange-400 to-pink-500 text-white px-3 py-1 rounded-full text-sm font-semibold">
                       Nổi bật
@@ -401,7 +420,7 @@ export default function ProductDetail() {
                 </div>
               </div>
             </div>
-            <div className="mt-2 bg-white border border-gray-200 rounded-lg shadow-md my-4 p-6 pt-4">
+            <div className="mt-2 bg-white border border-gray-200 rounded-lg my-4 p-6 pt-4">
               <h4 className="text-xl font-semibold">Sản phẩm tương tự</h4>
               <div className="mt-1 grid grid-cols-5 gap-2">
                 {listProductRelated?.map((item) => {
@@ -413,7 +432,7 @@ export default function ProductDetail() {
                 })}
               </div>
             </div>
-            <div className="mt-2 bg-white border border-gray-200 rounded-lg shadow-md my-4 p-6">
+            <div className="mt-2 bg-white border border-gray-200 rounded-lg my-4 p-6">
               <h4 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-cyan-500 bg-clip-text text-transparent mb-6">
                 Thông tin sản phẩm
               </h4>
@@ -465,11 +484,14 @@ export default function ProductDetail() {
               <div className="mt-8">
                 <div className="flex items-center gap-3 mb-4">
                   <div className="h-8 w-1 bg-gradient-to-b from-blue-500 to-cyan-400 rounded-full"></div>
-                  <h5 className="text-xl font-bold text-gray-800">Mô tả chi tiết</h5>
+                  <h5 className="text-xl font-bold text-gray-800">Mô tả sản phẩm</h5>
                 </div>
 
                 {productDetail?.description === "<p>Đợi cập nhật</p>" ? (
-                  <div className="text-center py-12 bg-gradient-to-br from-purple-50 to-pink-50 rounded-xl border border-purple-200">
+                  <div
+                    ref={descriptionRef}
+                    className="text-center bg-gradient-to-br from-purple-50 to-pink-50 rounded-xl border border-purple-200"
+                  >
                     <div className="text-6xl mb-4">⏳</div>
                     <div
                       className="prose max-w-none text-purple-600 font-semibold"
@@ -477,20 +499,52 @@ export default function ProductDetail() {
                     />
                   </div>
                 ) : (
-                  <div
-                    className="prose prose-lg max-w-none 
+                  <div className="relative">
+                    <div
+                      ref={descriptionRef}
+                      className={`prose prose-lg max-w-none 
           prose-headings:text-gray-800 prose-headings:font-bold
           prose-p:text-gray-600 prose-p:leading-relaxed
           prose-a:text-blue-600 prose-a:no-underline hover:prose-a:underline
           prose-strong:text-gray-800 prose-strong:font-bold
           prose-ul:list-disc prose-ul:ml-6
           prose-ol:list-decimal prose-ol:ml-6
-          prose-img:rounded-xl prose-img:shadow-md
-          bg-gray-50 p-6 rounded-xl border border-gray-200"
-                    dangerouslySetInnerHTML={{ __html: productDetail?.description }}
-                  />
+          prose-img:rounded-xl prose-img:shadow-md pb-6
+          bg-gray-50 ${!isExpanded ? "max-h-[560px] overflow-hidden" : "max-h-none"}`}
+                      dangerouslySetInnerHTML={{ __html: productDetail?.description }}
+                    />
+
+                    {showButton && !isExpanded && (
+                      <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-gray-50 via-gray-50/95 to-transparent pointer-events-none rounded-b-xl" />
+                    )}
+
+                    {showButton && (
+                      <div className="absolute bottom-0 left-1/2 -translate-x-1/2 z-20">
+                        <button
+                          className="flex items-center gap-2 text-blue-500"
+                          onClick={() => {
+                            setIsExpanded((prev) => !prev)
+                            // setShowButton(false)
+                          }}
+                        >
+                          <span className="text-blue-500">{isExpanded ? "Thu gọn bài viết" : "Đọc tiếp bài viết"}</span>
+                          <svg
+                            className={`w-4 h-4 transition-transform duration-300 ${isExpanded ? "rotate-180" : ""}`}
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                          </svg>
+                        </button>
+                      </div>
+                    )}
+                  </div>
                 )}
               </div>
+            </div>
+            <div>
+              <ProductRecently />
             </div>
           </motion.div>
 

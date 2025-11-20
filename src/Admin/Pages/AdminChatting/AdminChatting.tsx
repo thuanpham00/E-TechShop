@@ -1,153 +1,115 @@
 import { Helmet } from "react-helmet-async"
-import NavigateBack from "src/Admin/Components/NavigateBack"
 import { motion } from "framer-motion"
 import { useContext, useEffect, useMemo, useState } from "react"
-import { Empty, Input, Skeleton, Space } from "antd"
-import { keepPreviousData, useQuery } from "@tanstack/react-query"
-import { conversationAPI } from "src/Apis/conversation.api"
+import { Empty, Image, Input, Modal, Skeleton, Space, Tabs } from "antd"
+import { keepPreviousData, useQuery, useQueryClient } from "@tanstack/react-query"
 import avatarDefault from "src/Assets/img/avatarDefault.png"
-import socket from "src/socket"
-import { ConversationType } from "src/Client/Components/ChatConsulting/ChatConsulting"
-import { AppContext } from "src/Context/authContext"
-import { Send } from "lucide-react"
-import InfiniteScroll from "react-infinite-scroll-component"
-import { queryClient } from "src/main"
 import "./AdminChatting.css"
+import { TicketStatus } from "src/Constants/enum"
+import { TicketAPI } from "src/Apis/ticket.api"
+import { TicketItemType } from "src/Types/product.type"
+import { convertDateTime } from "src/Helpers/common"
+import Chatting from "./Chatting"
+import useCheckConnectSocket from "src/Hook/useCheckConnectSocket"
+import socket from "src/socket"
+import { EllipsisVertical, RefreshCw } from "lucide-react"
+import { AppContext } from "src/Context/authContext"
 
-const MessageObject = {
-  staff: "Staff",
-  customer: "Customer"
-}
-
-type UserTypeItem = {
-  _id: string
-  name: string
-  email: string
-  role: string
-  numberPhone: string
-  avatar: string
-  content: string
-}
-
-const LIMIT = 20
-const PAGE = 1
+export const LIMIT = 20
+export const PAGE = 1
 
 export default function AdminChatting() {
-  const { userId } = useContext(AppContext) // người gửi tin nhắn
-  const [activeTab, setActiveTab] = useState(MessageObject.customer)
-  const [userSelected, setUserSelected] = useState<UserTypeItem>()
-  const [valueInput, setValueInput] = useState("")
-  const [conversations, setConversations] = useState<ConversationType[]>([])
+  const { userId } = useContext(AppContext)
+  const { isSocketConnected, retryConnect } = useCheckConnectSocket()
+  const queryClient = useQueryClient()
+  const [activeTab, setActiveTab] = useState<TicketStatus>(TicketStatus.PENDING)
+  const [selectedTicket, setSelectedTicket] = useState<TicketItemType>()
 
-  const [pagination, setPagination] = useState({
-    page: PAGE,
-    total_page: 0
-  })
-
-  const [query, setQuery] = useState({
-    limit: LIMIT,
-    page: PAGE
-  })
-
-  const getUserListTypeQuery = useQuery({
-    queryKey: ["listUserType", activeTab],
+  const getListTicket = useQuery({
+    queryKey: ["listTicket", activeTab],
     queryFn: () => {
       const controller = new AbortController()
       setTimeout(() => {
         controller.abort() // hủy request khi chờ quá lâu // 10 giây sau cho nó hủy // làm tự động
       }, 10000)
-      return conversationAPI.getUserListType(controller.signal, { type_user: activeTab })
+      return TicketAPI.getListTicket(controller.signal, { status: activeTab })
     },
-    retry: 0, // số lần retry lại khi hủy request (dùng abort signal)
-    staleTime: 5 * 60 * 1000, // dưới 5 phút nó không gọi lại api
+    staleTime: 5 * 60 * 1000, // 5 phút
     placeholderData: keepPreviousData
   })
 
-  const listUserData = getUserListTypeQuery.data?.data.result.result as UserTypeItem[]
-
-  useEffect(() => {
-    if (listUserData) {
-      setUserSelected(listUserData[0])
-    }
-  }, [listUserData])
-
-  useEffect(() => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const handleReceivedMessage = (data: any) => {
-      const { payload } = data
-      setConversations((prev) => [payload, ...prev])
-    }
-
-    socket.on("received_message", handleReceivedMessage)
-
-    return () => {
-      socket.off("received_message", handleReceivedMessage)
-    }
-  }, [])
-
-  const handleSendMessage = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    const conversation = {
-      content: valueInput,
-      sender_id: userId as string,
-      receiver_id: userSelected?._id as string // người nhận (admin full quyền)
-    }
-    socket.emit("send_message", {
-      payload: conversation
-    })
-    setConversations((prev) => [{ ...conversation, _id: new Date().getTime().toString() }, ...prev])
-    setValueInput("")
-
-    queryClient.invalidateQueries({
-      queryKey: ["listUserType", activeTab]
-    })
-  }
-
-  const getDataConversation = useQuery({
-    queryKey: ["conversationList", userSelected, query],
+  const getListImagesChat = useQuery({
+    queryKey: ["listImagesChat", selectedTicket?._id],
     queryFn: () => {
       const controller = new AbortController()
       setTimeout(() => {
-        controller.abort()
+        controller.abort() // hủy request khi chờ quá lâu // 10 giây sau cho nó hủy // làm tự động
       }, 10000)
-      return conversationAPI.getConversation(controller.signal, userSelected?._id as string, query)
+      return TicketAPI.getImageTicketAdmin(controller.signal, selectedTicket?._id as string)
     },
-    retry: 0, // số lần retry lại khi hủy request (dùng abort signal)
-    staleTime: 10 * 60 * 1000, // dưới 5 phút nó không gọi lại api
-    placeholderData: keepPreviousData,
-    enabled: Boolean(userSelected)
+    enabled: !!selectedTicket?._id,
+    staleTime: 5 * 60 * 1000, // 5 phút
+    placeholderData: keepPreviousData
   })
 
-  const conversationListData = getDataConversation.data?.data.result.conversation as ConversationType[]
-  const page = getDataConversation.data?.data.result.page
-  const total_page = getDataConversation.data?.data.result.total_page
+  const listDataImagesChat = getListImagesChat.data?.data.data as string[]
+  console.log(listDataImagesChat)
 
+  const listTicket = getListTicket.data?.data.data as TicketItemType[]
   useEffect(() => {
-    if (conversationListData) {
-      setConversations((prev) => [...prev, ...conversationListData])
-      setPagination({
-        page,
-        total_page
-      })
+    if (!listTicket || listTicket.length === 0) {
+      setSelectedTicket(undefined)
+      return
     }
-  }, [conversationListData, page, total_page, userSelected])
 
-  const fetchConversationDataMore = () => {
-    if (pagination.page < pagination.total_page) {
-      setQuery({
-        page: pagination.page + 1,
-        limit: LIMIT
-      })
+    const exists = listTicket?.some((item) => item._id === selectedTicket?._id)
+    if (!exists) {
+      // nếu nó ko tồn tại trong danh sách hiện tại thì set lại ticket đầu tiên
+      setSelectedTicket(listTicket[0])
     }
-  }
+  }, [listTicket, selectedTicket])
 
   const [searchTerm, setSearchTerm] = useState("")
   const filteredList = useMemo(() => {
-    return listUserData?.filter((item) => item.name.toLowerCase().includes(searchTerm.toLowerCase()))
-  }, [listUserData, searchTerm])
+    return listTicket?.filter((item) => item.users.name.toLowerCase().includes(searchTerm.toLowerCase()))
+  }, [listTicket, searchTerm])
+
+  useEffect(() => {
+    const getListTicketAPI = async () => {
+      try {
+        await getListTicket.refetch()
+      } catch (error) {
+        console.error("Lỗi khi lấy danh sách ticket:", error)
+      }
+    }
+    socket.on("reload_ticket_list", getListTicketAPI)
+    return () => {
+      socket.off("reload_ticket_list", getListTicketAPI)
+    }
+  }, [getListTicket])
+
+  const handleUpdateReadMessageFromAdmin = (ticket: TicketItemType) => {
+    setSelectedTicket(ticket)
+    if (
+      ticket?.status !== TicketStatus.PENDING &&
+      ticket?.assigned_to !== null &&
+      ticket?.assigned_to === userId // phải là người tiếp nhận mới đc seen tin nhắn
+    ) {
+      // neu ticket khác hàng đã được tiếp nhận và người tiếp nhận có quyền seen tin nhắn (nếu không phải người tiếp nhận thì ko đc seen)
+      socket.emit("admin:read-message-from-assigned", {
+        payload: {
+          ticket_id: ticket?._id as string,
+          assigned_to: ticket?.assigned_to as string
+        }
+      })
+      queryClient.invalidateQueries({ queryKey: ["listTicket", activeTab] })
+    }
+  }
+
+  const [showModalHistoryAssigned, setShowModalHistoryAssigned] = useState(false)
 
   return (
-    <div>
+    <div className="AdminChatting">
       <Helmet>
         <title>Hệ thống chat</title>
         <meta
@@ -157,26 +119,70 @@ export default function AdminChatting() {
       </Helmet>
 
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-        <section className="mt-2 flex">
-          <div className="w-1/4 p-4 border bg-white border-gray-300 dark:bg-darkPrimary dark:border-darkBorder">
-            <NavigateBack />
-
-            <div className="mt-2 flex items-center justify-center">
+        <h1 className="flex items-center gap-2">
+          <span className="text-base font-semibold">Kết nối Server:</span>
+          {isSocketConnected ? (
+            <div className="inline-flex items-center gap-2 bg-green-50 text-green-800 px-3 py-1 rounded-full text-sm font-medium ring-1 ring-green-200">
+              <span className="inline-block h-2 w-2 rounded-full bg-green-500 shadow-sm" />
+              <span className="text-xs">Kết nối tới hệ thống thành công</span>
+            </div>
+          ) : (
+            <div className="flex items-center gap-1">
+              <div className="inline-flex items-center gap-2 bg-yellow-50 text-yellow-800 px-3 py-1 rounded-full text-sm font-medium ring-1 ring-yellow-200">
+                <span className="relative inline-block h-2 w-2">
+                  <span className="absolute inline-flex h-full w-full rounded-full bg-yellow-300 opacity-50 animate-ping" />
+                  <span className="absolute inline-block h-2 w-2 rounded-full bg-yellow-500" />
+                </span>
+                <span className="text-xs">Đang kết nối...</span>
+              </div>
               <button
-                className={`flex-1 py-2 border ${activeTab === MessageObject.customer ? "border-blue-500 bg-blue-500 text-white" : "border-gray-300"}`}
-                onClick={() => setActiveTab(MessageObject.customer)}
+                type="button"
+                onClick={() => {
+                  try {
+                    retryConnect?.()
+                  } catch {
+                    window.location.reload()
+                  }
+                }}
+                aria-label="Thử kết nối lại"
+                className="inline-flex items-center justify-center h-6 w-6 rounded-full bg-indigo-600 text-white hover:bg-indigo-700"
+                title="Thử kết nối lại"
               >
-                Khách hàng
-              </button>
-              <button
-                className={`flex-1 py-2 border ${activeTab === MessageObject.staff ? "border-blue-500  bg-blue-500 text-white" : "border-gray-300"}`}
-                onClick={() => setActiveTab(MessageObject.staff)}
-              >
-                Nhân viên
+                <RefreshCw size={14} />
               </button>
             </div>
+          )}
+        </h1>
+        <section className="mt-2 flex">
+          <div className="w-1/4 border bg-white p-2 rounded-tl-md rounded-bl-md border-gray-300 dark:bg-darkPrimary dark:border-darkBorder">
+            <Tabs
+              defaultActiveKey="1"
+              type="card"
+              size={"small"}
+              style={{ marginTop: 12 }}
+              tabBarStyle={{
+                width: "100%"
+              }}
+              items={[
+                {
+                  label: `Chờ tiếp nhận`,
+                  key: TicketStatus.PENDING
+                },
+                {
+                  label: `Đang xử lý`,
+                  key: TicketStatus.ASSIGNED
+                },
+                {
+                  label: `Đã đóng`,
+                  key: TicketStatus.CLOSED
+                }
+              ]}
+              onTabClick={(prev) => {
+                setActiveTab(prev as TicketStatus)
+              }}
+            />
 
-            <Space direction="vertical" style={{ width: "100%", marginTop: "16px" }}>
+            <Space direction="vertical" style={{ width: "100%", marginTop: "4px" }}>
               <Input
                 placeholder="Tìm kiếm..."
                 allowClear
@@ -186,34 +192,59 @@ export default function AdminChatting() {
               />
             </Space>
 
-            {getUserListTypeQuery.isLoading && <Skeleton />}
-            {getUserListTypeQuery.isFetched &&
-              (listUserData?.length > 0 ? (
-                <div className="mt-3 h-[calc(100vh-255px)] overflow-y-auto pr-2">
+            {getListTicket.isLoading && <Skeleton />}
+            {getListTicket.isFetched &&
+              (listTicket?.length > 0 ? (
+                <div className="mt-3 h-[calc(100vh-300px)] overflow-y-auto">
                   {filteredList.map((item) => (
                     <button
                       key={item._id}
-                      className={`flex items-center gap-2 p-2 w-full duration-100 ease-linear ${userSelected?._id === item._id ? "bg-gray-300 rounded-md dark:bg-gray-600" : "bg-white dark:bg-darkSecond"}`}
+                      className={`flex items-center gap-2 p-2 w-full duration-100 ease-linear ${selectedTicket?.users?._id === item.users._id ? "bg-gray-200 rounded-md dark:bg-gray-600" : "bg-white dark:bg-darkSecond"}`}
                       onClick={() => {
-                        const checkUser = userSelected?._id === item._id
-                        if (!checkUser) {
-                          setUserSelected(item)
-                          setConversations([])
-                          setQuery({
-                            page: 1,
-                            limit: LIMIT
-                          })
-                        }
+                        handleUpdateReadMessageFromAdmin(item)
                       }}
                     >
                       <img
-                        src={item.avatar || avatarDefault}
-                        alt={item.name}
+                        src={item.users.avatar || avatarDefault}
+                        alt={item.users.name}
                         className="w-[30px] h-[30px] object-contain rounded-full"
                       />
-                      <div className="flex flex-col items-start">
-                        <span className="font-semibold">{item.name}</span>
-                        <span className="text-gray-400 text-[13px]">{item.content || "Chưa có tin nhắn nào"}</span>
+                      <div className="flex items-center justify-between w-full relative">
+                        <div className="flex flex-col items-start">
+                          <span className="font-semibold">{item.users.name}</span>
+                          <span className={`text-gray-400 text-[13px] font-medium truncate max-w-[180px]`}>
+                            {item.last_message_sender_type === "staff" ? "Bạn" : "Khách"}:{" "}
+                            {item.last_message === null
+                              ? "Ảnh"
+                              : item.last_message !== null
+                                ? item.last_message
+                                : "Chưa có tin nhắn nào"}
+                          </span>
+                        </div>
+                        <div className="mt-2 text-gray-400 text-[12px] text-right">
+                          {(() => {
+                            const date = new Date(item.last_message_at)
+                            const now = new Date()
+                            const isToday =
+                              date.getDate() === now.getDate() &&
+                              date.getMonth() === now.getMonth() &&
+                              date.getFullYear() === now.getFullYear()
+
+                            if (isToday) {
+                              return `${date.getHours().toString().padStart(2, "0")}:${date.getMinutes().toString().padStart(2, "0")}`
+                            } else {
+                              return convertDateTime(item.last_message_at)
+                            }
+                          })()}
+                        </div>
+
+                        {item.unread_count_staff > 0 && (
+                          <div className="absolute right-0 top-[10%] -translate-y-1/2 flex items-center z-10">
+                            <div className="h-4 w-4 bg-red-500 rounded-full flex items-center justify-center text-[10px] text-white font-semibold">
+                              {item.unread_count_staff}
+                            </div>
+                          </div>
+                        )}
                       </div>
                     </button>
                   ))}
@@ -223,107 +254,91 @@ export default function AdminChatting() {
               ))}
           </div>
           <div className="w-2/4 border border-gray-300 dark:border-darkBorder border-l-0">
-            <div className="bg-white dark:bg-darkPrimary relative h-[calc(100vh-95px)]">
-              <div className="flex items-center gap-2 border-b border-b-gray-300 dark:border-darkBorder py-2 px-4 mb-2">
-                <img
-                  src={userSelected?.avatar || avatarDefault}
-                  alt={userSelected?.name}
-                  className="w-[40px] h-[40px] object-contain rounded-full"
-                />
-                <div className="flex flex-col">
-                  <span className="font-semibold">{userSelected?.name}</span>
-                  <span className="text-gray-400 text-sm">
-                    {userSelected?.role === "User" ? "Khách hàng" : "Quản trị viên"}
-                  </span>
-                </div>
-              </div>
-
-              <div
-                id="scrollableDiv"
-                style={{
-                  height: "calc(100vh - 200px)",
-                  overflow: "auto",
-                  display: "flex",
-                  flexDirection: "column-reverse"
-                }}
-              >
-                {userSelected && (
-                  <InfiniteScroll
-                    dataLength={conversations.length}
-                    next={fetchConversationDataMore}
-                    style={{ display: "flex", flexDirection: "column-reverse" }} //To put endMessage and loader to the top.
-                    inverse={true} //
-                    hasMore={pagination.page < pagination.total_page}
-                    loader={<h4>Loading...</h4>}
-                    scrollableTarget="scrollableDiv"
-                  >
-                    {conversations.map((item, index) => {
-                      return (
-                        <div key={item._id}>
-                          <div
-                            className={`${item.sender_id === userId ? "text-right pr-2" : "text-left pl-2"} block mb-2 ${index === 0 ? "mb-4" : ""}`}
-                          >
-                            <div
-                              className={`${item.sender_id === userId ? "bg-blue-500 text-white" : "bg-gray-300 text-black"} py-2 px-3 inline-block rounded-sm text-sm`}
-                            >
-                              {item.content}
-                            </div>
-                          </div>
-                        </div>
-                      )
-                    })}
-                  </InfiniteScroll>
-                )}
-              </div>
-
-              <form
-                onSubmit={handleSendMessage}
-                className="absolute bottom-0 left-0 flex items-stretch h-[40px] w-full"
-              >
-                <input
-                  type="text"
-                  value={valueInput}
-                  onChange={(e) => setValueInput(e.target.value)}
-                  className="flex-grow border border-gray-300 border-l-0 border-b-0 px-4 outline-none dark:bg-darkPrimary dark:border-darkBorder"
-                  placeholder="Nhập tin nhắn..."
-                />
-                <button
-                  disabled={!valueInput.trim()}
-                  type="submit"
-                  className="flex-shrink-0 p-2 px-3 bg-primaryBlue hover:bg-secondBlue duration-100"
-                >
-                  <Send size={16} color="white" />
-                </button>
-              </form>
-            </div>
+            <Chatting selectedTicket={selectedTicket as TicketItemType} activeTab={activeTab} />
           </div>
-          <div className="w-1/4 p-2 bg-white dark:bg-darkPrimary border border-gray-300 dark:border-darkBorder border-l-0">
-            <div className="flex flex-col items-center">
-              <div className="mt-4">
+          <div className="w-1/4 p-4 bg-white dark:bg-darkPrimary rounded-tr-md rounded-br-md border border-gray-200 dark:border-darkBorder shadow-sm">
+            <div className="flex flex-col items-center text-center">
+              <div className="w-fit rounded-full bg-gradient-to-br from-indigo-50 to-cyan-50 p-1">
                 <img
-                  src={userSelected?.avatar || avatarDefault}
-                  alt={userSelected?.name}
-                  className="w-[60px] h-[60px] rounded-full"
+                  src={selectedTicket?.users?.avatar || avatarDefault}
+                  alt={selectedTicket?.users?.name}
+                  className="w-[64px] h-[64px] rounded-full object-cover shadow-sm"
                 />
               </div>
-              <span className="font-semibold block mt-2">{userSelected?.name}</span>
-              <span className="text-gray-400 text-sm">
-                {userSelected?.role === "User" ? "Khách hàng" : "Quản trị viên"}
-              </span>
-              <div className="mt-4 bg-[#f2f2f2] dark:bg-darkPrimary rounded-md p-2">
-                <div className="flex items-center flex-wrap gap-x-2">
-                  <strong>Email:</strong>
-                  <span className="break-words whitespace-normal text-[14px]">{userSelected?.email}</span>
-                </div>
-                <div className="mt-2 flex items-center gap-2">
-                  <strong>Số điện thoại:</strong>
-                  <span className="truncate">{userSelected?.numberPhone}</span>
-                </div>
+              <h4 className="mt-3 font-semibold text-gray-900 dark:text-white truncate">
+                {selectedTicket?.users?.name}
+              </h4>
+            </div>
+
+            <div className="mt-4">
+              <button
+                className="text-sm font-semibold text-gray-700 dark:text-gray-200 flex justify-between items-center w-full"
+                onClick={() => setShowModalHistoryAssigned(true)}
+              >
+                <span>Lịch sử tiếp nhận</span>
+                <EllipsisVertical className="inline-block ml-1 mb-1" size={12} />
+              </button>
+
+              <div className="text-sm font-semibold text-gray-700 mt-4">Ảnh đoạn chat</div>
+              <div className="mt-2 h-[calc(100vh-330px)] overflow-y-auto border border-gray-200 dark:border-darkBorder p-2">
+                {listDataImagesChat && listDataImagesChat.length > 0 ? (
+                  <div className="grid grid-cols-3 gap-1">
+                    {listDataImagesChat.map((imgUrl, index) => (
+                      <div key={index} className="w-full rounded-md">
+                        <Image
+                          src={imgUrl}
+                          alt={`Ảnh chat ${index + 1}`}
+                          className="w-full h-full object-cover hover:scale-110 duration-200 cursor-pointer border border-gray-200 rounded-md"
+                        />
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-sm text-gray-500">Chưa có ảnh nào được gửi trong đoạn chat này.</div>
+                )}
               </div>
             </div>
           </div>
         </section>
       </motion.div>
+
+      <Modal
+        open={showModalHistoryAssigned}
+        onCancel={() => setShowModalHistoryAssigned(false)}
+        title="Lịch sử tiếp nhận"
+        width={600}
+        footer={null}
+      >
+        <div className="mt-3 space-y-3">
+          {selectedTicket && selectedTicket.served_by.length > 0 ? (
+            selectedTicket.served_by.map((item) => (
+              <div
+                key={item.admin_id}
+                className="relative p-3 rounded-lg bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700"
+              >
+                <div className="flex items-center justify-between">
+                  <div>
+                    <div className="text-xs text-gray-500">Người xử lý</div>
+                    <div className="font-medium text-sm">{item.admin_name}</div>
+                    <div className="text-xs text-gray-400 mt-1">Id: {item.admin_id}</div>
+                  </div>
+                  <div className="text-right">
+                    <div className={`text-xs font-semibold ${item.is_active ? "text-green-600" : "text-red-500"}`}>
+                      {item.is_active ? "Đang xử lý" : "Đã kết thúc"}
+                    </div>
+                    <div className="text-xs text-gray-400 mt-1">{convertDateTime(item.started_at.toString())}</div>
+                    {item.ended_at && (
+                      <div className="text-xs text-gray-400">{convertDateTime(item.ended_at.toString())}</div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            ))
+          ) : (
+            <div className="text-sm text-gray-500">Chưa có lịch sử</div>
+          )}
+        </div>
+      </Modal>
     </div>
   )
 }

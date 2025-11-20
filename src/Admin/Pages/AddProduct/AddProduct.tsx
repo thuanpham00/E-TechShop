@@ -3,7 +3,7 @@ import { PencilLine } from "lucide-react"
 import { Helmet } from "react-helmet-async"
 import NavigateBack from "src/Admin/Components/NavigateBack"
 import Input from "src/Components/Input"
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
+import { useMutation, useQuery } from "@tanstack/react-query"
 import { ErrorResponse, SuccessResponse } from "src/Types/utils.type"
 import { Controller, useFieldArray, useForm } from "react-hook-form"
 import { useEffect, useRef, useState } from "react"
@@ -23,7 +23,6 @@ import { LoadingOutlined } from "@ant-design/icons"
 import { useLocation, useNavigate } from "react-router-dom"
 import InputBanner from "./Components/InputBanner/InputBanner"
 import InputGallery from "./Components/InputGallery"
-import { queryParamConfigProduct } from "src/Types/queryParams.type"
 import { path } from "src/Constants/path"
 
 const listSpecificationForCategory = {
@@ -82,7 +81,7 @@ const formData = schemaAddProduct.pick([
   "banner",
   "medias",
   "priceAfterDiscount"
-])
+]) // validate field
 
 type FormData = Pick<
   SchemaAddProductType,
@@ -101,7 +100,7 @@ type FormData = Pick<
   | "banner"
   | "medias"
   | "priceAfterDiscount"
->
+> // field trong form
 
 export type GalleryFileItem = {
   file: File | null
@@ -111,9 +110,7 @@ export type GalleryFileItem = {
 
 export default function AddProduct() {
   const { state } = useLocation()
-  const queryClient = useQueryClient()
   const editItem = state?.editItem as boolean | ProductItemType
-  const queryConfig = state?.queryConfig as queryParamConfigProduct
 
   // lấy danh sách tên category
   const getNameCategory = useQuery({
@@ -287,6 +284,7 @@ export default function AddProduct() {
 
   const price = watch("price")
   const discount = watch("discount")
+
   useEffect(() => {
     if (!price || price === 0) {
       setValue("priceAfterDiscount", 0)
@@ -340,7 +338,6 @@ export default function AddProduct() {
             toast.success(isEdit ? "Cập nhật sản phẩm thành công!" : "Thêm sản phẩm thành công!", {
               autoClose: 1500
             })
-            queryClient.invalidateQueries({ queryKey: ["listProduct", queryConfig] })
 
             setTimeout(() => {
               navigate(path.AdminProducts)

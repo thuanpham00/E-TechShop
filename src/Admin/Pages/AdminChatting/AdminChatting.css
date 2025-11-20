@@ -2,3 +2,22 @@
   color: #aaa !important; /* hoặc màu bạn muốn */
   opacity: 1; /* đảm bảo không bị mờ */
 }
+
+.AdminChatting .ant-tabs-nav-list {
+  width: 100%;
+  display: flex;
+}
+
+.AdminChatting .ant-tabs-tab {
+  flex: 1 1 0;
+  justify-content: center;
+  text-align: center;
+}
+
+.AdminChatting .ant-tabs-tab.ant-tabs-tab-active {
+  background: #3b82f6 !important;
+}
+
+.AdminChatting .ant-tabs-tab.ant-tabs-tab-active .ant-tabs-tab-btn {
+  color: white !important;
+}

@@ -210,32 +210,15 @@ export default function ManageProducts() {
       fixed: "right",
       align: "center",
       render: (_, record) => (
-        <div className="flex items-center justify-center gap-2">
-          <Link
-            to={path.AddProduct}
-            state={{
-              editItem: record
-            }}
-            className="text-blue-500"
-          >
-            Xem chi tiết
-          </Link>
-          {/* <button
-            onClick={() =>
-              Modal.confirm({
-                title: "Bạn có chắc chắn muốn xóa?",
-                content: "Không thể hoàn tác hành động này. Thao tác này sẽ xóa vĩnh viễn dữ liệu của bạn.",
-                okText: "Xóa",
-                okButtonProps: { danger: true },
-                cancelText: "Hủy",
-                onOk: () => {}
-              })
-            }
-            className="p-1"
-          >
-            <Trash2 color="red" size={18} />
-          </button> */}
-        </div>
+        <Link
+          to={path.AddProduct}
+          state={{
+            editItem: record
+          }}
+          className="text-blue-500"
+        >
+          Xem chi tiết
+        </Link>
       )
     }
   ]

@@ -51,6 +51,36 @@ export type BrandItemType = {
   category_ids: string[]
 }
 
+export type TicketItemType = {
+  _id: string
+  customer_id: string
+  assigned_to: string | null
+  status: string
+  served_by: {
+    admin_id: string // ID admin xử lý
+    admin_name?: string // Tên admin (cache)
+    started_at: Date // Thời điểm bắt đầu xử lý
+    ended_at?: Date // Thời điểm kết thúc phiên (admin đóng ticket hoặc chuyển giao)
+    is_active: boolean // Phiên đang active? (true = đang xử lý, false = đã kết thúc)
+  }[]
+  last_message: string
+  last_message_at: string
+  last_message_sender_type: string
+  unread_count_customer: number
+  unread_count_staff: number
+  created_at: string
+  updated_at: string
+  assigned_at: null
+  closed_at: null
+  users: {
+    _id: string
+    name: string
+    email: string
+    avatar: string
+    numberPhone: string
+  }
+}
+
 export type SupplierItemType = {
   _id: string
   name: string

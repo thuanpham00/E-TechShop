@@ -27,7 +27,7 @@ import useQueryParams from "src/Hook/useQueryParams"
 import { queryParamConfig, queryParamConfigCustomer } from "src/Types/queryParams.type"
 import { UserType } from "src/Types/user.type"
 import { ErrorResponse, SuccessResponse } from "src/Types/utils.type"
-import { useEffect, useMemo, useState } from "react"
+import { useEffect, useState } from "react"
 import avatarDefault from "src/Assets/img/avatarDefault.png"
 import { UpdateBodyReq } from "src/Types/product.type"
 import { toast } from "react-toastify"
@@ -95,6 +95,11 @@ type FormDataSearch = Pick<
   | "updated_at_start"
   | "updated_at_end"
 >
+
+export type FileAvatarType = {
+  file: File | null
+  existingUrl: string | null
+}
 
 export default function ManageCustomers() {
   const { theme } = useTheme()
@@ -176,11 +181,13 @@ export default function ManageCustomers() {
   // set value vào form
   useEffect(() => {
     if (addItem !== null && typeof addItem === "object") {
-      if (addItem.avatar === "") {
-        setValue("avatar", avatarDefault)
-      } else {
-        setValue("avatar", addItem.avatar)
+      if (addItem.avatar !== "") {
+        setFile({
+          file: null,
+          existingUrl: addItem.avatar
+        })
       }
+
       setValue("id", addItem._id)
       setValue("name", addItem.name)
       setValue("email", addItem.email)
@@ -192,17 +199,19 @@ export default function ManageCustomers() {
     }
   }, [addItem, setValue])
 
-  const [file, setFile] = useState<File>()
+  const [file, setFile] = useState<FileAvatarType>({
+    file: null, // ảnh mới
+    existingUrl: null // ảnh từ server
+  })
 
-  const previewImage = useMemo(() => {
-    return file ? URL.createObjectURL(file) : ""
-  }, [file])
+  useEffect(() => {
+    if (file.file !== null) {
+      setValue("avatar", file.file.name)
+    } else if (file.existingUrl !== null) {
+      setValue("avatar", file.existingUrl)
+    }
+  }, [file, setValue])
 
-  const handleChangeImage = (file?: File) => {
-    setFile(file)
-  }
-
-  const avatarWatch = watch("avatar")
   const date_of_birth = watch("date_of_birth")
 
   // Gọi api cập nhật và fetch lại api
@@ -220,10 +229,10 @@ export default function ManageCustomers() {
 
   const handleSubmitUpdate = handleSubmit(async (data) => {
     try {
-      let avatarName = avatarWatch
+      let avatarName = file.existingUrl
       if (file) {
         const avatar = await updateImageProfileMutation.mutateAsync({
-          file: file as File,
+          file: file.file as File,
           userId: (addItem as UserType)._id as string
         })
         avatarName = avatar.data.result.url
@@ -903,26 +912,11 @@ export default function ManageCustomers() {
 
                       <div className="w-1/3 flex justify-center flex-col items-center px-4">
                         <div className="mb-2 text-black dark:text-white font-semibold">Ảnh đại diện</div>
-                        <div className="relative w-full h-[340px] border border-gray-200 rounded-md shadow-sm">
-                          <div
-                            className="absolute top-0 left-0 w-full h-full z-1 rounded-md"
-                            style={{
-                              backgroundImage: `url(${previewImage || avatarWatch})`,
-                              backgroundSize: "cover",
-                              backgroundPosition: "center",
-                              filter: "blur(2px)"
-                            }}
-                          ></div>
-                          <img
-                            src={previewImage || avatarWatch}
-                            className="absolute z-10 top-[40%] left-1/2 -translate-x-1/2 -translate-y-1/2 z-1 h-44 w-44 rounded-md mx-auto"
-                            alt="avatar default"
-                          />
-                          <InputFileImage
-                            onChange={handleChangeImage}
-                            classNameWrapper="text-center absolute z-30 top-[70%] left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80%]"
-                          />
-                        </div>
+                        <InputFileImage
+                          file={file}
+                          setFile={setFile}
+                          classNameWrapper="text-center absolute z-30 top-[70%] left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80%]"
+                        />
                       </div>
                     </div>
                     <div className="flex items-center justify-end">
