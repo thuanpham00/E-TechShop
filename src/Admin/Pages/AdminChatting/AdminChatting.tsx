@@ -53,7 +53,6 @@ export default function AdminChatting() {
   })
 
   const listDataImagesChat = getListImagesChat.data?.data.data as string[]
-  console.log(listDataImagesChat)
 
   const listTicket = getListTicket.data?.data.data as TicketItemType[]
   useEffect(() => {
@@ -87,6 +86,20 @@ export default function AdminChatting() {
       socket.off("reload_ticket_list", getListTicketAPI)
     }
   }, [getListTicket])
+
+  useEffect(() => {
+    const getListImageTicket = async () => {
+      try {
+        await getListImagesChat.refetch()
+      } catch (error) {
+        console.error("Lỗi khi lấy danh sách hình ảnh ticket:", error)
+      }
+    }
+    socket.on("reload_ticket_images", getListImageTicket)
+    return () => {
+      socket.off("reload_ticket_images", getListImageTicket)
+    }
+  }, [getListImagesChat])
 
   const handleUpdateReadMessageFromAdmin = (ticket: TicketItemType) => {
     setSelectedTicket(ticket)

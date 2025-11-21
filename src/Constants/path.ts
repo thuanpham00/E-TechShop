@@ -19,6 +19,7 @@ export const path = {
   ForgotPassword: "/forgot-password",
   ResetPassword: "/reset-password",
   NotFound: "*",
+  CompareProduct: "/compare-product",
   // admin
   AdminLogin: "/admin/login",
   AdminDashboard: "/admin/dashboard",

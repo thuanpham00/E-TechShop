@@ -10,7 +10,7 @@ import { CalculateSalePrice, formatCurrency, getNameFromNameId } from "src/Helpe
 import { CartType, CollectionItemType, FavouriteType, ProductDetailType, ProductItemType } from "src/Types/product.type"
 import { SuccessResponse } from "src/Types/utils.type"
 import star from "src/Assets/img/star.png"
-import { ChevronLeft, ChevronRight, Heart } from "lucide-react"
+import { ChevronLeft, ChevronRight, CirclePlus, Cpu, Heart, Star } from "lucide-react"
 import ProductItem from "../Collection/Components/ProductItem"
 import { useEffect, useMemo, useRef, useState } from "react"
 import { toast } from "react-toastify"
@@ -215,6 +215,21 @@ export default function ProductDetail() {
     }
   }, [productDetail?.description, COLLAPSED_HEIGHT])
 
+  const specificationScrollRef = useRef<HTMLDivElement>(null)
+
+  const handleScrollSpecification = () => {
+    const el = specificationScrollRef.current
+    if (el) {
+      // el.getBoundingClientRect().top → vị trí của element so với phần nhìn thấy của màn hình (viewport).
+      // window.pageYOffset → số pixel đã scroll từ trên xuống.
+
+      const headerOffset = 0
+      const elementPosition = el.getBoundingClientRect().top + window.pageYOffset
+      const offsetPosition = elementPosition - headerOffset - 140 // thêm một chút khoảng cách
+      window.scrollTo({ top: offsetPosition, behavior: "smooth" })
+    }
+  }
+
   return (
     <div className="container">
       {isLoading && <Skeleton />}
@@ -305,8 +320,39 @@ export default function ProductDetail() {
                   <span className="text-[14px] font-medium text-gray-500 block">Đã bán: {productDetail?.sold} | </span>
                   <h3 className="text-base text-yellow-500 font-semibold">0.0</h3>
                   <img src={star} alt="ngôi sao icon" className="w-3 h-3" />
-                  <span className="ml-3 text-base text-blue-500">Xem đánh giá</span>
                 </div>
+                <div className="mt-4 flex items-center gap-4">
+                  {/* so sánh sản phẩm */}
+
+                  <button
+                    className="flex items-center gap-1 border border-[#3a86ff] px-3 py-1 rounded-md hover:bg-blue-50 duration-200"
+                    onClick={() =>
+                      navigate(path.CompareProduct, {
+                        state: {
+                          productCurrent: productDetail
+                        }
+                      })
+                    }
+                  >
+                    <CirclePlus color="#3a86ff" size={18} />
+                    <span className="text-[#3a86ff] font-medium text-[13px]">So sánh</span>
+                  </button>
+
+                  <button
+                    className="flex items-center gap-1 border border-[#3a86ff] px-3 py-1 rounded-md hover:bg-blue-50 duration-200"
+                    type="button"
+                    onClick={handleScrollSpecification}
+                  >
+                    <Cpu color="#3a86ff" size={18} />
+                    <span className="text-[#3a86ff] font-medium text-[13px]">Thông số</span>
+                  </button>
+
+                  <button className="flex items-center gap-1 border border-[#3a86ff] px-3 py-1 rounded-md hover:bg-blue-50 duration-200">
+                    <Star color="#3a86ff" size={18} />
+                    <span className="text-[#3a86ff] font-medium text-[13px]">Đánh giá</span>
+                  </button>
+                </div>
+
                 <div className="mt-2 ">
                   {productDetail?.discount > 0 && (
                     <div className="flex items-center gap-3 my-4">
@@ -436,7 +482,7 @@ export default function ProductDetail() {
               </h4>
 
               <div className="mt-6">
-                <div className="flex items-center gap-3 mb-4">
+                <div className="flex items-center gap-3 mb-4" ref={specificationScrollRef}>
                   <div className="h-8 w-1 bg-gradient-to-b from-blue-500 to-cyan-400 rounded-full"></div>
                   <h5 className="text-xl font-bold text-gray-800">Thông số kỹ thuật</h5>
                 </div>
