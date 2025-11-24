@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { yupResolver } from "@hookform/resolvers/yup"
 import { keepPreviousData, useQuery } from "@tanstack/react-query"
 import { omit } from "lodash"
@@ -90,7 +91,7 @@ export default function FilterProduct({ queryConfig }: Props) {
     control: controlFormSearch,
     trigger
   } = useForm<FormDataSearch>({
-    resolver: yupResolver(formDataSearch)
+    resolver: yupResolver(formDataSearch) as any
   })
 
   const handleSubmitSearch = handleSubmitFormSearch(

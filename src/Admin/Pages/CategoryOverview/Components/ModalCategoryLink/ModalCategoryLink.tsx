@@ -1,12 +1,13 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { Button, Col, Form, FormInstance, Modal, Row } from "antd"
 import { ArrowUpFromLine } from "lucide-react"
-import { useEffect, useMemo, useState } from "react"
+import { useEffect, useState } from "react"
 import { toast } from "react-toastify"
 import { CategoryMenuAPI } from "src/Apis/admin/category_menu.api"
 import Input from "src/Components/Input"
-import InputFileImage from "src/Components/InputFileImage"
 import { MenuItemType } from "../ManageCategorySubLink/ManageCategorySubLink"
+import { FileAvatarType } from "src/Admin/Pages/ManageCustomers/ManageCustomers"
+import InputFileBanner from "../InputFileBanner"
 
 export default function ModalCategoryLink({
   showModalAddLinkCategory,
@@ -27,22 +28,10 @@ export default function ModalCategoryLink({
 }) {
   const queryClient = useQueryClient()
 
-  const [file, setFile] = useState<File>()
-  const [bannerUrl, setBannerUrl] = useState<string>("")
-
-  const previewImage = useMemo(() => {
-    return file ? URL.createObjectURL(file) : ""
-  }, [file])
-
-  useEffect(() => {
-    return () => {
-      if (previewImage) URL.revokeObjectURL(previewImage)
-    }
-  }, [previewImage])
-
-  const handleChangeImage = (file?: File) => {
-    setFile(file)
-  }
+  const [file, setFile] = useState<FileAvatarType>({
+    file: null, // ảnh mới
+    existingUrl: null // ảnh từ server
+  })
 
   useEffect(() => {
     if (editItem && typeof editItem === "object") {
@@ -51,11 +40,15 @@ export default function ModalCategoryLink({
         slug: editItem.slug,
         type_filter: editItem.type_filter
       })
-      setFile(undefined)
-      setBannerUrl(editItem.banner || "")
+      setFile({
+        file: null,
+        existingUrl: editItem.banner || ""
+      })
     } else {
-      setFile(undefined)
-      setBannerUrl("")
+      setFile({
+        file: null,
+        existingUrl: ""
+      })
     }
   }, [editItem, formAddLinkCategory])
 
@@ -101,12 +94,15 @@ export default function ModalCategoryLink({
         slug: values.slug,
         type_filter: values.type_filter
       }
-      if (file) payload.image = file
+      if (file) payload.image = file.file as File
       createLinkCategoryMutation.mutate(payload, {
         onSuccess: () => {
           setShowModalAddLinkCategory(false)
           formAddLinkCategory.resetFields()
-          setFile(undefined)
+          setFile({
+            file: null,
+            existingUrl: null
+          })
           queryClient.invalidateQueries({ queryKey: ["menuCategory", idCategory] })
           toast.success("Thêm liên kết thành công", { autoClose: 1500 })
         }
@@ -131,13 +127,16 @@ export default function ModalCategoryLink({
           slug: values.slug,
           type_filter: values.type_filter
         }
-        if (file) payload.image = file
+        if (file) payload.image = file.file as File
 
         updateLinkCategoryMutation.mutate(payload, {
           onSuccess: () => {
             setShowModalAddLinkCategory(false)
             formAddLinkCategory.resetFields()
-            setFile(undefined)
+            setFile({
+              file: null,
+              existingUrl: null
+            })
             queryClient.invalidateQueries({ queryKey: ["menuCategory", idCategory] })
             toast.success("Cập nhật liên kết thành công", { autoClose: 1500 })
           }
@@ -155,6 +154,9 @@ export default function ModalCategoryLink({
         setEditItem(null)
         formAddLinkCategory.resetFields()
         setShowModalAddLinkCategory(false)
+      }}
+      style={{
+        top: 20
       }}
       footer={null}
       width={900}
@@ -227,17 +229,10 @@ export default function ModalCategoryLink({
         </Form.Item>
         <div className="flex items-center justify-center flex-col rounded-sm shadow-sm">
           <div className="mb-2 text-black dark:text-white">Banner</div>
-          {previewImage || bannerUrl ? (
-            <img src={previewImage || bannerUrl} className="h-40 w-full rounded-md object-cover" alt="banner" />
-          ) : (
-            <div className="h-40 w-full rounded-md bg-white flex items-center justify-center text-gray-400">
-              Chưa chọn banner
-            </div>
-          )}
 
-          <InputFileImage onChange={handleChangeImage} />
+          <InputFileBanner file={file} setFile={setFile} classNameWrapper="absolute z-40 top-[-18%] w-[100%]" />
         </div>
-        <div className="flex items-center justify-end">
+        <div className="flex items-center justify-end mt-2">
           <Button type="primary" htmlType="submit" icon={<ArrowUpFromLine size={16} />}>
             Lưu thay đổi
           </Button>

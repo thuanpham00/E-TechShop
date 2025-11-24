@@ -65,5 +65,11 @@ export const collectionAPI = {
       params,
       signal
     })
+  },
+
+  getAllProduct: (signal?: AbortSignal) => {
+    return Http.get(`/products/all`, {
+      signal
+    })
   }
 }

@@ -20,6 +20,7 @@ import CategoryDetail from "../CategoryDetail"
 import { collectionAPI } from "src/Apis/client/collections.api"
 import { OrderApi } from "src/Apis/client/order.api"
 import { categoryAPI } from "src/Apis/client/category.api"
+import topBarImg from "src/Assets/img/top-bar.png"
 
 export default function Header() {
   const navigate = useNavigate()
@@ -245,6 +246,9 @@ export default function Header() {
 
   return (
     <div className="sticky top-0 left-0 z-20">
+      <div className="bg-black w-full">
+        <img src={topBarImg} alt="Top bar" className="w-full h-[45px] object-contain" />
+      </div>
       <div className="bg-primaryBlue">
         <div className="container">
           <div className="flex items-center gap-4 py-3">

@@ -329,7 +329,8 @@ export default function ProductDetail() {
                     onClick={() =>
                       navigate(path.CompareProduct, {
                         state: {
-                          productCurrent: productDetail
+                          productCurrent: productDetail,
+                          category: categoryProduct.name
                         }
                       })
                     }
@@ -491,29 +492,31 @@ export default function ProductDetail() {
                   <div className="overflow-hidden rounded-xl border border-gray-200 shadow-sm">
                     <table className="w-full">
                       <tbody>
-                        {productDetail.specifications?.map((item, index) => {
-                          const isEven = index % 2 === 0
+                        {productDetail.specifications
+                          .sort((a, b) => a.name.localeCompare(b.name))
+                          ?.map((item, index) => {
+                            const isEven = index % 2 === 0
 
-                          return (
-                            <tr
-                              key={item.name}
-                              className={`group transition-colors duration-200 ${isEven ? "bg-gray-50" : "bg-white"}`}
-                            >
-                              <td className="w-1/3 p-4 border-r border-gray-200">
-                                <div className="flex items-center gap-3">
-                                  <span className="font-bold text-blue-600 uppercase tracking-wide text-sm">
-                                    {item.name}
-                                  </span>
-                                </div>
-                              </td>
-                              <td className="w-2/3 p-4">
-                                <div className="flex items-center justify-between">
-                                  <span className="text-gray-700 font-medium text-base">{item.value}</span>
-                                </div>
-                              </td>
-                            </tr>
-                          )
-                        })}
+                            return (
+                              <tr
+                                key={item.name}
+                                className={`group transition-colors duration-200 ${isEven ? "bg-gray-50" : "bg-white"}`}
+                              >
+                                <td className="w-1/3 p-4 border-r border-gray-200">
+                                  <div className="flex items-center gap-3">
+                                    <span className="font-bold text-blue-600 uppercase tracking-wide text-sm">
+                                      {item.name}
+                                    </span>
+                                  </div>
+                                </td>
+                                <td className="w-2/3 p-4">
+                                  <div className="flex items-center justify-between">
+                                    <span className="text-gray-700 font-medium text-base">{item.value}</span>
+                                  </div>
+                                </td>
+                              </tr>
+                            )
+                          })}
                       </tbody>
                     </table>
                   </div>

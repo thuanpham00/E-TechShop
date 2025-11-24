@@ -126,7 +126,7 @@ export default function AddStaff({ setAddItem }: Props) {
     const idUser = new ObjectId().toHexString() // Trả về string như "665e0bcb9142f3e54365e1ef"
 
     let avatarName = avatarDefault
-    if (file) {
+    if (file.file) {
       const avatar = await updateImageProfileMutation.mutateAsync({
         file: file.file as File,
         userId: idUser as string

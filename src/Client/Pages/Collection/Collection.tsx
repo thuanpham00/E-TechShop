@@ -20,6 +20,8 @@ import useQueryParams from "src/Hook/useQueryParams"
 import { useEffect, useMemo } from "react"
 import { collectionAPI } from "src/Apis/client/collections.api"
 import { categoryAPI } from "src/Apis/client/category.api"
+import FilterLaptop from "./Components/FilterLaptop"
+import FilterScreen from "./Components/FilterScreen"
 
 const sortOptions = [
   { value: "name_asc", label: "Tên từ A-Z" },
@@ -43,7 +45,9 @@ export default function Collection() {
       screen_size: queryParams.screen_size,
       cpu: queryParams.cpu,
       ram: queryParams.ram,
-      ssd: queryParams.ssd,
+      resolution: queryParams.resolution,
+      type_screen: queryParams.type_screen,
+      screen_panel: queryParams.screen_panel,
       sort: queryParams.sort || "name_asc"
     },
     isUndefined
@@ -69,6 +73,11 @@ export default function Collection() {
   const bannerUrl = useMemo(() => {
     const findBanner = getListCategoryMenu.data?.data?.data.find((item: any) => item.slug === slug)
     return findBanner ? findBanner.banner : ""
+  }, [getListCategoryMenu.data?.data?.data, slug])
+
+  const nameDisplay = useMemo(() => {
+    const findBanner = getListCategoryMenu.data?.data?.data.find((item: any) => item.slug === slug)
+    return findBanner ? findBanner.name : ""
   }, [getListCategoryMenu.data?.data?.data, slug])
 
   const type_filter = useMemo(() => {
@@ -119,26 +128,6 @@ export default function Collection() {
     { label: <div>Hết hàng</div>, key: "out_of_stock" }
   ]
 
-  const itemsScreenSizeList: MenuProps["items"] = dataFilter?.data?.screen_size_list.map((item: string) => ({
-    label: <div>{item} inch</div>,
-    key: item
-  }))
-
-  const itemSSDList: MenuProps["items"] = dataFilter?.data?.ssd_list.map((item: string) => ({
-    label: <div>{item}</div>,
-    key: item
-  }))
-
-  const itemRamList: MenuProps["items"] = dataFilter?.data?.ram_list.map((item: string) => ({
-    label: <div>{item}</div>,
-    key: item
-  }))
-
-  const itemCpuList: MenuProps["items"] = dataFilter?.data?.cpu_list.map((item: string) => ({
-    label: <div>{item}</div>,
-    key: item
-  }))
-
   const handleChangeQuery = (field: string, value: string) => {
     const params: queryParamsCollection = {
       ...queryConfig,
@@ -156,7 +145,15 @@ export default function Collection() {
   }
 
   const handleResetFilter = () => {
-    const filteredSearch = omit(queryConfig, ["screen_size", "cpu", "ram", "ssd"])
+    const filteredSearch = omit(queryConfig, [
+      "screen_size",
+      "cpu",
+      "ram",
+      "ssd",
+      "resolution",
+      "type_screen",
+      "screen_panel"
+    ])
     navigate(
       { pathname: `/collections/${slug}`, search: createSearchParams({ ...filteredSearch, status: "all" }).toString() },
       {
@@ -175,7 +172,7 @@ export default function Collection() {
         />
       </Helmet>
       <div className="container">
-        <Breadcrumb slug_1={slug as string} />
+        <Breadcrumb slug_1={nameDisplay as string} />
 
         {/* Loading lần đầu */}
         {isLoading && <Skeleton />}
@@ -183,7 +180,9 @@ export default function Collection() {
         {slug && !isLoading && (
           <>
             {/* Banner cố định */}
-            {<img className="rounded-lg shadow-md h-[300px] w-full" src={bannerUrl} alt={`Banner ${slug}`} />}
+            {bannerUrl !== undefined && (
+              <img className="rounded-lg shadow-md h-[300px] w-full" src={bannerUrl} alt={`Banner ${slug}`} />
+            )}
 
             {/* Bộ lọc */}
             <div className="bg-white border border-gray-200 p-4 my-4 rounded-lg shadow-md">
@@ -209,81 +208,19 @@ export default function Collection() {
                     </Button>
                   </Dropdown>
 
-                  {(type_filter === "Laptop" || type_filter === "Laptop Gaming") && (
-                    <Dropdown
-                      trigger={["click"]}
-                      menu={{ items: itemsScreenSizeList, onClick: ({ key }) => handleChangeQuery("screen_size", key) }}
-                    >
-                      <Button className="border border-gray-300 rounded-md px-3 py-1 bg-white hover:bg-gray-50 flex items-center gap-1">
-                        <Space>
-                          <span className="text-[13px]">
-                            {itemsScreenSizeList && queryParams.screen_size
-                              ? (
-                                  itemsScreenSizeList.find(
-                                    (item) => item?.key?.toString() === queryParams.screen_size
-                                  ) as any
-                                )?.label
-                              : "Kích thước màn hình"}
-                          </span>
-                          <DownOutlined />
-                        </Space>
-                      </Button>
-                    </Dropdown>
-                  )}
+                  <FilterLaptop
+                    type_filter={type_filter}
+                    dataFilter={dataFilter}
+                    queryConfig={queryConfig}
+                    handleChangeQuery={handleChangeQuery}
+                  />
 
-                  {(type_filter === "Laptop" || type_filter === "Laptop Gaming") && (
-                    <Dropdown
-                      menu={{ items: itemCpuList, onClick: ({ key }) => handleChangeQuery("cpu", key) }}
-                      trigger={["click"]}
-                    >
-                      <Button className="border border-gray-300 rounded-md px-3 py-1 bg-white hover:bg-gray-50 flex items-center gap-1">
-                        <Space>
-                          <span className="text-[13px]">
-                            {itemCpuList && queryParams.cpu
-                              ? (itemCpuList.find((item) => item?.key?.toString() === queryParams.cpu) as any)?.label
-                              : "CPU"}
-                          </span>
-                          <DownOutlined />
-                        </Space>
-                      </Button>
-                    </Dropdown>
-                  )}
-
-                  {(type_filter === "Laptop" || type_filter === "Laptop Gaming") && (
-                    <Dropdown
-                      menu={{ items: itemRamList, onClick: ({ key }) => handleChangeQuery("ram", key) }}
-                      trigger={["click"]}
-                    >
-                      <Button className="border border-gray-300 rounded-md px-3 py-1 bg-white hover:bg-gray-50 flex items-center gap-1">
-                        <Space>
-                          <span className="text-[13px]">
-                            {itemRamList && queryParams.ram
-                              ? (itemRamList.find((item) => item?.key?.toString() === queryParams.ram) as any)?.label
-                              : "Ram"}
-                          </span>
-                          <DownOutlined />
-                        </Space>
-                      </Button>
-                    </Dropdown>
-                  )}
-
-                  {(type_filter === "Laptop" || type_filter === "Laptop Gaming") && (
-                    <Dropdown
-                      menu={{ items: itemSSDList, onClick: ({ key }) => handleChangeQuery("ssd", key) }}
-                      trigger={["click"]}
-                    >
-                      <Button className="border border-gray-300 rounded-md px-3 py-1 bg-white hover:bg-gray-50 flex items-center gap-1">
-                        <Space>
-                          <span className="text-[13px]">
-                            {itemSSDList && queryParams.ssd
-                              ? (itemSSDList.find((item) => item?.key?.toString() === queryParams.ssd) as any)?.label
-                              : "SSD"}
-                          </span>
-                          <DownOutlined />
-                        </Space>
-                      </Button>
-                    </Dropdown>
-                  )}
+                  <FilterScreen
+                    type_filter={type_filter}
+                    dataFilter={dataFilter}
+                    queryConfig={queryConfig}
+                    handleChangeQuery={handleChangeQuery}
+                  />
 
                   <button
                     className="h-[32px] rounded-md px-2 bg-primaryBlue hover:bg-primaryBlue/80 duration-200 flex items-center gap-1 text-white text-[13px]"

@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { Button, Col, Form, Input, Row, Select, Space } from "antd"
-import { useContext, useEffect, useMemo, useState } from "react"
+import { useContext, useEffect, useState } from "react"
 import { Helmet } from "react-helmet-async"
 import { userAPI } from "src/Apis/user.api"
 import InputFileImage from "src/Components/InputFileImage"
@@ -13,8 +13,8 @@ import { toast } from "react-toastify"
 import { isError422 } from "src/Helpers/utils"
 import { ErrorResponse } from "src/Types/utils.type"
 import { motion } from "framer-motion"
-import avatarDefault from "src/Assets/img/avatarDefault.png"
 import { setAvatarImageToLS, setNameUserToLS } from "src/Helpers/auth"
+import { FileAvatarType } from "src/Admin/Pages/ManageCustomers/ManageCustomers"
 
 const days = Array.from({ length: 31 }, (_, i) => i + 1)
 const months = Array.from({ length: 12 }, (_, i) => i + 1)
@@ -53,6 +53,10 @@ export default function Profile() {
         verify: userData.verify === 1 ? "Verified" : "Unverified",
         numberPhone: userData.numberPhone
       })
+      setFile({
+        file: null,
+        existingUrl: userData.avatar
+      })
     }
   }, [form, userData])
 
@@ -67,15 +71,10 @@ export default function Profile() {
     }
   }, [userData])
 
-  const [file, setFile] = useState<File>()
-
-  const previewImage = useMemo(() => {
-    return file ? URL.createObjectURL(file) : ""
-  }, [file])
-
-  const handleChangeImage = (file?: File) => {
-    setFile(file)
-  }
+  const [file, setFile] = useState<FileAvatarType>({
+    file: null, // ảnh mới
+    existingUrl: null // ảnh từ server
+  })
 
   const updateProfileMutation = useMutation({
     mutationFn: (body: UpdateBodyReq) => {
@@ -93,9 +92,9 @@ export default function Profile() {
   const onFinish = async (values: any) => {
     try {
       let avatarName = avatar
-      if (file) {
+      if (file.file) {
         const avatar = await updateImageProfileMutation.mutateAsync({
-          file: file as File,
+          file: file.file as File,
           userId: userId as string
         })
         avatarName = avatar.data.result.url
@@ -162,7 +161,7 @@ export default function Profile() {
           <span className="text-sm">Quản lý thông tin hồ sơ để bảo mật tài khoản</span>
         </div>
 
-        <div className="mt-4 py-4 px-8">
+        <div className="mt-4 py-2 px-4">
           <Form
             form={form}
             onFinish={onFinish}
@@ -172,7 +171,7 @@ export default function Profile() {
             labelAlign="left"
             layout="horizontal"
           >
-            <Row gutter={16}>
+            <Row gutter={16} className="flex items-center">
               <Col span={14}>
                 <Form.Item label="Email" name="email">
                   <Input disabled />
@@ -224,19 +223,19 @@ export default function Profile() {
               </Col>
               <Col span={10}>
                 <div className="text-center">
-                  <div className="mb-2">Avatar</div>
-                  <img
-                    src={previewImage || (avatar as string) || avatarDefault}
-                    className="h-28 w-28 rounded-full mx-auto"
-                    alt="avatar default"
+                  <div className="mb-2">Ảnh đại diện</div>
+
+                  <InputFileImage
+                    file={file}
+                    setFile={setFile}
+                    classNameWrapper="text-center absolute z-30 top-[80%] left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80%]"
                   />
-                  <InputFileImage onChange={handleChangeImage} />
                 </div>
               </Col>
             </Row>
 
             <Form.Item>
-              <div className="flex justify-end">
+              <div className="flex justify-end mt-4">
                 <Button
                   htmlType="submit"
                   type="primary"

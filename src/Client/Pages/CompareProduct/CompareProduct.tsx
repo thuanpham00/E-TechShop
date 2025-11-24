@@ -3,30 +3,21 @@ import { Helmet } from "react-helmet-async"
 import { useLocation } from "react-router-dom"
 import { motion } from "framer-motion"
 import { Select } from "antd"
-import { useState } from "react"
-import useDebounce from "src/Hook/useDebounce"
-import { useQuery } from "@tanstack/react-query"
+import { useMemo, useState } from "react"
+import { keepPreviousData, useQuery } from "@tanstack/react-query"
 import { collectionAPI } from "src/Apis/client/collections.api"
-import { CalculateSalePrice, formatCurrency } from "src/Helpers/common"
-
-function useProductSearch(search: string | null) {
-  return useQuery({
-    queryKey: ["searchProduct", search],
-    queryFn: ({ signal }) => collectionAPI.getSearchProduct({ search: String(search) }, signal),
-    retry: 0,
-    enabled: Boolean(search)
-  })
-}
+import { categoryAPI } from "src/Apis/client/category.api"
+import ProductCompare from "./Components/ProductCompare"
+import { listSpecificationForCategory } from "src/Constants/product"
 
 export default function CompareProduct() {
   const { state } = useLocation()
   const productCurrent = state?.productCurrent
+  const category = state?.category
 
+  const [categorySelected, setCategorySelected] = useState<string | null>(category || null)
   const [searchText, setSearchText] = useState<string | null>(null)
   const [searchText2, setSearchText2] = useState<string | null>(null)
-
-  const inputSearchDebounce = useDebounce(searchText as string, 500)
-  const inputSearchDebounce2 = useDebounce(searchText2 as string, 500)
 
   const [productSelected, setProductSelected] = useState<{
     _id: string
@@ -44,13 +35,82 @@ export default function CompareProduct() {
     productSelected: any
   } | null>(null)
 
-  console.log(productSelected_2)
+  const getListProduct = useQuery({
+    queryKey: ["searchProduct"],
+    queryFn: ({ signal }) => collectionAPI.getAllProduct(signal),
+    retry: 0
+  })
 
-  const getSearchProduct1 = useProductSearch(inputSearchDebounce || null)
-  const getSearchProduct2 = useProductSearch(inputSearchDebounce2 || null)
+  const listProductFind = (getListProduct?.data?.data as any)?.result?.data || []
 
-  const listProductFind1 = (getSearchProduct1?.data?.data as any)?.result?.data || []
-  const listProductFind2 = (getSearchProduct2?.data?.data as any)?.result?.data || []
+  const getListCategoryIsActive = useQuery({
+    queryKey: ["listCategoryIsActive"],
+    queryFn: () => {
+      const controller = new AbortController()
+      setTimeout(() => {
+        controller.abort() // hủy request khi chờ quá lâu // 10 giây sau cho nó hủy // làm tự động
+      }, 10000)
+      return categoryAPI.getListCategoryIsActive(controller.signal)
+    },
+    retry: 0, // số lần retry lại khi hủy request (dùng abort signal)
+    staleTime: 10 * 60 * 1000, // dưới 5 phút nó không gọi lại api
+    placeholderData: keepPreviousData
+  })
+
+  const dataListCategoryIsActive = (getListCategoryIsActive.data?.data?.data ?? []) as {
+    _id: string
+    name: string
+    is_active: boolean
+  }[]
+
+  const dataListCategoryIsActiveSortAZ = dataListCategoryIsActive.sort((a, b) => {
+    return a.name.localeCompare(b.name) // so sánh 2 chuỗi theo thứ tự a-z
+  })
+
+  const dataListFilter = listProductFind
+    .filter((product: any) => product.category.name === categorySelected)
+    .filter((product: any) => {
+      if (!searchText) return true
+      return product.name.toLowerCase().includes(searchText.toLowerCase())
+    })
+
+  const dataListFilter2 = listProductFind
+    .filter((product: any) => product.category.name === categorySelected)
+    .filter((product: any) => {
+      if (!searchText2) return true
+      return product.name.toLowerCase().includes(searchText2.toLowerCase())
+    })
+
+  const listSpecificationProduct = useMemo(() => {
+    if (!categorySelected) return
+
+    const dict_1 = new Map(
+      productSelected
+        ? productSelected.productSelected?.specifications.map((spec: { name: string; value: string }) => [
+            spec.name,
+            spec.value
+          ])
+        : []
+    )
+
+    const dict_2 = new Map(
+      productSelected_2
+        ? productSelected_2.productSelected?.specifications.map((spec: { name: string; value: string }) => [
+            spec.name,
+            spec.value
+          ])
+        : []
+    )
+
+    const source = listSpecificationForCategory[categorySelected as keyof typeof listSpecificationForCategory]?.map(
+      (spec) => ({
+        name: spec,
+        value_product_1: dict_1.get(spec) || "Đang cập nhật", // lấy ra value tương ứng theo key
+        value_product_2: dict_2.get(spec) || "Đang cập nhật"
+      })
+    )
+    return source
+  }, [categorySelected, productSelected, productSelected_2])
 
   return (
     <div className="bg-gray-50">
@@ -65,6 +125,24 @@ export default function CompareProduct() {
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="py-6">
         <div className="container mx-auto px-4">
           <h1 className="text-2xl font-semibold mb-4">So sánh sản phẩm</h1>
+          <div className="flex items-center gap-2 mb-4">
+            <h3 className="text-[#3a86ff] font-medium">Chọn Danh mục: </h3>
+            <Select
+              className="w-1/3 "
+              placeholder="Chọn danh mục"
+              onChange={(value: string) => {
+                setCategorySelected(value)
+                setProductSelected(null)
+                setProductSelected_2(null)
+              }}
+              styles={{ popup: { root: { zIndex: 10 } } }}
+              value={categorySelected}
+              options={dataListCategoryIsActiveSortAZ.map((category) => ({
+                label: category.name,
+                value: category.name
+              }))}
+            />
+          </div>
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 px-8 py-6">
             <div className="flex items-center justify-between gap-6">
               <div className="flex-1">
@@ -72,19 +150,20 @@ export default function CompareProduct() {
                   className="w-full"
                   showSearch
                   allowClear
+                  styles={{ popup: { root: { zIndex: 10 } } }}
                   placeholder="Tìm và chọn sản phẩm để so sánh (tối đa 4)"
-                  notFoundContent={getSearchProduct1.isFetching ? "Đang tìm..." : "Không tìm thấy"}
+                  notFoundContent={getListProduct.isFetching ? "Đang tìm..." : "Không tìm thấy"}
                   onSearch={(val) => setSearchText(val)}
                   onChange={(value: string | null) => {
                     setProductSelected({
-                      productSelected: listProductFind1.find((p: any) => p._id === value),
+                      productSelected: dataListFilter.find((p: any) => p._id === value),
                       _id: value as string
                     })
                   }}
                   value={productSelected?._id || null}
                   filterOption={false} // we use server-side search
                   options={
-                    listProductFind1?.map((p: any) => ({
+                    dataListFilter?.map((p: any) => ({
                       label: p.name,
                       value: p._id
                     })) || []
@@ -96,20 +175,20 @@ export default function CompareProduct() {
                   className="w-full"
                   showSearch
                   allowClear
+                  styles={{ popup: { root: { zIndex: 10 } } }}
                   placeholder="Tìm và chọn sản phẩm để so sánh (tối đa 4)"
-                  notFoundContent={getSearchProduct2.isFetching ? "Đang tìm..." : "Không tìm thấy"}
+                  notFoundContent={getListProduct.isFetching ? "Đang tìm..." : "Không tìm thấy"}
                   onSearch={(val) => setSearchText2(val)}
                   onChange={(value: string | null) => {
-                    console.log(value)
                     setProductSelected_2({
-                      productSelected: listProductFind2.find((p: any) => p._id === value),
+                      productSelected: dataListFilter2.find((p: any) => p._id === value),
                       _id: value as string
                     })
                   }}
-                  value={productSelected?._id || null}
+                  value={productSelected_2?._id || null}
                   filterOption={false} // we use server-side search
                   options={
-                    listProductFind2?.map((p: any) => ({
+                    dataListFilter2?.map((p: any) => ({
                       label: p.name,
                       value: p._id
                     })) || []
@@ -118,125 +197,56 @@ export default function CompareProduct() {
               </div>
             </div>
 
-            <div className="flex items-center gap-6">
+            <div className="flex gap-6">
               <div className="flex-1 mt-6 p-4 border border-gray-200 rounded-lg">
-                {productSelected ? (
-                  <div>
-                    <div className="flex justify-center">
-                      <img
-                        src={productSelected.productSelected.banner.url}
-                        alt={productSelected.productSelected.name}
-                        className="w-[60%] h-[300px] object-cover"
-                      />
-                    </div>
-                    <h2 className="font-medium text-base my-2 h-[50px]">{productSelected.productSelected.name}</h2>
-                    {productSelected.productSelected?.discount > 0 && (
-                      <div className="flex items-center gap-3">
-                        <h2 className="text-xl font-semibold text-red-500">
-                          {CalculateSalePrice(
-                            productSelected.productSelected.price,
-                            productSelected.productSelected.discount
-                          )}
-                          ₫
-                        </h2>
-                        <span className="block text-[15px] text-[#6d6e72] font-semibold line-through">
-                          {formatCurrency(productSelected.productSelected.price)}₫
-                        </span>
-                        <div className="py-[1px] px-1 rounded-sm border border-[#e30019] text-[#e30019] text-[11px]">
-                          -{productSelected.productSelected.discount}%
-                        </div>
-                      </div>
-                    )}
-                    {productSelected.productSelected?.discount === 0 && (
-                      <h2 className="text-xl font-semibold text-red-500">
-                        {formatCurrency(productSelected.productSelected.price)}₫
-                      </h2>
-                    )}
-                    {/* Thêm các thông số khác của sản phẩm ở đây */}
-                    {productSelected.productSelected?.specifications.length > 0 ? (
-                      <div className="overflow-hidden rounded-xl border border-gray-200 shadow-sm mt-4">
-                        <table className="w-full">
-                          <tbody>
-                            {productSelected.productSelected?.specifications.map(
-                              (item: { value: string; name: string }, index: number) => {
-                                const isEven = index % 2 === 0
-
-                                return (
-                                  <tr
-                                    key={item.name}
-                                    className={`group transition-colors duration-200 ${isEven ? "bg-gray-50" : "bg-white"}`}
-                                  >
-                                    <td className="w-1/3 p-4 border-r border-gray-200">
-                                      <div className="flex items-center gap-3">
-                                        <span className="font-bold text-blue-600 uppercase tracking-wide text-sm">
-                                          {item.name}
-                                        </span>
-                                      </div>
-                                    </td>
-                                    <td className="w-2/3 p-4">
-                                      <div className="flex items-center justify-between">
-                                        <span className="text-gray-700 font-medium text-base">{item.value}</span>
-                                      </div>
-                                    </td>
-                                  </tr>
-                                )
-                              }
-                            )}
-                          </tbody>
-                        </table>
-                      </div>
-                    ) : (
-                      <div className="text-center py-12 bg-gray-50 rounded-xl border-2 border-dashed border-gray-300">
-                        <div className="text-6xl mb-4">📋</div>
-                        <p className="text-gray-500 font-medium">Hiện tại sản phẩm chưa có thông số kỹ thuật</p>
-                      </div>
-                    )}
-                  </div>
-                ) : (
-                  <p className="text-gray-500">Chưa chọn sản phẩm</p>
-                )}
+                <ProductCompare productSelected={productSelected} />
               </div>
 
               <div className="flex-1 mt-6 p-4 border border-gray-200 rounded-lg">
-                {productSelected_2 ? (
-                  <div>
-                    <div className="flex justify-center">
-                      <img
-                        src={productSelected_2.productSelected.banner.url}
-                        alt={productSelected_2.productSelected.name}
-                        className="w-[60%] h-[300px] object-cover"
-                      />
-                    </div>
-                    <h2 className="font-medium text-base my-2 h-[50px]">{productSelected_2.productSelected.name}</h2>
-                    {productSelected_2.productSelected?.discount > 0 && (
-                      <div className="flex items-center gap-3">
-                        <h2 className="text-xl font-semibold text-red-500">
-                          {CalculateSalePrice(
-                            productSelected_2.productSelected.price,
-                            productSelected_2.productSelected.discount
-                          )}
-                          ₫
-                        </h2>
-                        <span className="block text-[15px] text-[#6d6e72] font-semibold line-through">
-                          {formatCurrency(productSelected_2.productSelected.price)}₫
-                        </span>
-                        <div className="py-[1px] px-1 rounded-sm border border-[#e30019] text-[#e30019] text-[11px]">
-                          -{productSelected_2.productSelected.discount}%
-                        </div>
-                      </div>
-                    )}
-                    {productSelected_2.productSelected?.discount === 0 && (
-                      <h2 className="text-xl font-semibold text-red-500">
-                        {formatCurrency(productSelected_2.productSelected.price)}₫
-                      </h2>
-                    )}
-                    {/* Thêm các thông số khác của sản phẩm ở đây */}
-                  </div>
-                ) : (
-                  <p className="text-gray-500">Chưa chọn sản phẩm</p>
-                )}
+                <ProductCompare productSelected={productSelected_2} />
               </div>
             </div>
+
+            {/* render listSpecificationProduct tại đây */}
+            {productSelected?.productSelected !== undefined || productSelected_2?.productSelected !== undefined
+              ? listSpecificationProduct &&
+                listSpecificationProduct.length > 0 && (
+                  <div className="mt-6 overflow-hidden rounded-xl border border-gray-200 shadow-sm">
+                    <table className="w-full table-fixed">
+                      <thead>
+                        <tr className="bg-gray-100">
+                          <th className="w-[25%] p-3 text-left text-sm font-semibold">Thông số</th>
+                          <th className="w-[37.5%] p-3 text-left text-sm font-semibold">
+                            {productSelected?.productSelected?.name ?? "Sản phẩm 1"}
+                          </th>
+                          <th className="w-[37.5%] p-3 text-left text-sm font-semibold">
+                            {productSelected_2?.productSelected?.name ?? "Sản phẩm 2"}
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {listSpecificationProduct.map((spec: any, idx: number) => {
+                          const isDifferent = (spec.value_product_1 || "") !== (spec.value_product_2 || "")
+                          const rowBg = idx % 2 === 0 ? "bg-gray-50" : "bg-white"
+                          return (
+                            <tr key={spec.name} className={`${rowBg} ${isDifferent ? "bg-red-50" : ""}`}>
+                              <td className="p-4 border-r border-gray-200 align-top">
+                                <div className="font-semibold text-sm text-gray-700">{spec.name}</div>
+                              </td>
+                              <td className="p-4 align-top">
+                                <div className="text-gray-800 text-sm">{spec.value_product_1 ?? <em>—</em>}</div>
+                              </td>
+                              <td className="p-4 align-top">
+                                <div className="text-gray-800 text-sm">{spec.value_product_2 ?? <em>—</em>}</div>
+                              </td>
+                            </tr>
+                          )
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                )
+              : null}
           </div>
         </div>
       </motion.div>

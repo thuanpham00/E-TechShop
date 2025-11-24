@@ -230,7 +230,7 @@ export default function ManageCustomers() {
   const handleSubmitUpdate = handleSubmit(async (data) => {
     try {
       let avatarName = file.existingUrl
-      if (file) {
+      if (file.file) {
         const avatar = await updateImageProfileMutation.mutateAsync({
           file: file.file as File,
           userId: (addItem as UserType)._id as string

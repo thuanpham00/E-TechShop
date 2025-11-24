@@ -357,7 +357,17 @@ export default function ManageCategories() {
         <div className="flex justify-center items-center gap-2">
           <span className="font-semibold text-[#3b82f6]">{brand_ids.length}</span>
           <span className="text-black dark:text-white">|</span>
-          <button onClick={() => navigate(`${path.AdminCategories}/${record._id}`, { state: record.name })}>
+          <button
+            onClick={() =>
+              navigate(`${path.AdminCategories}/${record._id} `, {
+                state: {
+                  data: record,
+                  queryConfig: queryConfig,
+                  seenBrand: true
+                }
+              })
+            }
+          >
             <Eye color="#3b82f6" size={18} />
           </button>
         </div>

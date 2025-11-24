@@ -11,20 +11,20 @@ function MainLayoutInner() {
     <div className="relative bg-[#f1f1f1]">
       <Header />
 
-      <aside className="fixed left-4 top-36 z-10 hidden xl:block">
+      <aside className="fixed left-4 top-48 z-10 hidden xl:block">
         <div className="content-block rounded overflow-hidden shadow-md">
-          <img src={sideBarLeft} alt="Featured collection" className="w-[120px] h-[300px] object-fill" loading="lazy" />
+          <img src={sideBarLeft} alt="Featured collection" className="w-[120px] h-[350px] object-fill" loading="lazy" />
         </div>
       </aside>
 
       <Outlet />
 
-      <aside className="fixed right-4 top-36 z-10 hidden xl:block">
+      <aside className="fixed right-4 top-48 z-10 hidden xl:block">
         <div className="content-block rounded overflow-hidden shadow-md">
           <img
             src={sideBarRight}
             alt="Featured collection"
-            className="w-[120px] h-[300px] object-fill"
+            className="w-[120px] h-[350px] object-fill"
             loading="lazy"
           />
         </div>

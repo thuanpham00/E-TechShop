@@ -12,7 +12,8 @@ export default function CategoryOverview() {
   const { state } = useLocation()
   const queryConfig = state?.queryConfig
   const dataCategory = state?.data
-  const [tab, setTab] = useState("detail")
+  const seenBrand = state?.seenBrand
+  const [tab, setTab] = useState(seenBrand ? "brand" : "detail")
 
   return (
     <div className="sticky-tabs">

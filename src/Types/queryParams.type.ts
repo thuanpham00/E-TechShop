@@ -102,4 +102,7 @@ export type queryParamsCollection = {
   cpu?: string
   ram?: string
   ssd?: string
+  resolution?: string
+  type_screen?: string
+  screen_panel?: string
 }

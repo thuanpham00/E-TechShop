@@ -79,7 +79,7 @@ export default function ChangePassword() {
           <span className="text-sm">Quản lý thông tin hồ sơ để bảo mật tài khoản</span>
         </div>
 
-        <div className="mt-4 py-4 px-8">
+        <div className="mt-4 py-2 px-4">
           <Form
             form={form}
             onFinish={onFinish}
