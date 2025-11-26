@@ -6,27 +6,22 @@ import socket from "src/socket"
 import { useContext, useEffect, useState } from "react"
 import { AppContext } from "src/Context/authContext"
 import { ConversationType } from "src/Client/Components/ChatConsulting/ChatConsulting"
-import { keepPreviousData, useQuery, useQueryClient } from "@tanstack/react-query"
+import { keepPreviousData, useQuery } from "@tanstack/react-query"
 import { LIMIT, PAGE } from "../AdminChatting"
 import { TicketStatus } from "src/Constants/enum"
 import { Alert, Button, Image, Modal, Tag } from "antd"
 import { TicketAPI } from "src/Apis/ticket.api"
 import { convertDateTime } from "src/Helpers/common"
 import SendMessageAdmin from "../SendMessageAdmin"
+import { CopyCheck } from "lucide-react"
 
-export default function Chatting({
-  selectedTicket,
-  activeTab
-}: {
-  selectedTicket: TicketItemType
-  activeTab: TicketStatus
-}) {
-  const queryClient = useQueryClient()
+export default function Chatting({ selectedTicket }: { selectedTicket: TicketItemType }) {
   const { userId } = useContext(AppContext) // người gửi tin nhắn
 
   const [conversations, setConversations] = useState<(ConversationType | any)[]>([])
 
   const [showModalConfirmSupport, setShowModalConfirmSupport] = useState<boolean>(false)
+  const [showModalCloseSupport, setShowModalCloseSupport] = useState<boolean>(false)
 
   const [query, setQuery] = useState({
     limit: LIMIT,
@@ -138,7 +133,6 @@ export default function Chatting({
                 {selectedTicket?.served_by[selectedTicket.served_by.length - 1]?.admin_name}
               </span>
             </div>
-
             <div className="flex items-center gap-2">
               <Tag
                 color={
@@ -158,6 +152,19 @@ export default function Chatting({
                 </span>
               </span>
             </div>
+
+            {selectedTicket?.status === TicketStatus.ASSIGNED &&
+              (selectedTicket.assigned_to === userId ? (
+                <Button
+                  className="!p-2"
+                  type="primary"
+                  danger
+                  icon={<CopyCheck color="white" size={16} />}
+                  onClick={() => setShowModalCloseSupport(true)}
+                >
+                  Đóng cuộc hội thoại
+                </Button>
+              ) : null)}
           </div>
         )}
       </div>
@@ -165,7 +172,7 @@ export default function Chatting({
       <div
         id="scrollableDiv"
         style={{
-          height: `${selectedTicket?.status === TicketStatus.ASSIGNED && selectedTicket.assigned_to !== userId ? (checkFile ? "calc(100vh - 290px" : "calc(100vh - 290px)") : checkFile ? "calc(100vh - 350px)" : "calc(100vh - 250px)"}`,
+          height: `${(selectedTicket?.status === TicketStatus.ASSIGNED || selectedTicket?.status === TicketStatus.CLOSED) && selectedTicket.assigned_to !== userId ? (checkFile ? "calc(100vh - 300px)" : "calc(100vh - 290px)") : checkFile ? "calc(100vh - 350px)" : "calc(100vh - 275px)"}`,
           overflow: "auto",
           display: "flex",
           flexDirection: "column-reverse"
@@ -225,7 +232,7 @@ export default function Chatting({
       </div>
       {selectedTicket?.status === TicketStatus.PENDING && (
         <div className="absolute bottom-0 left-0 w-full">
-          <div className="p-2 w-full bg-gray-200 flex justify-center ">
+          <div className="p-2 py-4 w-full bg-gray-200 flex justify-center ">
             <Button type="primary" className="!shadow-xl" onClick={() => setShowModalConfirmSupport(true)}>
               Tiếp nhận xử lý
             </Button>
@@ -260,6 +267,19 @@ export default function Chatting({
             />
           </div>
         ))}
+
+      {selectedTicket?.status === TicketStatus.CLOSED && (
+        <div className="absolute bottom-0 left-[-4px] w-full p-3">
+          <Alert
+            type="warning"
+            showIcon
+            message="Cuộc hội thoại đã đóng"
+            className="!p-2"
+            description={<div className="text-sm text-gray-700 dark:text-gray-200">Phiên hỗ trợ này đã được đóng.</div>}
+          />
+        </div>
+      )}
+
       <Modal
         title="Xác nhận tiếp nhận hỗ trợ"
         open={showModalConfirmSupport}
@@ -270,7 +290,6 @@ export default function Chatting({
               assigned_to: userId
             }
           })
-          queryClient.invalidateQueries({ queryKey: ["listTicket", activeTab] })
           setShowModalConfirmSupport(false)
         }}
         onCancel={() => setShowModalConfirmSupport(false)}
@@ -288,6 +307,37 @@ export default function Chatting({
             </>
           }
           type="info"
+          showIcon
+        />
+      </Modal>
+
+      <Modal
+        title="Xác nhận đóng hỗ trợ"
+        open={showModalCloseSupport}
+        onOk={() => {
+          socket.emit("admin:close_ticket", {
+            payload: {
+              ticket_id: selectedTicket._id,
+              assigned_to: userId
+            }
+          })
+          setShowModalCloseSupport(false)
+        }}
+        onCancel={() => setShowModalCloseSupport(false)}
+        okText="Xác nhận đóng hỗ trợ"
+        cancelText="Hủy bỏ"
+      >
+        <Alert
+          message="Xác nhận đóng hỗ trợ"
+          description={
+            <>
+              Bạn có chắc chắn muốn <b>đóng</b> phiên hỗ trợ cho khách hàng <b>{selectedTicket?.users?.name}</b>?
+              <br />
+              Sau khi đóng, khách hàng sẽ không thể tiếp tục gửi tin nhắn vào ticket này. Hành động sẽ được ghi nhận
+              trong lịch sử.
+            </>
+          }
+          type="warning"
           showIcon
         />
       </Modal>

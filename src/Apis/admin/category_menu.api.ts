@@ -47,7 +47,14 @@ export const CategoryMenuAPI = {
 
   updateCategoryLink: (
     idLink: string,
-    data: { id_category: string; name: string; slug: string; type_filter: string; image?: File }
+    data: {
+      id_category: string
+      name: string
+      slug: string
+      type_filter: string
+      image?: File
+      urlBannerDelete?: string
+    }
   ) => {
     const formData = new FormData()
     formData.append("id_category", data.id_category)
@@ -58,6 +65,10 @@ export const CategoryMenuAPI = {
     if (data.image) {
       formData.append("image", data.image)
     }
+    if (data.urlBannerDelete) {
+      formData.append("urlBannerDelete", data.urlBannerDelete)
+    }
+
     return Http.put(`/admin/category_links/${idLink}`, formData, {
       headers: {
         "Content-Type": "multipart/form-data"

@@ -1,4 +1,6 @@
-import { useMemo, useRef } from "react"
+/* eslint-disable @typescript-eslint/no-unused-expressions */
+import { Trash2 } from "lucide-react"
+import { Fragment, useMemo, useRef } from "react"
 import { toast } from "react-toastify"
 import { FileAvatarType } from "src/Admin/Pages/ManageCustomers/ManageCustomers"
 import Button from "src/Components/Button"
@@ -7,11 +9,13 @@ import { config } from "src/Constants/config"
 export default function InputFileBanner({
   file,
   setFile,
-  classNameWrapper = "text-center"
+  classNameWrapper = "text-center",
+  setUrlBannerDelete
 }: {
   file: FileAvatarType
   setFile: React.Dispatch<React.SetStateAction<FileAvatarType>>
   classNameWrapper?: string
+  setUrlBannerDelete: React.Dispatch<React.SetStateAction<string>>
 }) {
   const refInput = useRef<HTMLInputElement>(null)
   const handleInputFile = () => {
@@ -30,6 +34,7 @@ export default function InputFileBanner({
       })
       // eslint-disable-next-line @typescript-eslint/no-unused-expressions
       setFile && setFile((prev) => ({ ...prev, file: fileFormLocal as File }))
+      setUrlBannerDelete("")
     }
   }
 
@@ -43,14 +48,30 @@ export default function InputFileBanner({
   return (
     <div className="relative w-full h-[300px] border border-gray-200 rounded-md shadow-sm">
       {previewImage !== "" ? (
-        <div
-          className="absolute top-0 left-0 w-full h-full z-1 rounded-md"
-          style={{
-            backgroundImage: `url(${previewImage})`,
-            backgroundSize: "cover",
-            backgroundPosition: "center"
-          }}
-        ></div>
+        <Fragment>
+          <div
+            className="absolute top-0 left-0 w-full h-full z-1 rounded-md"
+            style={{
+              backgroundImage: `url(${previewImage})`,
+              backgroundSize: "cover",
+              backgroundPosition: "center"
+            }}
+          ></div>
+          <div>
+            <Button
+              type="button"
+              onClick={() => {
+                if (file.existingUrl !== "") {
+                  // tồn tại ảnh cũ, xóa URL cũ
+                  setUrlBannerDelete(file.existingUrl as string)
+                }
+                setFile({ file: null, existingUrl: "" })
+              }}
+              icon={<Trash2 size={16} />}
+              classNameButton="absolute top-2 right-2 z-10 px-3 py-1 bg-red-500 text-white font-medium text-[13px] rounded-md hover:bg-red-500/80 duration-200"
+            />
+          </div>
+        </Fragment>
       ) : (
         <div className="h-40 w-full rounded-md bg-white flex items-center justify-center text-gray-400">
           Chưa chọn banner

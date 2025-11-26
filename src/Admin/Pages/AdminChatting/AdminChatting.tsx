@@ -2,7 +2,7 @@ import { Helmet } from "react-helmet-async"
 import { motion } from "framer-motion"
 import { useContext, useEffect, useMemo, useState } from "react"
 import { Empty, Image, Input, Modal, Skeleton, Space, Tabs } from "antd"
-import { keepPreviousData, useQuery, useQueryClient } from "@tanstack/react-query"
+import { keepPreviousData, useQuery } from "@tanstack/react-query"
 import avatarDefault from "src/Assets/img/avatarDefault.png"
 import "./AdminChatting.css"
 import { TicketStatus } from "src/Constants/enum"
@@ -18,10 +18,22 @@ import { AppContext } from "src/Context/authContext"
 export const LIMIT = 20
 export const PAGE = 1
 
+/**
+ * 
+✅ refetch()
+👉 Chỉ gọi lại API cho đúng cái query đang được dùng ở trang/component hiện tại.
+Không ảnh hưởng đến nơi khác.
+
+✅ queryClient.invalidateQueries(queryKey)
+👉 Báo cho React Query rằng tất cả query nào có cùng queryKey (hoặc match pattern) đều cần cập nhật lại → chúng sẽ tự refetch khi đang active.
+Dùng để đồng bộ dữ liệu ở nhiều nơi khác nhau.
+
+✅ Tóm lại:
+1 cái làm mới dữ liệu của riêng nó — 1 cái làm mới dữ liệu ở mọi nơi dùng chung queryKey.
+ */
 export default function AdminChatting() {
   const { userId } = useContext(AppContext)
   const { isSocketConnected, retryConnect } = useCheckConnectSocket()
-  const queryClient = useQueryClient()
   const [activeTab, setActiveTab] = useState<TicketStatus>(TicketStatus.PENDING)
   const [selectedTicket, setSelectedTicket] = useState<TicketItemType>()
 
@@ -33,9 +45,7 @@ export default function AdminChatting() {
         controller.abort() // hủy request khi chờ quá lâu // 10 giây sau cho nó hủy // làm tự động
       }, 10000)
       return TicketAPI.getListTicket(controller.signal, { status: activeTab })
-    },
-    staleTime: 5 * 60 * 1000, // 5 phút
-    placeholderData: keepPreviousData
+    }
   })
 
   const getListImagesChat = useQuery({
@@ -115,7 +125,6 @@ export default function AdminChatting() {
           assigned_to: ticket?.assigned_to as string
         }
       })
-      queryClient.invalidateQueries({ queryKey: ["listTicket", activeTab] })
     }
   }
 
@@ -208,7 +217,7 @@ export default function AdminChatting() {
             {getListTicket.isLoading && <Skeleton />}
             {getListTicket.isFetched &&
               (listTicket?.length > 0 ? (
-                <div className="mt-3 h-[calc(100vh-300px)] overflow-y-auto">
+                <div className="mt-3 h-[calc(100vh-350px)] overflow-y-auto">
                   {filteredList.map((item) => (
                     <button
                       key={item._id}
@@ -267,7 +276,7 @@ export default function AdminChatting() {
               ))}
           </div>
           <div className="w-2/4 border border-gray-300 dark:border-darkBorder border-l-0">
-            <Chatting selectedTicket={selectedTicket as TicketItemType} activeTab={activeTab} />
+            <Chatting selectedTicket={selectedTicket as TicketItemType} />
           </div>
           <div className="w-1/4 p-4 bg-white dark:bg-darkPrimary rounded-tr-md rounded-br-md border border-gray-200 dark:border-darkBorder shadow-sm">
             <div className="flex flex-col items-center text-center">
@@ -293,7 +302,7 @@ export default function AdminChatting() {
               </button>
 
               <div className="text-sm font-semibold text-gray-700 mt-4">Ảnh đoạn chat</div>
-              <div className="mt-2 h-[calc(100vh-330px)] overflow-y-auto border border-gray-200 dark:border-darkBorder p-2">
+              <div className="mt-2 h-[calc(100vh-340px)] overflow-y-auto border border-gray-200 dark:border-darkBorder p-2">
                 {listDataImagesChat && listDataImagesChat.length > 0 ? (
                   <div className="grid grid-cols-3 gap-1">
                     {listDataImagesChat.map((imgUrl, index) => (

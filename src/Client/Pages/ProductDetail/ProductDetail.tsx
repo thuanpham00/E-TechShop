@@ -225,7 +225,7 @@ export default function ProductDetail() {
 
       const headerOffset = 0
       const elementPosition = el.getBoundingClientRect().top + window.pageYOffset
-      const offsetPosition = elementPosition - headerOffset - 140 // thêm một chút khoảng cách
+      const offsetPosition = elementPosition - headerOffset - 170 // thêm một chút khoảng cách
       window.scrollTo({ top: offsetPosition, behavior: "smooth" })
     }
   }

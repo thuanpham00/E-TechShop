@@ -30,12 +30,19 @@ export default function Home() {
   const getCollectionPCTopSold = useCollectionTopSold("top-10-pc-ban-chay", "getCollectionPCTopSold")
   const getCollectionMonitorTopSold = useCollectionTopSold("top-10-man-hinh-ban-chay", "getCollectionMonitorTopSold")
   const getCollectionKeyboardTopSold = useCollectionTopSold("top-10-ban-phim-ban-chay", "getCollectionKeyboardTopSold")
+  const getCollectionMouseTopSold = useCollectionTopSold("top-10-chuot-ban-chay", "getCollectionMouseTopSold")
+  const getCollectionHeadphoneTopSold = useCollectionTopSold(
+    "top-10-tai-nghe-ban-chay",
+    "getCollectionHeadphoneTopSold"
+  )
 
   const result = getCollectionLaptopTopSold.data?.data as SuccessResponse<CollectionItemType[]>
   const resultLaptopGaming = getCollectionLaptopGamingTopSold.data?.data as SuccessResponse<CollectionItemType[]>
   const resultPC = getCollectionPCTopSold.data?.data as SuccessResponse<CollectionItemType[]>
   const resultMonitor = getCollectionMonitorTopSold.data?.data as SuccessResponse<CollectionItemType[]>
   const resultKeyboard = getCollectionKeyboardTopSold.data?.data as SuccessResponse<CollectionItemType[]>
+  const resultMouse = getCollectionMouseTopSold.data?.data as SuccessResponse<CollectionItemType[]>
+  const resultHeadphone = getCollectionHeadphoneTopSold.data?.data as SuccessResponse<CollectionItemType[]>
 
   return (
     <div>
@@ -67,12 +74,14 @@ export default function Home() {
                 getCollectionQuery={getCollectionLaptopTopSold}
                 result={result?.result || []}
                 title="Laptop bán chạy"
+                slug="top-10-laptop-ban-chay"
               />
 
               <ProductListShow
                 getCollectionQuery={getCollectionLaptopGamingTopSold}
                 result={resultLaptopGaming?.result || []}
                 title="Laptop Gaming bán chạy"
+                slug="top-10-laptop-gaming-ban-chay"
               />
 
               <Row gutter={12} className="my-4">
@@ -88,6 +97,7 @@ export default function Home() {
                 getCollectionQuery={getCollectionPCTopSold}
                 result={resultPC?.result || []}
                 title="PC bán chạy"
+                slug="top-10-pc-ban-chay"
               />
 
               <div>
@@ -98,18 +108,28 @@ export default function Home() {
                 getCollectionQuery={getCollectionMonitorTopSold}
                 result={resultMonitor?.result || []}
                 title="Màn hình chính hãng"
+                slug="top-10-man-hinh-ban-chay"
               />
 
               <ProductListShow
-                getCollectionQuery={getCollectionMonitorTopSold}
-                result={resultMonitor?.result || []}
-                title="Màn hình chính hãng"
+                getCollectionQuery={getCollectionMouseTopSold}
+                result={resultMouse?.result || []}
+                title="Chuột bán chạy"
+                slug="top-10-chuot-ban-chay"
               />
 
               <ProductListShow
                 getCollectionQuery={getCollectionKeyboardTopSold}
                 result={resultKeyboard?.result || []}
                 title="Bàn phím bán chạy"
+                slug="top-10-ban-phim-ban-chay"
+              />
+
+              <ProductListShow
+                getCollectionQuery={getCollectionHeadphoneTopSold}
+                result={resultHeadphone?.result || []}
+                title="Tai nghe bán chạy"
+                slug="top-10-tai-nghe-ban-chay"
               />
             </div>
           </div>

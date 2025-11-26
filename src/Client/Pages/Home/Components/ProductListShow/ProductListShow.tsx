@@ -18,11 +18,13 @@ import { useNavigate } from "react-router-dom"
 export default function ProductListShow({
   getCollectionQuery,
   result,
-  title
+  title,
+  slug
 }: {
   getCollectionQuery: UseQueryResult<AxiosResponse<any, any>, Error>
   result: CollectionItemType[]
   title: string
+  slug: string
 }) {
   const navigate = useNavigate()
 
@@ -38,7 +40,7 @@ export default function ProductListShow({
           <div className="flex justify-between items-center">
             <h1 className="text-xl font-semibold mb-2">{title}</h1>
             <button
-              onClick={() => handleNavigateCollections("top-10-laptop-ban-chay")}
+              onClick={() => handleNavigateCollections(slug)}
               className="text-blue-500 text-sm hover:text-blue-400 cursor-pointer duration-200"
             >
               Xem tất cả

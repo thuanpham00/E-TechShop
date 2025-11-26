@@ -3,7 +3,7 @@ import { UpdateCategoryBodyReq } from "src/Types/product.type"
 import { queryParamConfigCategory } from "src/Types/queryParams.type"
 
 export const CategoryAPI = {
-  createCategory: (body: { name: string; is_active: boolean }) => {
+  createCategory: (body: { name: string; is_active: boolean; desc: string }) => {
     return Http.post("/admin/categories", body)
   },
 

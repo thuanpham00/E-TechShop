@@ -37,6 +37,7 @@ export type CategoryItemType = {
   _id: string
   name: string
   is_active: boolean
+  desc: string
   created_at: string
   updated_at: string
   brand_ids: string[]
@@ -196,6 +197,7 @@ export type OrderItemType = {
   voucher_id?: string
   voucher_code?: string
   discount_amount?: number
+  type_order: string
 }
 
 export type ProductItemType = {
@@ -265,6 +267,7 @@ export type VoucherItemType = {
 export type UpdateCategoryBodyReq = {
   name?: string
   is_active?: boolean
+  desc?: string
 }
 
 export type UpdateSupplierBodyReq = {

@@ -22,6 +22,9 @@ import { collectionAPI } from "src/Apis/client/collections.api"
 import { categoryAPI } from "src/Apis/client/category.api"
 import FilterLaptop from "./Components/FilterLaptop"
 import FilterScreen from "./Components/FilterScreen"
+import FilterKeyboard from "./Components/FilterKeyboard"
+import FilterMouse from "./Components/FilterMouse"
+import FilterRam from "./Components/FilterRam"
 
 const sortOptions = [
   { value: "name_asc", label: "Tên từ A-Z" },
@@ -48,6 +51,10 @@ export default function Collection() {
       resolution: queryParams.resolution,
       type_screen: queryParams.type_screen,
       screen_panel: queryParams.screen_panel,
+      layout: queryParams.layout,
+      led: queryParams.led,
+      color: queryParams.color,
+      type_connect: queryParams.type_connect,
       sort: queryParams.sort || "name_asc"
     },
     isUndefined
@@ -152,7 +159,11 @@ export default function Collection() {
       "ssd",
       "resolution",
       "type_screen",
-      "screen_panel"
+      "screen_panel",
+      "layout",
+      "led",
+      "color",
+      "type_connect"
     ])
     navigate(
       { pathname: `/collections/${slug}`, search: createSearchParams({ ...filteredSearch, status: "all" }).toString() },
@@ -180,7 +191,7 @@ export default function Collection() {
         {slug && !isLoading && (
           <>
             {/* Banner cố định */}
-            {bannerUrl !== undefined && (
+            {bannerUrl !== "" && bannerUrl !== undefined && (
               <img className="rounded-lg shadow-md h-[300px] w-full" src={bannerUrl} alt={`Banner ${slug}`} />
             )}
 
@@ -216,6 +227,27 @@ export default function Collection() {
                   />
 
                   <FilterScreen
+                    type_filter={type_filter}
+                    dataFilter={dataFilter}
+                    queryConfig={queryConfig}
+                    handleChangeQuery={handleChangeQuery}
+                  />
+
+                  <FilterKeyboard
+                    type_filter={type_filter}
+                    dataFilter={dataFilter}
+                    queryConfig={queryConfig}
+                    handleChangeQuery={handleChangeQuery}
+                  />
+
+                  <FilterMouse
+                    type_filter={type_filter}
+                    dataFilter={dataFilter}
+                    queryConfig={queryConfig}
+                    handleChangeQuery={handleChangeQuery}
+                  />
+
+                  <FilterRam
                     type_filter={type_filter}
                     dataFilter={dataFilter}
                     queryConfig={queryConfig}

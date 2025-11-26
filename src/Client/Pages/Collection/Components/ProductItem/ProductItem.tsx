@@ -6,6 +6,7 @@ import { CollectionItemType } from "src/Types/product.type"
 import image_default from "src/Assets/img/anh_default_url.jpg"
 import { useNavigate } from "react-router-dom"
 import { AppContext } from "src/Context/authContext"
+import logoBestSeller from "src/Assets/img/best-seller-sticker-label-gold-600nw-2480981787.webp"
 
 const getStatusTagClass = (status: string) => {
   switch (status?.toLowerCase()) {
@@ -63,6 +64,15 @@ export default function ProductItem({ item }: { item: CollectionItemType }) {
             </span>
           )}
         </div>
+
+        {item.sold >= 500 && (
+          <img
+            src={logoBestSeller}
+            alt="Best Seller"
+            className="absolute top-[-5px] left-[-16px] rounded-full w-16 h-16"
+          />
+        )}
+
         <img
           loading="lazy"
           src={item._id === imageChange ? randomImage : imageDefault}

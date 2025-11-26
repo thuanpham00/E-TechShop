@@ -314,17 +314,26 @@ export default function ManageCategories() {
       )
     },
     {
+      title: "Mô tả",
+      dataIndex: "desc",
+      key: "desc",
+      width: 150,
+      render: (desc: string) => (
+        <div className="text-black dark:text-white">{desc !== "" && desc !== undefined ? desc : "-"}</div>
+      )
+    },
+    {
       title: "Ngày tạo",
       dataIndex: "created_at",
       key: "created_at",
-      width: 180,
+      width: 120,
       render: (value: string) => <div>{convertDateTime(value)}</div>
     },
     {
       title: "Ngày cập nhật",
       dataIndex: "updated_at",
       key: "updated_at",
-      width: 180,
+      width: 120,
       render: (value: string) => <div>{convertDateTime(value)}</div>
     },
     {

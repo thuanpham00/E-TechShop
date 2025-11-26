@@ -18,7 +18,7 @@ export default function CategoryDetail({ listCategoryMenu }: Props) {
   }
 
   return (
-    <div className="flex items-start">
+    <div className="grid grid-cols-5 gap-4 w-full shadow-lg bg-white border border-gray-300 rounded-md p-6">
       {listCategoryMenu[0]?.sections.map((item, index) => (
         <div key={index} className="mr-20">
           <span className="text-base tracking-wide font-semibold text-primaryBlue">{item.name}</span>
@@ -26,7 +26,7 @@ export default function CategoryDetail({ listCategoryMenu }: Props) {
             <button
               onClick={() => handleNavigate(valueItem.slug, valueItem.type_filter as string)}
               key={indexValue}
-              className="block my-3 text-[13px] font-medium cursor-pointer hover:text-primaryBlue"
+              className="block text-left my-3 text-sm font-medium cursor-pointer hover:text-primaryBlue"
             >
               {valueItem.name}
             </button>

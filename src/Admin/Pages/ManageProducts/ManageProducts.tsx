@@ -107,7 +107,7 @@ export default function ManageProducts() {
       width: 250,
       render: (_: any, record: ProductItemType) => (
         <div className="flex items-center gap-3">
-          <Image src={record.banner?.url} alt={record._id} style={{ width: 200, height: 120, objectFit: "cover" }} />
+          <Image src={record.banner?.url} alt={record._id} style={{ width: 200, height: 170, objectFit: "cover" }} />
         </div>
       )
     },

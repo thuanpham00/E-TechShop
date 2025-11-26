@@ -18,6 +18,7 @@ import { ErrorResponse, MessageResponse } from "src/Types/utils.type"
 
 type FormDataUpdate = Pick<SchemaAuthType, "name" | "id" | "created_at" | "updated_at"> & {
   is_active?: "active" | "inactive"
+  desc?: string
 }
 
 const formDataUpdate = schemaAuth.pick(["name", "id", "created_at", "updated_at"])
@@ -44,6 +45,8 @@ export default function CategoryDetail({
     defaultValues: {
       id: "",
       name: "",
+      desc: "",
+      is_active: "active",
       created_at: "",
       updated_at: ""
     } // giá trị khởi tạo
@@ -54,6 +57,7 @@ export default function CategoryDetail({
       setValue("id", dataCategory._id)
       setValue("name", dataCategory.name)
       setValue("is_active", dataCategory.is_active ? "active" : "inactive")
+      setValue("desc", dataCategory.desc || "")
       setValue("created_at", convertDateTime(dataCategory.created_at))
       setValue("updated_at", convertDateTime(dataCategory.updated_at))
     }
@@ -68,7 +72,8 @@ export default function CategoryDetail({
   const handleSubmitUpdate = handleSubmit((data) => {
     const payload = {
       name: data.name,
-      is_active: data.is_active === "active" ? true : false
+      is_active: data.is_active === "active" ? true : false,
+      desc: data.desc
     }
     updateCategoryMutation.mutate(
       { id: dataCategory._id as string, body: payload },
@@ -189,6 +194,17 @@ export default function CategoryDetail({
                   ]}
                 />
               )}
+            />
+          </div>
+          <div className="w-full mt-4">
+            <Input
+              name="desc"
+              register={register}
+              placeholder="Nhập mô tả"
+              classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-white dark:bg-darkSecond focus:border-blue-500 focus:ring-2 outline-none rounded-md text-black dark:text-white"
+              className="relative flex-1"
+              classNameLabel="text-black dark:text-white"
+              nameInput="Mô tả danh mục"
             />
           </div>
           <div className="flex items-center justify-end mt-4 gap-2">

@@ -105,4 +105,8 @@ export type queryParamsCollection = {
   resolution?: string
   type_screen?: string
   screen_panel?: string
+  layout?: string
+  led?: string
+  color?: string
+  type_connect?: string
 }

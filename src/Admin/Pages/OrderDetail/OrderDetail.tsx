@@ -8,6 +8,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { OrderAPI } from "src/Apis/admin/order.api"
 import { useState } from "react"
 import { toast } from "react-toastify"
+import PrintBill from "./Components/PrintBill"
 
 export default function OrderDetail() {
   const { state } = useLocation()
@@ -124,8 +125,12 @@ export default function OrderDetail() {
         </div>
       </div>
 
+      <div className="flex justify-end">
+        <PrintBill order={orderData} />
+      </div>
+
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-2 pb-8 pt-4">
+      <div className="max-w-7xl mx-auto pb-8 pt-4">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Left Column - 2/3 width */}
           <div className="lg:col-span-2 space-y-6">

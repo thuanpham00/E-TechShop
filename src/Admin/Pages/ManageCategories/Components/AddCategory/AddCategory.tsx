@@ -18,8 +18,8 @@ interface Props {
   addItem: any
 }
 
-type FormData = Pick<SchemaAuthType, "name"> & { is_active?: "active" | "inactive" }
-const formData = schemaAuth.pick(["name"])
+type FormData = Pick<SchemaAuthType, "name"> & { is_active?: "active" | "inactive"; desc?: string } // type form
+const formData = schemaAuth.pick(["name"]) // validation form
 
 export default function AddCategory({ setAddItem, addItem }: Props) {
   const queryClient = useQueryClient()
@@ -38,15 +38,16 @@ export default function AddCategory({ setAddItem, addItem }: Props) {
   })
 
   const addCategoryMutation = useMutation({
-    mutationFn: (body: { name: string; is_active: boolean }) => {
-      return CategoryAPI.createCategory({ name: body.name, is_active: body.is_active })
+    mutationFn: (body: { name: string; is_active: boolean; desc: string }) => {
+      return CategoryAPI.createCategory({ name: body.name, is_active: body.is_active, desc: body.desc })
     }
   })
 
   const handleAddCategorySubmit = handleSubmit((data) => {
     const payload = {
       name: data.name,
-      is_active: data.is_active === "active" ? true : false
+      is_active: data.is_active === "active" ? true : false,
+      desc: data.desc || ""
     }
     addCategoryMutation.mutate(payload, {
       onSuccess: () => {
@@ -95,7 +96,7 @@ export default function AddCategory({ setAddItem, addItem }: Props) {
               <h3 className="py-2 px-4 text-lg font-semibold tracking-wide rounded-md text-black dark:text-white">
                 Thông tin danh mục
               </h3>
-              <div className="p-4 pt-0 w-[400px]">
+              <div className="p-4 pt-0 w-[500px]">
                 <div className="w-full">
                   <Input
                     name="name"
@@ -106,6 +107,17 @@ export default function AddCategory({ setAddItem, addItem }: Props) {
                     className="relative flex-1"
                     classNameLabel="text-black dark:text-white"
                     nameInput="Tên danh mục"
+                  />
+                </div>
+                <div className="w-full">
+                  <Input
+                    name="desc"
+                    register={register}
+                    placeholder="Nhập mô tả"
+                    classNameInput="mt-1 p-2 w-full border border-[#dedede] dark:border-darkBorder bg-white dark:bg-darkSecond focus:border-blue-500 focus:ring-2 outline-none rounded-md text-black dark:text-white"
+                    className="relative flex-1"
+                    classNameLabel="text-black dark:text-white"
+                    nameInput="Mô tả (nếu có)"
                   />
                 </div>
                 <div className="w-full">

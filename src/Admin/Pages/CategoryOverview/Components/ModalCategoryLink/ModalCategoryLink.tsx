@@ -32,6 +32,7 @@ export default function ModalCategoryLink({
     file: null, // ảnh mới
     existingUrl: null // ảnh từ server
   })
+  const [urlBannerDelete, setUrlBannerDelete] = useState<string>("")
 
   useEffect(() => {
     if (editItem && typeof editItem === "object") {
@@ -120,6 +121,7 @@ export default function ModalCategoryLink({
           slug: string
           type_filter: string
           image?: File
+          urlBannerDelete?: string
         } = {
           id_link: editItem.id_item,
           id_category: idCategory,
@@ -128,6 +130,7 @@ export default function ModalCategoryLink({
           type_filter: values.type_filter
         }
         if (file) payload.image = file.file as File
+        if (urlBannerDelete) payload.urlBannerDelete = urlBannerDelete
 
         updateLinkCategoryMutation.mutate(payload, {
           onSuccess: () => {
@@ -230,7 +233,12 @@ export default function ModalCategoryLink({
         <div className="flex items-center justify-center flex-col rounded-sm shadow-sm">
           <div className="mb-2 text-black dark:text-white">Banner</div>
 
-          <InputFileBanner file={file} setFile={setFile} classNameWrapper="absolute z-40 top-[-18%] w-[100%]" />
+          <InputFileBanner
+            file={file}
+            setFile={setFile}
+            setUrlBannerDelete={setUrlBannerDelete}
+            classNameWrapper="absolute z-40 top-[-18%] w-[100%]"
+          />
         </div>
         <div className="flex items-center justify-end mt-2">
           <Button type="primary" htmlType="submit" icon={<ArrowUpFromLine size={16} />}>

@@ -546,9 +546,7 @@ export default function Header() {
             </div>
             {isHover && (
               <div className="mx-auto absolute w-full top-22 left-0">
-                <div className="bg-white border border-gray-300 shadow-xl h-[350px] rounded-md p-6">
-                  <CategoryDetail showDetail={showCategoryDetail} listCategoryMenu={listCategoryMenu} />
-                </div>
+                <CategoryDetail showDetail={showCategoryDetail} listCategoryMenu={listCategoryMenu} />
               </div>
             )}
           </div>

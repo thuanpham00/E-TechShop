@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { PencilLine } from "lucide-react"
 import { Helmet } from "react-helmet-async"
 import NavigateBack from "src/Admin/Components/NavigateBack"
 import Input from "src/Components/Input"
@@ -545,13 +544,6 @@ export default function AddProduct() {
                         </Select>
                       )}
                     />
-                    <button
-                      type="button"
-                      className="flex items-center gap-1 text-xs text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 transition-colors mt-1 group"
-                    >
-                      <PencilLine size={12} className="group-hover:scale-110 transition-transform" />
-                      <span>Thêm thể loại mới</span>
-                    </button>
                     {errors.category?.message && (
                       <motion.span
                         initial={{ opacity: 0, y: -5 }}
@@ -602,13 +594,6 @@ export default function AddProduct() {
                         </Select>
                       )}
                     />
-                    <button
-                      type="button"
-                      className="flex items-center gap-1 text-xs text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 transition-colors mt-1 group"
-                    >
-                      <PencilLine size={12} className="group-hover:scale-110 transition-transform" />
-                      <span>Thêm thương hiệu mới</span>
-                    </button>
                     {errors.brand?.message && (
                       <motion.span
                         initial={{ opacity: 0, y: -5 }}
