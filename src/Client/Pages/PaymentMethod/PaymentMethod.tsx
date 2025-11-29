@@ -142,7 +142,7 @@ export default function PaymentMethod() {
             </div>
 
             {/* Order Info */}
-            <div className="p-6">
+            <div className="p-2 md:p-6">
               <Card className="bg-gray-50 border-gray-200 mb-6">
                 <Title level={5} className="mb-4 flex items-center gap-2">
                   <User size={18} className="text-blue-500" />
@@ -217,8 +217,10 @@ export default function PaymentMethod() {
                   </div>
                   <Divider className="my-2 bg-blue-300" />
                   <div className="flex justify-between items-center">
-                    <Text className="text-lg font-bold text-gray-800">Tổng thanh toán:</Text>
-                    <Text className="text-2xl font-bold text-red-500">{formatCurrency(infoOrder?.totalAmount)}đ</Text>
+                    <Text className="text-base md:text-lg font-bold text-gray-800">Tổng thanh toán:</Text>
+                    <Text className="text-lg md:text-2xl font-bold text-red-500">
+                      {formatCurrency(infoOrder?.totalAmount)}đ
+                    </Text>
                   </div>
                 </Space>
               </Card>
@@ -234,7 +236,7 @@ export default function PaymentMethod() {
                   value={methodPayment}
                   className="w-full"
                 >
-                  <Space direction="horizontal" size="middle" className="w-full flex items-center">
+                  <Space direction="horizontal" size="middle" className="w-full flex items-center flex-col md:flex-row">
                     <button
                       className={`flex items-center gap-4 p-4 border-2 rounded-lg cursor-pointer transition-all ${
                         methodPayment === "cod" ? "border-blue-500 bg-blue-50" : "border-gray-200 hover:border-blue-300"

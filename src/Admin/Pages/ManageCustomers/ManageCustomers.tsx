@@ -10,7 +10,6 @@ import {
   Plus,
   RotateCcw,
   Search,
-  SearchCheck,
   Trash2,
   X
 } from "lucide-react"
@@ -720,13 +719,7 @@ export default function ManageCustomers() {
               ]}
             />
           </div>
-          <div className="flex items-center gap-2">
-            <Button
-              onClick={() => navigate(path.AdminCustomerOrderHistory)}
-              icon={<SearchCheck size={15} />}
-              nameButton="Tra cứu lịch sử mua hàng"
-              classNameButton="py-2 px-3 bg-red-500 w-full text-white font-medium rounded-md hover:bg-red-500/80 duration-200 text-[13px] flex items-center gap-1 text-[13px]"
-            />
+          <div>
             <Button
               onClick={() => setAddItem(true)}
               icon={<Plus size={15} />}

@@ -29,28 +29,60 @@ export default function SlideShow() {
       modules={[Navigation, Pagination, Autoplay]}
     >
       <SwiperSlide>
-        <img src={banner_1} className="object-fill w-full h-[300px] block" alt="banner_1" />
+        <img
+          src={banner_1}
+          className="object-fill w-full h-[150px] md:h-[230px] lg:h-[300px] block rounded-md"
+          alt="banner_1"
+        />
       </SwiperSlide>
       <SwiperSlide>
-        <img src={banner_2} className="object-fill w-full h-[300px] block" alt="banner_2" />
+        <img
+          src={banner_2}
+          className="object-fill w-full h-[150px] md:h-[230px] lg:h-[300px] block rounded-md"
+          alt="banner_2"
+        />
       </SwiperSlide>
       <SwiperSlide>
-        <img src={banner_3} className="object-fill w-full h-[300px] block" alt="banner_2" />
+        <img
+          src={banner_3}
+          className="object-fill w-full h-[150px] md:h-[230px] lg:h-[300px] block rounded-md"
+          alt="banner_2"
+        />
       </SwiperSlide>
       <SwiperSlide>
-        <img src={banner_4} className="object-fill w-full h-[300px] block" alt="banner_2" />
+        <img
+          src={banner_4}
+          className="object-fill w-full h-[150px] md:h-[230px] lg:h-[300px] block rounded-md"
+          alt="banner_2"
+        />
       </SwiperSlide>
       <SwiperSlide>
-        <img src={banner_5} className="object-fill w-full h-[300px] block" alt="banner_1" />
+        <img
+          src={banner_5}
+          className="object-fill w-full h-[150px] md:h-[230px] lg:h-[300px] block rounded-md"
+          alt="banner_1"
+        />
       </SwiperSlide>
       <SwiperSlide>
-        <img src={banner_7} className="object-fill w-full h-[300px] block" alt="banner_2" />
+        <img
+          src={banner_7}
+          className="object-fill w-full h-[150px] md:h-[230px] lg:h-[300px] block rounded-md"
+          alt="banner_2"
+        />
       </SwiperSlide>
       <SwiperSlide>
-        <img src={banner_8} className="object-fill w-full h-[300px] block" alt="banner_2" />
+        <img
+          src={banner_8}
+          className="object-fill w-full h-[150px] md:h-[230px] lg:h-[300px] block rounded-md"
+          alt="banner_2"
+        />
       </SwiperSlide>
       <SwiperSlide>
-        <img src={banner_9} className="object-fill w-full h-[300px] block" alt="banner_2" />
+        <img
+          src={banner_9}
+          className="object-fill w-full h-[150px] md:h-[230px] lg:h-[300px] block rounded-md"
+          alt="banner_2"
+        />
       </SwiperSlide>
     </Swiper>
   )

@@ -45,7 +45,7 @@ export default function ProductItem({ item }: { item: CollectionItemType }) {
 
   return (
     <button
-      className="col-span-1 block border border-[#dedede] rounded-[8px] p-4 pt-[6px] bg-white transition-all duration-200 ease-in cursor-pointer"
+      className="w-full block border border-[#dedede] rounded-[8px] p-4 pt-[6px] bg-white transition-all duration-200 ease-in cursor-pointer"
       onMouseEnter={() => handleHoverProduct(item._id)}
       onMouseLeave={() => handleHoverProduct("")}
       onClick={handleNavigate}
@@ -77,7 +77,7 @@ export default function ProductItem({ item }: { item: CollectionItemType }) {
           loading="lazy"
           src={item._id === imageChange ? randomImage : imageDefault}
           alt={item.name}
-          className="mt-4 object-cover w-full h-[180px] duration-200 transition-all"
+          className="mt-4 object-contain w-full h-[180px] duration-200 transition-all"
         />
         <span className="text-[14px] font-bold mt-4 mb-2 block text-left line-clamp-2 h-[44px]">{item.name}</span>
         {item.discount ? (
@@ -105,8 +105,8 @@ export default function ProductItem({ item }: { item: CollectionItemType }) {
             </span>
           </Fragment>
         )}
-        <div className="flex justify-between items-center gap-1">
-          <div className="flex items-center gap-2">
+        <div className="flex items-start justify-between md:items-center gap-1">
+          <div className="flex items-start justify-start md:items-center flex-col md:flex-row gap-2">
             <div className="flex items-center gap-[2px]">
               <span className="text-[13px] font-semibold text-[#FF8A00]">
                 {ConvertAverageRating(item.averageRating)}

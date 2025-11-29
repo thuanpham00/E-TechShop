@@ -24,6 +24,7 @@ import InputBanner from "./Components/InputBanner/InputBanner"
 import InputGallery from "./Components/InputGallery"
 import { path } from "src/Constants/path"
 import { listSpecificationForCategory } from "src/Constants/product"
+import { formatCurrency } from "src/Helpers/common"
 
 type CategoryType = keyof typeof listSpecificationForCategory
 
@@ -655,6 +656,7 @@ export default function AddProduct() {
                     control={control}
                     isCurrency={true}
                     currencySuffix="đ"
+                    value={formatCurrency(watch("priceAfterDiscount") || 0)}
                   />
                 </div>
 
@@ -933,35 +935,3 @@ export default function AddProduct() {
     </div>
   )
 }
-
-/**
- * interface Product {
-name: string, // tên sản phẩm -> đã có
-category: ObjectId, // thể loại -> đã có
-brand: ObjectId, // thương hiệu -> đã có
-price: number, // giá sản phẩm -> đã có
-discount: number, // % giảm giá (nếu có) -> đã có
-stock: number // số lượng tồn kho
-description: string, // Mô tả sản phẩm chi tiết -> đã có
-isFeatured: boolean, // Sản phẩm nổi bật -> đã có
-specifications: ObjectId[] -> đã có
-banner: Media, -> đã có
-medias: Media[], // hình ảnh -> đã có
-
-gifts: ObjectId[] -> 
-_id: ObjectId, -> sinh ra trong lúc thêm
-
-created_at: Date, -> sinh ra trong lúc thêm (thời gian hiện tại)
-
-updated_at: Date, -> sinh ra trong lúc thêm (thời gian hiện tại)
-
-status: ProductStatus -> sinh ra trong lúc thêm (nếu stock = 0 thì hết hàng còn nếu stock > 0 thì còn hàng)
-
-viewCount: number,         // Số lượt xem -> sinh ra trong lúc thêm (=0)
-sold: number, // số lượng đã bán -> sinh ra trong lúc thêm (=0)
-
-averageRating: number // trung bình đánh giá -> rỗng
-
-reviews: ObjectId[] -> rỗng
-}
- */

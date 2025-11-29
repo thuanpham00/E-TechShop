@@ -42,5 +42,6 @@ export const listSpecificationForCategory = {
   "Tai nghe": ["Màu sắc", "Kiểu tai nghe", "Trọng lượng", "Bảo hành"],
   "RAM, SSD, HDD": ["Màu sắc", "Loại RAM", "Dung lượng", "Bảo hành"], // dành cho RAM
   HDD: ["Tốc độ đọc", "Tốc độ ghi", "Cache", "Dung lượng", "RPM", "Bảo hành"], // dành cho HDD
-  SSD: ["Tốc độ đọc", "Tốc độ ghi", "Chuẩn giao tiếp", "Dung lượng", "TBW", "Bảo hành"] // dành cho SSD
+  SSD: ["Tốc độ đọc", "Tốc độ ghi", "Chuẩn giao tiếp", "Dung lượng", "TBW", "Bảo hành"], // dành cho SSD
+  Loa: ["Công suất", "Kiểu loa", "Pin", "Bảo hành"]
 } as const

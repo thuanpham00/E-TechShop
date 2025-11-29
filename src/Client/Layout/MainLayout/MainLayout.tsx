@@ -5,11 +5,13 @@ import Footer from "src/Client/Components/Footer"
 import Header from "src/Client/Components/Header"
 import sideBarLeft from "src/Assets/img/side_bar_left.jpg"
 import sideBarRight from "src/Assets/img/side_bar_right.jpg"
+import HeaderMobile from "src/Client/Components/HeaderMobile"
 
 function MainLayoutInner() {
   return (
     <div className="relative bg-[#f1f1f1]">
       <Header />
+      <HeaderMobile />
 
       <aside className="fixed left-4 top-48 z-10 hidden xl:block">
         <div className="content-block rounded overflow-hidden shadow-md">
@@ -30,7 +32,9 @@ function MainLayoutInner() {
         </div>
       </aside>
 
-      <ChatConsulting />
+      <div className="hidden md:block">
+        <ChatConsulting />
+      </div>
       <Footer />
     </div>
   )

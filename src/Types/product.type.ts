@@ -43,6 +43,35 @@ export type CategoryItemType = {
   brand_ids: string[]
 }
 
+export type TopReviewOrderItemType = {
+  _id: string
+  productId: {
+    _id: string
+    name: string
+    banner: {
+      url: string
+      type: number
+      id: string
+    }
+    discount: number
+    price: number
+    priceAfterDiscount: number
+  }
+  userId: {
+    _id: string
+    name: string
+    avatar: string
+  }
+  orderId: string
+  rating: number
+  title: string
+  comment: string
+  images: never[]
+  replies: never[]
+  created_at: string
+  updated_at: string
+}
+
 export type BrandItemType = {
   _id: string
   name: string
@@ -169,7 +198,10 @@ export type ReceiptItemType = {
 
 export type OrderItemType = {
   _id: string
-  user_id: string
+  user_id: {
+    _id: string
+    avatar: string
+  }
   customer_info: {
     name: string
     phone: string
@@ -198,6 +230,23 @@ export type OrderItemType = {
   voucher_code?: string
   discount_amount?: number
   type_order: string
+  reviews?: {
+    _id: string
+    rating: number
+    title: string
+    comment: string
+    created_at: string
+    images: {
+      id: string
+      url: string
+      type: number
+    }[]
+    userId: {
+      _id: string
+      name: string
+      avatar: string
+    }
+  }[]
 }
 
 export type ProductItemType = {
@@ -310,7 +359,6 @@ export type ProductDetailType = {
     type: number
   }[]
   price: number
-  reviews: string[] // Dữ liệu có thể thay đổi tùy thuộc vào yêu cầu
   sold: number
   specifications: {
     name: string
@@ -324,8 +372,35 @@ export type ProductDetailType = {
     url: string
   }
   status: StatusProduct
+  reviews?: {
+    _id: string
+    rating: number
+    title: string
+    comment: string
+    created_at: string
+    images: {
+      id: string
+      url: string
+      type: number
+    }[]
+    userId: {
+      _id: string
+      name: string
+      avatar: string
+    }
+  }[]
 
   quantity?: number // Thêm trường quantity nếu cần thiết - dành cho cart
+}
+
+export type CreateReviewOderBodyReq = {
+  reviews: {
+    product_id: string
+    rating: number
+    title: string
+    comment: string
+    images: File[] // URLs của hình ảnh đã upload
+  }[]
 }
 
 export type CreateProductBodyReq = {

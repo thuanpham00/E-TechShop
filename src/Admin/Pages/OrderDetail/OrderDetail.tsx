@@ -16,6 +16,8 @@ export default function OrderDetail() {
   const orderData = state?.orderData as OrderItemType
   const type = state?.type as "process" | "completed"
 
+  console.log(orderData)
+
   const navigate = useNavigate()
 
   const getStatusColor = (status: string) => {
@@ -308,6 +310,49 @@ export default function OrderDetail() {
                 </div>
               </div>
             </div>
+
+            {/* Review */}
+            {orderData.reviews && orderData.reviews.length > 0 && (
+              <div className="bg-white dark:bg-darkPrimary rounded-xl shadow-sm border border-gray-200 dark:border-darkBorder p-6 mt-6">
+                <h3 className="text-lg font-semibold text-gray-800 dark:text-white mb-4">Đánh giá đơn hàng</h3>
+                <div className="space-y-6">
+                  {orderData.reviews.map((review) => (
+                    <div key={review._id} className="border-b pb-4">
+                      <div className="flex items-center gap-3 mb-2">
+                        <img
+                          src={orderData.user_id.avatar}
+                          alt={orderData.customer_info?.name}
+                          className="w-10 h-10 rounded-full object-cover border"
+                        />
+                        <span className="font-semibold">{orderData.customer_info?.name}</span>
+                        <span className="ml-auto text-yellow-500 font-bold">
+                          {Array.from({ length: review.rating }).map((_, i) => (
+                            <span key={i}>★</span>
+                          ))}
+                        </span>
+                      </div>
+                      <div className="font-medium text-gray-800 mb-1">{review.title}</div>
+                      <div className="text-gray-600">{review.comment}</div>
+                      {review.images && review.images.length > 0 && (
+                        <div className="flex gap-2 mt-2">
+                          {review.images.map((img) => (
+                            <img
+                              key={img.id}
+                              src={img.url}
+                              alt="review-img"
+                              className="w-16 h-16 object-cover rounded border"
+                            />
+                          ))}
+                        </div>
+                      )}
+                      <div className="text-xs text-gray-400 mt-1">
+                        {new Date(review.created_at).toLocaleString("vi-VN")}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Right Column - 1/3 width */}

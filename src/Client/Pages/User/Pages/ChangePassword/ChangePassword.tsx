@@ -90,7 +90,7 @@ export default function ChangePassword() {
             layout="horizontal"
           >
             <Row gutter={16}>
-              <Col span={16}>
+              <Col span={24} md={16}>
                 <Form.Item
                   label="Mật khẩu hiện tại"
                   name="old_password"

@@ -27,6 +27,7 @@ const ChangePassword = lazy(() => import("../Pages/User/Pages/ChangePassword"))
 const Profile = lazy(() => import("../Pages/User/Pages/Profile"))
 const PaymentMethod = lazy(() => import("../Pages/PaymentMethod"))
 const CompareProduct = lazy(() => import("../Pages/CompareProduct"))
+const OrderReview = lazy(() => import("../Pages/OrderReview"))
 
 const ProjectRouter = () => {
   const { isAuthenticated } = useContext(AppContext)
@@ -178,6 +179,14 @@ export default function useRouterClient() {
                   element: (
                     <Suspense>
                       <Order />
+                    </Suspense>
+                  )
+                },
+                {
+                  path: path.OrderReview,
+                  element: (
+                    <Suspense>
+                      <OrderReview />
                     </Suspense>
                   )
                 },

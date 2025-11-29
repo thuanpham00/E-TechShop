@@ -18,7 +18,7 @@ export default function CategoryDetail({ listCategoryMenu }: Props) {
   }
 
   return (
-    <div className="grid grid-cols-5 gap-4 w-full shadow-lg bg-white border border-gray-300 rounded-md p-6">
+    <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4 w-full shadow-lg bg-white border-2 border-blue-300 rounded-md p-6 relative z-10">
       {listCategoryMenu[0]?.sections.map((item, index) => (
         <div key={index} className="mr-20">
           <span className="text-base tracking-wide font-semibold text-primaryBlue">{item.name}</span>

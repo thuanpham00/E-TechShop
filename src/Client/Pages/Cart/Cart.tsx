@@ -86,7 +86,7 @@ export default function Cart() {
           }}
         />
       ),
-      width: 150
+      width: 120
     },
     {
       title: "Sản phẩm",
@@ -388,9 +388,9 @@ export default function Cart() {
                 {/* Cart Header */}
                 <div className="px-6 py-4 bg-gray-50 border-b border-gray-200">
                   <div className="flex items-center justify-between">
-                    <h1 className="text-xl font-bold text-gray-800 flex items-center gap-2">
+                    <h1 className="text-base md:text-xl font-bold text-gray-800 flex items-center gap-2">
                       <ShoppingCart className="text-blue-500" size={24} />
-                      Giỏ hàng của bạn
+                      <span className="hidden md:block">Giỏ hàng của bạn</span>
                       <span className="text-blue-500">({lengthCart} sản phẩm)</span>
                     </h1>
                     {listCart.length > 0 && (
@@ -408,7 +408,14 @@ export default function Cart() {
 
                 {/* Products Table */}
                 <div className="p-6">
-                  <Table columns={columns} dataSource={listCart} pagination={false} bordered className="cart-table" />
+                  <Table
+                    columns={columns}
+                    dataSource={listCart}
+                    pagination={false}
+                    bordered
+                    className="cart-table"
+                    scroll={{ x: "max-content" }} // Thêm dòng này để có scroll ngang
+                  />
                 </div>
 
                 {/* Sticky Footer */}
@@ -416,12 +423,12 @@ export default function Cart() {
                   <div className="px-6 py-4">
                     <div className="flex justify-end items-center">
                       {/* Right - Summary & Checkout */}
-                      <div className="flex items-center gap-6">
+                      <div className="flex items-center gap-6 flex-col md:flex-row">
                         {/* Price Summary */}
                         <div className="text-right">
                           <div className="flex items-center gap-2 mb-1">
                             <span className="text-gray-600">Tổng thanh toán ({selectedProducts.length} sản phẩm):</span>
-                            <span className="text-2xl font-bold text-red-500">
+                            <span className="text-lg md:text-2xl font-bold text-red-500">
                               {formatCurrency(totalPriceProducts)}đ
                             </span>
                           </div>
@@ -442,7 +449,7 @@ export default function Cart() {
                           size="large"
                           onClick={handleOrderProduct}
                           disabled={selectedProducts.length === 0}
-                          className="bg-red-500 hover:!bg-red-600 border-none px-8 h-12 text-base font-bold shadow-lg"
+                          className="ml-auto md:ml-0 bg-red-500 hover:!bg-red-600 border-none px-8 h-12 text-base font-bold shadow-lg"
                         >
                           Mua hàng ({selectedProducts.length})
                         </Button>

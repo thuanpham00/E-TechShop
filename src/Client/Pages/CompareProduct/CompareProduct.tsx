@@ -143,8 +143,8 @@ export default function CompareProduct() {
               }))}
             />
           </div>
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 px-8 py-6">
-            <div className="flex items-center justify-between gap-6">
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 md:px-8 md:py-6">
+            <div className="flex items-center flex-wrap justify-between gap-6">
               <div className="flex-1">
                 <Select
                   className="w-full"
@@ -197,12 +197,12 @@ export default function CompareProduct() {
               </div>
             </div>
 
-            <div className="flex gap-6">
-              <div className="flex-1 mt-6 p-4 border border-gray-200 rounded-lg">
+            <div className="flex md:gap-6 mt-6">
+              <div className="flex-1 p-4 border border-gray-200 rounded-tl-lg rounded-bl-lg md:rounded-lg">
                 <ProductCompare productSelected={productSelected} />
               </div>
 
-              <div className="flex-1 mt-6 p-4 border border-gray-200 rounded-lg">
+              <div className="flex-1 p-4 border border-gray-200 rounded-tr-lg rounded-br-lg md:rounded-lg">
                 <ProductCompare productSelected={productSelected_2} />
               </div>
             </div>

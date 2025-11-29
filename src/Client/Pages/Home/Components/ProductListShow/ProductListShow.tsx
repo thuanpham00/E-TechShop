@@ -46,32 +46,40 @@ export default function ProductListShow({
               Xem tất cả
             </button>
           </div>
-          <Swiper
-            modules={[Navigation, Autoplay]}
-            slidesPerView={5}
-            spaceBetween={20}
-            navigation={{
-              nextEl: ".custom-next",
-              prevEl: ".custom-prev"
-            }}
-            autoplay={{ delay: 3000, disableOnInteraction: false }}
-            loop={true}
-            className="mySwiper relative"
-          >
-            {result.map((item, index) => (
-              <SwiperSlide key={index}>
-                <ProductItem item={item} />
-              </SwiperSlide>
-            ))}
-          </Swiper>
+          <div className="mt-3 relative">
+            <Swiper
+              modules={[Navigation, Autoplay]}
+              spaceBetween={20}
+              loop={true}
+              autoplay={{ delay: 3000, disableOnInteraction: false }}
+              navigation={{
+                nextEl: ".custom-next",
+                prevEl: ".custom-prev"
+              }}
+              breakpoints={{
+                320: { slidesPerView: 2 },
+                480: { slidesPerView: 2 },
+                768: { slidesPerView: 3 },
+                1024: { slidesPerView: 4 },
+                1280: { slidesPerView: 5 }
+              }}
+              className="mySwiper relative"
+            >
+              {result.map((item, index) => (
+                <SwiperSlide key={index}>
+                  <ProductItem item={item} />
+                </SwiperSlide>
+              ))}
+            </Swiper>
 
-          <button className="custom-prev">
-            <ChevronLeft />
-          </button>
+            <button className="custom-prev">
+              <ChevronLeft />
+            </button>
 
-          <button className="custom-next">
-            <ChevronRight />
-          </button>
+            <button className="custom-next">
+              <ChevronRight />
+            </button>
+          </div>
         </Fragment>
       )}
     </div>

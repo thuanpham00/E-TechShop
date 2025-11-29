@@ -4,11 +4,16 @@ import banner_2 from "src/Assets/img/banner_background/banner_2.webp"
 
 function MainLayoutAuthInner() {
   return (
-    <div className="flex items-center dark:bg-darkPrimary bg-white">
-      <div className="w-[70%]">
-        <img className="w-full object-cover h-screen" src={banner_2} alt="banner" />
-      </div>
-      <div className="w-[30%]">
+    <div
+      className="flex items-center bg-white justify-center"
+      style={{
+        backgroundImage: `url(${banner_2})`,
+        backgroundSize: "cover",
+        backgroundPosition: "center center",
+        minHeight: "100vh"
+      }}
+    >
+      <div className="w-[90%] md:w-[55%] lg:w-[50%] bg-white rounded-md">
         <Outlet />
       </div>
     </div>

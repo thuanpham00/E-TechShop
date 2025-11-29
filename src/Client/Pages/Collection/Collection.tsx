@@ -84,6 +84,7 @@ export default function Collection() {
 
   const nameDisplay = useMemo(() => {
     const findBanner = getListCategoryMenu.data?.data?.data.find((item: any) => item.slug === slug)
+    console.log(findBanner)
     return findBanner ? findBanner.name : ""
   }, [getListCategoryMenu.data?.data?.data, slug])
 
@@ -173,6 +174,8 @@ export default function Collection() {
     )
   }
 
+  console.log(nameDisplay)
+
   return (
     <div>
       <Helmet>
@@ -184,7 +187,6 @@ export default function Collection() {
       </Helmet>
       <div className="container">
         <Breadcrumb slug_1={nameDisplay as string} />
-
         {/* Loading lần đầu */}
         {isLoading && <Skeleton />}
 
@@ -192,13 +194,17 @@ export default function Collection() {
           <>
             {/* Banner cố định */}
             {bannerUrl !== "" && bannerUrl !== undefined && (
-              <img className="rounded-lg shadow-md h-[300px] w-full" src={bannerUrl} alt={`Banner ${slug}`} />
+              <img
+                className="rounded-lg shadow-md h-[120px] md:h-[200px] lg:h-[300px] w-full"
+                src={bannerUrl}
+                alt={`Banner ${slug}`}
+              />
             )}
 
             {/* Bộ lọc */}
             <div className="bg-white border border-gray-200 p-4 my-4 rounded-lg shadow-md">
-              <div className="mt-1 mb-3 flex items-center justify-between">
-                <div className="flex items-center gap-3">
+              <div className="mt-1 mb-3 flex items-start md:items-center justify-between flex-col md:flex-row gap-2 md:gap-0">
+                <div className="flex items-center flex-wrap gap-3">
                   <div className="border border-gray-300 rounded-md px-2 py-1 flex items-center gap-1">
                     <ListFilter size={16} />
                     <span className="text-[13px]">Bộ lọc</span>
@@ -296,7 +302,7 @@ function ProductList({ result, isFetching }: { result?: SuccessResponse<Collecti
           <Spin size="large" />
         </div>
       ) : (
-        <div className="grid grid-cols-5 gap-3">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
           {result?.result.length ? (
             result.result.map((item) => (
               <div key={item._id}>

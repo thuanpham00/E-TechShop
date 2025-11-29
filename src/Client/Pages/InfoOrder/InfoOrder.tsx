@@ -299,13 +299,20 @@ export default function InfoOrder() {
             <div className="px-6 py-4 bg-gray-50 border-b border-gray-200">
               <h1 className="text-xl font-bold text-gray-800 flex items-center gap-2">
                 <Package className="text-blue-500" size={24} />
-                Thông tin đơn hàng
+                <span className="hidden md:block">Thông tin đơn hàng</span>
                 <span className="text-blue-500">({listCart?.length} sản phẩm)</span>
               </h1>
             </div>
 
             <div className="p-6">
-              <Table columns={columns} dataSource={listCart} pagination={false} bordered className="order-table" />
+              <Table
+                columns={columns}
+                dataSource={listCart}
+                pagination={false}
+                bordered
+                className="order-table"
+                scroll={{ x: "max-content" }}
+              />
             </div>
 
             <Divider className="my-0" />
@@ -550,11 +557,11 @@ export default function InfoOrder() {
                     </div>
                     <Divider className="my-2 bg-blue-300" />
                     <div className="flex justify-between items-center">
-                      <span className="text-lg font-bold text-gray-800 flex items-center gap-2">
+                      <span className="text-base md:text-lg font-bold text-gray-800 flex items-center gap-2">
                         <CreditCard size={20} />
                         Tổng thanh toán
                       </span>
-                      <span className="text-2xl font-bold text-red-500">{formatCurrency(finalTotal)}đ</span>
+                      <span className="text-lg md:text-2xl font-bold text-red-500">{formatCurrency(finalTotal)}đ</span>
                     </div>
                   </div>
                 </Card>

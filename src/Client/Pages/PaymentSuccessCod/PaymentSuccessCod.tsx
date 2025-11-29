@@ -40,6 +40,7 @@ export default function PaymentSuccessCod() {
     queryClient.invalidateQueries({ queryKey: ["listCart", token] })
     queryClient.invalidateQueries({ queryKey: ["listOrder", token] })
     calledRef.current = true
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
@@ -192,12 +193,14 @@ export default function PaymentSuccessCod() {
 
               {/* Total Amount */}
               <Card className="bg-gradient-to-r from-red-50 to-orange-50 border-red-200">
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between flex-col md:flex-row">
                   <div className="flex items-center gap-2">
                     <Truck size={20} className="text-red-500" />
                     <Text className="text-lg font-semibold text-gray-800">Số tiền cần thanh toán:</Text>
                   </div>
-                  <Text className="text-3xl font-bold text-red-500">{formatCurrency(infoOrder?.totalAmount)}đ</Text>
+                  <Text className="text-lg md:text-3xl font-bold text-red-500">
+                    {formatCurrency(infoOrder?.totalAmount)}đ
+                  </Text>
                 </div>
                 {infoOrder?.type_order === "cod" && (
                   // <Divider className="my-3" />

@@ -3,7 +3,7 @@ import { keepPreviousData, useMutation, useQuery } from "@tanstack/react-query"
 import { Modal, Table, Tabs, TabsProps, Tag, Typography, Empty, Spin } from "antd"
 import { ChevronLeft, Package, Clock, MapPin, Phone, User, CreditCard } from "lucide-react"
 import { Helmet } from "react-helmet-async"
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import { getAccessTokenFromLS } from "src/Helpers/auth"
 import { useEffect, useMemo, useState } from "react"
 import { convertDateTime, formatCurrency } from "src/Helpers/common"
@@ -13,15 +13,66 @@ import { queryClient } from "src/main"
 import { motion } from "framer-motion"
 import { OrderApi } from "src/Apis/client/order.api"
 
-type OrderList = {
+export type TypeOrderItem = {
   key: string
-  time: string
-  total: number
+  user_id: string
+  customer_info: {
+    name: string
+    phone: string
+    address: string
+    email: string
+  }
+  products: ProductInOrder[]
+  subTotal: number
+  shipping_fee: number
+  discount_amount: number
+  voucher_id: string
+  voucher_code: string
+  totalAmount: number
+  type_order: string
   status: string
+  status_history: {
+    status: string
+    updated_at: string
+  }[]
+  note: string
+  isReview: boolean
+  reviews?: ReviewItemOrder[]
+  created_at: string
+  updated_at: string
+}
+
+export type ReviewItemOrder = {
+  _id: string
+  productId: {
+    _id: string
+    name: string
+    banner: {
+      id: string
+      type: number
+      url: string
+    }
+  }
+  orderId: string
+  rating: string
+  title: string
+  comment: string
+  images: {
+    id: string
+    url: string
+    type: number
+  }[]
+  created_at: string
+}
+
+export type ProductInOrder = {
+  product_id: string
   name: string
-  address: string
-  phone: number
-}[]
+  price: number
+  quantity: number
+  image: string
+  discount: number
+}
 
 const { Text } = Typography
 
@@ -35,15 +86,17 @@ const items: TabsProps["items"] = [
 ]
 
 export default function Order() {
+  const navigate = useNavigate()
   const token = getAccessTokenFromLS()
   const [activeTabKey, setActiveTabKey] = useState("1")
-  const [listOrder, setListOrder] = useState<OrderList>([])
+  const [listOrder, setListOrder] = useState<TypeOrderItem[]>([])
   const [selectedOrder, setSelectedOrder] = useState<string | null>(null)
   const [open, setOpen] = useState(false)
   const [confirmLoading, setConfirmLoading] = useState(false)
+  const [openConfirmReceived, setOpenConfirmReceived] = useState(false)
 
   const { data, isLoading } = useQuery({
-    queryKey: ["listOrderClient", token],
+    queryKey: ["listOrder", token],
     queryFn: () => {
       const controller = new AbortController()
       setTimeout(() => controller.abort(), 10000)
@@ -146,7 +199,7 @@ export default function Order() {
 
   useEffect(() => {
     if (listOrderData) {
-      const list: OrderList = listOrderData?.map((item: any) => ({
+      const list: TypeOrderItem[] = listOrderData?.map((item: any) => ({
         key: item._id,
         time: item.created_at,
         subTotal: item.subTotal,
@@ -157,7 +210,9 @@ export default function Order() {
         address: item.customer_info.address,
         phone: item.customer_info.phone,
         products: item.products,
-        discount_amount: item.discount_amount
+        discount_amount: item.discount_amount,
+        isReview: item.isReview,
+        reviews: item.reviews || []
       }))
       setListOrder(list)
     }
@@ -186,7 +241,7 @@ export default function Order() {
       {
         onSuccess: (res) => {
           toast.success(res.data.message, { autoClose: 1500 })
-          queryClient.invalidateQueries({ queryKey: ["listOrderClient", token] })
+          queryClient.invalidateQueries({ queryKey: ["listOrder", token] })
           setOpen(false)
           setConfirmLoading(false)
         },
@@ -198,9 +253,23 @@ export default function Order() {
     )
   }
 
-  const showModal = (orderId: string) => {
-    setSelectedOrder(orderId)
-    setOpen(true)
+  const handleConfirmReceived = (idOrder: string) => {
+    setConfirmLoading(true)
+    updateOrderStatus.mutate(
+      { idOrder, status: 1 },
+      {
+        onSuccess: (res) => {
+          toast.success(res.data.message, { autoClose: 1500 })
+          queryClient.invalidateQueries({ queryKey: ["listOrder", token] })
+          setOpenConfirmReceived(false)
+          setConfirmLoading(false)
+        },
+        onError: () => {
+          toast.error("Xác nhận đơn hàng thất bại", { autoClose: 1500 })
+          setConfirmLoading(false)
+        }
+      }
+    )
   }
 
   return (
@@ -224,7 +293,7 @@ export default function Order() {
           </div>
 
           {/* Main Content */}
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 md:p-6">
             {isLoading ? (
               <div className="flex justify-center items-center py-28">
                 <Spin size="large" />
@@ -233,7 +302,7 @@ export default function Order() {
               <div>
                 {/* Title */}
                 <div className="mb-6">
-                  <h1 className="text-2xl font-bold text-gray-800 flex items-center gap-2">
+                  <h1 className="text-lg md:text-2xl font-bold text-gray-800 flex items-center gap-2">
                     <Package className="text-blue-500" size={28} />
                     Đơn hàng của tôi
                     <span className="text-blue-500">({lengthOrder})</span>
@@ -257,9 +326,10 @@ export default function Order() {
                       </span>
                     )
                   }}
+                  scroll={{ x: "max-content" }}
                   expandable={{
                     expandedRowRender: (record: any) => (
-                      <div className="bg-gray-50 p-6 rounded-lg space-y-4">
+                      <div className="bg-gray-50 p-0 md:p-6 rounded-lg space-y-4">
                         {/* Products */}
                         <div className="space-y-3">
                           {record.products.map((item: any) => {
@@ -267,11 +337,10 @@ export default function Order() {
                               ? item.price - item.price * (item.discount / 100)
                               : item.price
                             const totalPrice = discountedPrice * item.quantity
-
                             return (
                               <div
                                 key={item.product_id}
-                                className="flex items-center justify-between p-4 bg-white border border-gray-200 rounded-lg hover:shadow-md transition-shadow"
+                                className="flex flex-col items-end md:flex-row md:items-center justify-between p-4 bg-white border border-gray-200 rounded-lg hover:shadow-md transition-shadow"
                               >
                                 <div className="flex items-center gap-4">
                                   <div className="relative">
@@ -330,19 +399,22 @@ export default function Order() {
                         </div>
 
                         {/* Actions */}
-                        <div className="flex justify-between items-center pt-2">
+                        <div className="flex flex-col md:flex-row justify-between items-end gap-2 md:items-center pt-2">
                           <p className="text-sm text-red-500">
                             * Bạn chỉ có thể hủy đơn hàng khi đang ở trạng thái Chờ xác nhận
                           </p>
-                          <div className="flex gap-3">
+                          <div className="flex items-end flex-col lg:flex-row gap-3">
                             <Button
                               classNameButton={`px-6 py-2 text-white font-medium rounded-lg transition-all ${
                                 record.status === "Chờ xác nhận"
-                                  ? "bg-red-500 hover:bg-red-600 shadow-md hover:shadow-lg"
+                                  ? "bg-red-500 !hover:bg-red-600 shadow-md hover:shadow-lg"
                                   : "bg-gray-300 cursor-not-allowed"
                               }`}
                               nameButton="Hủy đơn hàng"
-                              onClick={() => showModal(record.key)}
+                              onClick={() => {
+                                setOpen(true)
+                                setSelectedOrder(record.key)
+                              }}
                               disabled={record.status !== "Chờ xác nhận"}
                             />
                             <Button
@@ -352,10 +424,80 @@ export default function Order() {
                                   : "bg-gray-300 cursor-not-allowed"
                               }`}
                               nameButton="Đã nhận hàng"
+                              onClick={() => {
+                                setOpenConfirmReceived(true)
+                                setSelectedOrder(record.key)
+                              }}
                               disabled={record.status !== "Đang vận chuyển"}
                             />
+
+                            {record.isReview === true ? (
+                              <div>
+                                <Tag color="green" className="font-semibold px-4 py-2 text-sm rounded-lg">
+                                  Đã đánh giá
+                                </Tag>
+                              </div>
+                            ) : (
+                              <Button
+                                classNameButton={`px-6 py-2 text-white font-medium rounded-lg transition-all ${
+                                  record.status === "Đã giao hàng"
+                                    ? "bg-blue-500 hover:bg-blue-600 shadow-md hover:shadow-lg"
+                                    : "bg-gray-300 cursor-not-allowed"
+                                }`}
+                                nameButton="Đánh giá đơn hàng"
+                                onClick={() => {
+                                  navigate(`/orders/${record.key}/review`, {
+                                    state: { order: record }
+                                  })
+                                }}
+                                disabled={record.status !== "Đã giao hàng"}
+                              />
+                            )}
                           </div>
                         </div>
+
+                        {record.isReview === true && record.reviews && record.reviews.length > 0 && (
+                          <div className="mt-2 space-y-3">
+                            {record.reviews.map((rv: ReviewItemOrder, idx: number) => (
+                              <div key={rv._id || idx} className="bg-gray-100 rounded-lg p-3">
+                                <div className="flex flex-col items-start md:items-center md:flex-row md:justify-between gap-2 mb-1">
+                                  <div className="flex items-center gap-2">
+                                    <img
+                                      src={rv.productId.banner.url}
+                                      alt={rv.productId.name}
+                                      className="w-10 h-10 object-cover rounded border"
+                                    />
+                                    <span className="font-semibold">{rv.productId.name}</span>
+                                  </div>
+                                  <div className="flex flex-col items-start md:flex-row md:items-center gap-2">
+                                    <span className="text-yellow-500">
+                                      {Array.from({ length: Number(rv.rating) }).map((_, i) => (
+                                        <span key={i} className="text-lg">
+                                          ★
+                                        </span>
+                                      ))}
+                                    </span>
+                                    <span className="font-semibold">{rv.title}</span>
+                                  </div>
+                                </div>
+                                <div className="text-gray-700 mb-1">{rv.comment}</div>
+                                {rv.images && rv.images.length > 0 && (
+                                  <div className="flex gap-2 mt-2">
+                                    {rv.images.map((img, i) => (
+                                      <img
+                                        key={img.id || i}
+                                        src={img.url}
+                                        alt="review"
+                                        className="w-14 h-14 object-cover rounded border"
+                                      />
+                                    ))}
+                                  </div>
+                                )}
+                                <div className="flex justify-end text-gray-400">{convertDateTime(rv.created_at)}</div>
+                              </div>
+                            ))}
+                          </div>
+                        )}
                       </div>
                     )
                   }}
@@ -398,7 +540,7 @@ export default function Order() {
         okText="Xác nhận hủy"
         cancelText="Quay lại"
         okButtonProps={{
-          className: "bg-red-500 hover:bg-red-600"
+          className: "!bg-red-500 !hover:bg-red-600"
         }}
       >
         <div className="space-y-3 py-4">
@@ -408,6 +550,35 @@ export default function Order() {
           <div className="bg-yellow-50 border-l-4 border-yellow-400 p-3 rounded">
             <p className="text-sm text-yellow-800">
               Đơn hàng sau khi hủy sẽ không thể phục hồi và các sản phẩm sẽ được hoàn về kho.
+            </p>
+          </div>
+        </div>
+      </Modal>
+
+      <Modal
+        title={
+          <div className="flex items-center gap-2 text-lg">
+            <span className="text-2xl">✅</span>
+            <span>Xác nhận đã nhận hàng</span>
+          </div>
+        }
+        open={openConfirmReceived}
+        onOk={() => selectedOrder && handleConfirmReceived(selectedOrder)}
+        confirmLoading={confirmLoading}
+        onCancel={() => setOpenConfirmReceived(false)}
+        okText="Xác nhận đã nhận"
+        cancelText="Quay lại"
+        okButtonProps={{
+          className: "bg-green-500 hover:bg-green-600"
+        }}
+      >
+        <div className="space-y-3 py-4">
+          <p className="text-gray-700">
+            Bạn xác nhận đã nhận đủ hàng từ đơn vị vận chuyển? Sau khi xác nhận, bạn có thể đánh giá sản phẩm.
+          </p>
+          <div className="bg-green-50 border-l-4 border-green-400 p-3 rounded">
+            <p className="text-sm text-green-800">
+              Nếu có vấn đề với sản phẩm, vui lòng liên hệ hỗ trợ trước khi xác nhận.
             </p>
           </div>
         </div>

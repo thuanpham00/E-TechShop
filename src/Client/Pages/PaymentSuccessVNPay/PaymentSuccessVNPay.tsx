@@ -168,12 +168,12 @@ export default function PaymentSuccessVNPay() {
 
               {/* Total Amount */}
               <Card className="bg-gradient-to-r from-green-50 to-emerald-50 border-green-200">
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between flex-col md:flex-row">
                   <div className="flex items-center gap-2">
                     <CheckCircle2 size={20} className="text-green-500" />
                     <Text className="text-lg font-semibold text-gray-800">Số tiền đã thanh toán:</Text>
                   </div>
-                  <Text className="text-3xl font-bold text-green-600">
+                  <Text className="text-lg md:text-3xl font-bold text-green-600">
                     {formatCurrency(Number(paramsUrl.vnp_Amount.slice(0, -2)))}đ
                   </Text>
                 </div>

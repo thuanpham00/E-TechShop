@@ -1,5 +1,5 @@
 import Http from "src/Helpers/http"
-import { OrderType } from "src/Types/product.type"
+import { CreateReviewOderBodyReq, OrderType } from "src/Types/product.type"
 
 export const OrderApi = {
   getOrders: (signal?: AbortSignal) => {
@@ -23,6 +23,31 @@ export const OrderApi = {
   callBackVnpay: (orderId: string) => {
     return Http.post("/payment/vnpay-callback", {
       orderId
+    })
+  },
+
+  addReviewOrder: (orderId: string, body: CreateReviewOderBodyReq) => {
+    const formData = new FormData()
+    body.reviews.forEach((review, index) => {
+      formData.append(`reviews[${index}][product_id]`, review.product_id)
+      formData.append(`reviews[${index}][rating]`, review.rating.toString())
+      formData.append(`reviews[${index}][comment]`, review.comment)
+      formData.append(`reviews[${index}][title]`, review.title)
+      review.images.forEach((imageUrl, imgIndex) => {
+        formData.append(`reviews[${index}][image][${imgIndex}]`, imageUrl)
+      })
+    })
+
+    return Http.post(`/orders/${orderId}/reviews`, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data"
+      }
+    })
+  },
+
+  getTopReviewNewest: (signal?: AbortSignal) => {
+    return Http.get("/orders/top-10-reviews", {
+      signal
     })
   }
 }

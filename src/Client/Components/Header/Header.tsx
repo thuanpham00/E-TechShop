@@ -1,3 +1,4 @@
+/* eslint-disable import/no-unresolved */
 import avatarDefault from "src/Assets/img/avatarDefault.png"
 import { Cpu, Heart, HeartOff, Info, LogOut, PackageSearch, ShoppingCart } from "lucide-react"
 import { Link, useNavigate } from "react-router-dom"
@@ -21,6 +22,7 @@ import { collectionAPI } from "src/Apis/client/collections.api"
 import { OrderApi } from "src/Apis/client/order.api"
 import { categoryAPI } from "src/Apis/client/category.api"
 import topBarImg from "src/Assets/img/top-bar.png"
+import { Swiper, SwiperSlide } from "swiper/react"
 
 export default function Header() {
   const navigate = useNavigate()
@@ -245,24 +247,24 @@ export default function Header() {
   }, [])
 
   return (
-    <div className="sticky top-0 left-0 z-20">
+    <div className="hidden md:block sticky top-0 left-0 z-20">
       <div className="bg-black w-full">
         <img src={topBarImg} alt="Top bar" className="w-full h-[45px] object-contain" />
       </div>
       <div className="bg-primaryBlue">
         <div className="container">
-          <div className="flex items-center gap-4 py-3">
-            <div className="w-[15%]">
+          <div className="grid grid-cols-6 items-center gap-4 py-3">
+            <div className="col-span-1">
               <div className="flex items-center gap-2">
                 <button className="flex items-center gap-1" onClick={() => navigate(path.Home)}>
-                  <Cpu color="white" className="mt-1" />
+                  <Cpu color="white" className="mt-1 hidden lg:block" />
                   <span className="text-white text-2xl font-bold text-center border-b-[3px] border-white dark:border-white">
                     TechZone
                   </span>
                 </button>
               </div>
             </div>
-            <div className="w-[40%]">
+            <div className="col-span-2">
               <form className="w-full relative flex">
                 <input
                   type="text"
@@ -329,8 +331,8 @@ export default function Header() {
                 </div>
               </form>
             </div>
-            <div className="w-[45%]">
-              <div className="flex">
+            <div className="col-span-3">
+              <div className="flex gap-1">
                 <div className="w-[65%] flex items-center">
                   <div className="flex-1">
                     <Link to={path.Order} className="flex items-center justify-center gap-1 cursor-pointer relative">
@@ -501,9 +503,9 @@ export default function Header() {
                       {
                         <div className="flex items-center gap-1 py-1 px-2 rounded-[4px] bg-secondBlue text-white font-semibold hover:bg-secondBlue/50 duration-200 transition ease-linear cursor-pointer">
                           <img src={avatar || avatarDefault} className="h-8 w-8 rounded-full" alt="avatar default" />
-                          <div>
+                          <div className="min-w-0">
                             <span className="text-xs">Xin chào</span>
-                            <span className="block text-[13px] truncate w-32">{nameUser}</span>
+                            <span className="block text-[13px] truncate">{nameUser}</span>
                           </div>
                         </div>
                       }
@@ -532,20 +534,27 @@ export default function Header() {
       </div>
       <div className="bg-white border-b border-b-gray-200 pt-1">
         <div className="container">
-          <div onMouseLeave={handleExitCategory} className="relative">
-            <div className="flex items-center flex-wrap justify-center">
-              {dataListCategoryIsActiveSortAZ.slice(0, 10).map((category) => (
-                <MenuCategoryItem
+          <div onMouseLeave={handleExitCategory} className="relative flex justify-center">
+            <Swiper spaceBetween={8} slidesPerView="auto">
+              {dataListCategoryIsActiveSortAZ.map((category) => (
+                <SwiperSlide
                   key={category._id}
-                  showCategoryDetail={showCategoryDetail}
-                  idCategory={category._id}
-                  onHover={() => handleCategory(category._id)}
-                  nameCategory={category.name}
-                />
+                  style={{ width: "auto" }} // Để mỗi category vừa nội dung
+                >
+                  <div key={category._id}>
+                    <MenuCategoryItem
+                      showCategoryDetail={showCategoryDetail}
+                      idCategory={category._id}
+                      onHover={() => handleCategory(category._id)}
+                      nameCategory={category.name}
+                    />
+                  </div>
+                </SwiperSlide>
               ))}
-            </div>
+            </Swiper>
+
             {isHover && (
-              <div className="mx-auto absolute w-full top-22 left-0">
+              <div className="mx-auto absolute w-full top-8 left-0">
                 <CategoryDetail showDetail={showCategoryDetail} listCategoryMenu={listCategoryMenu} />
               </div>
             )}

@@ -23,7 +23,6 @@ export default function ProductRecently() {
             </div>
             <Swiper
               modules={[Navigation, Autoplay]}
-              slidesPerView={5}
               spaceBetween={20}
               navigation={{
                 nextEl: ".custom-next",
@@ -32,6 +31,13 @@ export default function ProductRecently() {
               autoplay={{ delay: 3000, disableOnInteraction: false }}
               loop={true}
               className="mySwiper relative"
+              breakpoints={{
+                320: { slidesPerView: 2 },
+                480: { slidesPerView: 2 },
+                768: { slidesPerView: 3 },
+                1024: { slidesPerView: 4 },
+                1280: { slidesPerView: 5 }
+              }}
             >
               {recentlyViewed.map((item, index) => (
                 <SwiperSlide key={index}>

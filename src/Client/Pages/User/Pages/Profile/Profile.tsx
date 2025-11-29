@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import { Button, Col, Form, Input, Row, Select, Space } from "antd"
+import { Button, Col, Form, Input, Row, Select } from "antd"
 import { useContext, useEffect, useState } from "react"
 import { Helmet } from "react-helmet-async"
 import { userAPI } from "src/Apis/user.api"
@@ -172,7 +172,7 @@ export default function Profile() {
             layout="horizontal"
           >
             <Row gutter={16} className="flex items-center">
-              <Col span={14}>
+              <Col span={24} md={14}>
                 <Form.Item label="Email" name="email">
                   <Input disabled />
                 </Form.Item>
@@ -185,10 +185,10 @@ export default function Profile() {
                 <Form.Item label="Số điện thoại" name="numberPhone">
                   <Input />
                 </Form.Item>
-                <Form.Item label="Ngày sinh">
-                  <Space>
-                    {/* Ngày */}
-                    <Select placeholder="Ngày" style={{ width: 120 }} onChange={(value) => setDay(value)} value={day}>
+                <Form.Item label="Ngày sinh" className="w-full">
+                  {/* Ngày */}
+                  <div className="flex gap-2 ">
+                    <Select placeholder="Ngày" style={{ flex: 1 }} onChange={(value) => setDay(value)} value={day}>
                       {days.map((d) => (
                         <Option key={d} value={d}>
                           {d}
@@ -197,12 +197,7 @@ export default function Profile() {
                     </Select>
 
                     {/* Tháng */}
-                    <Select
-                      placeholder="Tháng"
-                      style={{ width: 120 }}
-                      onChange={(value) => setMonth(value)}
-                      value={month}
-                    >
+                    <Select placeholder="Tháng" style={{ flex: 1 }} onChange={(value) => setMonth(value)} value={month}>
                       {months.map((m, index) => (
                         <Option key={index} value={m}>
                           {m}
@@ -211,17 +206,17 @@ export default function Profile() {
                     </Select>
 
                     {/* Năm */}
-                    <Select placeholder="Năm" style={{ width: 120 }} onChange={(value) => setYear(value)} value={year}>
+                    <Select placeholder="Năm" style={{ flex: 1 }} onChange={(value) => setYear(value)} value={year}>
                       {years.map((y) => (
                         <Option key={y} value={y}>
                           {y}
                         </Option>
                       ))}
                     </Select>
-                  </Space>
+                  </div>
                 </Form.Item>
               </Col>
-              <Col span={10}>
+              <Col span={24} md={10}>
                 <div className="text-center">
                   <div className="mb-2">Ảnh đại diện</div>
 
