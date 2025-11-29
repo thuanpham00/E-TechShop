@@ -466,7 +466,7 @@ export default function Header() {
                         <ShoppingCart color="white" size={24} />
                         <span className="text-[13px] text-white font-semibold">Giỏ hàng</span>
                         {isAuthenticated ? (
-                          <span className="absolute -top-3 left-7 w-[20px] h-[20px] bg-red-500 border border-white text-white text-[10px] flex items-center justify-center rounded-full font-semibold">
+                          <span className="absolute -top-3 left-9 w-[20px] h-[20px] bg-red-500 border border-white text-white text-[10px] flex items-center justify-center rounded-full font-semibold">
                             {lengthCart}
                           </span>
                         ) : (
