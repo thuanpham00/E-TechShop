@@ -253,7 +253,7 @@ export default function ManageProducts() {
       <Collapse items={items} defaultActiveKey={["2"]} className="bg-white dark:bg-darkPrimary dark:border-none" />
 
       <section className="mt-4">
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between mb-2">
           <div className="flex items-center gap-2">
             <Button
               onClick={() => downloadExcel(listProduct)}
@@ -313,7 +313,9 @@ export default function ManageProducts() {
                 })
             }}
             columns={columns}
-            rowClassName={(_, index) => (index % 2 === 0 ? "bg-[#f2f2f2]" : "bg-white")}
+            rowClassName={(_, index) =>
+              index % 2 === 0 ? "dark:bg-darkSecond bg-[#f2f2f2]" : "dark:bg-darkPrimary bg-white"
+            }
           />
         ) : (
           !isFetching && (

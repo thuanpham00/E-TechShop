@@ -87,7 +87,7 @@ export default function OrderReview() {
           queryClient.invalidateQueries({ queryKey: ["listOrder", token] })
           setTimeout(() => {
             navigate("/orders")
-          }, 2000)
+          }, 500)
           // dong bo data danh gia
         },
         onSettled: () => {

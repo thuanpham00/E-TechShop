@@ -18,6 +18,13 @@ export const collectionAPI = {
     })
   },
 
+  getCollectionsTop10: ({ params, signal }: { params: queryParamsCollection; signal?: AbortSignal }) => {
+    return Http.get(`/collections/top-10-product`, {
+      params,
+      signal
+    })
+  },
+
   addProductToFavourite: (body: FavouriteType) => {
     return Http.post(`/collections/favourite`, body)
   },

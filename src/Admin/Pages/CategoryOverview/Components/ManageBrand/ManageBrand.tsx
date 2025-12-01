@@ -281,8 +281,8 @@ export default function ManageBrand({ idCategory, nameCategory }: { idCategory: 
           <form onSubmit={handleSubmitSearch}>
             <div className="mt-1 grid grid-cols-2">
               <div className="col-span-1 flex items-center h-14 px-2 bg-[#ececec] dark:bg-darkPrimary border border-[#dadada] rounded-tl-md">
-                <span className="w-1/3 dark:text-white">Ngày đăng</span>
-                <div className="w-2/3 relative h-full">
+                <span className="w-[25%] dark:text-white">Ngày đăng</span>
+                <div className="w-[75%] relative h-full">
                   <div className="mt-2 w-full flex items-center gap-2">
                     <Controller
                       name="created_at_start"
@@ -320,8 +320,8 @@ export default function ManageBrand({ idCategory, nameCategory }: { idCategory: 
                 </div>
               </div>
               <div className="col-span-1 flex items-center h-14 px-2 bg-[#ececec] dark:bg-darkPrimary border border-[#dadada] rounded-tr-md">
-                <span className="w-1/3 dark:text-white">Ngày cập nhật</span>
-                <div className="w-2/3 relative h-full">
+                <span className="w-[25%] dark:text-white">Ngày cập nhật</span>
+                <div className="w-[75%] relative h-full">
                   <div className="mt-2 w-full flex items-center gap-2">
                     <Controller
                       name="updated_at_start"
@@ -359,8 +359,8 @@ export default function ManageBrand({ idCategory, nameCategory }: { idCategory: 
                 </div>
               </div>
               <div className="col-span-1 flex items-center h-14 px-2 bg-[#fff] dark:bg-darkPrimary border border-[#dadada] border-t-0 rounded-bl-md">
-                <span className="w-1/3 dark:text-white">Tên thể loại</span>
-                <div className="w-2/3 relative h-full">
+                <span className="w-[25%] dark:text-white">Tên thể loại</span>
+                <div className="w-[75%] relative h-full">
                   <div className="mt-2 w-full flex items-center gap-2">
                     <Input
                       name="name"
@@ -508,7 +508,7 @@ export default function ManageBrand({ idCategory, nameCategory }: { idCategory: 
     <div>
       <Collapse items={items} defaultActiveKey={["2"]} className="bg-white dark:bg-darkPrimary dark:border-none" />
 
-      <section className="bg-white dark:bg-darkPrimary mb-3 dark:border-darkBorder mt-4">
+      <section className="bg-white dark:bg-darkSecond mb-3 dark:border-darkBorder mt-4">
         <div className="flex items-center justify-between mb-2">
           <div className="flex items-center gap-2">
             <Button
@@ -562,7 +562,9 @@ export default function ManageBrand({ idCategory, nameCategory }: { idCategory: 
               }
             }}
             columns={columns}
-            rowClassName={(_, index) => (index % 2 === 0 ? "bg-[#f2f2f2]" : "bg-white")}
+            rowClassName={(_, index) =>
+              index % 2 === 0 ? "dark:bg-darkSecond bg-[#f2f2f2]" : "dark:bg-darkPrimary bg-white"
+            }
           />
         ) : (
           !isFetching && (

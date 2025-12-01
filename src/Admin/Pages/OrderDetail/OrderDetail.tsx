@@ -16,8 +16,6 @@ export default function OrderDetail() {
   const orderData = state?.orderData as OrderItemType
   const type = state?.type as "process" | "completed"
 
-  console.log(orderData)
-
   const navigate = useNavigate()
 
   const getStatusColor = (status: string) => {
@@ -386,7 +384,7 @@ export default function OrderDetail() {
                   onClick={handleUpdateStatus}
                   loading={updateStatusOrderMutation.isPending}
                   disabled={selectedStatus === orderData.status || type === "completed"}
-                  className="w-full"
+                  className={`w-full ${selectedStatus === orderData.status || type === "completed" ? "!text-black dark:!text-white" : "!text-white dark:!text-white"}`}
                 >
                   Cập nhật trạng thái
                 </Button>

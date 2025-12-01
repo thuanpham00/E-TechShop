@@ -100,7 +100,7 @@ export default function PrintBill({ order }: { order: OrderItemType }) {
         type="default"
         icon={<Printer size={16} />}
         onClick={generatePdf}
-        className="bg-white/20 hover:bg-white/30 text-black mt-2"
+        className="bg-white/20 hover:bg-white/30 text-black dark:text-white mt-2"
       >
         In hoá đơn
       </Button>

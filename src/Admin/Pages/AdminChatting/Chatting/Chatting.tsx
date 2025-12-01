@@ -2,7 +2,6 @@
 import InfiniteScroll from "react-infinite-scroll-component"
 import { TicketItemType } from "src/Types/product.type"
 import avatarDefault from "src/Assets/img/avatarDefault.png"
-import socket from "src/socket"
 import { useContext, useEffect, useState } from "react"
 import { AppContext } from "src/Context/authContext"
 import { ConversationType } from "src/Client/Components/ChatConsulting/ChatConsulting"
@@ -16,7 +15,7 @@ import SendMessageAdmin from "../SendMessageAdmin"
 import { CopyCheck } from "lucide-react"
 
 export default function Chatting({ selectedTicket }: { selectedTicket: TicketItemType }) {
-  const { userId } = useContext(AppContext) // người gửi tin nhắn
+  const { userId, socket } = useContext(AppContext) // người gửi tin nhắn
 
   const [conversations, setConversations] = useState<(ConversationType | any)[]>([])
 
@@ -75,6 +74,7 @@ export default function Chatting({ selectedTicket }: { selectedTicket: TicketIte
   }
 
   useEffect(() => {
+    if (!socket) return
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const handleReceivedMessage = (data: any) => {
       const { payload } = data
@@ -87,9 +87,10 @@ export default function Chatting({ selectedTicket }: { selectedTicket: TicketIte
     return () => {
       socket.off("received_message", handleReceivedMessage)
     }
-  }, [setConversations, selectedTicket])
+  }, [setConversations, selectedTicket, socket])
 
   useEffect(() => {
+    if (!socket) return
     const getListMessageLatest = async () => {
       try {
         await getDataConversation.refetch()
@@ -101,7 +102,7 @@ export default function Chatting({ selectedTicket }: { selectedTicket: TicketIte
     return () => {
       socket.off("reload_ticket_list", getListMessageLatest)
     }
-  }, [getDataConversation])
+  }, [getDataConversation, socket])
 
   const [checkFile, setCheckFile] = useState<boolean>(false)
 
@@ -232,7 +233,7 @@ export default function Chatting({ selectedTicket }: { selectedTicket: TicketIte
       </div>
       {selectedTicket?.status === TicketStatus.PENDING && (
         <div className="absolute bottom-0 left-0 w-full">
-          <div className="p-2 py-4 w-full bg-gray-200 flex justify-center ">
+          <div className="p-2 py-4 w-full bg-gray-200 dark:bg-darkSecond flex justify-center ">
             <Button type="primary" className="!shadow-xl" onClick={() => setShowModalConfirmSupport(true)}>
               Tiếp nhận xử lý
             </Button>
@@ -255,7 +256,7 @@ export default function Chatting({ selectedTicket }: { selectedTicket: TicketIte
               className="!p-2"
               description={
                 <div className="flex items-center justify-between gap-3">
-                  <div className="text-sm text-gray-700 dark:text-gray-200">
+                  <div className="text-sm text-gray-700 dark:text-gray-700">
                     Tin nhắn này đã được{" "}
                     <span className="font-semibold">
                       {selectedTicket?.served_by?.[selectedTicket.served_by.length - 1]?.admin_name || "nhân viên"}
@@ -275,7 +276,7 @@ export default function Chatting({ selectedTicket }: { selectedTicket: TicketIte
             showIcon
             message="Cuộc hội thoại đã đóng"
             className="!p-2"
-            description={<div className="text-sm text-gray-700 dark:text-gray-200">Phiên hỗ trợ này đã được đóng.</div>}
+            description={<div className="text-sm text-gray-700 dark:text-gray-700">Phiên hỗ trợ này đã được đóng.</div>}
           />
         </div>
       )}
@@ -284,6 +285,7 @@ export default function Chatting({ selectedTicket }: { selectedTicket: TicketIte
         title="Xác nhận tiếp nhận hỗ trợ"
         open={showModalConfirmSupport}
         onOk={() => {
+          if (!socket) return
           socket.emit("admin:assign_ticket", {
             payload: {
               ticket_id: selectedTicket._id,
@@ -315,6 +317,7 @@ export default function Chatting({ selectedTicket }: { selectedTicket: TicketIte
         title="Xác nhận đóng hỗ trợ"
         open={showModalCloseSupport}
         onOk={() => {
+          if (!socket) return
           socket.emit("admin:close_ticket", {
             payload: {
               ticket_id: selectedTicket._id,

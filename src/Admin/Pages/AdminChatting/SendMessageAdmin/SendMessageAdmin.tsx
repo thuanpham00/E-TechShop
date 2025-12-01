@@ -1,12 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useState } from "react"
+import { useContext, useState } from "react"
 import { Fragment } from "react/jsx-runtime"
 import { MessageType } from "src/Constants/enum"
-import socket from "src/socket"
 import { GalleryFileItem } from "../../AddProduct/AddProduct"
 import { TicketItemType } from "src/Types/product.type"
 import ShowPreviewImage from "src/Components/ShowPreviewImage"
 import FormSendMessage from "src/Components/FormSendMessage"
+import { AppContext } from "src/Context/authContext"
 
 export default function SendMessageAdmin({
   setConversations,
@@ -17,6 +17,7 @@ export default function SendMessageAdmin({
   setCheckFile: React.Dispatch<React.SetStateAction<boolean>>
   selectedTicket: TicketItemType
 }) {
+  const { socket } = useContext(AppContext)
   const [valueInput, setValueInput] = useState("")
   const [files, setFiles] = useState<GalleryFileItem[]>([])
 
@@ -53,6 +54,7 @@ export default function SendMessageAdmin({
         sender_type: "staff",
         ticket_id: selectedTicket._id
       }
+      if (!socket) return
       socket.emit(
         "admin:send_message",
         {

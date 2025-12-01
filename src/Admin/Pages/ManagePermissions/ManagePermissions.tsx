@@ -132,7 +132,11 @@ export default function ManagePermissions() {
       "order",
       "role",
       "permission",
-      "staff"
+      "staff",
+      "voucher",
+      "review",
+      "ticket",
+      "category_menu"
     ]
     const actionSort = ["read", "create", "update", "delete"]
     return listPermission
@@ -446,10 +450,16 @@ export default function ManagePermissions() {
               setUpdatePermissionForRole([])
               setEdited(structuredClone(listPermissionByRolesId))
             }}
+            className={`${updatePermissionForRole.length === 0 ? "!text-black dark:!text-white" : ""}`}
           >
             Hủy thay đổi
           </Button>
-          <Button type="primary" disabled={updatePermissionForRole.length === 0} onClick={() => setIsModalOpen(true)}>
+          <Button
+            type="primary"
+            disabled={updatePermissionForRole.length === 0}
+            onClick={() => setIsModalOpen(true)}
+            className={`${updatePermissionForRole.length === 0 ? "!text-black dark:!text-white" : ""}`}
+          >
             Cập nhật
           </Button>
         </div>

@@ -327,8 +327,8 @@ export default function ManageSuppliers() {
             <form onSubmit={handleSubmitSearch}>
               <div className="mt-1 grid grid-cols-2">
                 <div className="col-span-1 flex items-center h-14 px-2 bg-[#fff] dark:bg-darkPrimary border border-[#dadada] rounded-tl-xl">
-                  <span className="w-1/3 dark:text-white">Tên nhà cung cấp</span>
-                  <div className="w-2/3 relative h-full">
+                  <span className="w-[25%] dark:text-white">Tên nhà cung cấp</span>
+                  <div className="w-[75%] relative h-full">
                     <div className="mt-2 w-full flex items-center gap-2">
                       <Input
                         name="name"
@@ -343,8 +343,8 @@ export default function ManageSuppliers() {
                   </div>
                 </div>
                 <div className="col-span-1 flex items-center h-14 px-2 bg-[#fff] dark:bg-darkPrimary border border-[#dadada] rounded-tr-xl">
-                  <span className="w-1/3 dark:text-white">Tên người đại diện</span>
-                  <div className="w-2/3 relative h-full">
+                  <span className="w-[25%] dark:text-white">Tên người đại diện</span>
+                  <div className="w-[75%] relative h-full">
                     <div className="mt-2 w-full flex items-center gap-2">
                       <Input
                         name="contactName"
@@ -359,8 +359,8 @@ export default function ManageSuppliers() {
                   </div>
                 </div>
                 <div className="col-span-1 flex items-center h-14 px-2 bg-[#ececec] dark:bg-darkPrimary border border-[#dadada] border-t-0">
-                  <span className="w-1/3 dark:text-white">Email</span>
-                  <div className="w-2/3 relative h-full">
+                  <span className="w-[25%] dark:text-white">Email</span>
+                  <div className="w-[75%] relative h-full">
                     <div className="mt-2 w-full flex items-center gap-2">
                       <Input
                         name="email"
@@ -375,8 +375,8 @@ export default function ManageSuppliers() {
                   </div>
                 </div>
                 <div className="col-span-1 flex items-center h-14 px-2 bg-[#ececec] dark:bg-darkPrimary border border-[#dadada] border-t-0">
-                  <span className="w-1/3 dark:text-white">Số điện thoại</span>
-                  <div className="w-2/3 relative h-full">
+                  <span className="w-[25%] dark:text-white">Số điện thoại</span>
+                  <div className="w-[75%] relative h-full">
                     <div className="mt-2 w-full flex items-center gap-2">
                       <Input
                         name="phone"
@@ -391,8 +391,8 @@ export default function ManageSuppliers() {
                   </div>
                 </div>
                 <div className="col-span-1 flex items-center h-14 px-2 bg-[#fff] dark:bg-darkPrimary border border-[#dadada] border-t-0 rounded-bl-xl">
-                  <span className="w-1/3 dark:text-white">Ngày tạo</span>
-                  <div className="w-2/3 relative h-full">
+                  <span className="w-[25%] dark:text-white">Ngày tạo</span>
+                  <div className="w-[75%] relative h-full">
                     <div className="mt-2 w-full flex items-center gap-2">
                       <Controller
                         name="created_at_start"
@@ -430,8 +430,8 @@ export default function ManageSuppliers() {
                   </div>
                 </div>
                 <div className="col-span-1 flex items-center h-14 px-2 bg-[#fff] dark:bg-darkPrimary border border-[#dadada] border-t-0 rounded-br-xl">
-                  <span className="w-1/3 dark:text-white">Ngày cập nhật</span>
-                  <div className="w-2/3 relative h-full">
+                  <span className="w-[25%] dark:text-white">Ngày cập nhật</span>
+                  <div className="w-[75%] relative h-full">
                     <div className="mt-2 w-full flex items-center gap-2">
                       <Controller
                         name="updated_at_start"
@@ -620,7 +620,7 @@ export default function ManageSuppliers() {
       <Collapse items={items} defaultActiveKey={["2"]} className="bg-white dark:bg-darkPrimary dark:border-none" />
 
       <section className="mt-4">
-        <div className="bg-white dark:bg-darkPrimary mb-3 dark:border-darkBorder rounded-2xl">
+        <div className="bg-white dark:bg-darkSecond mb-3 dark:border-darkBorder rounded-2xl">
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-2">
               <Button
@@ -675,7 +675,9 @@ export default function ManageSuppliers() {
                   })
                 }
               }}
-              rowClassName={(_, index) => (index % 2 === 0 ? "bg-[#f2f2f2]" : "bg-white")}
+              rowClassName={(_, index) =>
+                index % 2 === 0 ? "dark:bg-darkSecond bg-[#f2f2f2]" : "dark:bg-darkPrimary bg-white"
+              }
               scroll={{ x: "max-content" }}
             />
           ) : (

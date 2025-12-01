@@ -23,8 +23,11 @@ import {
   GlobalOutlined,
   CalendarOutlined
 } from "@ant-design/icons"
+import { useTheme } from "src/Admin/Components/Theme-provider/Theme-provider"
 
 export default function AdminEmail() {
+  const { theme } = useTheme()
+  const isDark = theme === "dark" || theme === "system"
   const navigate = useNavigate()
   const { userId } = useContext(AppContext)
 
@@ -192,21 +195,21 @@ export default function AdminEmail() {
             title={
               <div className="flex items-center gap-2">
                 <GlobalOutlined className="text-blue-500" />
-                <span className="text-lg font-semibold">Thông tin Domain</span>
+                <span className="text-lg font-semibold dark:text-white">Thông tin Domain</span>
               </div>
             }
           >
             <Row gutter={[16, 16]}>
               <Col xs={24} sm={12} md={8}>
                 <Statistic
-                  title="Domain Name"
+                  title={<div className="dark:text-white">Domain Name</div>}
                   value={domainData?.name}
-                  valueStyle={{ fontSize: "16px", fontWeight: 500 }}
+                  valueStyle={{ fontSize: "16px", fontWeight: 500, color: isDark ? "#f1f5f9" : "#1f1f1f" }}
                 />
               </Col>
               <Col xs={24} sm={12} md={8}>
                 <Statistic
-                  title="Status"
+                  title={<div className="dark:text-white">Trạng thái</div>}
                   value={domainData?.status}
                   valueStyle={{
                     color: domainData?.status === "verified" ? "#52c41a" : "#faad14",
@@ -216,20 +219,24 @@ export default function AdminEmail() {
                 />
               </Col>
               <Col xs={24} sm={12} md={8}>
-                <Statistic title="Region" value={domainData?.region} valueStyle={{ fontSize: "16px" }} />
+                <Statistic
+                  title={<div className="dark:text-white">khu vực</div>}
+                  value={domainData?.region}
+                  valueStyle={{ fontSize: "16px", color: isDark ? "#f1f5f9" : "#1f1f1f" }}
+                />
               </Col>
               <Col xs={24} sm={12}>
                 <div className="text-sm">
-                  <span className="text-gray-500 dark:text-gray-400">Created at: </span>
-                  <span className="font-medium text-gray-700 dark:text-gray-300">
+                  <span className="text-gray-500 dark:text-white">Created at: </span>
+                  <span className="font-medium text-gray-700 dark:text-white">
                     {domainData?.created_at ? new Date(domainData.created_at).toLocaleString("vi-VN") : "N/A"}
                   </span>
                 </div>
               </Col>
               <Col xs={24} sm={12}>
                 <div className="text-sm">
-                  <span className="text-gray-500 dark:text-gray-400">Domain ID: </span>
-                  <span className="font-mono text-xs text-gray-600 dark:text-gray-400">{domainData?.id}</span>
+                  <span className="text-gray-500 dark:text-white">Domain ID: </span>
+                  <span className="font-mono text-xs text-gray-600 dark:text-white">{domainData?.id}</span>
                 </div>
               </Col>
             </Row>
@@ -244,7 +251,7 @@ export default function AdminEmail() {
             title={
               <div className="flex items-center gap-2">
                 <MailOutlined className="text-blue-500" />
-                <span className="text-lg font-semibold">Lịch sử gửi email</span>
+                <span className="text-lg font-semibold dark:text-white">Lịch sử gửi email</span>
               </div>
             }
           >
@@ -259,7 +266,6 @@ export default function AdminEmail() {
                 total: Number(result?.result.total || 0),
                 showSizeChanger: true,
                 pageSizeOptions: ["5", "10", "20", "50"],
-                showTotal: (total, range) => `${range[0]}-${range[1]} của ${total} email`,
                 onChange: (page, pageSize) => {
                   navigate({
                     pathname: path.AdminEmail,
@@ -276,9 +282,7 @@ export default function AdminEmail() {
               }}
               scroll={{ x: 1400 }}
               rowClassName={(_, index) =>
-                index % 2 === 0
-                  ? "bg-gray-50 dark:bg-darkSecond hover:bg-blue-50 dark:hover:bg-darkBorder transition-colors"
-                  : "bg-white dark:bg-darkPrimary hover:bg-blue-50 dark:hover:bg-darkBorder transition-colors"
+                index % 2 === 0 ? "dark:bg-darkSecond bg-[#f2f2f2]" : "dark:bg-darkPrimary bg-white"
               }
             />
           </Card>

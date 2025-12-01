@@ -93,10 +93,23 @@ export default function StatisticalUser() {
     rateReturningCustomers: any
   }>
 
-  const totalCustomer = dataStatisticalUser?.result.totalCustomer
-  const totalStaff = dataStatisticalUser?.result.totalStaff
-  const top10CustomerBuyTheMost = dataStatisticalUser?.result.top10CustomerBuyTheMost
-  const rateReturningCustomers = dataStatisticalUser?.result.rateReturningCustomers[0]
+  // Use API data when available; otherwise use safe empty defaults
+  const totalCustomer = dataStatisticalUser?.result.totalCustomer ?? {
+    title: "Tổng khách hàng",
+    value: 0,
+    color: "#08979c"
+  }
+  const totalStaff = dataStatisticalUser?.result.totalStaff ?? {
+    title: "Tổng nhân viên",
+    value: 0,
+    color: "#722ed1"
+  }
+  const top10CustomerBuyTheMost = dataStatisticalUser?.result.top10CustomerBuyTheMost ?? []
+  const rateReturningCustomers = dataStatisticalUser?.result.rateReturningCustomers?.[0] ?? { retentionRate: 0 }
+
+  const topCustomersArray = (top10CustomerBuyTheMost ?? []) as StatisticalUser[]
+  const topCustomersTotalRevenue = topCustomersArray.reduce((s, c) => s + (c.totalRevenue || 0), 0)
+  // average not used right now; keep for future use
 
   const columns = [
     {
@@ -166,14 +179,12 @@ export default function StatisticalUser() {
     }
   }
 
+  const retentionRate = Number(rateReturningCustomers?.retentionRate ?? 0)
   const pieData = {
     labels: ["Khách mua 1 lần", "Khách quay lại"],
     datasets: [
       {
-        data: [
-          100 - rateReturningCustomers?.retentionRate.toFixed(2),
-          rateReturningCustomers?.retentionRate.toFixed(2)
-        ],
+        data: [Number((100 - retentionRate).toFixed(2)), Number(retentionRate.toFixed(2))],
         backgroundColor: ["#cf1322", "#08979c"],
         borderWidth: 1
       }
@@ -192,13 +203,13 @@ export default function StatisticalUser() {
       {getStatisticalUser.isLoading && <Skeleton />}
       {!getStatisticalUser.isFetching ? (
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-          <Row gutter={[24, 24]} className="mt-4 h-[300px]">
-            <Col span={12} style={{ height: "100%" }}>
-              <Row gutter={[24, 24]} style={{ height: "100%" }}>
+          <Row gutter={[24, 24]} className="mt-4" style={{ height: 300 }}>
+            <Col span={12}>
+              <Row gutter={[16, 16]} style={{ height: "100%" }}>
                 <Col span={12}>
                   <div
                     style={{ height: "100%" }}
-                    className="border-gray-500 shadow-md rounded-xl bg-white dark:bg-darkPrimary p-6 flex flex-col justify-between"
+                    className="border border-gray-300 shadow-md rounded-xl bg-white dark:bg-darkPrimary p-6 flex flex-col justify-between"
                   >
                     <div className="flex items-start justify-between">
                       <div className="text-[16px] font-semibold tracking-wide mr-2 text-black dark:text-white">
@@ -214,7 +225,7 @@ export default function StatisticalUser() {
                 <Col span={12}>
                   <div
                     style={{ height: "100%" }}
-                    className="border-gray-500 shadow-md rounded-xl bg-white dark:bg-darkPrimary p-6 flex flex-col justify-between"
+                    className="border border-gray-300 shadow-md rounded-xl bg-white dark:bg-darkPrimary p-6 flex flex-col justify-between"
                   >
                     <div className="flex items-start justify-between">
                       <div className="text-[16px] font-semibold tracking-wide mr-2 text-black dark:text-white">
@@ -229,34 +240,22 @@ export default function StatisticalUser() {
                 </Col>
                 <Col span={12}>
                   <div
+                    className="border border-gray-300 shadow-md rounded-xl bg-white dark:bg-darkPrimary p-6 flex flex-col justify-between"
                     style={{ height: "100%" }}
-                    className="border-gray-500 shadow-md rounded-xl bg-white dark:bg-darkPrimary p-6 flex flex-col justify-between"
                   >
-                    <div className="flex items-start justify-between">
-                      <div className="text-[16px] font-semibold tracking-wide mr-2 text-black dark:text-white">
-                        {totalStaff?.title}
-                      </div>
-                      <Users size={22} color={isDarkMode ? "white" : "black"} />
-                    </div>
-                    <div className={`text-2xl font-semibold mt-4`} style={{ color: totalStaff?.color }}>
-                      {totalStaff.value || 0}
+                    <div className="text-[16px] font-semibold text-black dark:text-white">Tổng doanh thu top khách</div>
+                    <div className="text-2xl font-semibold mt-4 text-red-500">
+                      {formatCurrency(topCustomersTotalRevenue)}đ
                     </div>
                   </div>
                 </Col>
                 <Col span={12}>
                   <div
+                    className="border border-gray-300 shadow-md rounded-xl bg-white dark:bg-darkPrimary p-6 flex flex-col justify-between"
                     style={{ height: "100%" }}
-                    className="border-gray-500 shadow-md rounded-xl bg-white dark:bg-darkPrimary p-6 flex flex-col justify-between"
                   >
-                    <div className="flex items-start justify-between">
-                      <div className="text-[16px] font-semibold tracking-wide mr-2 text-black dark:text-white">
-                        {totalCustomer?.title}
-                      </div>
-                      <User size={22} color={isDarkMode ? "white" : "black"} />
-                    </div>
-                    <div className={`text-2xl font-semibold mt-4`} style={{ color: totalCustomer?.color }}>
-                      {totalCustomer?.value || 0}
-                    </div>
+                    <div className="text-[16px] font-semibold text-black dark:text-white">Tỷ lệ khách quay lại</div>
+                    <div className="text-2xl font-semibold mt-4">{retentionRate.toFixed(2)}%</div>
                   </div>
                 </Col>
               </Row>
@@ -268,22 +267,36 @@ export default function StatisticalUser() {
                   padding: 12,
                   display: "flex",
                   justifyContent: "center",
+                  alignItems: "center",
                   borderRadius: "12px"
                 }}
                 className="shadow-md bg-white border border-[#dadada] dark:bg-darkPrimary dark:border-darkBorder"
               >
-                <Pie data={pieData} options={pieOptions} />
+                <div
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center"
+                  }}
+                >
+                  <Pie data={pieData} options={pieOptions} />
+                </div>
               </div>
             </Col>
           </Row>
 
-          <Row gutter={[24, 24]} className="mt-4">
-            <Col span={24}>
+          <Row gutter={[24, 24]} className="mt-4" style={{ height: 300 }}>
+            <Col span={24} style={{ height: "100%" }}>
               <div
                 className="shadow-md p-6 bg-white border border-[#dadada] dark:bg-darkPrimary dark:border-darkBorder"
                 style={{
                   borderRadius: "8px",
-                  position: "relative"
+                  position: "relative",
+                  height: "100%",
+                  display: "flex",
+                  flexDirection: "column"
                 }}
               >
                 <div className="absolute top-0 right-3 flex gap-1 items-center my-3 justify-end">
@@ -321,7 +334,7 @@ export default function StatisticalUser() {
                   Top 10 Khách hàng mua sắm cao nhất
                 </div>
 
-                <div style={{ minHeight: "100px", overflowY: "auto" }}>
+                <div style={{ flex: 1, minHeight: 0, overflowY: "auto", marginTop: 28 }}>
                   <Table
                     columns={columns}
                     dataSource={
@@ -333,6 +346,7 @@ export default function StatisticalUser() {
                       }[]
                     }
                     pagination={false}
+                    size="small"
                   />
                 </div>
               </div>

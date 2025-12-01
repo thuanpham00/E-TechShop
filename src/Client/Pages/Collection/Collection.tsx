@@ -84,7 +84,6 @@ export default function Collection() {
 
   const nameDisplay = useMemo(() => {
     const findBanner = getListCategoryMenu.data?.data?.data.find((item: any) => item.slug === slug)
-    console.log(findBanner)
     return findBanner ? findBanner.name : ""
   }, [getListCategoryMenu.data?.data?.data, slug])
 
@@ -173,8 +172,6 @@ export default function Collection() {
       }
     )
   }
-
-  console.log(nameDisplay)
 
   return (
     <div>

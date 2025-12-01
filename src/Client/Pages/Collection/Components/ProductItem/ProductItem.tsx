@@ -77,6 +77,8 @@ export default function ProductItem({ item }: { item: CollectionItemType }) {
           loading="lazy"
           src={item._id === imageChange ? randomImage : imageDefault}
           alt={item.name}
+          width={300}
+          height={180}
           className="mt-4 object-contain w-full h-[180px] duration-200 transition-all"
         />
         <span className="text-[14px] font-bold mt-4 mb-2 block text-left line-clamp-2 h-[44px]">{item.name}</span>

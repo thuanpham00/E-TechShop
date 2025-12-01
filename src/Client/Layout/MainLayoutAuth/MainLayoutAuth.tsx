@@ -13,7 +13,7 @@ function MainLayoutAuthInner() {
         minHeight: "100vh"
       }}
     >
-      <div className="w-[90%] md:w-[55%] lg:w-[50%] bg-white rounded-md">
+      <div className="w-[90%] md:w-[50%] lg:w-[40%] xl:w-[30%] bg-white rounded-md">
         <Outlet />
       </div>
     </div>

@@ -23,6 +23,9 @@ import { OrderApi } from "src/Apis/client/order.api"
 import { categoryAPI } from "src/Apis/client/category.api"
 import topBarImg from "src/Assets/img/top-bar.png"
 import { Swiper, SwiperSlide } from "swiper/react"
+import "swiper/css"
+import "swiper/css/navigation"
+import "swiper/css/pagination"
 
 export default function Header() {
   const navigate = useNavigate()

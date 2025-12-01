@@ -1,19 +1,9 @@
 import { ClipboardCheck, Copy, Pencil, Trash2 } from "lucide-react"
 import useCopyText from "src/Hook/useCopyText"
 import { ReceiptItemType } from "src/Types/product.type"
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger
-} from "src/Components/ui/alert-dialog"
 import { convertDateTime, formatCurrency } from "src/Helpers/common"
 import { useEffect, useRef, useState } from "react"
+import { Modal } from "antd"
 
 interface Props {
   item: ReceiptItemType
@@ -23,7 +13,6 @@ export default function ReceiptItem({ item }: Props) {
   const listProductInReceipt = useRef<HTMLDivElement>(null)
   const { copiedId, handleCopyText } = useCopyText()
   const [showDetail, setShowDetail] = useState<boolean>(false)
-  // có 20 đơn nhập hàng thì mỗi đơn là 1 ReceiptItem thì mỗi component item sẽ tạo 1 state riêng khi click vào item nào thì xử lý bên trong component đó
 
   useEffect(() => {
     const clickOutHideList = (event: MouseEvent) => {
@@ -39,7 +28,7 @@ export default function ReceiptItem({ item }: Props) {
   return (
     <div className="mt-4 py-4 mb-2 bg-white/80 dark:bg-darkPrimary border border-[#dedede] dark:border-gray-700 px-3 rounded-xl cursor-pointer shadow-lg">
       <div className="flex items-center justify-between">
-        <div className="text-base py-1 px-2 flex items-center gap-2 bg-[#e5e5e5] border border-[#dadada] rounded-md">
+        <div className="text-base py-1 px-2 flex items-center gap-2 bg-[#e5e5e5] dark:bg-darkSecond border border-[#dadada] dark:border-darkBorder rounded-md">
           <span>Đơn nhập hàng: </span>
           <h2 className="font-semibold">#{item._id}</h2>
           <button onClick={() => handleCopyText(item._id)} className="p-1 border rounded mr-2">
@@ -100,29 +89,27 @@ export default function ReceiptItem({ item }: Props) {
         <button className="p-2 bg-yellow-100 hover:bg-blue-300 rounded-md duration-200">
           <Pencil color="orange" size={18} />
         </button>
-        <AlertDialog>
-          <AlertDialogTrigger className="p-2 bg-red-100 hover:bg-red-300 rounded-md duration-200">
-            <Trash2 color="red" size={18} />
-          </AlertDialogTrigger>
-          <AlertDialogContent className="w-[350px]">
-            <AlertDialogHeader>
-              <AlertDialogTitle className="text-base">Bạn có chắc chắn muốn xóa?</AlertDialogTitle>
-              <AlertDialogDescription className="text-sm">
-                Không thể hoàn tác hành động này. Thao tác này sẽ xóa vĩnh viễn dữ liệu của bạn.
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel className="text-sm">Hủy</AlertDialogCancel>
-              <AlertDialogAction className="bg-red-500 hover:bg-red-600 text-sm">Xóa</AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
+        <button
+          className="p-2 bg-red-100 hover:bg-red-300 rounded-md duration-200"
+          onClick={() =>
+            Modal.confirm({
+              title: "Bạn có chắc chắn muốn xóa?",
+              content: "Không thể hoàn tác hành động này. Thao tác này sẽ xóa vĩnh viễn dữ liệu của bạn.",
+              okText: "Xóa",
+              okButtonProps: { danger: true },
+              cancelText: "Hủy"
+              // onOk: () => handleDeleteSupply(record._id)
+            })
+          }
+        >
+          <Trash2 color="red" size={18} />
+        </button>
       </div>
       {showDetail && (
-        <div className="transition-all ease-in-out duration-500 w-screen h-screen bg-black/20 fixed right-0 top-0 z-10 opacity-100">
+        <div className="transition-all ease-in-out duration-500 w-screen h-screen bg-black/40 fixed right-0 top-0 z-10 opacity-100">
           <div
             ref={listProductInReceipt}
-            className="fixed right-4 top-0 z-20 bg-white dark:bg-darkPrimary w-[600px] h-screen overflow-y-scroll p-2"
+            className="fixed right-4 top-0 z-20 bg-white dark:bg-darkPrimary w-[800px] h-screen overflow-y-scroll p-2"
           >
             <div className="text-lg text-center font-semibold mb-2 tracking-wide text-black dark:text-white">
               Danh sách sản phẩm ({item.items.length})

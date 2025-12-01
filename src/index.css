@@ -202,3 +202,39 @@ html {
 .dark .ant-empty-description {
   color: #fff;
 }
+
+.ant-table-row {
+  cursor: default !important;
+}
+.ant-table-row:hover > td {
+  background: inherit !important;
+}
+
+.dark .ant-pagination .ant-pagination-item-link span {
+  color: #fff !important;
+}
+
+.dark .ant-pagination .ant-pagination-item:hover a {
+  background-color: white !important;
+  color: black !important;
+  border-radius: 4px;
+}
+
+/* Dark mode: đồng bộ nền cell fixed với nền hàng */
+.dark .ant-table-wrapper .ant-table-cell-fix-left,
+.dark .ant-table-wrapper .ant-table-cell-fix-right {
+  background: inherit !important;
+}
+
+/* Tắt “ping” shadow của cột fixed trong dark mode */
+.dark .ant-table-wrapper .ant-table-ping-left .ant-table-cell-fix-left-last::after,
+.dark .ant-table-wrapper .ant-table-ping-right .ant-table-cell-fix-right-first::after {
+  content: none !important;
+  box-shadow: none !important;
+}
+
+/* Nếu cần tắt hover trong dark mode (kết hợp với class no-row-hover) */
+.dark .no-row-hover .ant-table-tbody > tr:hover > td {
+  background: inherit !important;
+}
+

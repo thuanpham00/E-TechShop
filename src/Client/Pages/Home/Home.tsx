@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable import/no-unresolved */
 import { Helmet } from "react-helmet-async"
 import banner_1 from "src/Assets/img/banner_home/banner_1.webp"
@@ -12,7 +13,6 @@ import "swiper/css/navigation"
 import "swiper/css/pagination"
 import "../../../index.css"
 import bannerMonitor from "src/Assets/img/banner_category/asus-monitor.webp"
-import useCollectionTopSold from "src/Hook/useCollectionTopSold"
 import { motion } from "framer-motion"
 import SlideShow from "./Components/SlideShow"
 import bannerQC1 from "src/Assets/img/banner_home/thang_06_banner_build_pc_top_promotion_banner_2.png"
@@ -24,29 +24,39 @@ import { OrderApi } from "src/Apis/client/order.api"
 import { Swiper, SwiperSlide } from "swiper/react"
 import { Rate } from "antd"
 import { Autoplay, Navigation } from "swiper/modules"
+import { collectionAPI } from "src/Apis/client/collections.api"
 
 export default function Home() {
-  const getCollectionLaptopTopSold = useCollectionTopSold("top-10-laptop-ban-chay", "getCollectionLaptopTopSold")
-  const getCollectionLaptopGamingTopSold = useCollectionTopSold(
-    "top-10-laptop-gaming-ban-chay",
-    "getCollectionLaptopGamingTopSold"
-  )
-  const getCollectionPCTopSold = useCollectionTopSold("top-10-pc-ban-chay", "getCollectionPCTopSold")
-  const getCollectionMonitorTopSold = useCollectionTopSold("top-10-man-hinh-ban-chay", "getCollectionMonitorTopSold")
-  const getCollectionKeyboardTopSold = useCollectionTopSold("top-10-ban-phim-ban-chay", "getCollectionKeyboardTopSold")
-  const getCollectionMouseTopSold = useCollectionTopSold("top-10-chuot-ban-chay", "getCollectionMouseTopSold")
-  const getCollectionHeadphoneTopSold = useCollectionTopSold(
-    "top-10-tai-nghe-ban-chay",
-    "getCollectionHeadphoneTopSold"
-  )
+  const getTop10Product = useQuery({
+    queryKey: ["list-top-10-product"],
+    queryFn: () => {
+      const controller = new AbortController()
+      setTimeout(() => {
+        controller.abort() // hủy request khi chờ quá lâu // 10 giây sau cho nó hủy // làm tự động
+      }, 10000)
 
-  const result = getCollectionLaptopTopSold.data?.data as SuccessResponse<CollectionItemType[]>
-  const resultLaptopGaming = getCollectionLaptopGamingTopSold.data?.data as SuccessResponse<CollectionItemType[]>
-  const resultPC = getCollectionPCTopSold.data?.data as SuccessResponse<CollectionItemType[]>
-  const resultMonitor = getCollectionMonitorTopSold.data?.data as SuccessResponse<CollectionItemType[]>
-  const resultKeyboard = getCollectionKeyboardTopSold.data?.data as SuccessResponse<CollectionItemType[]>
-  const resultMouse = getCollectionMouseTopSold.data?.data as SuccessResponse<CollectionItemType[]>
-  const resultHeadphone = getCollectionHeadphoneTopSold.data?.data as SuccessResponse<CollectionItemType[]>
+      return collectionAPI
+        .getCollectionsTop10({
+          params: {},
+          signal: controller.signal
+        })
+        .then((res) => res)
+        .catch((err) => Promise.reject(err))
+    },
+    retry: 0,
+    staleTime: 15 * 60 * 1000,
+    placeholderData: keepPreviousData
+  })
+
+  const dataTop10Product = (getTop10Product.data?.data?.result as Record<string, any>) || {}
+
+  const result = dataTop10Product[`top-10-laptop-ban-chay`] as SuccessResponse<CollectionItemType[]>
+  const resultLaptopGaming = dataTop10Product[`top-10-laptop-gaming-ban-chay`] as SuccessResponse<CollectionItemType[]>
+  const resultPC = dataTop10Product[`top-10-pc-ban-chay`] as SuccessResponse<CollectionItemType[]>
+  const resultMonitor = dataTop10Product[`top-10-man-hinh-ban-chay`] as SuccessResponse<CollectionItemType[]>
+  const resultKeyboard = dataTop10Product[`top-10-ban-phim-ban-chay`] as SuccessResponse<CollectionItemType[]>
+  const resultMouse = dataTop10Product[`top-10-chuot-ban-chay`] as SuccessResponse<CollectionItemType[]>
+  const resultHeadphone = dataTop10Product[`top-10-tai-nghe-ban-chay`] as SuccessResponse<CollectionItemType[]>
 
   const getListTopReviewNewest = useQuery({
     queryKey: ["listTopReviewNewest"],
@@ -89,14 +99,14 @@ export default function Home() {
               <ProductRecently />
 
               <ProductListShow
-                getCollectionQuery={getCollectionLaptopTopSold}
+                getCollectionQuery={getTop10Product}
                 result={result?.result || []}
                 title="Laptop bán chạy"
                 slug="top-10-laptop-ban-chay"
               />
 
               <ProductListShow
-                getCollectionQuery={getCollectionLaptopGamingTopSold}
+                getCollectionQuery={getTop10Product}
                 result={resultLaptopGaming?.result || []}
                 title="Laptop Gaming bán chạy"
                 slug="top-10-laptop-gaming-ban-chay"
@@ -108,7 +118,7 @@ export default function Home() {
               </div>
 
               <ProductListShow
-                getCollectionQuery={getCollectionPCTopSold}
+                getCollectionQuery={getTop10Product}
                 result={resultPC?.result || []}
                 title="PC bán chạy"
                 slug="top-10-pc-ban-chay"
@@ -123,28 +133,28 @@ export default function Home() {
               </div>
 
               <ProductListShow
-                getCollectionQuery={getCollectionMonitorTopSold}
+                getCollectionQuery={getTop10Product}
                 result={resultMonitor?.result || []}
                 title="Màn hình chính hãng"
                 slug="top-10-man-hinh-ban-chay"
               />
 
               <ProductListShow
-                getCollectionQuery={getCollectionMouseTopSold}
+                getCollectionQuery={getTop10Product}
                 result={resultMouse?.result || []}
                 title="Chuột bán chạy"
                 slug="top-10-chuot-ban-chay"
               />
 
               <ProductListShow
-                getCollectionQuery={getCollectionKeyboardTopSold}
+                getCollectionQuery={getTop10Product}
                 result={resultKeyboard?.result || []}
                 title="Bàn phím bán chạy"
                 slug="top-10-ban-phim-ban-chay"
               />
 
               <ProductListShow
-                getCollectionQuery={getCollectionHeadphoneTopSold}
+                getCollectionQuery={getTop10Product}
                 result={resultHeadphone?.result || []}
                 title="Tai nghe bán chạy"
                 slug="top-10-tai-nghe-ban-chay"

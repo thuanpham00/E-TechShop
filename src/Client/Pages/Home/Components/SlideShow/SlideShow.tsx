@@ -31,6 +31,8 @@ export default function SlideShow() {
       <SwiperSlide>
         <img
           src={banner_1}
+          width={1920}
+          height={420}
           className="object-fill w-full h-[150px] md:h-[230px] lg:h-[300px] block rounded-md"
           alt="banner_1"
         />
@@ -38,6 +40,8 @@ export default function SlideShow() {
       <SwiperSlide>
         <img
           src={banner_2}
+          width={1920}
+          height={420}
           className="object-fill w-full h-[150px] md:h-[230px] lg:h-[300px] block rounded-md"
           alt="banner_2"
         />
@@ -45,6 +49,8 @@ export default function SlideShow() {
       <SwiperSlide>
         <img
           src={banner_3}
+          width={1920}
+          height={420}
           className="object-fill w-full h-[150px] md:h-[230px] lg:h-[300px] block rounded-md"
           alt="banner_2"
         />
@@ -52,6 +58,8 @@ export default function SlideShow() {
       <SwiperSlide>
         <img
           src={banner_4}
+          width={1920}
+          height={420}
           className="object-fill w-full h-[150px] md:h-[230px] lg:h-[300px] block rounded-md"
           alt="banner_2"
         />
@@ -59,6 +67,8 @@ export default function SlideShow() {
       <SwiperSlide>
         <img
           src={banner_5}
+          width={1920}
+          height={420}
           className="object-fill w-full h-[150px] md:h-[230px] lg:h-[300px] block rounded-md"
           alt="banner_1"
         />
@@ -66,6 +76,8 @@ export default function SlideShow() {
       <SwiperSlide>
         <img
           src={banner_7}
+          width={1920}
+          height={420}
           className="object-fill w-full h-[150px] md:h-[230px] lg:h-[300px] block rounded-md"
           alt="banner_2"
         />
@@ -73,6 +85,8 @@ export default function SlideShow() {
       <SwiperSlide>
         <img
           src={banner_8}
+          width={1920}
+          height={420}
           className="object-fill w-full h-[150px] md:h-[230px] lg:h-[300px] block rounded-md"
           alt="banner_2"
         />
@@ -80,6 +94,8 @@ export default function SlideShow() {
       <SwiperSlide>
         <img
           src={banner_9}
+          width={1920}
+          height={420}
           className="object-fill w-full h-[150px] md:h-[230px] lg:h-[300px] block rounded-md"
           alt="banner_2"
         />

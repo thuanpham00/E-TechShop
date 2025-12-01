@@ -3,7 +3,6 @@ import { keepPreviousData, useQuery } from "@tanstack/react-query"
 import { Cpu, MessagesSquare, RefreshCw, X } from "lucide-react"
 import { Fragment, useContext, useEffect, useState } from "react"
 import { AppContext } from "src/Context/authContext"
-import socket from "src/socket"
 import InfiniteScroll from "react-infinite-scroll-component"
 import { TicketAPI } from "src/Apis/ticket.api"
 import { useNavigate } from "react-router-dom"
@@ -50,10 +49,10 @@ Dùng để đồng bộ dữ liệu ở nhiều nơi khác nhau.
  */
 
 export default function ChatConsulting() {
-  const { isSocketConnected, retryConnect } = useCheckConnectSocket()
+  const { isSocketConnected } = useCheckConnectSocket()
 
   const navigate = useNavigate()
-  const { isAuthenticated, userId } = useContext(AppContext)
+  const { isAuthenticated, userId, socket } = useContext(AppContext)
   const [isOpen, setIsOpen] = useState(false)
 
   const [conversations, setConversations] = useState<(ConversationType | any)[]>([]) // lưu đoạn chat
@@ -105,6 +104,7 @@ export default function ChatConsulting() {
   }, [conversationListData, page, total_page, unreadMessageCount, triggerRefetch])
 
   useEffect(() => {
+    if (!socket) return
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const handleReceivedMessage = (data: any) => {
       const { payload, unreadCountCustomer } = data
@@ -115,7 +115,7 @@ export default function ChatConsulting() {
     return () => {
       socket.off("received_message", handleReceivedMessage) // khi component unmount (hủy dom) thì nó disconnect socket
     }
-  }, [])
+  }, [socket])
 
   const fetchConversationDataMore = () => {
     if (pagination.page < pagination.total_page) {
@@ -133,11 +133,12 @@ export default function ChatConsulting() {
   }, [isAuthenticated])
 
   useEffect(() => {
+    if (!socket) return
     if (isOpen && unreadCountMessage > 0) {
       socket.emit("client:read_messages", { payload: { user_id: userId } }) // thông báo cho server đã đọc tin nhắn
       setUnreadCountMessage(0) // reset số lượng tin nhắn chưa đọc về 0
     }
-  }, [isOpen, userId, unreadCountMessage])
+  }, [isOpen, userId, unreadCountMessage, socket])
 
   const handleCheckAuth = async () => {
     // lúc này khi bật ModalChat lên check và update lại số lượng tin nhắn chưa đọc chỗ này ko cần socket cứ dùng api bình thường
@@ -159,6 +160,7 @@ export default function ChatConsulting() {
   }
 
   useEffect(() => {
+    if (!socket) return
     const getConversationNew = async () => {
       try {
         await getDataConversation.refetch()
@@ -170,7 +172,7 @@ export default function ChatConsulting() {
     return () => {
       socket.off("reload_conversation", getConversationNew)
     }
-  }, [getDataConversation])
+  }, [getDataConversation, socket])
 
   const [checkFile, setCheckFile] = useState(false)
 
@@ -218,11 +220,11 @@ export default function ChatConsulting() {
                   <button
                     type="button"
                     onClick={() => {
-                      try {
-                        retryConnect?.()
-                      } catch {
-                        window.location.reload()
-                      }
+                      // try {
+                      //   retryConnect?.()
+                      // } catch {
+                      //   window.location.reload()
+                      // }
                     }}
                     aria-label="Thử kết nối lại"
                     className="inline-flex items-center justify-center h-6 w-6 rounded-full bg-indigo-600 text-white hover:bg-indigo-700"

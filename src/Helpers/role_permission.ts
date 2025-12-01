@@ -19,7 +19,8 @@ export const permissions = {
   VIEW_EMPLOYEE: "view_employee",
   VIEW_ROLES: "view_roles",
   VIEW_PERMISSION: "view_permissions",
-  VIEW_VOUCHER: "view_vouchers"
+  VIEW_VOUCHER: "view_vouchers",
+  VIEW_REVIEW: "view_reviews"
 }
 
 export const Roles_Permissions = {
@@ -37,7 +38,8 @@ export const Roles_Permissions = {
     permissions.VIEW_EMAIL,
     permissions.VIEW_CHAT,
     permissions.VIEW_PERMISSION,
-    permissions.VIEW_VOUCHER
+    permissions.VIEW_VOUCHER,
+    permissions.VIEW_REVIEW
   ],
   [rolesForApi.SALES_STAFF]: [
     permissions.VIEW_DASHBOARD,
@@ -46,6 +48,7 @@ export const Roles_Permissions = {
     permissions.VIEW_CATEGORY,
     permissions.VIEW_PRODUCT,
     permissions.VIEW_EMAIL,
-    permissions.VIEW_CHAT
+    permissions.VIEW_CHAT,
+    permissions.VIEW_REVIEW
   ]
 }

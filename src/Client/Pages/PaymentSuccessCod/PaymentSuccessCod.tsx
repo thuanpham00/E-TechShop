@@ -18,9 +18,10 @@ import { Link, useLocation } from "react-router-dom"
 import { motion } from "framer-motion"
 import { path } from "src/Constants/path"
 import { convertDateTime, formatCurrency } from "src/Helpers/common"
-import { useEffect, useRef } from "react"
+import { useContext, useEffect, useRef } from "react"
 import { useQueryClient } from "@tanstack/react-query"
 import { getAccessTokenFromLS } from "src/Helpers/auth"
+import { AppContext } from "src/Context/authContext"
 
 const { Text } = Typography
 
@@ -28,6 +29,7 @@ export default function PaymentSuccessCod() {
   const queryClient = useQueryClient()
   const token = getAccessTokenFromLS()
   const { state } = useLocation()
+  const { socket, userId } = useContext(AppContext)
   const infoOrder = state?.infoOrder
   const calledRef = useRef(false)
 
@@ -36,13 +38,17 @@ export default function PaymentSuccessCod() {
   }, [])
 
   useEffect(() => {
+    if (!socket) return
     if (calledRef.current) return
     queryClient.invalidateQueries({ queryKey: ["listCart", token] })
     queryClient.invalidateQueries({ queryKey: ["listOrder", token] })
     calledRef.current = true
 
+    socket.emit("client:order_notification", {
+      payload: userId
+    })
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [socket])
 
   return (
     <div className="bg-gray-50 min-h-screen">

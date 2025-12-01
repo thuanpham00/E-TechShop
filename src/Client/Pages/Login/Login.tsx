@@ -15,6 +15,7 @@ import { AppContext } from "src/Context/authContext"
 import Button from "src/Components/Button"
 import Input from "src/Components/Input"
 import { Cpu } from "lucide-react"
+import { io } from "socket.io-client"
 
 const getGoogleAuthUrl = () => {
   const { VITE_GOOGLE_CLIENT_ID, VITE_GOOGLE_AUTHORIZED_REDIRECT_URI } = import.meta.env
@@ -38,7 +39,7 @@ type FormData = Pick<SchemaAuthType, "email" | "password"> // kiểu dữ liệu
 const formData = schemaAuth.pick(["email", "password"]) // validate ở client
 
 export default function Login() {
-  const { setIsAuthenticated, setNameUser, setRole, setAvatar, setUserId } = useContext(AppContext)
+  const { setIsAuthenticated, setNameUser, setRole, setAvatar, setUserId, setSocket } = useContext(AppContext)
   const {
     formState: { errors },
     setError,
@@ -68,6 +69,12 @@ export default function Login() {
         // -> dẫn đến UI không cập nhật (mới nhất sau khi login) -> cần set state
         // để app re-render lại và đặt giá trị mới cho state global
         // và giá trị khởi tạo cho state global (LS) - set trong response
+        const socket = io(import.meta.env.VITE_API_SERVER, {
+          auth: {
+            Authorization: `Bearer ${response.data.result.accessToken}`
+          }
+        })
+        setSocket(socket)
       },
       onError: (error) => {
         // lỗi từ server trả về

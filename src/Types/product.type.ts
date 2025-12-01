@@ -43,6 +43,32 @@ export type CategoryItemType = {
   brand_ids: string[]
 }
 
+export type ReviewItemType = {
+  _id: string
+  productId: {
+    _id: string
+    name: string
+    banner: {
+      id: string
+      type: number
+      url: string
+    }
+  }
+  userId: {
+    _id: string
+    name: string
+    avatar: string
+  }
+  orderId: string
+  rating: number
+  title: string
+  comment: string
+  images: never[]
+  replies: never[]
+  created_at: string
+  updated_at: string
+}
+
 export type TopReviewOrderItemType = {
   _id: string
   productId: {

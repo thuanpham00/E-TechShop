@@ -345,6 +345,16 @@ export const schemaRole = schemaAuth.pick(["updated_at", "created_at"]).shape({
   description: yup.string().required("Mô tả vai trò bắt buộc!")
 })
 
+export const schemaSearchFilterReview = schemaSupply
+  .pick(["created_at_start", "created_at_end", "updated_at_start", "updated_at_end"])
+  .shape({
+    name: yup.string(),
+    rating: yup
+      .number()
+      .transform((value, originalValue) => (originalValue === "" ? undefined : value))
+      .notRequired()
+  })
+
 export type SchemaAuthType = yup.InferType<typeof schemaAuth>
 
 export type SchemaSearchFilterType = yup.InferType<typeof schemaSearchFilter>
@@ -370,3 +380,5 @@ export type SchemaOrderType = yup.InferType<typeof schemaOrder>
 export type SchemaSearchFilterOrderType = yup.InferType<typeof schemaSearchFilterOrder>
 
 export type SchemaRoleType = yup.InferType<typeof schemaRole>
+
+export type SchemaReviewType = yup.InferType<typeof schemaSearchFilterReview>

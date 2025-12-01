@@ -10,10 +10,9 @@ import { TicketAPI } from "src/Apis/ticket.api"
 import { TicketItemType } from "src/Types/product.type"
 import { convertDateTime } from "src/Helpers/common"
 import Chatting from "./Chatting"
-import useCheckConnectSocket from "src/Hook/useCheckConnectSocket"
-import socket from "src/socket"
 import { EllipsisVertical, RefreshCw } from "lucide-react"
 import { AppContext } from "src/Context/authContext"
+import useCheckConnectSocket from "src/Hook/useCheckConnectSocket"
 
 export const LIMIT = 20
 export const PAGE = 1
@@ -32,8 +31,8 @@ Dùng để đồng bộ dữ liệu ở nhiều nơi khác nhau.
 1 cái làm mới dữ liệu của riêng nó — 1 cái làm mới dữ liệu ở mọi nơi dùng chung queryKey.
  */
 export default function AdminChatting() {
-  const { userId } = useContext(AppContext)
-  const { isSocketConnected, retryConnect } = useCheckConnectSocket()
+  const { isSocketConnected } = useCheckConnectSocket()
+  const { userId, socket } = useContext(AppContext)
   const [activeTab, setActiveTab] = useState<TicketStatus>(TicketStatus.PENDING)
   const [selectedTicket, setSelectedTicket] = useState<TicketItemType>()
 
@@ -84,6 +83,7 @@ export default function AdminChatting() {
   }, [listTicket, searchTerm])
 
   useEffect(() => {
+    if (!socket) return
     const getListTicketAPI = async () => {
       try {
         await getListTicket.refetch()
@@ -95,9 +95,10 @@ export default function AdminChatting() {
     return () => {
       socket.off("reload_ticket_list", getListTicketAPI)
     }
-  }, [getListTicket])
+  }, [getListTicket, socket])
 
   useEffect(() => {
+    if (!socket) return
     const getListImageTicket = async () => {
       try {
         await getListImagesChat.refetch()
@@ -109,9 +110,10 @@ export default function AdminChatting() {
     return () => {
       socket.off("reload_ticket_images", getListImageTicket)
     }
-  }, [getListImagesChat])
+  }, [getListImagesChat, socket])
 
   const handleUpdateReadMessageFromAdmin = (ticket: TicketItemType) => {
+    if (!socket) return
     setSelectedTicket(ticket)
     if (
       ticket?.status !== TicketStatus.PENDING &&
@@ -160,11 +162,11 @@ export default function AdminChatting() {
               <button
                 type="button"
                 onClick={() => {
-                  try {
-                    retryConnect?.()
-                  } catch {
-                    window.location.reload()
-                  }
+                  // try {
+                  //   // retryConnect?.()
+                  // } catch {
+                  //   window.location.reload()
+                  // }
                 }}
                 aria-label="Thử kết nối lại"
                 className="inline-flex items-center justify-center h-6 w-6 rounded-full bg-indigo-600 text-white hover:bg-indigo-700"
@@ -233,7 +235,7 @@ export default function AdminChatting() {
                       />
                       <div className="flex items-center justify-between w-full relative">
                         <div className="flex flex-col items-start">
-                          <span className="font-semibold">{item.users.name}</span>
+                          <span className="font-semibold text-left">{item.users.name}</span>
                           <span className={`text-gray-400 text-[13px] font-medium truncate max-w-[180px]`}>
                             {item.last_message_sender_type === "staff" ? "Bạn" : "Khách"}:{" "}
                             {item.last_message === null
@@ -294,14 +296,14 @@ export default function AdminChatting() {
 
             <div className="mt-4">
               <button
-                className="text-sm font-semibold text-gray-700 dark:text-gray-200 flex justify-between items-center w-full"
+                className="text-sm font-semibold text-gray-700 dark:text-white flex justify-between items-center w-full"
                 onClick={() => setShowModalHistoryAssigned(true)}
               >
                 <span>Lịch sử tiếp nhận</span>
                 <EllipsisVertical className="inline-block ml-1 mb-1" size={12} />
               </button>
 
-              <div className="text-sm font-semibold text-gray-700 mt-4">Ảnh đoạn chat</div>
+              <div className="text-sm font-semibold text-gray-700 dark:text-white mt-4">Ảnh đoạn chat</div>
               <div className="mt-2 h-[calc(100vh-340px)] overflow-y-auto border border-gray-200 dark:border-darkBorder p-2">
                 {listDataImagesChat && listDataImagesChat.length > 0 ? (
                   <div className="grid grid-cols-3 gap-1">
@@ -331,7 +333,13 @@ export default function AdminChatting() {
         width={600}
         footer={null}
       >
-        <div className="mt-3 space-y-3">
+        <div
+          className="mt-3 space-y-3"
+          style={{
+            overflowY: "auto",
+            height: "500px"
+          }}
+        >
           {selectedTicket && selectedTicket.served_by.length > 0 ? (
             selectedTicket.served_by.map((item) => (
               <div
@@ -340,8 +348,8 @@ export default function AdminChatting() {
               >
                 <div className="flex items-center justify-between">
                   <div>
-                    <div className="text-xs text-gray-500">Người xử lý</div>
-                    <div className="font-medium text-sm">{item.admin_name}</div>
+                    <div className="text-xs text-gray-500 dark:text-white">Người xử lý</div>
+                    <div className="font-medium text-sm dark:text-white">{item.admin_name}</div>
                     <div className="text-xs text-gray-400 mt-1">Id: {item.admin_id}</div>
                   </div>
                   <div className="text-right">

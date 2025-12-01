@@ -216,8 +216,8 @@ export default function ManageReceipt() {
             <form onSubmit={handleSubmitSearch}>
               <div className="mt-1 grid grid-cols-2">
                 <div className="col-span-1 flex items-center h-14 px-2 bg-[#ececec] dark:bg-darkPrimary border border-[#dadada] rounded-tl-md">
-                  <span className="w-1/3 dark:text-white">Tên sản phẩm</span>
-                  <div className="w-2/3 relative h-full">
+                  <span className="w-[25%] dark:text-white">Tên sản phẩm</span>
+                  <div className="w-[75%] relative h-full">
                     <DropdownSearch
                       name="name_product"
                       namePlaceholder="Nhập tên sản phẩm"
@@ -231,8 +231,8 @@ export default function ManageReceipt() {
                   </div>
                 </div>
                 <div className="col-span-1 flex items-center h-14 px-2 bg-[#ececec] dark:bg-darkPrimary border border-[#dadada] rounded-tr-md">
-                  <span className="w-1/3 dark:text-white">Tên nhà cung cấp</span>
-                  <div className="w-2/3 relative h-full">
+                  <span className="w-[25%] dark:text-white">Tên nhà cung cấp</span>
+                  <div className="w-[75%] relative h-full">
                     <DropdownSearch
                       name="name_supplier"
                       namePlaceholder="Nhập tên nhà cung cấp"
@@ -246,8 +246,8 @@ export default function ManageReceipt() {
                   </div>
                 </div>
                 <div className="col-span-1 flex items-center h-14 px-2 bg-[#fff] dark:bg-darkPrimary border border-[#dadada] border-t-0">
-                  <span className="w-1/3 dark:text-white">Số lượng sản phẩm</span>
-                  <div className="w-2/3 relative h-full">
+                  <span className="w-[25%] dark:text-white">Số lượng sản phẩm</span>
+                  <div className="w-[75%] relative h-full">
                     <div className="mt-2 w-full flex items-center gap-2">
                       <Input
                         name="quantity"
@@ -262,8 +262,8 @@ export default function ManageReceipt() {
                   </div>
                 </div>
                 <div className="col-span-1 flex items-center h-14 px-2 bg-[#fff] dark:bg-darkPrimary border border-[#dadada] border-t-0">
-                  <span className="w-1/3 dark:text-white">Lọc theo giá</span>
-                  <div className="w-2/3 relative h-full">
+                  <span className="w-[25%] dark:text-white">Lọc theo giá</span>
+                  <div className="w-[75%] relative h-full">
                     <div className="flex items-center justify-between gap-2">
                       <Controller
                         name="price_min"
@@ -315,8 +315,8 @@ export default function ManageReceipt() {
                   </div>
                 </div>
                 <div className="col-span-1 flex items-center h-14 px-2 bg-[#ececec] dark:bg-darkPrimary border border-[#dadada] border-t-0 rounded-bl-md">
-                  <span className="w-1/3 dark:text-white">Ngày tạo</span>
-                  <div className="w-2/3 relative h-full">
+                  <span className="w-[25%] dark:text-white">Ngày tạo</span>
+                  <div className="w-[75%] relative h-full">
                     <div className="mt-2 w-full flex items-center gap-2">
                       <Controller
                         name="created_at_start"
@@ -354,8 +354,8 @@ export default function ManageReceipt() {
                   </div>
                 </div>
                 <div className="col-span-1 flex items-center h-14 px-2 bg-[#ececec] dark:bg-darkPrimary border border-[#dadada] border-t-0 rounded-br-md">
-                  <span className="w-1/3 dark:text-white">Ngày cập nhật</span>
-                  <div className="w-2/3 relative h-full">
+                  <span className="w-[25%] dark:text-white">Ngày cập nhật</span>
+                  <div className="w-[75%] relative h-full">
                     <div className="mt-2 w-full flex items-center gap-2">
                       <Controller
                         name="updated_at_start"

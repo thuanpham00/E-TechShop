@@ -7,6 +7,7 @@ import { Helmet } from "react-helmet-async"
 import { useForm } from "react-hook-form"
 import { Link } from "react-router-dom"
 import { toast } from "react-toastify"
+import { io } from "socket.io-client"
 import { authAPI } from "src/Apis/admin/auth.api"
 import { schemaAuth, SchemaAuthType } from "src/Client/Utils/rule"
 import Button from "src/Components/Button"
@@ -20,7 +21,7 @@ type FormData = Pick<SchemaAuthType, "email" | "password"> // kiểu dữ liệu
 const formData = schemaAuth.pick(["email", "password"]) // validate ở client
 
 export default function LoginAdmin() {
-  const { setIsAuthenticated, setNameUser, setRole, setAvatar, setUserId } = useContext(AppContext)
+  const { setIsAuthenticated, setNameUser, setRole, setAvatar, setUserId, setSocket } = useContext(AppContext)
   const {
     formState: { errors },
     setError,
@@ -46,6 +47,13 @@ export default function LoginAdmin() {
         setRole(response.data.result.userInfo.role)
         setAvatar(response.data.result.userInfo.avatar)
         setUserId(response.data.result.userInfo._id)
+
+        const socket = io(import.meta.env.VITE_API_SERVER, {
+          auth: {
+            Authorization: `Bearer ${response.data.result.accessToken}`
+          }
+        })
+        setSocket(socket)
       },
       onError: (error) => {
         // lỗi từ server trả về

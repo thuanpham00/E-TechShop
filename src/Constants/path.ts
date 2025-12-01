@@ -42,6 +42,7 @@ export const path = {
   AddProduct: "/admin/products/add",
   AddReceipt: "/admin/receipts/add",
   AdminVoucher: "/admin/vouchers",
+  AdminReview: "/admin/reviews",
 
   AdminProfile: "/admin/profile"
 }

@@ -78,18 +78,27 @@ export default function StatisticalProduct() {
     productRunningOutOfStock: TypeStatistical
   }>
 
-  // xử lý biểu đồ thống kê sản phẩm theo danh mục
+  // Use API result when available. If data is missing, use safe empty defaults so charts render gracefully.
   const countCategory = dataStatisticalProduct?.result.countCategory
-  const labelData_CountCategory = (countCategory?.value as any[])?.map((item) => item.categoryName)
-  const data_countCategory = (countCategory?.value as any[])?.map((item) => item.total)
+  const categoriesArray = (countCategory?.value ?? []) as { categoryName: string; total: number }[]
+  const labelData_CountCategory = categoriesArray.map((item) => item.categoryName)
+  const data_countCategory = categoriesArray.map((item) => item.total)
 
   // xử lý biểu đồ top 10 sản phẩm bán chạy
   const top10ProductSold = dataStatisticalProduct?.result.top10ProductSold
-  const labelData_Top10Product = (top10ProductSold?.value as any[])?.map((item) => item.name)
-  const data_top10ProductSold = (top10ProductSold?.value as any[])?.map((item) => item.sold)
+  const top10Array = (top10ProductSold?.value ?? []) as { name: string; sold: number }[]
+  const labelData_Top10Product = top10Array.map((item) => item.name)
+  const data_top10ProductSold = top10Array.map((item) => item.sold)
 
   // xử lý biểu đồ danh sách các sản phẩm sắp hết hàng
   const productRunningOutOfStock = dataStatisticalProduct?.result.productRunningOutOfStock
+  const runningOutArray = (productRunningOutOfStock?.value ?? []) as ProductRunningOutOfStock[]
+
+  // additional computed metrics
+  const totalCategories = categoriesArray.length
+  const totalProductsCount = categoriesArray.reduce((s, c) => s + (c.total || 0), 0)
+  const lowStockCount = runningOutArray.filter((p) => p.stock > 0 && p.stock < 5).length
+  const outOfStockCount = runningOutArray.filter((p) => p.stock === 0).length
 
   const options: ChartOptions<"bar"> = {
     indexAxis: "y", // 🔥 Biểu đồ cột ngang
@@ -304,6 +313,32 @@ export default function StatisticalProduct() {
       {!getStatisticalProduct.isFetching ? (
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
           <div className="mt-4">
+            <Row gutter={[16, 16]} className="mb-4">
+              <Col span={6}>
+                <div className="shadow-md p-4 bg-white border border-[#dadada] dark:bg-darkPrimary dark:border-darkBorder rounded-md">
+                  <div className="text-sm text-black dark:text-white">Tổng danh mục</div>
+                  <div className="text-2xl font-semibold mt-2">{totalCategories || 0}</div>
+                </div>
+              </Col>
+              <Col span={6}>
+                <div className="shadow-md p-4 bg-white border border-[#dadada] dark:bg-darkPrimary dark:border-darkBorder rounded-md">
+                  <div className="text-sm text-black dark:text-white">Tổng sản phẩm</div>
+                  <div className="text-2xl font-semibold mt-2">{totalProductsCount || 0}</div>
+                </div>
+              </Col>
+              <Col span={6}>
+                <div className="shadow-md p-4 bg-white border border-[#dadada] dark:bg-darkPrimary dark:border-darkBorder rounded-md">
+                  <div className="text-sm text-black dark:text-white">Sản phẩm sắp hết (&lt;5)</div>
+                  <div className="text-2xl font-semibold mt-2">{lowStockCount || 0}</div>
+                </div>
+              </Col>
+              <Col span={6}>
+                <div className="shadow-md p-4 bg-white border border-[#dadada] dark:bg-darkPrimary dark:border-darkBorder rounded-md">
+                  <div className="text-sm text-black dark:text-white">Hết hàng</div>
+                  <div className="text-2xl font-semibold mt-2">{outOfStockCount || 0}</div>
+                </div>
+              </Col>
+            </Row>
             <Row gutter={[24, 24]} className="mt-2">
               <Col span={12}>
                 <div

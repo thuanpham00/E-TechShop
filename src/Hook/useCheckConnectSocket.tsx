@@ -1,105 +1,32 @@
-import { useCallback, useEffect, useRef, useState } from "react"
-import socket from "src/socket"
+import { useContext, useEffect, useState } from "react"
+import { AppContext } from "src/Context/authContext"
 
-export default function useCheckConnectSocket({
-  maxAttempts = 10,
-  initialDelay = 1000 // ms
-}: { maxAttempts?: number; initialDelay?: number } = {}) {
+export default function useCheckConnectSocket() {
+  const { socket } = useContext(AppContext)
   const [isSocketConnected, setIsSocketConnected] = useState<boolean>(Boolean(socket?.connected))
-  const attemptRef = useRef<number>(0)
-  const timerRef = useRef<number | null>(null)
-  const manualDisconnectRef = useRef<boolean>(false)
-
-  const clearTimer = () => {
-    if (timerRef.current !== null) {
-      clearTimeout(timerRef.current)
-      timerRef.current = null
-    }
-  }
-
-  const scheduleReconnect = useCallback(() => {
-    if (manualDisconnectRef.current) return
-    if (socket?.connected) {
-      attemptRef.current = 0
-      return
-    }
-    if (attemptRef.current >= maxAttempts) return
-
-    const delay = Math.min(initialDelay * 2 ** attemptRef.current, 30000)
-    clearTimer()
-    timerRef.current = window.setTimeout(() => {
-      attemptRef.current += 1
-      try {
-        socket.connect()
-      } catch {
-        // ignore
-      }
-    }, delay)
-  }, [initialDelay, maxAttempts])
 
   useEffect(() => {
-    const onConnect = () => {
-      clearTimer()
-      attemptRef.current = 0
-      setIsSocketConnected(true)
-    }
-    const onDisconnect = () => {
+    if (!socket) return
+
+    const handleConnect = () => setIsSocketConnected(true)
+    const handleDisconnect = () => {
       setIsSocketConnected(false)
-      if (!manualDisconnectRef.current) scheduleReconnect()
-    }
-    const onConnectError = () => {
-      setIsSocketConnected(false)
-      scheduleReconnect()
+      // Tự động thử kết nối lại sau 2 giây
+      setTimeout(() => {
+        if (!socket.connected) socket.connect()
+      }, 2000)
     }
 
-    socket.on("connect", onConnect)
-    socket.on("disconnect", onDisconnect)
-    socket.on("connect_error", onConnectError)
+    socket.on("connect", handleConnect)
+    socket.on("disconnect", handleDisconnect)
+
+    setIsSocketConnected(socket.connected)
 
     return () => {
-      socket.off("connect", onConnect)
-      socket.off("disconnect", onDisconnect)
-      socket.off("connect_error", onConnectError)
-      clearTimer()
+      socket.off("connect", handleConnect)
+      socket.off("disconnect", handleDisconnect)
     }
-  }, [scheduleReconnect])
+  }, [socket])
 
-  useEffect(() => {
-    const onVisible = () => {
-      if (document.visibilityState === "visible" && !socket.connected && !manualDisconnectRef.current) {
-        attemptRef.current = 0
-        try {
-          socket.connect()
-        } catch {
-          scheduleReconnect()
-        }
-      }
-    }
-    document.addEventListener("visibilitychange", onVisible)
-    return () => document.removeEventListener("visibilitychange", onVisible)
-  }, [scheduleReconnect])
-
-  const retryConnect = useCallback(() => {
-    manualDisconnectRef.current = false
-    clearTimer()
-    attemptRef.current = 0
-    try {
-      socket.connect()
-    } catch {
-      scheduleReconnect()
-    }
-  }, [scheduleReconnect])
-
-  const disconnect = useCallback(() => {
-    manualDisconnectRef.current = true
-    clearTimer()
-    try {
-      socket.disconnect()
-    } catch {
-      // ignore
-    }
-    setIsSocketConnected(false)
-  }, [])
-
-  return { isSocketConnected, retryConnect, disconnect }
+  return { isSocketConnected }
 }

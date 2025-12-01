@@ -6,7 +6,7 @@ import { OrderType } from "src/Types/product.type"
 import { formatCurrency } from "src/Helpers/common"
 import iconCod from "src/Assets/img/icon_cod.png"
 import iconVnpay from "src/Assets/img/icon_vnpay.jpg"
-import { useEffect, useState } from "react"
+import { useContext, useEffect, useState } from "react"
 import { useMutation } from "@tanstack/react-query"
 import { toast } from "react-toastify"
 import { path } from "src/Constants/path"
@@ -25,10 +25,12 @@ import {
   CheckCircle2
 } from "lucide-react"
 import { OrderApi } from "src/Apis/client/order.api"
+import { AppContext } from "src/Context/authContext"
 
 const { Text, Title } = Typography
 
 export default function PaymentMethod() {
+  const { socket, userId } = useContext(AppContext)
   const navigate = useNavigate()
   const { state } = useLocation()
   const infoOrder = state?.infoOrder as OrderType
@@ -66,8 +68,12 @@ export default function PaymentMethod() {
         }
       })
     } else {
+      if (!socket) return
       const toastId = toast.loading("Đang xử lý thanh toán. Vui lòng chờ trong giây lát...")
       try {
+        socket.emit("client:order_notification", {
+          payload: userId
+        })
         const response = await createOrderMutation.mutateAsync(body, {
           onSuccess: () => {
             toast.dismiss(toastId)

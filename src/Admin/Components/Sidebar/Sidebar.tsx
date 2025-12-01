@@ -15,7 +15,8 @@ import {
   Users,
   Settings,
   Settings2,
-  Tickets
+  Tickets,
+  Star
 } from "lucide-react"
 import { path } from "src/Constants/path"
 import SidebarItem from "../SidebarItem"
@@ -50,7 +51,8 @@ export default function Sidebar() {
     { name: "Thông báo Email", icon: Mail, path: path.AdminEmail },
     { name: "Hệ thống chat", icon: MessageCircle, path: path.AdminChat },
     { name: "Phân quyền hệ thống", icon: Settings, path: path.AdminPermission },
-    { name: "Quản lý Voucher", icon: Tickets, path: path.AdminVoucher }
+    { name: "Quản lý Voucher", icon: Tickets, path: path.AdminVoucher },
+    { name: "Quản lý Đánh giá", icon: Star, path: path.AdminReview }
   ]
 
   const logoutMutation = useMutation({
@@ -126,6 +128,20 @@ export default function Sidebar() {
           })}
           nameSideBar={sideBarList[13].name}
           path={sideBarList[13].path}
+        />
+      )
+    },
+    hasPermission(permissions.VIEW_REVIEW) && {
+      key: path.AdminReview,
+      label: (
+        <SidebarItem
+          className={`${checkActive(sideBarList[14].path) ? "text-[14px] text-[#3b82f6] font-semibold" : "text-[14px] text-white font-normal hover:text-[#495057] duration-200 ease-in"}`}
+          classNameWrapper={`flex items-center gap-2 cursor-pointer`}
+          icon={React.createElement(sideBarList[14].icon, {
+            color: checkActive(sideBarList[14].path) ? "#3b82f6" : "white"
+          })}
+          nameSideBar={sideBarList[14].name}
+          path={sideBarList[14].path}
         />
       )
     }

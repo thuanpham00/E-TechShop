@@ -373,7 +373,6 @@ export default function ManageVoucher() {
     limit: string
     totalOfPage: string
   }>
-  console.log(resultOrder?.result?.limit)
   const listOrderApplyVoucher = resultOrder?.result?.result
 
   useEffect(() => {
@@ -400,7 +399,7 @@ export default function ManageVoucher() {
       </h1>
 
       <section className="mt-4">
-        <div className="bg-white dark:bg-darkPrimary mb-3 dark:border-darkBorder rounded-2xl">
+        <div className="bg-white dark:bg-darkSecond mb-3 dark:border-darkBorder rounded-2xl">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
               <Button

@@ -16,6 +16,12 @@ export type queryParamConfigCustomer = queryParamConfig & {
   sortBy?: string
 }
 
+export type queryParamConfigReview = queryParamConfig & {
+  sortBy?: string
+  name?: string
+  rating?: string
+}
+
 export type queryParamConfigCategory = queryParamConfig & {
   name?: string
   sortBy?: string

@@ -50,7 +50,6 @@ export default function ChangePassword() {
         }
         if (isError400<{ message: string }>(error)) {
           const formError = error.response?.data.message
-          console.log(formError)
           const errorFields = []
           errorFields.push({
             name: "old_password",

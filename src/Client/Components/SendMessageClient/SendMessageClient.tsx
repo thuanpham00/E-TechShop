@@ -5,7 +5,6 @@ import FormSendMessage from "src/Components/FormSendMessage"
 import ShowPreviewImage from "src/Components/ShowPreviewImage"
 import { MessageType } from "src/Constants/enum"
 import { AppContext } from "src/Context/authContext"
-import socket from "src/socket"
 
 type MessageSend = {
   content: string // REQUIRED - Nội dung tin nhắn
@@ -21,7 +20,7 @@ export default function SendMessageClient({
   setConversations: React.Dispatch<React.SetStateAction<any[]>>
   setCheckFile: React.Dispatch<React.SetStateAction<boolean>>
 }) {
-  const { userId } = useContext(AppContext) // người gửi tin nhắn
+  const { userId, socket } = useContext(AppContext) // người gửi tin nhắn
 
   const [files, setFiles] = useState<GalleryFileItem[]>([])
   const [valueInput, setValueInput] = useState("")
@@ -59,6 +58,7 @@ export default function SendMessageClient({
         type: files.length > 0 ? MessageType.FILE_TEXT : MessageType.TEXT,
         sender_type: "customer"
       }
+      if (!socket) return
       socket.emit(
         "send_message",
         {

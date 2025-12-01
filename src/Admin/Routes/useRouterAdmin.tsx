@@ -27,6 +27,7 @@ const AdminEmail = lazy(() => import("src/Admin/Pages/AdminEmail"))
 const AdminChatting = lazy(() => import("src/Admin/Pages/AdminChatting"))
 const AdminProfile = lazy(() => import("src/Admin/Pages/AdminProfile"))
 const ManageVoucher = lazy(() => import("src/Admin/Pages/ManageVoucher"))
+const ManageReview = lazy(() => import("src/Admin/Pages/ManageReview"))
 
 const ProtectedRoute = () => {
   const { isAuthenticated } = useContext(AppContext)
@@ -108,6 +109,14 @@ export default function useRouterAdmin() {
                   element: (
                     <Suspense>
                       <ManageProducts />
+                    </Suspense>
+                  )
+                },
+                {
+                  path: path.AdminReview,
+                  element: (
+                    <Suspense>
+                      <ManageReview />
                     </Suspense>
                   )
                 },
