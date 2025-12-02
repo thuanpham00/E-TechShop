@@ -4,7 +4,7 @@ import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tansta
 import { Collapse, CollapseProps, Empty, Image, Modal, Select, Table } from "antd"
 import { isUndefined, omit, omitBy } from "lodash"
 import { ArrowUpNarrowWide, ClipboardCheck, FolderUp, Pencil, Plus, RotateCcw, Search, Trash2 } from "lucide-react"
-import { useEffect, useState } from "react"
+import { useContext, useEffect, useState } from "react"
 import { Controller, useForm } from "react-hook-form"
 import { createSearchParams, useNavigate } from "react-router-dom"
 import { toast } from "react-toastify"
@@ -31,6 +31,8 @@ import StaffDetail from "./Components/StaffDetail"
 import { ColumnsType } from "antd/es/table"
 import { StaffAPI } from "src/Apis/admin/staff.api"
 import useSortList from "src/Hook/useSortList"
+import { AppContext } from "src/Context/authContext"
+import { useCheckPermission } from "src/Hook/useRolePermissions"
 
 const formDataSearch = schemaSearchFilterCustomer.pick([
   "email",
@@ -56,6 +58,9 @@ type FormDataSearch = Pick<
 >
 
 export default function ManageStaff() {
+  const { permissions } = useContext(AppContext)
+  const { hasPermission } = useCheckPermission(permissions)
+
   const { theme } = useTheme()
   const queryClient = useQueryClient()
   const isDark = theme === "dark" || theme === "system"
@@ -526,10 +531,11 @@ export default function ManageStaff() {
       align: "center",
       render: (_, record) => (
         <div className="flex items-center justify-center gap-2">
-          <button onClick={() => setAddItem(record)} className="p-1">
-            <Pencil color="orange" size={18} />
+          <button onClick={() => setAddItem(record)} className="p-1" disabled={!hasPermission("staff:update")}>
+            <Pencil color={`${hasPermission("staff:update") ? "orange" : "gray"}`} size={18} />
           </button>
           <button
+            disabled={!hasPermission("staff:delete")}
             onClick={() =>
               Modal.confirm({
                 title: "Bạn có chắc chắn muốn xóa?",
@@ -542,7 +548,7 @@ export default function ManageStaff() {
             }
             className="p-1"
           >
-            <Trash2 color="red" size={18} />
+            <Trash2 color={`${hasPermission("staff:delete") ? "red" : "gray"}`} size={18} />
           </button>
         </div>
       )
@@ -600,7 +606,8 @@ export default function ManageStaff() {
                 onClick={() => setAddItem(true)}
                 icon={<Plus size={15} />}
                 nameButton="Thêm mới"
-                classNameButton="py-2 px-3 bg-blue-500 w-full text-white font-medium rounded-md hover:bg-blue-500/80 duration-200 text-[13px] flex items-center gap-1 text-[13px]"
+                disabled={!hasPermission("staff:create")}
+                classNameButton="py-2 px-3 bg-blue-500 w-full text-white font-medium rounded-md hover:bg-blue-500/80 duration-200 text-[13px] flex items-center gap-1 text-[13px] disabled:bg-gray-400 disabled:text-gray-200 disabled:cursor-not-allowed"
               />
             </div>
           </div>

@@ -9,7 +9,7 @@ import useQueryParams from "src/Hook/useQueryParams"
 import { queryParamConfigCategory } from "src/Types/queryParams.type"
 import { SuccessResponse } from "src/Types/utils.type"
 import { path } from "src/Constants/path"
-import { useEffect, useState } from "react"
+import { useContext, useEffect, useState } from "react"
 import { CategoryItemType } from "src/Types/product.type"
 import { isUndefined, omit, omitBy } from "lodash"
 import { cleanObject, convertDateTime } from "src/Helpers/common"
@@ -29,6 +29,8 @@ import { useTheme } from "src/Admin/Components/Theme-provider/Theme-provider"
 import { ColumnsType } from "antd/es/table"
 import { CategoryAPI } from "src/Apis/admin/category.api"
 import useSortList from "src/Hook/useSortList"
+import { AppContext } from "src/Context/authContext"
+import { useCheckPermission } from "src/Hook/useRolePermissions"
 
 const formDataSearch = schemaSearchFilter.pick([
   "name",
@@ -44,6 +46,9 @@ type FormDataSearch = Pick<
 >
 
 export default function ManageCategories() {
+  const { permissions } = useContext(AppContext)
+  const { hasPermission } = useCheckPermission(permissions)
+
   const { theme } = useTheme()
   const isDark = theme === "dark" || theme === "system"
 
@@ -386,11 +391,7 @@ export default function ManageCategories() {
 
   useEffect(() => {
     if (isError) {
-      const message = (error as any).response?.data?.message
       const status = (error as any)?.response?.status
-      if (message === "Không có quyền truy cập!") {
-        toast.error(message, { autoClose: 1500 })
-      }
       if (status === HttpStatusCode.NotFound) {
         navigate(path.AdminNotFound, { replace: true })
       }
@@ -437,8 +438,9 @@ export default function ManageCategories() {
             <Button
               onClick={() => setAddItem(true)}
               icon={<Plus size={15} />}
+              disabled={!hasPermission("category:create")}
               nameButton="Thêm mới"
-              classNameButton="py-2 px-3 bg-blue-500 w-full text-white font-medium rounded-md hover:bg-blue-500/80 duration-200 text-[13px] flex items-center gap-1 text-[13px]"
+              classNameButton="py-2 px-3 bg-blue-500 w-full text-white font-medium rounded-md hover:bg-blue-500/80 duration-200 text-[13px] flex items-center gap-1 text-[13px] disabled:bg-gray-400 disabled:text-gray-200 disabled:cursor-not-allowed"
             />
           </div>
         </div>

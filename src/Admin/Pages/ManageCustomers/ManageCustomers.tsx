@@ -26,7 +26,7 @@ import useQueryParams from "src/Hook/useQueryParams"
 import { queryParamConfig, queryParamConfigCustomer } from "src/Types/queryParams.type"
 import { UserType } from "src/Types/user.type"
 import { ErrorResponse, SuccessResponse } from "src/Types/utils.type"
-import { useEffect, useState } from "react"
+import { useContext, useEffect, useState } from "react"
 import avatarDefault from "src/Assets/img/avatarDefault.png"
 import { UpdateBodyReq } from "src/Types/product.type"
 import { toast } from "react-toastify"
@@ -54,6 +54,8 @@ import { useTheme } from "src/Admin/Components/Theme-provider/Theme-provider"
 import { ColumnsType } from "antd/es/table"
 import { CustomerAPI } from "src/Apis/admin/customer.api"
 import useSortList from "src/Hook/useSortList"
+import { useCheckPermission } from "src/Hook/useRolePermissions"
+import { AppContext } from "src/Context/authContext"
 
 const formDataUpdate = schemaAuth.pick([
   "id",
@@ -101,6 +103,10 @@ export type FileAvatarType = {
 }
 
 export default function ManageCustomers() {
+  // xử lý phân quyền
+  const { permissions } = useContext(AppContext)
+  const { hasPermission } = useCheckPermission(permissions)
+
   const { theme } = useTheme()
   const isDark = theme === "dark" || theme === "system"
   const { downloadExcel } = useDownloadExcel()
@@ -651,6 +657,7 @@ export default function ManageCustomers() {
             <Pencil color="orange" size={18} />
           </button>
           <button
+            disabled={!hasPermission("customer:delete")}
             onClick={() =>
               Modal.confirm({
                 title: "Bạn có chắc chắn muốn xóa?",
@@ -662,7 +669,7 @@ export default function ManageCustomers() {
               })
             }
           >
-            <Trash2 color="red" size={18} />
+            <Trash2 color={`${!hasPermission("customer:delete") ? "#dadada" : "red"}`} size={18} />
           </button>
         </div>
       )
@@ -719,7 +726,8 @@ export default function ManageCustomers() {
               onClick={() => setAddItem(true)}
               icon={<Plus size={15} />}
               nameButton="Thêm mới"
-              classNameButton="py-2 px-3 bg-blue-500 w-full text-white font-medium rounded-md hover:bg-blue-500/80 duration-200 text-[13px] flex items-center gap-1 text-[13px]"
+              disabled={!hasPermission("customer:create")}
+              classNameButton={`py-2 px-3 bg-blue-500 w-full text-white font-medium rounded-md hover:bg-blue-500/80 duration-200 text-[13px] flex items-center gap-1 text-[13px] disabled:bg-gray-400 disabled:text-gray-200 disabled:cursor-not-allowed`}
             />
           </div>
         </div>
@@ -910,7 +918,8 @@ export default function ManageCustomers() {
                         type="submit"
                         icon={<ArrowUpFromLine size={18} />}
                         nameButton="Lưu thay đổi"
-                        classNameButton="w-[120px] px-3 py-2 bg-blue-500 mt-2 w-full text-white font-semibold rounded-md hover:bg-blue-500/80 duration-200 flex items-center gap-1 text-[13px]"
+                        disabled={!hasPermission("customer:update")}
+                        classNameButton="w-[120px] px-3 py-2 bg-blue-500 mt-2 w-full text-white font-semibold rounded-md hover:bg-blue-500/80 duration-200 flex items-center gap-1 text-[13px] disabled:bg-gray-400 disabled:text-gray-200 disabled:cursor-not-allowed"
                       />
                     </div>
                   </div>

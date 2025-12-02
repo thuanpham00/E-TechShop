@@ -2,7 +2,7 @@ import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tansta
 import { Collapse, Empty, Image, Modal, Space, Table, Tag, Button as ButtonAntd, Form } from "antd"
 import { ColumnsType } from "antd/es/table/interface"
 import { Edit2, Trash2 } from "lucide-react"
-import { useState } from "react"
+import { useContext, useState } from "react"
 import { toast } from "react-toastify"
 import { CategoryMenuAPI } from "src/Apis/admin/category_menu.api"
 import Skeleton from "src/Components/Skeleton"
@@ -10,6 +10,8 @@ import { CategoryItemType } from "src/Types/product.type"
 import ModalEditGroupName from "../ModalEditGroupName"
 import ModalAddGroupLinkCategory from "../ModalAddGroupLinkCategory/ModalAddGroupLinkCategory"
 import ModalCategoryLink from "../ModalCategoryLink/ModalCategoryLink"
+import { AppContext } from "src/Context/authContext"
+import { useCheckPermission } from "src/Hook/useRolePermissions"
 
 export type MenuItemType = {
   id_item: string
@@ -27,6 +29,9 @@ type SectionMenuItemType = {
 }
 
 export default function ManageCategorySubLink({ dataCategory }: { dataCategory: CategoryItemType }) {
+  const { permissions } = useContext(AppContext)
+  const { hasPermission } = useCheckPermission(permissions)
+
   const queryClient = useQueryClient()
 
   // xử lý gọi danh sách menu con
@@ -87,6 +92,7 @@ export default function ManageCategorySubLink({ dataCategory }: { dataCategory: 
         <Space>
           <ButtonAntd
             size="small"
+            disabled={!hasPermission("category_menu:update_link")}
             onClick={() => {
               setShowModalAddLinkCategory(true)
               setEditItem(record)
@@ -97,6 +103,7 @@ export default function ManageCategorySubLink({ dataCategory }: { dataCategory: 
           <ButtonAntd
             size="small"
             danger
+            disabled={!hasPermission("category_menu:delete_link")}
             onClick={() =>
               Modal.confirm({
                 title: "Xóa liên kết?",
@@ -157,7 +164,11 @@ export default function ManageCategorySubLink({ dataCategory }: { dataCategory: 
         <div className="mt-2">
           <div className="flex items-center justify-between mb-2">
             <div className="text-black dark:text-white font-medium">Tổng nhóm: {menuData?.length || 0}</div>
-            <ButtonAntd type="primary" onClick={() => setShowModalAddGroupCategory(true)}>
+            <ButtonAntd
+              type="primary"
+              onClick={() => setShowModalAddGroupCategory(true)}
+              disabled={!hasPermission("category_menu:create_group")}
+            >
               Thêm nhóm
             </ButtonAntd>
           </div>
@@ -179,6 +190,7 @@ export default function ManageCategorySubLink({ dataCategory }: { dataCategory: 
                   <Space onClick={(e) => e.stopPropagation()}>
                     <ButtonAntd
                       size="small"
+                      disabled={!hasPermission("category_menu:update_group_name")}
                       onClick={() => {
                         setShowModalEditGroup(true)
                         formEditGroupName.setFieldValue("id_section", section.id_section)
@@ -186,11 +198,15 @@ export default function ManageCategorySubLink({ dataCategory }: { dataCategory: 
                         formEditGroupName.setFieldValue("is_active", section.is_active)
                       }}
                     >
-                      <Edit2 size={16} />
+                      <Edit2
+                        size={16}
+                        color={`${hasPermission("category_menu:update_group_name") ? "orange" : "gray"}`}
+                      />
                     </ButtonAntd>
                     <ButtonAntd
                       size="small"
                       danger
+                      disabled={!hasPermission("category_menu:delete_group")}
                       onClick={() =>
                         Modal.confirm({
                           title: "Xóa nhóm?",
@@ -212,6 +228,7 @@ export default function ManageCategorySubLink({ dataCategory }: { dataCategory: 
                       <ButtonAntd
                         type="dashed"
                         size="small"
+                        disabled={!hasPermission("category_menu:create_link")}
                         onClick={() => {
                           setShowModalAddLinkCategory(true)
                           setEditItem(true)

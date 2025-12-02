@@ -19,13 +19,18 @@ import Button from "src/Components/Button"
 import useDownloadExcel from "src/Hook/useDownloadExcel"
 import { useTheme } from "src/Admin/Components/Theme-provider/Theme-provider"
 import { toast } from "react-toastify"
-import { useEffect } from "react"
+import { useContext, useEffect } from "react"
 import { ColumnsType } from "antd/es/table"
 import { convertDateTime, formatCurrency } from "src/Helpers/common"
 import { ProductAPI } from "src/Apis/admin/product.api"
 import useSortList from "src/Hook/useSortList"
+import { AppContext } from "src/Context/authContext"
+import { useCheckPermission } from "src/Hook/useRolePermissions"
 
 export default function ManageProducts() {
+  const { permissions } = useContext(AppContext)
+  const { hasPermission } = useCheckPermission(permissions)
+
   const { theme } = useTheme()
   const isDarkMode = theme === "dark" || theme === "system"
 
@@ -223,13 +228,18 @@ export default function ManageProducts() {
     }
   ]
 
+  const handleNavigateProductDetail = () => {
+    navigate(path.AddProduct, {
+      state: {
+        editItem: true,
+        queryConfig: queryConfig
+      }
+    })
+  }
+
   useEffect(() => {
     if (isError) {
-      const message = (error as any).response?.data?.message
       const status = (error as any)?.response?.status
-      if (message === "Không có quyền truy cập!") {
-        toast.error(message, { autoClose: 1500 })
-      }
       if (status === HttpStatusCode.NotFound) {
         navigate(path.AdminNotFound, { replace: true })
       }
@@ -273,17 +283,14 @@ export default function ManageProducts() {
             />
           </div>
           <div>
-            <Link
-              to={path.AddProduct}
-              state={{
-                editItem: true,
-                queryConfig: queryConfig
-              }}
-              className="py-2 px-3 bg-blue-500 w-full text-white font-medium rounded-md hover:bg-blue-500/80 duration-200 text-[13px] flex items-center gap-1"
+            <button
+              onClick={handleNavigateProductDetail}
+              className="py-2 px-3 bg-blue-500 w-full text-white font-medium rounded-md hover:bg-blue-500/80 duration-200 text-[13px] flex items-center gap-1 disabled:bg-gray-400 disabled:text-gray-200 disabled:cursor-not-allowed"
+              disabled={!hasPermission("product:create")}
             >
               <Plus size={15} />
               <span>Thêm mới</span>
-            </Link>
+            </button>
           </div>
         </div>
         {isLoading ? (

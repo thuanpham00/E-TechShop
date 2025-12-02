@@ -6,15 +6,20 @@ import { OrderItemType } from "src/Types/product.type"
 import { convertDateTime, formatCurrency } from "src/Helpers/common"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { OrderAPI } from "src/Apis/admin/order.api"
-import { useState } from "react"
+import { useContext, useState } from "react"
 import { toast } from "react-toastify"
 import PrintBill from "./Components/PrintBill"
+import { AppContext } from "src/Context/authContext"
+import { useCheckPermission } from "src/Hook/useRolePermissions"
 
 export default function OrderDetail() {
+  const { permissions } = useContext(AppContext)
+  const { hasPermission } = useCheckPermission(permissions)
+
   const { state } = useLocation()
   const queryClient = useQueryClient()
   const orderData = state?.orderData as OrderItemType
-  const type = state?.type as "process" | "completed"
+  const type = state?.type as "process" | "completed" | "canceled"
 
   const navigate = useNavigate()
 
@@ -366,7 +371,7 @@ export default function OrderDetail() {
                     className="w-full"
                     size="large"
                     placeholder="Chọn trạng thái"
-                    disabled={type === "completed"}
+                    disabled={type === "completed" || type === "canceled" || !hasPermission("order:update")}
                   >
                     {statusOptions.map((option) => (
                       <Select.Option key={option.value} value={option.value}>

@@ -5,7 +5,7 @@ import { ColumnsType } from "antd/es/table"
 import dayjs from "dayjs"
 import { isUndefined, omitBy } from "lodash"
 import { ArrowUpNarrowWide, Edit, FolderUp, Plus, Trash2, Tag as TagIcon, Percent, DollarSign } from "lucide-react"
-import { useEffect, useState } from "react"
+import { useContext, useEffect, useState } from "react"
 import { Helmet } from "react-helmet-async"
 import { createSearchParams, Link, useNavigate } from "react-router-dom"
 import { toast } from "react-toastify"
@@ -24,11 +24,16 @@ import { OrderItemType, VoucherItemType } from "src/Types/product.type"
 import { queryParamConfigVoucher } from "src/Types/queryParams.type"
 import { SuccessResponse } from "src/Types/utils.type"
 import "../ManageOrders/ManageOrders.css"
+import { AppContext } from "src/Context/authContext"
+import { useCheckPermission } from "src/Hook/useRolePermissions"
 
 const { RangePicker } = DatePicker
 const { TextArea } = Input
 
 export default function ManageVoucher() {
+  const { permissions } = useContext(AppContext)
+  const { hasPermission } = useCheckPermission(permissions)
+
   const { theme } = useTheme()
   const isDarkMode = theme === "dark" || theme === "system"
   const navigate = useNavigate()
@@ -322,18 +327,20 @@ export default function ManageVoucher() {
       render: (_, record) => (
         <div className="flex items-center justify-center gap-2">
           <button
+            disabled={!hasPermission("voucher:update")}
             onClick={() => handleOpenModal(record)}
             className="text-blue-500 hover:text-blue-700 transition-colors"
             title="Chỉnh sửa"
           >
-            <Edit size={18} />
+            <Edit color={hasPermission("voucher:update") ? "blue" : "gray"} size={18} />
           </button>
           <button
+            disabled={!hasPermission("voucher:delete")}
             onClick={() => handleDelete(record._id)}
             className="text-red-500 hover:text-red-700 transition-colors"
             title="Xóa"
           >
-            <Trash2 size={18} />
+            <Trash2 color={hasPermission("voucher:delete") ? "red" : "gray"} size={18} />
           </button>
         </div>
       )
@@ -419,7 +426,8 @@ export default function ManageVoucher() {
               onClick={() => handleOpenModal()}
               icon={<Plus size={15} />}
               nameButton="Thêm voucher"
-              classNameButton="py-2 px-3 bg-blue-500 w-full text-white font-medium rounded-md hover:bg-blue-500/80 duration-200 text-[13px] flex items-center gap-1"
+              disabled={!hasPermission("voucher:create")}
+              classNameButton="py-2 px-3 bg-blue-500 w-full text-white font-medium rounded-md hover:bg-blue-500/80 duration-200 text-[13px] flex items-center gap-1 disabled:bg-gray-400 disabled:text-gray-200 disabled:cursor-not-allowed"
             />
           </div>
 

@@ -5,7 +5,7 @@ import Input from "src/Components/Input"
 import { useMutation, useQuery } from "@tanstack/react-query"
 import { ErrorResponse, SuccessResponse } from "src/Types/utils.type"
 import { Controller, useFieldArray, useForm } from "react-hook-form"
-import { useEffect, useRef, useState } from "react"
+import { useContext, useEffect, useRef, useState } from "react"
 import Button from "src/Components/Button"
 import { schemaAddProduct, SchemaAddProductType } from "src/Client/Utils/rule"
 import { yupResolver } from "@hookform/resolvers/yup"
@@ -25,6 +25,8 @@ import InputGallery from "./Components/InputGallery"
 import { path } from "src/Constants/path"
 import { listSpecificationForCategory } from "src/Constants/product"
 import { formatCurrency } from "src/Helpers/common"
+import { AppContext } from "src/Context/authContext"
+import { useCheckPermission } from "src/Hook/useRolePermissions"
 
 type CategoryType = keyof typeof listSpecificationForCategory
 
@@ -68,6 +70,9 @@ export type GalleryFileItem = {
 }
 
 export default function AddProduct() {
+  const { permissions } = useContext(AppContext)
+  const { hasPermission } = useCheckPermission(permissions)
+
   const { state } = useLocation()
   const editItem = state?.editItem as boolean | ProductItemType
 
@@ -892,10 +897,11 @@ export default function AddProduct() {
             <div className="flex items-center justify-end gap-3 sticky bottom-4 bg-white dark:bg-gray-800 p-4 rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-700">
               {editItem && typeof editItem === "object" && (
                 <Button
-                  classNameButton="px-6 py-3 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 flex items-center gap-2"
+                  classNameButton="px-6 py-3 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 flex items-center gap-2 "
                   nameButton="Xóa sản phẩm"
                   type="button"
                   onClick={() => setIsModalOpen(true)}
+                  disabled={!hasPermission("product:delete")}
                 />
               )}
               <Button
@@ -909,7 +915,7 @@ export default function AddProduct() {
                       : "Thêm sản phẩm"
                 }
                 type="submit"
-                disabled={isSubmitting}
+                disabled={isSubmitting || (!hasPermission("product:update") && !hasPermission("product:create"))}
               />
             </div>
           </div>

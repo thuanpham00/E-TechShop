@@ -25,7 +25,7 @@ export const path = {
   AdminLogin: "/admin/login",
   AdminDashboard: "/admin/dashboard",
   AdminCustomers: "/admin/customers",
-  AdminEmployees: "/admin/staff",
+  AdminEmployees: "/admin/staffs",
   AdminCategories: "/admin/categories",
   AdminCategoryDetail: "/admin/categories/:id",
   AdminProducts: "/admin/products",

@@ -14,6 +14,7 @@ import { SearchOutlined } from "@ant-design/icons"
 import Highlighter from "react-highlight-words"
 import { useTheme } from "src/Admin/Components/Theme-provider/Theme-provider"
 import { RolePermissionAPI } from "src/Apis/admin/role.api"
+import { useCheckPermission } from "src/Hook/useRolePermissions"
 
 interface PermissionType {
   _id: string
@@ -37,7 +38,9 @@ type DataIndex = keyof PermissionType
 const HighlighterComp = Highlighter as React.ComponentType<any>
 
 export default function ManagePermissions() {
-  const { userId } = useContext(AppContext)
+  const { userId, permissions } = useContext(AppContext)
+  const { hasPermission } = useCheckPermission(permissions)
+
   const { theme } = useTheme()
   const isDark = theme === "dark" || theme === "system"
 
@@ -119,6 +122,7 @@ export default function ManagePermissions() {
   const listPermissionGroup = useMemo(() => {
     if (!listPermission) return []
     const groupSort = [
+      "permission",
       "statistical",
       "customer",
       "category",
@@ -267,7 +271,10 @@ export default function ManagePermissions() {
               text
             )}
           </div>
-          <Tag color={colorTag}>{record.api_endpoints.method}</Tag>
+          <div>
+            <Tag color={colorTag}>{record.code}</Tag>
+            <Tag color={colorTag}>{record.api_endpoints.method}</Tag>
+          </div>
         </div>
       ) : (
         <div className="font-semibold">{text.charAt(0).toUpperCase() + text.slice(1)}</div>
@@ -447,7 +454,7 @@ export default function ManagePermissions() {
           <Button
             type="primary"
             danger
-            disabled={updatePermissionForRole.length === 0}
+            disabled={updatePermissionForRole.length === 0 || !hasPermission("permission:update")}
             onClick={() => {
               setUpdatePermissionForRole([])
               setEdited(structuredClone(listPermissionByRolesId))
@@ -458,7 +465,7 @@ export default function ManagePermissions() {
           </Button>
           <Button
             type="primary"
-            disabled={updatePermissionForRole.length === 0}
+            disabled={updatePermissionForRole.length === 0 || !hasPermission("permission:update")}
             onClick={() => setIsModalOpen(true)}
             className={`${updatePermissionForRole.length === 0 ? "!text-black dark:!text-white" : ""}`}
           >

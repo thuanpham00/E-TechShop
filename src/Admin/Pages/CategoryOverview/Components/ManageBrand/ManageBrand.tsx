@@ -22,7 +22,7 @@ import useQueryParams from "src/Hook/useQueryParams"
 import { isUndefined, omit, omitBy } from "lodash"
 import { queryParamConfigBrand } from "src/Types/queryParams.type"
 import { path } from "src/Constants/path"
-import { useEffect, useState } from "react"
+import { useContext, useEffect, useState } from "react"
 import { yupResolver } from "@hookform/resolvers/yup"
 import { cleanObject, convertDateTime } from "src/Helpers/common"
 import { toast } from "react-toastify"
@@ -41,6 +41,8 @@ import { useTheme } from "src/Admin/Components/Theme-provider/Theme-provider"
 import { ColumnsType } from "antd/es/table"
 import { BrandAPI } from "src/Apis/admin/brand.api"
 import useSortList from "src/Hook/useSortList"
+import { AppContext } from "src/Context/authContext"
+import { useCheckPermission } from "src/Hook/useRolePermissions"
 
 type FormDataUpdate = Pick<SchemaAuthType, "name" | "id" | "created_at" | "updated_at">
 const formDataUpdate = schemaAuth.pick(["name", "id", "created_at", "updated_at"])
@@ -59,6 +61,9 @@ type FormDataSearch = Pick<
 >
 
 export default function ManageBrand({ idCategory, nameCategory }: { idCategory: string; nameCategory: string }) {
+  const { permissions } = useContext(AppContext)
+  const { hasPermission } = useCheckPermission(permissions)
+
   const { theme } = useTheme()
   const isDark = theme === "dark" || theme === "system"
 
@@ -448,8 +453,8 @@ export default function ManageBrand({ idCategory, nameCategory }: { idCategory: 
       align: "center",
       render: (_, record) => (
         <div className="flex items-center justify-center gap-2">
-          <button onClick={() => setAddItem(record)} className="p-1">
-            <Pencil color="orange" size={18} />
+          <button onClick={() => setAddItem(record)} className="p-1" disabled={!hasPermission("brand:update")}>
+            <Pencil color={`${hasPermission("brand:update") ? "orange" : "gray"}`} size={18} />
           </button>
           <button
             onClick={() =>
@@ -463,8 +468,9 @@ export default function ManageBrand({ idCategory, nameCategory }: { idCategory: 
               })
             }
             className="p-1"
+            disabled={!hasPermission("brand:delete")}
           >
-            <Trash2 color="red" size={18} />
+            <Trash2 color={`${hasPermission("brand:delete") ? "red" : "gray"}`} size={18} />
           </button>
         </div>
       )
@@ -493,11 +499,7 @@ export default function ManageBrand({ idCategory, nameCategory }: { idCategory: 
 
   useEffect(() => {
     if (isError) {
-      const message = (error as any).response?.data?.message
       const status = (error as any)?.response?.status
-      if (message === "Không có quyền truy cập!") {
-        toast.error(message, { autoClose: 1500 })
-      }
       if (status === HttpStatusCode.NotFound) {
         navigate(path.AdminNotFound, { replace: true })
       }
@@ -533,7 +535,9 @@ export default function ManageBrand({ idCategory, nameCategory }: { idCategory: 
               onClick={() => setAddItem(true)}
               icon={<Plus size={15} />}
               nameButton="Thêm mới"
-              classNameButton="py-2 px-3 bg-blue-500 w-full text-white font-medium rounded-md hover:bg-blue-500/80 duration-200 text-[13px] flex items-center gap-1"
+              disabled={!hasPermission("brand:create")}
+              classNameButton="py-2 px-3 bg-blue-500 w-full text-white font-medium rounded-md hover:bg-blue-500/80 duration-200 text-[13px] flex items-center gap-1
+              disabled:bg-gray-400 disabled:text-gray-200 disabled:cursor-not-allowed"
             />
           </div>
         </div>

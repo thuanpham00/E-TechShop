@@ -4,7 +4,7 @@ import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tansta
 import { Button, Collapse, CollapseProps, Empty, Image, Modal, Rate, Table } from "antd"
 import { ColumnsType } from "antd/es/table"
 import { isUndefined, omit, omitBy } from "lodash"
-import { useEffect, useState } from "react"
+import { useContext, useEffect, useState } from "react"
 import { Helmet } from "react-helmet-async"
 import { Controller, useForm } from "react-hook-form"
 import { createSearchParams, useNavigate } from "react-router-dom"
@@ -24,6 +24,8 @@ import { SuccessResponse } from "src/Types/utils.type"
 import ButtonBase from "src/Components/Button"
 import { RotateCcw, Search } from "lucide-react"
 import Input from "src/Components/Input"
+import { AppContext } from "src/Context/authContext"
+import { useCheckPermission } from "src/Hook/useRolePermissions"
 
 const formDataSearch = schemaSearchFilterReview.pick([
   "created_at_start",
@@ -40,6 +42,9 @@ type FormDataSearch = Pick<
 >
 
 export default function ManageReview() {
+  const { permissions } = useContext(AppContext)
+  const { hasPermission } = useCheckPermission(permissions)
+
   const navigate = useNavigate()
   const queryClient = useQueryClient()
   const queryParams: queryParamConfigReview = useQueryParams()
@@ -494,8 +499,10 @@ export default function ManageReview() {
               <div className="dark:text-white">{new Date(showModalReview.created_at).toLocaleString("vi-VN")}</div>
             </div>
             <Button
+              disabled={!hasPermission("review:delete")}
               type="primary"
-              className="!bg-red-500 !hover:bg-red-300 !ml-auto block"
+              className="!bg-red-500 !hover:bg-red-300 !ml-auto block disabled:!bg-gray-200
+    disabled:!cursor-not-allowed"
               typeof="button"
               loading={deleteReviewMutation.isPending}
               onClick={() =>

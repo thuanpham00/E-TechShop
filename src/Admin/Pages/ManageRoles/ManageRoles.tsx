@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import { Button, Empty, Table, Tag } from "antd"
+import { Button, Empty, Modal, Table, Tag } from "antd"
 import { useContext, useEffect, useState } from "react"
 import { Helmet } from "react-helmet-async"
 import { toast } from "react-toastify"
@@ -11,20 +11,10 @@ import "./ManageRoles.css"
 import AddRole from "./Components/AddRole"
 import RoleDetail from "./Components/RoleDetail/RoleDetail"
 import { isError400 } from "src/Helpers/utils"
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger
-} from "src/Components/ui/alert-dialog"
 import { Pencil, Trash2 } from "lucide-react"
 import { RolePermissionAPI } from "src/Apis/admin/role.api"
 import Skeleton from "src/Components/Skeleton"
+import { useCheckPermission } from "src/Hook/useRolePermissions"
 
 export interface Role {
   _id: string
@@ -35,9 +25,11 @@ export interface Role {
 }
 
 export default function ManageRoles() {
+  const { userId, permissions } = useContext(AppContext)
+  const { hasPermission } = useCheckPermission(permissions)
+
   const queryClient = useQueryClient()
 
-  const { userId } = useContext(AppContext)
   const { data, isError, error, isLoading, isFetching } = useQuery({
     queryKey: ["listRole", userId],
     queryFn: () => {
@@ -63,7 +55,7 @@ export default function ManageRoles() {
     }
   })
 
-  const handleDeleteCategory = (id: string) => {
+  const handleDeleteRole = (id: string) => {
     deleteRoleMutation.mutate(id, {
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: ["listRole", userId] })
@@ -103,36 +95,29 @@ export default function ManageRoles() {
       render: (_: any, record: Role) => (
         <div className="flex justify-center gap-2">
           <button
+            disabled={!hasPermission("role:update")}
             onClick={() => {
               setAddItem(record)
             }}
           >
-            <Pencil color="orange" size={18} />
+            <Pencil color={`${hasPermission("role:update") ? "orange" : "gray"}`} size={18} />
           </button>
-          <AlertDialog>
-            <AlertDialogTrigger disabled={record.key === "ADMIN"}>
-              <Trash2 color={`${record.key === "ADMIN" ? "gray" : "red"}`} size={18} />
-            </AlertDialogTrigger>
-            <AlertDialogContent className="w-[350px] dark:bg-darkPrimary">
-              <AlertDialogHeader>
-                <AlertDialogHeader>
-                  <AlertDialogTitle className="text-base">Bạn có chắc chắn muốn xóa?</AlertDialogTitle>
-                  <AlertDialogDescription className="text-sm">
-                    Không thể hoàn tác hành động này. Thao tác này sẽ xóa vĩnh viễn dữ liệu của bạn.
-                  </AlertDialogDescription>
-                </AlertDialogHeader>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel className="text-sm dark:bg-darkPrimary">Hủy</AlertDialogCancel>
-                <AlertDialogAction
-                  onClick={() => handleDeleteCategory(record._id)}
-                  className="bg-red-500 hover:bg-red-600 text-sm text-white"
-                >
-                  Xóa
-                </AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
+          <button
+            onClick={() =>
+              Modal.confirm({
+                title: "Bạn có chắc chắn muốn xóa?",
+                content: "Không thể hoàn tác hành động này. Thao tác này sẽ xóa vĩnh viễn dữ liệu của bạn.",
+                okText: "Xóa",
+                okButtonProps: { danger: true },
+                cancelText: "Hủy",
+                onOk: () => handleDeleteRole(record._id)
+              })
+            }
+            className="p-1"
+            disabled={!hasPermission("role:delete")}
+          >
+            <Trash2 color={`${hasPermission("role:delete") ? "red" : "gray"}`} size={18} />
+          </button>
         </div>
       )
     }
@@ -163,7 +148,7 @@ export default function ManageRoles() {
         Vai trò hệ thống
       </h1>
       <div className="flex justify-end gap-2">
-        <Button onClick={() => setAddItem(true)} type="primary">
+        <Button onClick={() => setAddItem(true)} type="primary" disabled={!hasPermission("role:create")}>
           Thêm vai trò
         </Button>
       </div>

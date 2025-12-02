@@ -1,7 +1,7 @@
 import { Helmet } from "react-helmet-async"
 import NavigateBack from "src/Admin/Components/NavigateBack"
 import { motion } from "framer-motion"
-import { useEffect, useState } from "react"
+import { useContext, useEffect, useState } from "react"
 import Input from "src/Components/Input"
 import { schemaAddReceipt, SchemaAddReceiptType } from "src/Client/Utils/rule"
 import { useFieldArray, useForm } from "react-hook-form"
@@ -16,12 +16,17 @@ import { CreateReceiptBodyReq } from "src/Types/product.type"
 import { ProductAPI } from "src/Apis/admin/product.api"
 import { SupplierAPI } from "src/Apis/admin/supplier.api"
 import { ReceiptAPI } from "src/Apis/admin/receipt.api"
+import { AppContext } from "src/Context/authContext"
+import { useCheckPermission } from "src/Hook/useRolePermissions"
 
 type FormData = Pick<SchemaAddReceiptType, "importDate" | "totalItem" | "totalAmount" | "items">
 
 const formData = schemaAddReceipt.pick(["importDate", "totalItem", "totalAmount", "items"])
 
 export default function AddReceipt() {
+  const { permissions } = useContext(AppContext)
+  const { hasPermission } = useCheckPermission(permissions)
+
   const [quantityProduct, setQuantityProduct] = useState("1")
 
   // xử lý form
@@ -314,12 +319,14 @@ export default function AddReceipt() {
 
             <div className="flex items-center justify-end gap-2">
               <Button
-                classNameButton="mt-1 p-2 px-3 bg-red-500 text-white font-semibold rounded-sm hover:bg-red-500/80 duration-200"
+                disabled={!hasPermission("receipt:create")}
+                classNameButton="mt-1 p-2 px-3 bg-red-500 text-white font-semibold rounded-sm hover:bg-red-500/80 duration-200 disabled:bg-gray-400 disabled:text-gray-200 disabled:cursor-not-allowed"
                 nameButton="Xóa"
                 type="submit"
               />
               <Button
-                classNameButton="mt-1 p-2 px-3 bg-blue-500 text-white font-semibold rounded-sm hover:bg-blue-500/80 duration-200"
+                disabled={!hasPermission("receipt:create")}
+                classNameButton="mt-1 p-2 px-3 bg-blue-500 text-white font-semibold rounded-sm hover:bg-blue-500/80 duration-200 disabled:bg-gray-400 disabled:text-gray-200 disabled:cursor-not-allowed"
                 nameButton="Thêm đơn nhập hàng"
                 type="submit"
               />

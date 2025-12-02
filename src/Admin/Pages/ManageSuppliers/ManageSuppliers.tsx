@@ -12,7 +12,7 @@ import { ErrorResponse, MessageResponse, SuccessResponse } from "src/Types/utils
 import { SupplierItemType, UpdateSupplierBodyReq } from "src/Types/product.type"
 import { HttpStatusCode } from "src/Constants/httpStatus"
 import Button from "src/Components/Button"
-import { useEffect, useState } from "react"
+import { useContext, useEffect, useState } from "react"
 import {
   ArrowUpFromLine,
   ArrowUpNarrowWide,
@@ -48,6 +48,8 @@ import { useTheme } from "src/Admin/Components/Theme-provider/Theme-provider"
 import { ColumnsType } from "antd/es/table"
 import { SupplierAPI } from "src/Apis/admin/supplier.api"
 import useSortList from "src/Hook/useSortList"
+import { useCheckPermission } from "src/Hook/useRolePermissions"
+import { AppContext } from "src/Context/authContext"
 
 type FormDataUpdate = Pick<
   SchemaSupplierUpdateType,
@@ -100,6 +102,9 @@ const formDataSearch = schemaSupplier.pick([
 ])
 
 export default function ManageSuppliers() {
+  const { permissions } = useContext(AppContext)
+  const { hasPermission } = useCheckPermission(permissions)
+
   const { theme } = useTheme()
   const isDarkMode = theme === "dark" || theme === "system"
   const navigate = useNavigate()
@@ -566,10 +571,11 @@ export default function ManageSuppliers() {
       align: "center",
       render: (_, record) => (
         <div className="flex items-center justify-center gap-2">
-          <button onClick={() => setAddItem(record)} className="p-1">
-            <Pencil color="orange" size={18} />
+          <button onClick={() => setAddItem(record)} className="p-1" disabled={!hasPermission("supplier:update")}>
+            <Pencil color={`${hasPermission("supplier:update") ? "orange" : "gray"}`} size={18} />
           </button>
           <button
+            disabled={!hasPermission("supplier:delete")}
             onClick={() =>
               Modal.confirm({
                 title: "Bạn có chắc chắn muốn xóa?",
@@ -582,7 +588,7 @@ export default function ManageSuppliers() {
             }
             className="p-1"
           >
-            <Trash2 color="red" size={18} />
+            <Trash2 color={`${hasPermission("supplier:delete") ? "red" : "gray"}`} size={18} />
           </button>
         </div>
       )
@@ -640,7 +646,8 @@ export default function ManageSuppliers() {
                 onClick={() => setAddItem(true)}
                 icon={<Plus size={15} />}
                 nameButton="Thêm mới"
-                classNameButton="py-2 px-3 bg-blue-500 w-full text-white font-medium rounded-md hover:bg-blue-500/80 duration-200 text-[13px] flex items-center gap-1"
+                disabled={!hasPermission("supplier:create")}
+                classNameButton="py-2 px-3 bg-blue-500 w-full text-white font-medium rounded-md hover:bg-blue-500/80 duration-200 text-[13px] flex items-center gap-1 disabled:bg-gray-400 disabled:text-gray-200 disabled:cursor-not-allowed"
               />
             </div>
           </div>

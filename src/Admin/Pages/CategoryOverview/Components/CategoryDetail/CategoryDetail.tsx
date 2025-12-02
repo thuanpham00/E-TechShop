@@ -2,7 +2,7 @@ import { yupResolver } from "@hookform/resolvers/yup"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { Modal, Select } from "antd"
 import { ArrowUpFromLine, Trash2 } from "lucide-react"
-import { useEffect } from "react"
+import { useContext, useEffect } from "react"
 import { Controller, useForm } from "react-hook-form"
 import { useNavigate } from "react-router-dom"
 import { toast } from "react-toastify"
@@ -10,8 +10,10 @@ import { CategoryAPI } from "src/Apis/admin/category.api"
 import { schemaAuth, SchemaAuthType } from "src/Client/Utils/rule"
 import Button from "src/Components/Button"
 import Input from "src/Components/Input"
+import { AppContext } from "src/Context/authContext"
 import { convertDateTime } from "src/Helpers/common"
 import { isError400 } from "src/Helpers/utils"
+import { useCheckPermission } from "src/Hook/useRolePermissions"
 import { CategoryItemType, UpdateCategoryBodyReq } from "src/Types/product.type"
 import { queryParamConfigCategory } from "src/Types/queryParams.type"
 import { ErrorResponse, MessageResponse } from "src/Types/utils.type"
@@ -30,6 +32,9 @@ export default function CategoryDetail({
   dataCategory: CategoryItemType
   queryConfig: queryParamConfigCategory
 }) {
+  const { permissions } = useContext(AppContext)
+  const { hasPermission } = useCheckPermission(permissions)
+
   const queryClient = useQueryClient()
   const navigate = useNavigate()
 
@@ -222,13 +227,15 @@ export default function CategoryDetail({
               icon={<Trash2 size={18} />}
               nameButton="Xóa"
               type="button"
-              classNameButton="w-[120px] p-4 py-2 bg-red-500 w-full text-white font-semibold rounded-md hover:bg-red-500/80 duration-200 flex items-center gap-1 text-[12px]"
+              disabled={!hasPermission("category:delete")}
+              classNameButton="w-[120px] p-4 py-2 bg-red-500 w-full text-white font-semibold rounded-md hover:bg-red-500/80 duration-200 flex items-center gap-1 text-[12px] disabled:bg-gray-400 disabled:text-gray-200 disabled:cursor-not-allowed"
             />
             <Button
               type="submit"
               icon={<ArrowUpFromLine size={18} />}
               nameButton="Lưu thay đổi"
-              classNameButton="w-[120px] p-4 py-2 bg-blue-500 w-full text-white font-semibold rounded-md hover:bg-blue-500/80 duration-200 flex items-center gap-1 text-[12px]"
+              disabled={!hasPermission("category:update")}
+              classNameButton="w-[120px] p-4 py-2 bg-blue-500 w-full text-white font-semibold rounded-md hover:bg-blue-500/80 duration-200 flex items-center gap-1 text-[12px] disabled:bg-gray-400 disabled:text-gray-200 disabled:cursor-not-allowed"
             />
           </div>
         </div>

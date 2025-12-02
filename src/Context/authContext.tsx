@@ -9,6 +9,7 @@ import {
 } from "src/Helpers/auth"
 import { CollectionItemType } from "src/Types/product.type"
 import type { Socket } from "socket.io-client"
+import { PermissionItem } from "src/App"
 
 type Props = {
   children: React.ReactNode
@@ -32,6 +33,9 @@ type TypeInitialState = {
 
   socket: Socket | null
   setSocket: React.Dispatch<React.SetStateAction<Socket | null>>
+
+  permissions: PermissionItem[]
+  setPermissions: React.Dispatch<React.SetStateAction<PermissionItem[]>>
 }
 
 // giá trị khởi tạo cho state global
@@ -52,7 +56,10 @@ const initialStateContext: TypeInitialState = {
   setRecentlyViewed: () => null,
 
   socket: null,
-  setSocket: () => null
+  setSocket: () => null,
+
+  permissions: [],
+  setPermissions: () => null
 }
 
 export const AppContext = createContext<TypeInitialState>(initialStateContext)
@@ -66,6 +73,7 @@ export default function AppClientProvider({ children }: Props) {
 
   const [recentlyViewed, setRecentlyViewed] = useState<CollectionItemType[]>([])
   const [socket, setSocket] = useState<Socket | null>(initialStateContext.socket)
+  const [permissions, setPermissions] = useState<PermissionItem[]>(initialStateContext.permissions)
 
   /**
    * Các biến trong context (như isAuthenticated, nameUser, isShowCategory, ...) phải khớp với các biến state trong AppClientProvider để đảm bảo rằng chúng phản ánh đúng dữ liệu toàn cục được quản lý bởi context.
@@ -102,7 +110,9 @@ export default function AppClientProvider({ children }: Props) {
         recentlyViewed,
         setRecentlyViewed,
         socket,
-        setSocket
+        setSocket,
+        permissions,
+        setPermissions
       }}
     >
       {children}

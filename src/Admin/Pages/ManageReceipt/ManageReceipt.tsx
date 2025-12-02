@@ -5,7 +5,7 @@ import { isUndefined, omit, omitBy } from "lodash"
 import { ArrowUpNarrowWide, FolderUp, Plus, RotateCcw, Search } from "lucide-react"
 import { Helmet } from "react-helmet-async"
 import { Controller, useForm } from "react-hook-form"
-import { createSearchParams, Link, useNavigate } from "react-router-dom"
+import { createSearchParams, useNavigate } from "react-router-dom"
 import DatePicker from "src/Admin/Components/DatePickerRange"
 import NavigateBack from "src/Admin/Components/NavigateBack"
 import { schemaSupply, SchemaSupplyType } from "src/Client/Utils/rule"
@@ -19,7 +19,7 @@ import { queryParamConfigReceipt } from "src/Types/queryParams.type"
 import { SuccessResponse } from "src/Types/utils.type"
 import ReceiptItem from "./Components/ReceiptItem"
 import DropdownSearch from "../ManageSupplies/Components/DropdownSearch"
-import { Fragment, useEffect, useState } from "react"
+import { Fragment, useContext, useEffect, useState } from "react"
 import { cleanObject } from "src/Helpers/common"
 import { toast } from "react-toastify"
 import { motion } from "framer-motion"
@@ -34,6 +34,8 @@ import { ProductAPI } from "src/Apis/admin/product.api"
 import { SupplierAPI } from "src/Apis/admin/supplier.api"
 import { ReceiptAPI } from "src/Apis/admin/receipt.api"
 import useSortList from "src/Hook/useSortList"
+import { AppContext } from "src/Context/authContext"
+import { useCheckPermission } from "src/Hook/useRolePermissions"
 
 type FormDataSearch = Pick<
   SchemaSupplyType,
@@ -61,6 +63,9 @@ const formDataSearch = schemaSupply.pick([
 ])
 
 export default function ManageReceipt() {
+  const { permissions } = useContext(AppContext)
+  const { hasPermission } = useCheckPermission(permissions)
+
   const { theme } = useTheme()
   const isDarkMode = theme === "dark" || theme === "system"
 
@@ -461,13 +466,14 @@ export default function ManageReceipt() {
           />
         </div>
         <div>
-          <Link
-            to={path.AddReceipt}
-            className="py-2 px-3 bg-blue-500 w-full text-white font-medium rounded-md hover:bg-blue-500/80 duration-200 text-[13px] flex items-center gap-1"
+          <button
+            onClick={() => navigate(path.AddReceipt)}
+            disabled={!hasPermission("receipt:create")}
+            className="py-2 px-3 bg-blue-500 w-full text-white font-medium rounded-md hover:bg-blue-500/80 duration-200 text-[13px] flex items-center gap-1 disabled:bg-gray-400 disabled:text-gray-200 disabled:cursor-not-allowed"
           >
             <Plus size={15} />
             <span>Thêm mới</span>
-          </Link>
+          </button>
         </div>
       </div>
 
