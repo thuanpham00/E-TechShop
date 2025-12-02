@@ -8,7 +8,7 @@ import { useFieldArray, useForm } from "react-hook-form"
 import { yupResolver } from "@hookform/resolvers/yup"
 import { convertDateTime, formatCurrency, parseCurrencyToNumber } from "src/Helpers/common"
 import DropdownList from "../ManageSupplies/Components/DropdownList"
-import { keepPreviousData, useMutation, useQueries, useQuery } from "@tanstack/react-query"
+import { keepPreviousData, useMutation, useQueries, useQuery, useQueryClient } from "@tanstack/react-query"
 import { SuccessResponse } from "src/Types/utils.type"
 import Button from "src/Components/Button"
 import { toast } from "react-toastify"
@@ -18,15 +18,20 @@ import { SupplierAPI } from "src/Apis/admin/supplier.api"
 import { ReceiptAPI } from "src/Apis/admin/receipt.api"
 import { AppContext } from "src/Context/authContext"
 import { useCheckPermission } from "src/Hook/useRolePermissions"
+import { useLocation, useNavigate } from "react-router-dom"
 
-type FormData = Pick<SchemaAddReceiptType, "importDate" | "totalItem" | "totalAmount" | "items">
+type FormData = Pick<SchemaAddReceiptType, "importDate" | "totalItem" | "totalAmount" | "items" | "note">
 
-const formData = schemaAddReceipt.pick(["importDate", "totalItem", "totalAmount", "items"])
+const formData = schemaAddReceipt.pick(["importDate", "totalItem", "totalAmount", "items", "note"])
 
 export default function AddReceipt() {
   const { permissions } = useContext(AppContext)
   const { hasPermission } = useCheckPermission(permissions)
 
+  const queryClient = useQueryClient()
+  const { state } = useLocation()
+  const queryConfig = state?.queryConfig
+  const navigate = useNavigate()
   const [quantityProduct, setQuantityProduct] = useState("1")
 
   // xử lý form
@@ -44,7 +49,8 @@ export default function AddReceipt() {
       totalItem: 1,
       totalAmount: "0",
       importDate: "",
-      items: []
+      items: [],
+      note: ""
     }
   })
 
@@ -146,7 +152,8 @@ export default function AddReceipt() {
         quantity: Number(item.quantity),
         pricePerUnit: Number(parseCurrencyToNumber(item.pricePerUnit)),
         totalPrice: Number(parseCurrencyToNumber(item.totalPrice))
-      }))
+      })),
+      note: data.note
     }
     AddReceiptMutation.mutate(body, {
       onSuccess: () => {
@@ -155,6 +162,11 @@ export default function AddReceipt() {
         })
         reset()
         setQuantityProduct("1")
+
+        queryClient.invalidateQueries({ queryKey: ["listReceipt", queryConfig] })
+        setTimeout(() => {
+          navigate(-1)
+        }, 1500)
       }
     })
   })
@@ -175,7 +187,7 @@ export default function AddReceipt() {
 
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
         <form onSubmit={handleSubmitAddReceipt} className="mt-4">
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-3 gap-4">
             <div className="col-span-1">
               <Input
                 name="importDate"
@@ -211,9 +223,20 @@ export default function AddReceipt() {
                 nameInput="Tổng thành tiền (đ)"
                 classNameInput="p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#f2f2f2] dark:bg-black focus:border-blue-500 focus:ring-1 outline-none rounded-md h-[35px] text-base text-red-500 font-semibold"
                 className="relative flex-grow"
-                classNameLabel="font-semibold mb-1 block text-base text-red-500"
+                classNameLabel="font-semibold mb-1 block text-red-500"
                 classNameError="hidden"
                 disabled
+              />
+            </div>
+            <div className="col-span-3">
+              <Input
+                name="note"
+                register={register}
+                nameInput="Ghi chú"
+                classNameInput="p-2 w-full border border-[#dedede] dark:border-darkBorder bg-[#fff] dark:bg-black focus:border-blue-500 focus:ring-1 outline-none rounded-md h-[35px]"
+                className="relative flex-grow"
+                classNameLabel="mb-1 block font-semibold"
+                classNameError="hidden"
               />
             </div>
           </div>

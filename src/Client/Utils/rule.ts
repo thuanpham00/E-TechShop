@@ -307,7 +307,8 @@ export const schemaAddReceipt = yup.object({
     .transform((value, originalValue) => (originalValue === "" ? undefined : value))
     .moreThan(0, "Số lượng sản phẩm phải lớn hơn 0"),
 
-  totalAmount: yup.string()
+  totalAmount: yup.string(),
+  note: yup.string().max(500, "Độ dài tối đa 500 kí tự!")
 })
 
 export const schemaOrder = schemaAuth.pick(["created_at", "updated_at", "id"]).shape({

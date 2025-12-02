@@ -217,6 +217,7 @@ export type ReceiptItemType = {
   totalAmount: number
   totalItem: number
   importDate: string
+  status: string
   note: string
   created_at: string
   updated_at: string
@@ -455,6 +456,21 @@ export type CreateReceiptBodyReq = {
     pricePerUnit: number
     totalPrice: number
   }[]
+  note?: string
+}
+
+export type UpdateReceiptBodyReq = {
+  importDate?: string
+  totalItem?: number
+  totalAmount?: number
+  items?: {
+    productId: string
+    supplierId: string
+    quantity: number
+    pricePerUnit: number
+    totalPrice: number
+  }[]
+  note?: string
 }
 
 export type CreateCustomerBodyReq = {

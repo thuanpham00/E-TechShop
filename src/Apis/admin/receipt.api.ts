@@ -1,5 +1,5 @@
 import Http from "src/Helpers/http"
-import { CreateReceiptBodyReq } from "src/Types/product.type"
+import { CreateReceiptBodyReq, UpdateReceiptBodyReq } from "src/Types/product.type"
 import { queryParamConfigReceipt, queryParamsPricePerUnit } from "src/Types/queryParams.type"
 
 export const ReceiptAPI = {
@@ -19,5 +19,9 @@ export const ReceiptAPI = {
 
   createReceipt: (body: CreateReceiptBodyReq) => {
     return Http.post(`/admin/receipts`, body)
+  },
+
+  updateReceipt: (id: string, body: UpdateReceiptBodyReq) => {
+    return Http.put(`/admin/receipts/${id}`, body)
   }
 }

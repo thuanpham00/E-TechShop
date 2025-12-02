@@ -32,6 +32,7 @@ export const path = {
   AdminOrders: "/admin/orders",
   AdminOrderDetail: "/admin/orders/:id",
   AdminReceipts: "/admin/receipts",
+  AdminReceiptDetail: "/admin/receipts/:id",
   AdminSupplies: "/admin/supplies",
   AdminSuppliers: "/admin/suppliers",
   AdminRole: "/admin/roles",
