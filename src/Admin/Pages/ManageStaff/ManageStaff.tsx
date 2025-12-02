@@ -551,12 +551,7 @@ export default function ManageStaff() {
 
   useEffect(() => {
     if (isError) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const message = (error as any).response?.data?.message
       const status = (error as any)?.response?.status
-      if (message === "Không có quyền truy cập!") {
-        toast.error(message, { autoClose: 1500 })
-      }
       if (status === HttpStatusCode.NotFound) {
         navigate(path.AdminNotFound, { replace: true })
       }

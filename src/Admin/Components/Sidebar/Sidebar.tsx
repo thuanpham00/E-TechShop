@@ -305,14 +305,18 @@ export default function Sidebar() {
       : null
 
   const items: MenuProps["items"] = [
-    {
-      key: path.AdminDashboard, // key trùng pathname
-      label: hasPermission(permissions.VIEW_DASHBOARD) && (
-        <Link to={path.AdminDashboard} className="font-semibold text-white block text-[15px]">
-          Thống kê hệ thống
-        </Link>
-      )
-    },
+    ...(hasPermission(permissions.VIEW_DASHBOARD)
+      ? [
+          {
+            key: path.AdminDashboard, // key trùng pathname
+            label: (
+              <Link to={path.AdminDashboard} className="font-semibold text-white block text-[15px]">
+                Thống kê hệ thống
+              </Link>
+            )
+          }
+        ]
+      : []),
     sub1,
     {
       type: "divider"
@@ -321,25 +325,33 @@ export default function Sidebar() {
     {
       type: "divider"
     },
-    {
-      key: path.AdminChat, // key trùng pathname
-      label: hasPermission(permissions.VIEW_CHAT) && (
-        <Link to={path.AdminChat} className="font-semibold text-white block text-[15px]">
-          Hệ thống tư vấn
-        </Link>
-      )
-    },
+    ...(hasPermission(permissions.VIEW_CHAT)
+      ? [
+          {
+            key: path.AdminChat, // key trùng pathname
+            label: (
+              <Link to={path.AdminChat} className="font-semibold text-white block text-[15px]">
+                Hệ thống tư vấn
+              </Link>
+            )
+          }
+        ]
+      : []),
     {
       type: "divider"
     },
-    {
-      key: path.AdminEmail, // key trùng pathname
-      label: hasPermission(permissions.VIEW_EMAIL) && (
-        <Link to={path.AdminEmail} className="font-semibold text-white block text-[15px]">
-          Thông báo email
-        </Link>
-      )
-    },
+    ...(hasPermission(permissions.VIEW_EMAIL)
+      ? [
+          {
+            key: path.AdminEmail, // key trùng pathname
+            label: (
+              <Link to={path.AdminEmail} className="font-semibold text-white block text-[15px]">
+                Thông báo email
+              </Link>
+            )
+          }
+        ]
+      : []),
     {
       type: "divider"
     },

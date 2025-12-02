@@ -142,7 +142,9 @@ export default function ManageRoles() {
 
   useEffect(() => {
     if (isError) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      if ((error as any).response?.data?.message === "Không có quyền truy cập!") {
+        return // toast này đã được xử lý ở http
+      }
       toast.error((error as any).response?.data?.message, { autoClose: 1500 })
     }
   }, [isError, error])

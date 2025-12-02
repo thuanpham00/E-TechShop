@@ -372,11 +372,7 @@ export default function ManageReview() {
 
   useEffect(() => {
     if (isError) {
-      const message = (error as any).response?.data?.message
       const status = (error as any)?.response?.status
-      if (message === "Không có quyền truy cập!") {
-        toast.error(message, { autoClose: 1500 })
-      }
       if (status === HttpStatusCode.NotFound) {
         navigate(path.AdminNotFound, { replace: true })
       }
@@ -396,9 +392,7 @@ export default function ManageReview() {
       <h1 className="text-2xl font-bold text-gray-800 bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600 my-2">
         Đánh giá
       </h1>
-
       <Collapse items={items} defaultActiveKey={["2"]} className="bg-white dark:bg-darkPrimary dark:border-none" />
-
       <section className="bg-white dark:bg-darkPrimary mb-3 dark:border-darkBorder mt-4">
         {isLoading ? (
           <Skeleton />
@@ -440,11 +434,12 @@ export default function ManageReview() {
       </section>
 
       <Modal
-        title="Chi tiết đánh giá"
+        title={<span className="dark:text-white">Chi tiết đánh giá</span>}
         open={Boolean(showModalReview)}
         onCancel={() => setShowModalReview(null)}
         footer={null}
         width={700}
+        className="dark:[&_.ant-modal-content]:bg-darkPrimary dark:[&_.ant-modal-content]:border dark:[&_.ant-modal-content]:border-darkBorder dark:[&_.ant-modal-header]:bg-darkPrimary dark:[&_.ant-modal-header]:border-b dark:[&_.ant-modal-header]:border-darkBorder dark:[&_.ant-modal-title]:text-white dark:[&_.ant-modal-body]:bg-darkPrimary dark:[&_.ant-modal-body]:text-white"
       >
         {showModalReview && (
           <div className="space-y-4">
@@ -458,8 +453,8 @@ export default function ManageReview() {
                 preview={false}
               />
               <div>
-                <div className="font-semibold">{showModalReview.productId.name}</div>
-                <div className="text-xs text-gray-500">Đơn hàng: {showModalReview.orderId}</div>
+                <div className="font-semibold dark:text-white">{showModalReview.productId.name}</div>
+                <div className="text-xs text-gray-500 dark:text-gray-300">Đơn hàng: {showModalReview.orderId}</div>
               </div>
             </div>
             <div className="flex items-center gap-2">
@@ -471,19 +466,19 @@ export default function ManageReview() {
                 style={{ borderRadius: "50%" }}
                 preview={false}
               />
-              <span className="font-medium">{showModalReview.userId.name}</span>
+              <span className="font-medium dark:text-white">{showModalReview.userId.name}</span>
               <Rate disabled value={showModalReview.rating} />
             </div>
             <div>
-              <div className="font-semibold mb-1">Tiêu đề:</div>
-              <div>{showModalReview.title}</div>
+              <div className="font-semibold mb-1 dark:text-white">Tiêu đề:</div>
+              <div className="dark:text-white">{showModalReview.title}</div>
             </div>
             <div>
-              <div className="font-semibold mb-1">Nội dung:</div>
-              <div>{showModalReview.comment}</div>
+              <div className="font-semibold mb-1 dark:text-white">Nội dung:</div>
+              <div className="dark:text-white">{showModalReview.comment}</div>
             </div>
             <div>
-              <div className="font-semibold mb-1">Ảnh:</div>
+              <div className="font-semibold mb-1 dark:text-white">Ảnh:</div>
               {showModalReview.images && showModalReview.images.length > 0 ? (
                 <div className="flex gap-2">
                   {showModalReview.images.map((img: any) => (
@@ -491,12 +486,12 @@ export default function ManageReview() {
                   ))}
                 </div>
               ) : (
-                <span className="text-gray-400">Không có ảnh</span>
+                <span className="text-gray-400 dark:text-gray-300">Không có ảnh</span>
               )}
             </div>
             <div>
-              <div className="font-semibold mb-1">Thời gian:</div>
-              <div>{new Date(showModalReview.created_at).toLocaleString("vi-VN")}</div>
+              <div className="font-semibold mb-1 dark:text-white">Thời gian:</div>
+              <div className="dark:text-white">{new Date(showModalReview.created_at).toLocaleString("vi-VN")}</div>
             </div>
             <Button
               type="primary"
@@ -510,6 +505,8 @@ export default function ManageReview() {
                   okText: "Xóa",
                   okButtonProps: { danger: true },
                   cancelText: "Hủy",
+                  className:
+                    "dark:[&_.ant-modal-content]:bg-darkPrimary dark:[&_.ant-modal-content]:border dark:[&_.ant-modal-content]:border-darkBorder dark:[&_.ant-modal-header]:bg-darkPrimary dark:[&_.ant-modal-header]:border-b dark:[&_.ant-modal-header]:border-darkBorder dark:[&_.ant-modal-title]:text-white dark:[&_.ant-modal-body]:bg-darkPrimary dark:[&_.ant-modal-body]:text-white",
                   onOk: () => {
                     if (showModalReview) {
                       deleteReviewMutation.mutate(showModalReview._id)

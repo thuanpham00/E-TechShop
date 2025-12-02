@@ -45,10 +45,18 @@ export const Roles_Permissions = {
     permissions.VIEW_DASHBOARD,
     permissions.VIEW_CUSTOMER,
     permissions.VIEW_ORDERS,
+    permissions.VIEW_REVIEW,
     permissions.VIEW_CATEGORY,
     permissions.VIEW_PRODUCT,
     permissions.VIEW_EMAIL,
-    permissions.VIEW_CHAT,
-    permissions.VIEW_REVIEW
+    permissions.VIEW_CHAT
+  ],
+  [rolesForApi.INVENTORY_STAFF]: [
+    permissions.VIEW_DASHBOARD,
+    permissions.VIEW_CATEGORY,
+    permissions.VIEW_PRODUCT,
+    permissions.VIEW_RECEIPT,
+    permissions.VIEW_SUPPLIERS,
+    permissions.VIEW_SUPPLIES
   ]
 }

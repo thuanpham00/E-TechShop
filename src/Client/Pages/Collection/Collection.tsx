@@ -45,6 +45,7 @@ export default function Collection() {
   const queryConfig: queryParamsCollection = omitBy(
     {
       status: queryParams.status || "all",
+      review: queryParams.review || "all",
       screen_size: queryParams.screen_size,
       cpu: queryParams.cpu,
       ram: queryParams.ram,
@@ -135,6 +136,12 @@ export default function Collection() {
     { label: <div>Hết hàng</div>, key: "out_of_stock" }
   ]
 
+  const itemsReview: MenuProps["items"] = [
+    { label: <div>Không lọc đánh giá</div>, key: "all" },
+    { label: <div>Có đánh giá</div>, key: "has_review" },
+    { label: <div>Không đánh giá</div>, key: "no_review" }
+  ]
+
   const handleChangeQuery = (field: string, value: string) => {
     const params: queryParamsCollection = {
       ...queryConfig,
@@ -166,7 +173,10 @@ export default function Collection() {
       "type_connect"
     ])
     navigate(
-      { pathname: `/collections/${slug}`, search: createSearchParams({ ...filteredSearch, status: "all" }).toString() },
+      {
+        pathname: `/collections/${slug}`,
+        search: createSearchParams({ ...filteredSearch, status: "all", review: "all" }).toString()
+      },
       {
         state: state
       }
@@ -216,6 +226,22 @@ export default function Collection() {
                           {queryParams.status
                             ? (itemsStatus.find((item) => item?.key === queryParams.status) as any)?.label
                             : "Tất cả sản phẩm"}
+                        </span>
+                        <DownOutlined />
+                      </Space>
+                    </Button>
+                  </Dropdown>
+
+                  <Dropdown
+                    trigger={["click"]}
+                    menu={{ items: itemsReview, onClick: ({ key }) => handleChangeQuery("review", key) }}
+                  >
+                    <Button className="border border-gray-300 rounded-md px-3 py-1 bg-white hover:bg-gray-50 flex items-center gap-1">
+                      <Space>
+                        <span className="text-[13px]">
+                          {queryParams.review
+                            ? (itemsReview.find((item) => item?.key === queryParams.review) as any)?.label
+                            : "Không lọc đánh giá"}
                         </span>
                         <DownOutlined />
                       </Space>

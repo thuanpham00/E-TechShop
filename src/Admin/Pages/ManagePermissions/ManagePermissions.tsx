@@ -399,13 +399,6 @@ export default function ManagePermissions() {
     })
   }
 
-  useEffect(() => {
-    if (isError) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      toast.error((error as any).response?.data?.message, { autoClose: 1500 })
-    }
-  }, [isError, error])
-
   const [isModalOpen, setIsModalOpen] = useState(false)
 
   const updatePermissionForRoleMutation = useMutation({
@@ -425,6 +418,15 @@ export default function ManagePermissions() {
       }
     })
   }
+
+  useEffect(() => {
+    if (isError) {
+      if ((error as any).response?.data?.message === "Không có quyền truy cập!") {
+        return // toast này đã được xử lý ở http
+      }
+      toast.error((error as any).response?.data?.message, { autoClose: 1500 })
+    }
+  }, [isError, error])
 
   return (
     <div>

@@ -238,3 +238,107 @@ html {
   background: inherit !important;
 }
 
+.dark .ant-modal-content {
+  background: #26282c !important;
+}
+
+.dark .ant-modal-title {
+  background: #26282c !important;
+  color: white !important;
+}
+
+.dark .ant-modal-content .anticon-close {
+  color: white !important;
+}
+
+.dark .ant-modal-body .ant-form-item-label label {
+  color: white !important;
+}
+
+.dark .ant-select-arrow {
+  color: white !important;
+}
+
+.dark .ant-modal-confirm-title {
+  color: white !important;
+}
+
+.dark .ant-modal-confirm-content {
+  color: white !important;
+}
+
+.dark .ant-radio-label {
+  color: white !important;
+}
+
+.dark .ant-picker-range,
+.dark .ant-input-number-outlined,
+.dark .ant-input-outlined {
+  background: #18181a !important;
+}
+
+.dark .ant-input-number-input {
+  color: white !important;
+}
+
+/* Placeholder sáng màu trong dark mode */
+
+/* Input thường */
+.dark .ant-input::placeholder {
+  color: #ffffffcc !important; /* trắng hơi mờ */
+  opacity: 1;
+}
+
+/* Input.Password (wrapper chứa input) */
+.dark .ant-input-password input::placeholder {
+  color: #ffffffcc !important;
+  opacity: 1;
+}
+
+/* InputNumber */
+.dark .ant-input-number-input::placeholder {
+  color: #ffffffcc !important;
+  opacity: 1;
+}
+
+/* TextArea */
+.dark .ant-input-textarea::placeholder,
+.dark textarea.ant-input::placeholder {
+  color: #ffffffcc !important;
+  opacity: 1;
+}
+
+/* Select placeholder */
+.dark .ant-select-selection-placeholder {
+  color: #ffffffcc !important;
+}
+
+/* DatePicker / RangePicker */
+.dark .ant-picker-input > input::placeholder {
+  color: #ffffffcc !important;
+  opacity: 1;
+}
+
+/* Cross-browser (WebKit + Firefox) */
+.dark .ant-input::-webkit-input-placeholder,
+.dark .ant-input-number-input::-webkit-input-placeholder,
+.dark textarea.ant-input::-webkit-input-placeholder {
+  color: #ffffffcc !important;
+}
+.dark .ant-input::-moz-placeholder,
+.dark .ant-input-number-input::-moz-placeholder,
+.dark textarea.ant-input::-moz-placeholder {
+  color: #ffffffcc !important;
+}
+
+.dark .ant-input-number-suffix {
+  color: white !important;
+}
+
+.dark .ant-picker-range .ant-picker-input {
+  color: white !important;
+}
+
+.dark .ant-input-outlined {
+  color: white !important;
+}

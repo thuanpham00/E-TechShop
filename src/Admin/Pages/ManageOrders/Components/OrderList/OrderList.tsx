@@ -5,7 +5,6 @@ import { Select, Tag, Table, Collapse, CollapseProps, Empty } from "antd"
 import { ColumnsType } from "antd/es/table"
 import { isUndefined, omit, omitBy } from "lodash"
 import { ArrowUpNarrowWide, ClipboardCheck, FolderUp, RotateCcw, Search } from "lucide-react"
-import { useEffect } from "react"
 import { Controller, useForm } from "react-hook-form"
 import { createSearchParams, Link, useNavigate } from "react-router-dom"
 import { toast } from "react-toastify"
@@ -80,7 +79,7 @@ export default function OrderList({ type }: { type: "process" | "completed" | "c
     isUndefined
   )
 
-  const { data, isFetching, isLoading, isError, error } = useQuery({
+  const { data, isFetching, isLoading } = useQuery({
     queryKey: ["listOrder", queryConfig, type],
     queryFn: () => {
       const controller = new AbortController()
@@ -491,13 +490,6 @@ export default function OrderList({ type }: { type: "process" | "completed" | "c
       )
     }
   ]
-
-  useEffect(() => {
-    if (isError) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      toast.error((error as any).response?.data?.message, { autoClose: 1500 })
-    }
-  }, [isError, error])
 
   return (
     <div>

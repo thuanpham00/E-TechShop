@@ -13,7 +13,7 @@ import { SuccessResponse } from "src/Types/utils.type"
 import star from "src/Assets/img/star.png"
 import { Check, ChevronLeft, ChevronRight, CirclePlus, Cpu, Heart, Star } from "lucide-react"
 import ProductItem from "../Collection/Components/ProductItem"
-import { Fragment, useEffect, useMemo, useRef, useState } from "react"
+import { Fragment, useContext, useEffect, useMemo, useRef, useState } from "react"
 import { toast } from "react-toastify"
 import { getAccessTokenFromLS } from "src/Helpers/auth"
 import InputNumberQuantity from "src/Client/Components/InputNumberQuantity"
@@ -27,6 +27,7 @@ import { Autoplay, Navigation } from "swiper/modules"
 import "swiper/css"
 import "swiper/css/navigation"
 import "swiper/css/pagination"
+import { AppContext } from "src/Context/authContext"
 
 export default function ProductDetail() {
   const queryClient = useQueryClient()
@@ -36,12 +37,13 @@ export default function ProductDetail() {
   const imgRef = useRef<HTMLImageElement>(null)
   const [valueQuantity, setValueQuantity] = useState<number>(1)
   const navigate = useNavigate()
+  const { socket } = useContext(AppContext)
 
   useEffect(() => {
     window.scroll(0, 0) // scroll mượt
   }, [])
 
-  const { data, isError, isFetching, isLoading, error } = useQuery({
+  const { data, isError, isFetching, isLoading, error, refetch } = useQuery({
     queryKey: ["productDetail", id],
     queryFn: () => {
       const controller = new AbortController()
@@ -250,6 +252,20 @@ export default function ProductDetail() {
       window.scrollTo({ top: offsetPosition, behavior: "smooth" })
     }
   }
+
+  useEffect(() => {
+    if (!socket) return
+    const handleRefetchProduct = () => {
+      refetch()
+    }
+
+    // update số lượng sản phẩm đồng bộ
+    socket.on("client:update_quantity_product_display", handleRefetchProduct)
+
+    return () => {
+      socket.off("client:update_quantity_product_display", handleRefetchProduct)
+    }
+  }, [socket, refetch])
 
   return (
     <div className="container">

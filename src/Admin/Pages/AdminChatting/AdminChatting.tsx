@@ -219,7 +219,7 @@ export default function AdminChatting() {
             {getListTicket.isLoading && <Skeleton />}
             {getListTicket.isFetched &&
               (listTicket?.length > 0 ? (
-                <div className="mt-3 h-[calc(100vh-350px)] overflow-y-auto">
+                <div className="mt-3 h-[calc(100vh-250px)] overflow-y-auto">
                   {filteredList.map((item) => (
                     <button
                       key={item._id}

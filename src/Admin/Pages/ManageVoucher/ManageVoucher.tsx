@@ -377,11 +377,7 @@ export default function ManageVoucher() {
 
   useEffect(() => {
     if (isError) {
-      const message = (error as any).response?.data?.message
       const status = (error as any)?.response?.status
-      if (message === "Không có quyền truy cập!") {
-        toast.error(message, { autoClose: 1500 })
-      }
       if (status === HttpStatusCode.NotFound) {
         navigate(path.AdminNotFound, { replace: true })
       }
@@ -618,7 +614,7 @@ export default function ManageVoucher() {
             <Button
               onClick={handleCloseModal}
               nameButton="Hủy"
-              classNameButton="px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50"
+              classNameButton="px-4 py-2 border border-gray-300 rounded-md dark:text-white dark:hover:bg-gray-800 hover:bg-gray-200"
             />
             <Button
               type="submit"

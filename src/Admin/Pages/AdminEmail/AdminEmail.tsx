@@ -80,7 +80,6 @@ export default function AdminEmail() {
 
   const listEmailLog = result?.result?.result
 
-  // ✅ Ant Design Table Columns
   const columns: ColumnsType<EmailLogItemType> = [
     {
       title: "Mã Resend",

@@ -228,7 +228,9 @@ export default function ManageCategorySubLink({ dataCategory }: { dataCategory: 
                       pagination={false}
                       size="middle"
                       scroll={{ x: "max-content" }}
-                      rowClassName={(_, index) => (index % 2 === 0 ? "bg-[#f7f8fa]" : "bg-white")}
+                      rowClassName={(_, index) =>
+                        index % 2 === 0 ? "bg-[#f7f8fa] dark:bg-darkSecond" : "bg-white dark:bg-darkPrimary"
+                      }
                     />
                   </>
                 )

@@ -86,14 +86,24 @@ export default function ChatConsulting() {
   const page = getDataConversation.data?.data.result.page
   const total_page = getDataConversation.data?.data.result.total_page
   const assigned_to = getDataConversation.data?.data.result.ticket
-    ? (getDataConversation.data?.data.result.ticket.assigned_to.name as string)
+    ? (getDataConversation.data?.data.result.ticket?.assigned_to?.name as string)
     : ""
   const unreadMessageCount = getDataConversation.data?.data.result?.ticket?.unread_count_customer || 0
   const [triggerRefetch, setTriggerRefetch] = useState(false)
 
   useEffect(() => {
     if (conversationListData || triggerRefetch === true) {
-      setConversations((prev) => [...prev, ...conversationListData]) // load từ api
+      const list = Array.isArray(conversationListData) ? conversationListData : []
+      setConversations((prev) => {
+        const base = page > 1 ? [...prev, ...list] : [...list]
+        const ids = new Set<string>()
+        return base.filter((m) => {
+          if (ids.has(m._id)) return false
+          ids.add(m._id)
+          return true
+        })
+      })
+
       setUnreadCountMessage(unreadMessageCount)
       setPagination({
         page,

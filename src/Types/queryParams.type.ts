@@ -102,6 +102,7 @@ export type queryParamConfigEmail = {
 }
 
 export type queryParamsCollection = {
+  review?: string
   sort?: string
   status?: string
   screen_size?: string
