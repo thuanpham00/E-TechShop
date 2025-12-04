@@ -23,5 +23,13 @@ export const ReceiptAPI = {
 
   updateReceipt: (id: string, body: UpdateReceiptBodyReq) => {
     return Http.put(`/admin/receipts/${id}`, body)
+  },
+
+  updateStatusReceipt: (id: string) => {
+    return Http.put(`/admin/receipts/${id}/status`)
+  },
+
+  deleteReceiptDraft: (id: string) => {
+    return Http.delete(`/admin/receipts/${id}`)
   }
 }

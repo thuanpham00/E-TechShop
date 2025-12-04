@@ -15,6 +15,12 @@ export const StatisticalAPI = {
     })
   },
 
+  getStatisticalProfit: (signal: AbortSignal) => {
+    return Http.get("/admin/statistical-profit", {
+      signal
+    })
+  },
+
   getStatisticalUser: (signal: AbortSignal, params: { year: number; month?: number }) => {
     return Http.get("/admin/statistical-user", {
       params,

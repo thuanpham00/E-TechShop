@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useContext, useEffect, useState } from "react"
 import { useLocation, useNavigate } from "react-router-dom"
 import Button from "src/Components/Button"
 import { ChevronLeft, ClipboardCheck, Copy } from "lucide-react"
@@ -9,20 +9,26 @@ import { Helmet } from "react-helmet-async"
 import { useMutation, useQueryClient, keepPreviousData, useQuery, useQueries } from "@tanstack/react-query"
 import { ReceiptAPI } from "src/Apis/admin/receipt.api"
 import { toast } from "react-toastify"
-import { useForm, useFieldArray } from "react-hook-form"
+import { useForm, useFieldArray, useWatch } from "react-hook-form"
 import Input from "src/Components/Input"
 //
-import { Select } from "antd"
+import { Modal, Select } from "antd"
 import { SuccessResponse } from "src/Types/utils.type"
 import { ProductAPI } from "src/Apis/admin/product.api"
 import { SupplierAPI } from "src/Apis/admin/supplier.api"
 import { AnimatePresence, motion } from "framer-motion"
 import { path } from "src/Constants/path"
+import { AppContext } from "src/Context/authContext"
+import { useCheckPermission } from "src/Hook/useRolePermissions"
 
 export default function ReceiptDetail() {
+  const { permissions } = useContext(AppContext)
+  const { hasPermission } = useCheckPermission(permissions)
+
   const navigate = useNavigate()
   const { state } = useLocation()
   const initialReceipt = state?.data as ReceiptItemType | undefined
+  const queryConfig = state?.queryConfig
   const { copiedId, handleCopyText } = useCopyText()
   const queryClient = useQueryClient()
   const [inputValueProducts, setInputValueProducts] = useState<string[]>([])
@@ -45,13 +51,6 @@ export default function ReceiptDetail() {
       enabled: !!productName
     }))
   })
-
-  // Import price per product-supplier selection (defined after fields)
-
-  // Ensure supplier queries track current fields length (after fields exists)
-  useEffect(() => {
-    // will be updated after fields is defined below
-  }, [])
 
   type FormData = {
     importDate: string
@@ -92,16 +91,21 @@ export default function ReceiptDetail() {
   const { fields, append, remove } = useFieldArray({ control, name: "items" })
 
   // Import price per product-supplier selection (mirror AddReceipt behavior)
+  const itemsWatch = useWatch({ control, name: "items" }) || []
   const pricePerUnitQueries = useQueries({
-    queries: (fields || []).map((_, index) => ({
-      queryKey: ["pricePerUnitReceiptDetail", inputValueProducts[index], watch(`items.${index}.supplierId`)],
-      queryFn: () =>
-        ReceiptAPI.getPricePerUnitBasedOnProductAndSupplier({
-          name_product: inputValueProducts[index],
-          name_supplier: watch(`items.${index}.supplierId`)
-        }),
-      enabled: !!inputValueProducts[index] && !!watch(`items.${index}.supplierId`)
-    }))
+    queries: (fields || []).map((_, index) => {
+      const supplier = itemsWatch?.[index]?.supplierId || ""
+      const product = inputValueProducts[index] || ""
+      return {
+        queryKey: ["pricePerUnitReceiptDetail", product, supplier],
+        queryFn: () =>
+          ReceiptAPI.getPricePerUnitBasedOnProductAndSupplier({
+            name_product: product,
+            name_supplier: supplier
+          }),
+        enabled: !!product && !!supplier
+      }
+    })
   })
 
   // Sync inputValueProducts length with fields after fields is available
@@ -138,34 +142,44 @@ export default function ReceiptDetail() {
   }, [initialReceipt])
 
   // Recompute totals whenever items change
-  const watchItems = watch("items") || []
-  const totalItemComputed = watchItems.reduce((sum, i) => sum + Number(i.quantity || 0), 0)
-  const totalAmountComputed = watchItems.reduce(
+  const totalItemComputed = (itemsWatch || []).reduce((sum, i) => sum + Number(i?.quantity || 0), 0)
+  const totalAmountComputed = (itemsWatch || []).reduce(
     (sum, i) => sum + Number(i.quantity || 0) * Number(parseCurrencyToNumber(i.pricePerUnit || "0")),
     0
   )
   useEffect(() => {
-    setValue("totalItem", totalItemComputed)
-    setValue("totalAmount", formatCurrency(totalAmountComputed))
+    // only update when changed to avoid render loops
+    if (Number(watch("totalItem")) !== totalItemComputed) {
+      setValue("totalItem", totalItemComputed)
+    }
+    const currentTotalAmount = watch("totalAmount") || "0"
+    const nextTotalAmount = formatCurrency(totalAmountComputed)
+    if (currentTotalAmount !== nextTotalAmount) {
+      setValue("totalAmount", nextTotalAmount)
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [totalItemComputed, totalAmountComputed])
 
   // When pricePerUnit query resolves or quantity changes, update price and totals per item
   useEffect(() => {
     ;(fields || []).forEach((_, index) => {
-      const qty = Number(watch(`items.${index}.quantity`) || 0)
+      const qty = Number(itemsWatch?.[index]?.quantity || 0)
       const importPrice = pricePerUnitQueries?.[index]?.data?.data?.result?.result?.importPrice ?? 0
-      if (importPrice) {
-        setValue(`items.${index}.pricePerUnit`, formatCurrency(importPrice))
-      } else {
-        const current = parseCurrencyToNumber(watch(`items.${index}.pricePerUnit`) || "0")
-        setValue(`items.${index}.pricePerUnit`, formatCurrency(current || 0))
+      const currentUnitString = (itemsWatch?.[index]?.pricePerUnit as string) || "0"
+      const currentUnit = Number(parseCurrencyToNumber(currentUnitString))
+      const nextUnit = importPrice || currentUnit || 0
+      const nextUnitString = formatCurrency(nextUnit)
+      if (currentUnitString !== nextUnitString) {
+        setValue(`items.${index}.pricePerUnit`, nextUnitString)
       }
-      const unit = importPrice || Number(parseCurrencyToNumber(watch(`items.${index}.pricePerUnit`) || "0"))
-      setValue(`items.${index}.totalPrice`, formatCurrency(qty * unit))
+      const nextTotal = formatCurrency(qty * nextUnit)
+      const currentTotal = (itemsWatch?.[index]?.totalPrice as string) || "0"
+      if (currentTotal !== nextTotal) {
+        setValue(`items.${index}.totalPrice`, nextTotal)
+      }
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [fields, pricePerUnitQueries, watch])
+  }, [fields.length, itemsWatch, pricePerUnitQueries])
 
   const handleChangeQuantity = (index: number, value: string) => {
     const qty = Number(value || 0)
@@ -231,7 +245,7 @@ export default function ReceiptDetail() {
     }
     if (["RECEIVED"].includes(s)) {
       return {
-        label: "Đã nhận",
+        label: "Đã nhập hàng",
         className:
           "bg-green-100 text-green-700 border border-green-300 dark:bg-green-200/20 dark:text-green-300 dark:border-green-600"
       }
@@ -242,6 +256,36 @@ export default function ReceiptDetail() {
         "bg-gray-100 text-gray-700 border border-gray-300 dark:bg-gray-200/20 dark:text-gray-300 dark:border-gray-600"
     }
   })()
+
+  // xóa phiếu nhập
+  const deleteMutation = useMutation({
+    mutationFn: (id: string) => ReceiptAPI.deleteReceiptDraft(id)
+  })
+
+  const handleDeleteReceipt = (id: string) => {
+    deleteMutation.mutate(id, {
+      onSuccess: () => {
+        toast.success("Xóa phiếu nhập thành công", { autoClose: 1500 })
+        queryClient.invalidateQueries({ queryKey: ["listReceipt", queryConfig] })
+        navigate(path.AdminReceipts, { replace: true })
+      }
+    })
+  }
+
+  // cập nhật phiếu nhập
+  const updateStatusReceipt = useMutation({
+    mutationFn: (id: string) => ReceiptAPI.updateStatusReceipt(id)
+  })
+
+  const handleUpdateStatusReceipt = (id: string) => {
+    updateStatusReceipt.mutate(id, {
+      onSuccess: () => {
+        toast.success("Cập nhật trạng thái phiếu nhập thành công", { autoClose: 1500 })
+        queryClient.invalidateQueries({ queryKey: ["listReceipt", queryConfig] })
+        navigate(path.AdminReceipts, { replace: true })
+      }
+    })
+  }
 
   if (!initialReceipt) {
     return <div className="p-4">Không có dữ liệu phiếu nhập</div>
@@ -258,17 +302,54 @@ export default function ReceiptDetail() {
       </Helmet>
       <button
         onClick={() => {
-          navigate(path.AdminReceipts)
-          window.location.reload()
+          navigate(path.AdminReceipts, { replace: true })
         }}
         className="flex items-center gap-[2px] cursor-pointer"
       >
         <ChevronLeft size={16} />
         <span className="text-[14px] font-medium">Trở lại</span>
       </button>
-      <h1 className="text-2xl font-bold text-gray-800 bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600 my-2">
-        Đơn nhập hàng
-      </h1>
+
+      <div className="flex items-center justify-between">
+        <h1 className="text-2xl font-bold text-gray-800 bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600 my-2">
+          Đơn nhập hàng
+        </h1>
+
+        {initialReceipt.status === "DRAFT" && (
+          <div className="flex items-center gap-2">
+            <Button
+              classNameButton="p-2 px-3 bg-red-600 disabled:bg-red-300 text-white rounded-md"
+              nameButton="Xóa phiếu nhập (dành cho phiếu nháp)"
+              disabled={!hasPermission("receipt:delete")}
+              onClick={() => {
+                Modal.confirm({
+                  title: "Bạn có chắc chắn muốn xóa?",
+                  content: "Không thể hoàn tác hành động này. Thao tác này sẽ xóa vĩnh viễn dữ liệu của bạn.",
+                  okText: "Xóa",
+                  okButtonProps: { danger: true },
+                  cancelText: "Hủy",
+                  onOk: () => handleDeleteReceipt(initialReceipt._id)
+                })
+              }}
+            />
+            <Button
+              classNameButton="p-2 px-3 bg-yellow-400 disabled:bg-yellow-300 text-white rounded-md flex items-center gap-1"
+              nameButton="Nhập hàng vào kho"
+              disabled={!hasPermission("receipt:update")}
+              onClick={() => {
+                Modal.confirm({
+                  title: "Xác nhận nhập kho",
+                  content:
+                    "Thao tác này sẽ cập nhật tồn kho cho các sản phẩm trong phiếu nhập. Vui lòng kiểm tra kỹ số lượng và nhà cung cấp trước khi tiếp tục.",
+                  okText: "Nhập kho",
+                  cancelText: "Hủy",
+                  onOk: () => handleUpdateStatusReceipt(initialReceipt._id)
+                })
+              }}
+            />
+          </div>
+        )}
+      </div>
 
       <div className="flex items-center justify-between">
         <div className="text-base py-1 px-2 flex items-center gap-2 bg-[#e5e5e5] dark:bg-darkSecond border border-[#dadada] dark:border-darkBorder rounded-md">
@@ -304,18 +385,22 @@ export default function ReceiptDetail() {
 
       <div className="flex justify-between items-center">
         <div className="text-lg font-semibold dark:text-white">Danh sách sản phẩm ({fields.length})</div>
-        <div className="flex items-center gap-2">
-          <Button
-            classNameButton="p-2 px-3 bg-blue-500 text-white rounded-md flex items-center gap-1"
-            nameButton="Thêm sản phẩm"
-            onClick={handleAddItem}
-          />
-          <Button
-            classNameButton="p-2 px-3 bg-green-600 text-white rounded-md"
-            nameButton="Lưu cập nhật"
-            onClick={handleSaveUpdates}
-          />
-        </div>
+        {initialReceipt.status === "DRAFT" && (
+          <div className="flex items-center gap-2">
+            <Button
+              classNameButton="p-2 px-3 bg-blue-500 disabled:bg-blue-300 text-white rounded-md flex items-center gap-1"
+              nameButton="Thêm sản phẩm"
+              onClick={handleAddItem}
+              disabled={!hasPermission("receipt:update")}
+            />
+            <Button
+              classNameButton="p-2 px-3 bg-green-600 disabled:bg-green-300 text-white rounded-md"
+              nameButton="Lưu cập nhật"
+              disabled={!hasPermission("receipt:update")}
+              onClick={handleSaveUpdates}
+            />
+          </div>
+        )}
       </div>
 
       <div className="flex flex-col gap-3">
@@ -334,6 +419,7 @@ export default function ReceiptDetail() {
                 <div className="col-span-12 md:col-span-4">
                   <div className="text-sm text-black dark:text-white">Tên sản phẩm</div>
                   <Select
+                    disabled={initialReceipt.status !== "DRAFT" || !hasPermission("receipt:update")}
                     className="w-full"
                     placeholder="Chọn sản phẩm"
                     value={watch(`items.${index}.productId`) || undefined}
@@ -348,6 +434,24 @@ export default function ReceiptDetail() {
                     }}
                     options={listNameProductResult.map((name) => ({ label: name, value: name }))}
                   />
+
+                  <div className="mt-2">
+                    <div className="text-sm text-black dark:text-white mb-1">Nhà cung cấp</div>
+                    <Select
+                      disabled={initialReceipt.status !== "DRAFT" || !hasPermission("receipt:update")}
+                      className="w-full"
+                      placeholder="Chọn nhà cung cấp"
+                      value={watch(`items.${index}.supplierId`) || undefined}
+                      onChange={(val) => setValue(`items.${index}.supplierId`, val)}
+                      options={
+                        (
+                          getNameSuppliersBasedOnNameProduct[index]?.data?.data as SuccessResponse<{
+                            result: string[]
+                          }>
+                        )?.result?.result?.map((name) => ({ label: name, value: name })) || []
+                      }
+                    />
+                  </div>
                 </div>
 
                 <div className="col-span-12 md:col-span-3">
@@ -386,27 +490,14 @@ export default function ReceiptDetail() {
                     classNameError="hidden"
                     disabled
                   />
-                  <div className="mt-2">
-                    <div className="text-sm text-black dark:text-white mb-1">Nhà cung cấp</div>
-                    <Select
-                      className="w-full"
-                      placeholder="Chọn nhà cung cấp"
-                      value={watch(`items.${index}.supplierId`) || undefined}
-                      onChange={(val) => setValue(`items.${index}.supplierId`, val)}
-                      options={
-                        (
-                          getNameSuppliersBasedOnNameProduct[index]?.data?.data as SuccessResponse<{ result: string[] }>
-                        )?.result?.result?.map((name) => ({ label: name, value: name })) || []
-                      }
-                    />
-                  </div>
                 </div>
 
                 <div className="col-span-12 md:col-span-2 flex items-center justify-end gap-2">
                   <Button
-                    classNameButton="p-2 px-3 bg-red-500 text-white rounded-md"
+                    classNameButton="p-2 px-3 bg-red-500 disabled:bg-red-300 text-white rounded-md"
                     nameButton="Xóa"
                     onClick={() => handleRemoveItem(index)}
+                    disabled={!hasPermission("receipt:update")}
                   />
                 </div>
               </div>

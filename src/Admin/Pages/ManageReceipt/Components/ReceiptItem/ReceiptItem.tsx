@@ -3,12 +3,14 @@ import useCopyText from "src/Hook/useCopyText"
 import { ReceiptItemType } from "src/Types/product.type"
 import { convertDateTime, formatCurrency } from "src/Helpers/common"
 import { useNavigate } from "react-router-dom"
+import { queryParamConfigReceipt } from "src/Types/queryParams.type"
 
 interface Props {
   item: ReceiptItemType
+  queryConfig: queryParamConfigReceipt
 }
 
-export default function ReceiptItem({ item }: Props) {
+export default function ReceiptItem({ item, queryConfig }: Props) {
   console.log(item)
   const navigate = useNavigate()
   const { copiedId, handleCopyText } = useCopyText()
@@ -24,7 +26,7 @@ export default function ReceiptItem({ item }: Props) {
     }
     if (["RECEIVED"].includes(s)) {
       return {
-        label: "Đã nhận",
+        label: "Đã nhập hàng",
         className:
           "bg-green-100 text-green-700 border border-green-300 dark:bg-green-200/20 dark:text-green-300 dark:border-green-600"
       }
@@ -94,7 +96,7 @@ export default function ReceiptItem({ item }: Props) {
           <button
             onClick={() =>
               navigate(`/admin/receipts/${item._id}`, {
-                state: { data: item }
+                state: { data: item, queryConfig: queryConfig }
               })
             }
             className="text-sm text-red-500 hover:underline"

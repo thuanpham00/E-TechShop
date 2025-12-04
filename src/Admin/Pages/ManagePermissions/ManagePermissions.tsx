@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { keepPreviousData, useMutation, useQuery } from "@tanstack/react-query"
+import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { Alert, Button, Checkbox, Input, InputRef, Modal, Space, Table, TableColumnType, Tag } from "antd"
 import { useContext, useEffect, useMemo, useRef, useState } from "react"
 import { AppContext } from "src/Context/authContext"
@@ -41,10 +41,16 @@ export default function ManagePermissions() {
   const { userId, permissions } = useContext(AppContext)
   const { hasPermission } = useCheckPermission(permissions)
 
+  const queryClient = useQueryClient()
   const { theme } = useTheme()
   const isDark = theme === "dark" || theme === "system"
 
-  const { data, isError, error } = useQuery({
+  const {
+    data,
+    isError,
+    error,
+    refetch: refetchRoles
+  } = useQuery({
     queryKey: ["listRoleInPermissions", userId],
     queryFn: () => {
       const controller = new AbortController()
@@ -75,7 +81,7 @@ export default function ManagePermissions() {
       .map((item) => ({ name: item.name, _id: item._id }))
   }, [result])
 
-  const { data: dataPermissions } = useQuery({
+  const { data: dataPermissions, refetch: refetchPermissions } = useQuery({
     queryKey: ["listPermission", userId],
     queryFn: () => {
       const controller = new AbortController()
@@ -93,7 +99,7 @@ export default function ManagePermissions() {
     result: PermissionType[]
   }>
 
-  const { data: dataPermissionsByRoles } = useQuery({
+  const { data: dataPermissionsByRoles, refetch: refetchPermissionsByRoles } = useQuery({
     queryKey: ["listPermissionByRoles", listRoleId],
     queryFn: () => {
       const controller = new AbortController()
@@ -421,6 +427,10 @@ export default function ManagePermissions() {
         toast.success("Cập nhật thành công!", {
           autoClose: 1500
         })
+        queryClient.invalidateQueries({ queryKey: ["listPermissionForUserUsed", userId] })
+        refetchRoles()
+        refetchPermissions()
+        refetchPermissionsByRoles()
         setUpdatePermissionForRole([])
       }
     })

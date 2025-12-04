@@ -7,11 +7,5 @@ export const emailAPI = {
       params,
       signal
     })
-  },
-
-  getDomains: (signal: AbortSignal) => {
-    return Http.get(`/email/domain`, {
-      signal
-    })
   }
 }

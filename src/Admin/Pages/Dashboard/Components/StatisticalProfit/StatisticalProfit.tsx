@@ -5,7 +5,7 @@ import { SuccessResponse } from "src/Types/utils.type"
 import Skeleton from "src/Components/Skeleton"
 import { motion } from "framer-motion"
 import { Chart } from "react-chartjs-2"
-import { Button, Col, Row, Table, Tag } from "antd"
+import { Col, Row, Table } from "antd"
 import ChartDataLabels from "chartjs-plugin-datalabels"
 import {
   Chart as ChartJS,
@@ -45,60 +45,108 @@ ChartJS.register(
   Legend
 )
 
-type ProductRunningOutOfStock = {
-  name: string
-  _id: string
-  categoryInfo: string
-  stock: number
+type ProfitResponse = {
+  totalRevenue: number
+  totalCost: number
+  totalProfit: number
+  marginPercent: number
+  topProductsByProfit: Array<{
+    productId: string
+    name: string
+    quantity: number
+    sellPerUnit: number
+    costPerUnit: number
+    revenue: number
+    cost: number
+    profit: number
+  }>
 }
 
-export default function StatisticalProduct() {
+export default function StatisticalProfit() {
   const { theme } = useTheme()
   const isDarkMode = theme === "dark" || theme === "system"
   const { copiedId, handleCopyText } = useCopyText()
 
   const getStatisticalProduct = useQuery({
-    queryKey: ["getStatisticalProduct"],
+    queryKey: ["getStatisticalProfit"],
     queryFn: () => {
       const controller = new AbortController()
       setTimeout(() => {
         controller.abort()
-      }, 10000) // quá 10 giây api chưa trả res về thì timeout sẽ hủy gọi api và api signal nhận tín hiệu hủy
-
-      return StatisticalAPI.getStatisticalProduct(controller.signal)
+      }, 10000)
+      return StatisticalAPI.getStatisticalProfit(controller.signal)
     },
     placeholderData: keepPreviousData,
-    retry: 0, // số lần retry lại khi hủy request (dùng abort signal)
-    staleTime: 1 * 60 * 1000 // dưới 5 phút nó không gọi lại api
+    retry: 0,
+    staleTime: 1 * 60 * 1000
   })
 
   const dataStatisticalProduct = getStatisticalProduct?.data?.data as SuccessResponse<{
     countCategory: TypeStatistical
     top10ProductSold: TypeStatistical
     productRunningOutOfStock: TypeStatistical
+    totalRevenue?: number
+    totalCost?: number
+    totalProfit?: number
+    marginPercent?: number
+    itemsByProduct?: Array<{
+      _id: string
+      productId: string
+      totalQuantity: number
+      totalRevenue: number
+      totalCost: number
+      totalProfit: number
+    }>
+    topProductsByProfit?: Array<{
+      _id: string
+      productId: string
+      totalQuantity: number
+      totalRevenue: number
+      totalCost: number
+      totalProfit: number
+    }>
   }>
 
   // Use API result when available. If data is missing, use safe empty defaults so charts render gracefully.
+  // Ưu tiên dùng itemsByCategory từ response mới; fallback sang countCategory
+  const itemsByCategory = (dataStatisticalProduct?.result as any)?.itemsByCategory as
+    | Array<{ _id: string; totalQuantity: number }>
+    | undefined
   const countCategory = dataStatisticalProduct?.result.countCategory
-  const categoriesArray = (countCategory?.value ?? []) as { categoryName: string; total: number }[]
+  const categoriesArray = itemsByCategory
+    ? itemsByCategory.map((c) => ({ categoryName: c._id, total: c.totalQuantity }))
+    : ((countCategory?.value ?? []) as { categoryName: string; total: number }[])
   const labelData_CountCategory = categoriesArray.map((item) => item.categoryName)
   const data_countCategory = categoriesArray.map((item) => item.total)
 
-  // xử lý biểu đồ top 10 sản phẩm bán chạy
-  const top10ProductSold = dataStatisticalProduct?.result.top10ProductSold
-  const top10Array = (top10ProductSold?.value ?? []) as { name: string; sold: number }[]
-  const labelData_Top10Product = top10Array.map((item) => item.name)
-  const data_top10ProductSold = top10Array.map((item) => item.sold)
-
-  // xử lý biểu đồ danh sách các sản phẩm sắp hết hàng
-  const productRunningOutOfStock = dataStatisticalProduct?.result.productRunningOutOfStock
-  const runningOutArray = (productRunningOutOfStock?.value ?? []) as ProductRunningOutOfStock[]
-
-  // additional computed metrics
-  const totalCategories = categoriesArray.length
-  const totalProductsCount = categoriesArray.reduce((s, c) => s + (c.total || 0), 0)
-  const lowStockCount = runningOutArray.filter((p) => p.stock > 0 && p.stock < 5).length
-  const outOfStockCount = runningOutArray.filter((p) => p.stock === 0).length
+  // new profit fields
+  const profitData: ProfitResponse | null = dataStatisticalProduct?.result
+    ? {
+        totalRevenue: (dataStatisticalProduct.result.totalRevenue as number) ?? 0,
+        totalCost: (dataStatisticalProduct.result.totalCost as number) ?? 0,
+        totalProfit: (dataStatisticalProduct.result.totalProfit as number) ?? 0,
+        marginPercent: (dataStatisticalProduct.result.marginPercent as number) ?? 0,
+        topProductsByProfit: ((dataStatisticalProduct.result.topProductsByProfit || []) as any).map(
+          (p: {
+            _id: string
+            productId: string
+            totalQuantity: number
+            totalRevenue: number
+            totalCost: number
+            totalProfit: number
+          }) => ({
+            productId: p.productId,
+            name: p._id,
+            quantity: p.totalQuantity,
+            sellPerUnit: 0,
+            costPerUnit: 0,
+            revenue: p.totalRevenue,
+            cost: p.totalCost,
+            profit: p.totalProfit
+          })
+        )
+      }
+    : null
 
   const options: ChartOptions<"bar"> = {
     indexAxis: "y", // 🔥 Biểu đồ cột ngang
@@ -182,7 +230,7 @@ export default function StatisticalProduct() {
       },
       title: {
         display: true,
-        text: "Top 10 sản phẩm bán chạy nhất thời đại",
+        text: "Top sản phẩm theo lợi nhuận",
         font: { size: 16, weight: 500 },
         padding: { top: 10, bottom: 10 },
         color: isDarkMode ? "white" : "dark"
@@ -227,21 +275,21 @@ export default function StatisticalProduct() {
       {
         label: "Số lượng",
         data: data_countCategory,
-        backgroundColor: "rgba(75, 192, 192, 0.7)",
-        borderColor: "rgba(75, 192, 192, 1)",
+        backgroundColor: "rgba(59, 130, 246, 0.75)",
+        borderColor: "rgba(59, 130, 246, 1)",
         borderWidth: 1
       }
     ]
   }
 
   const dataChart_2 = {
-    labels: labelData_Top10Product,
+    labels: (dataStatisticalProduct?.result.topProductsByProfit || []).map((p: any) => p._id),
     datasets: [
       {
-        label: "Lượt bán",
-        data: data_top10ProductSold,
-        backgroundColor: "rgba(212, 63, 21, 0.7)",
-        borderColor: "#e86e22",
+        label: "Lợi nhuận (đ)",
+        data: (dataStatisticalProduct?.result.topProductsByProfit || []).map((p: any) => p.totalProfit),
+        backgroundColor: "rgba(99, 102, 241, 0.7)",
+        borderColor: "rgba(99, 102, 241, 1)",
         borderWidth: 1
       }
     ]
@@ -249,54 +297,39 @@ export default function StatisticalProduct() {
 
   const columns = [
     {
-      title: "Mã sản phẩm",
-      dataIndex: "_id",
-      render: (_: any, record: ProductRunningOutOfStock) => {
-        return (
-          <div className="text-blue-500 font-semibold">
-            {record._id}
-
-            <button onClick={() => handleCopyText(record._id)} className="p-1 border rounded mr-2">
-              {copiedId === record._id ? (
-                <ClipboardCheck color="#8d99ae" size={12} />
-              ) : (
-                <Copy color="#8d99ae" size={12} />
-              )}
-            </button>
-          </div>
-        )
-      }
-    },
-    {
       title: "Sản phẩm",
-      dataIndex: "name"
+      dataIndex: "_id",
+      render: (name: string, record: { productId: string }) => (
+        <div className="text-blue-500 font-semibold">
+          {name}
+          <button onClick={() => handleCopyText(record.productId)} className="p-1 border rounded ml-2">
+            {copiedId === record.productId ? (
+              <ClipboardCheck color="#8d99ae" size={12} />
+            ) : (
+              <Copy color="#8d99ae" size={12} />
+            )}
+          </button>
+        </div>
+      )
     },
     {
-      title: "Danh mục",
-      dataIndex: "categoryInfo"
+      title: "Số lượng",
+      dataIndex: "totalQuantity"
     },
     {
-      title: "Tồn kho",
-      dataIndex: "stock",
-      key: "stock",
-      render: (stock: number) => {
-        const color = stock === 0 ? "red" : stock < 5 ? "orange" : "green"
-        return <Tag color={color}>{stock}</Tag>
-      }
+      title: "Doanh thu",
+      dataIndex: "totalRevenue",
+      render: (v: number) => v?.toLocaleString("vi-VN")
     },
     {
-      title: "Trạng thái",
-      key: "status",
-      render: (_: any, record: ProductRunningOutOfStock) => {
-        if (record.stock === 0) return <Tag color="red">Hết hàng</Tag>
-        if (record.stock < 5) return <Tag color="orange">Sắp hết</Tag>
-        return <Tag color="green">Đủ hàng</Tag>
-      }
+      title: "Chi phí",
+      dataIndex: "totalCost",
+      render: (v: number) => v?.toLocaleString("vi-VN")
     },
     {
-      title: "Hành động",
-      key: "action",
-      render: () => <Button type="primary">Nhập hàng</Button>
+      title: "Lợi nhuận",
+      dataIndex: "totalProfit",
+      render: (v: number) => <span className="text-green-600 font-semibold">{v?.toLocaleString("vi-VN")}</span>
     }
   ]
 
@@ -313,42 +346,59 @@ export default function StatisticalProduct() {
       {!getStatisticalProduct.isFetching ? (
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
           <div className="mt-4">
-            <Row gutter={[16, 16]} className="mb-4">
-              <Col span={6}>
-                <div className="shadow-md p-4 bg-white border border-[#dadada] dark:bg-darkPrimary dark:border-darkBorder rounded-md">
-                  <div className="text-sm text-black dark:text-white">Tổng danh mục</div>
-                  <div className="text-2xl font-semibold mt-2 dark:text-white">{totalCategories || 0}</div>
-                </div>
-              </Col>
-              <Col span={6}>
-                <div className="shadow-md p-4 bg-white border border-[#dadada] dark:bg-darkPrimary dark:border-darkBorder rounded-md">
-                  <div className="text-sm text-black dark:text-white">Tổng sản phẩm</div>
-                  <div className="text-2xl font-semibold mt-2 dark:text-white">{totalProductsCount || 0}</div>
-                </div>
-              </Col>
-              <Col span={6}>
-                <div className="shadow-md p-4 bg-white border border-[#dadada] dark:bg-darkPrimary dark:border-darkBorder rounded-md">
-                  <div className="text-sm text-black dark:text-white">Sản phẩm sắp hết (&lt;5)</div>
-                  <div className="text-2xl font-semibold mt-2 dark:text-white">{lowStockCount || 0}</div>
-                </div>
-              </Col>
-              <Col span={6}>
-                <div className="shadow-md p-4 bg-white border border-[#dadada] dark:bg-darkPrimary dark:border-darkBorder rounded-md">
-                  <div className="text-sm text-black dark:text-white">Hết hàng</div>
-                  <div className="text-2xl font-semibold mt-2 dark:text-white">{outOfStockCount || 0}</div>
-                </div>
-              </Col>
-            </Row>
             <Row gutter={[24, 24]} className="mt-2">
+              {/* Revenue / Cost / Profit summary */}
+              <Col span={24}>
+                <Row gutter={[16, 16]}>
+                  <Col span={6}>
+                    <div className="shadow-md p-4 bg-white border border-[#dadada] dark:bg-darkPrimary dark:border-darkBorder rounded-md">
+                      <div className="text-sm text-black dark:text-white">Doanh thu</div>
+                      <div className="text-2xl font-semibold mt-2 text-blue-600 dark:text-blue-400">
+                        {(profitData?.totalRevenue || 0).toLocaleString("vi-VN")}đ
+                      </div>
+                    </div>
+                  </Col>
+                  <Col span={6}>
+                    <div className="shadow-md p-4 bg-white border border-[#dadada] dark:bg-darkPrimary dark:border-darkBorder rounded-md">
+                      <div className="text-sm text-black dark:text-white">Chi phí</div>
+                      <div className="text-2xl font-semibold mt-2 text-rose-600 dark:text-rose-400">
+                        {(profitData?.totalCost || 0).toLocaleString("vi-VN")}đ
+                      </div>
+                    </div>
+                  </Col>
+                  <Col span={6}>
+                    <div className="shadow-md p-4 bg-white border border-[#dadada] dark:bg-darkPrimary dark:border-darkBorder rounded-md">
+                      <div className="text-sm text-black dark:text-white">Lợi nhuận</div>
+                      <div className="text-2xl font-semibold mt-2 text-green-600 dark:text-green-400">
+                        {(profitData?.totalProfit || 0).toLocaleString("vi-VN")}đ
+                      </div>
+                    </div>
+                  </Col>
+                  <Col span={6}>
+                    <div className="shadow-md p-4 bg-white border border-[#dadada] dark:bg-darkPrimary dark:border-darkBorder rounded-md">
+                      <div className="text-sm text-black dark:text-white">Biên lợi nhuận</div>
+                      <div className="text-2xl font-semibold mt-2 text-violet-600 dark:text-violet-400">
+                        {`${profitData?.marginPercent || 0}%`}
+                      </div>
+                    </div>
+                  </Col>
+                </Row>
+              </Col>
               <Col span={12}>
                 <div
                   className="shadow-md p-6 bg-white border border-[#dadada] dark:bg-darkPrimary dark:border-darkBorder"
                   style={{
                     borderRadius: "8px",
-                    height: "350px"
+                    minHeight: "350px"
                   }}
                 >
-                  <Chart type="bar" data={dataChart} options={options} />
+                  {data_countCategory.length > 0 ? (
+                    <Chart type="bar" data={dataChart} options={options} />
+                  ) : (
+                    <div className="h-full flex items-center justify-center text-gray-500">
+                      Không có dữ liệu danh mục để hiển thị
+                    </div>
+                  )}
                 </div>
               </Col>
               <Col span={12}>
@@ -370,20 +420,16 @@ export default function StatisticalProduct() {
                   }}
                 >
                   <div className="text-base font-semibold text-center mb-2 text-black dark:text-white">
-                    Danh sách các sản phẩm sắp hết hàng
+                    Thống kê theo sản phẩm
                   </div>
 
                   <div style={{ height: "350px", overflowY: "auto" }}>
                     <Table
                       columns={columns}
-                      dataSource={
-                        productRunningOutOfStock?.value as {
-                          name: string
-                          _id: string
-                          categoryInfo: string
-                          stock: number
-                        }[]
-                      }
+                      dataSource={((dataStatisticalProduct?.result.itemsByProduct || []) as any[]).map((p, idx) => ({
+                        key: idx,
+                        ...p
+                      }))}
                       pagination={false}
                     />
                   </div>

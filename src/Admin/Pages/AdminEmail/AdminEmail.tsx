@@ -1,10 +1,8 @@
 import { keepPreviousData, useQuery } from "@tanstack/react-query"
 import { isUndefined, omitBy } from "lodash"
-import { useContext } from "react"
 import { useNavigate, createSearchParams } from "react-router-dom"
 import { emailAPI } from "src/Apis/email.api"
 import Skeleton from "src/Components/Skeleton"
-import { AppContext } from "src/Context/authContext"
 import useQueryParams from "src/Hook/useQueryParams"
 import { queryParamConfigEmail } from "src/Types/queryParams.type"
 import { SuccessResponse } from "src/Types/utils.type"
@@ -24,28 +22,12 @@ import {
   CalendarOutlined
 } from "@ant-design/icons"
 import { useTheme } from "src/Admin/Components/Theme-provider/Theme-provider"
+import { Fragment } from "react/jsx-runtime"
 
 export default function AdminEmail() {
   const { theme } = useTheme()
   const isDark = theme === "dark" || theme === "system"
   const navigate = useNavigate()
-  const { userId } = useContext(AppContext)
-
-  const getDomainResendQuery = useQuery({
-    queryKey: ["domainResend", userId],
-    queryFn: () => {
-      const controller = new AbortController()
-      setTimeout(() => {
-        controller.abort()
-      }, 10000)
-      return emailAPI.getDomains(controller.signal)
-    },
-    retry: 0,
-    staleTime: 15 * 60 * 1000,
-    placeholderData: keepPreviousData
-  })
-
-  const domainData = getDomainResendQuery.data?.data.data[0]
 
   const queryParams: queryParamConfigEmail = useQueryParams()
   const queryConfig: queryParamConfigEmail = omitBy(
@@ -72,6 +54,17 @@ export default function AdminEmail() {
 
   const result = data?.data as SuccessResponse<{
     result: EmailLogItemType[]
+    domain: {
+      id: string
+      name: string
+      status: string
+      region: string
+      created_at: string
+      capabilities: {
+        sending: string
+        receiving: string
+      }
+    }[]
     total: string
     page: string
     limit: string
@@ -79,6 +72,8 @@ export default function AdminEmail() {
   }>
 
   const listEmailLog = result?.result?.result
+  const nameDomain = result?.result?.domain?.[0]?.name
+  const domainData = result?.result?.domain?.[0]
 
   const columns: ColumnsType<EmailLogItemType> = [
     {
@@ -186,105 +181,103 @@ export default function AdminEmail() {
       <NavigateBack />
 
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-4">
-        {getDomainResendQuery.isLoading ? (
-          <Skeleton />
-        ) : (
-          <Card
-            className="mt-2 shadow-lg dark:bg-darkPrimary dark:border-darkBorder"
-            title={
-              <div className="flex items-center gap-2">
-                <GlobalOutlined className="text-blue-500" />
-                <span className="text-lg font-semibold dark:text-white">Thông tin Domain</span>
-              </div>
-            }
-          >
-            <Row gutter={[16, 16]}>
-              <Col xs={24} sm={12} md={8}>
-                <Statistic
-                  title={<div className="dark:text-white">Domain Name</div>}
-                  value={domainData?.name}
-                  valueStyle={{ fontSize: "16px", fontWeight: 500, color: isDark ? "#f1f5f9" : "#1f1f1f" }}
-                />
-              </Col>
-              <Col xs={24} sm={12} md={8}>
-                <Statistic
-                  title={<div className="dark:text-white">Trạng thái</div>}
-                  value={domainData?.status}
-                  valueStyle={{
-                    color: domainData?.status === "verified" ? "#52c41a" : "#faad14",
-                    textTransform: "capitalize"
-                  }}
-                  prefix={domainData?.status === "verified" ? <CheckCircleOutlined /> : <ClockCircleOutlined />}
-                />
-              </Col>
-              <Col xs={24} sm={12} md={8}>
-                <Statistic
-                  title={<div className="dark:text-white">khu vực</div>}
-                  value={domainData?.region}
-                  valueStyle={{ fontSize: "16px", color: isDark ? "#f1f5f9" : "#1f1f1f" }}
-                />
-              </Col>
-              <Col xs={24} sm={12}>
-                <div className="text-sm">
-                  <span className="text-gray-500 dark:text-white">Created at: </span>
-                  <span className="font-medium text-gray-700 dark:text-white">
-                    {domainData?.created_at ? new Date(domainData.created_at).toLocaleString("vi-VN") : "N/A"}
-                  </span>
-                </div>
-              </Col>
-              <Col xs={24} sm={12}>
-                <div className="text-sm">
-                  <span className="text-gray-500 dark:text-white">Domain ID: </span>
-                  <span className="font-mono text-xs text-gray-600 dark:text-white">{domainData?.id}</span>
-                </div>
-              </Col>
-            </Row>
-          </Card>
-        )}
-
         {isLoading ? (
           <Skeleton />
         ) : (
-          <Card
-            className="shadow-lg dark:bg-darkPrimary dark:border-darkBorder"
-            title={
-              <div className="flex items-center gap-2">
-                <MailOutlined className="text-blue-500" />
-                <span className="text-lg font-semibold dark:text-white">Lịch sử gửi email</span>
-              </div>
-            }
-          >
-            <Table
-              rowKey={(record) => record._id}
-              dataSource={listEmailLog}
-              columns={columns}
-              loading={isFetching}
-              pagination={{
-                current: Number(queryConfig.page),
-                pageSize: Number(queryConfig.limit),
-                total: Number(result?.result.total || 0),
-                showSizeChanger: true,
-                pageSizeOptions: ["5", "10", "20", "50"],
-                onChange: (page, pageSize) => {
-                  navigate({
-                    pathname: path.AdminEmail,
-                    search: createSearchParams({
-                      ...queryConfig,
-                      page: page.toString(),
-                      limit: pageSize.toString()
-                    }).toString()
-                  })
-                }
-              }}
-              locale={{
-                emptyText: <Empty description="Chưa có email nào" />
-              }}
-              scroll={{ x: 1400 }}
-              rowClassName={(_, index) =>
-                index % 2 === 0 ? "dark:bg-darkSecond bg-[#f2f2f2]" : "dark:bg-darkPrimary bg-white"
+          <Fragment>
+            <Card
+              className="mt-2 shadow-lg dark:bg-darkPrimary dark:border-darkBorder"
+              title={
+                <div className="flex items-center gap-2">
+                  <GlobalOutlined className="text-blue-500" />
+                  <span className="text-lg font-semibold dark:text-white">Thông tin Domain</span>
+                </div>
               }
-            />
-          </Card>
+            >
+              <Row gutter={[16, 16]}>
+                <Col xs={24} sm={12} md={8}>
+                  <Statistic
+                    title={<div className="dark:text-white">Domain Name</div>}
+                    value={nameDomain}
+                    valueStyle={{ fontSize: "16px", fontWeight: 500, color: isDark ? "#f1f5f9" : "#1f1f1f" }}
+                  />
+                </Col>
+                <Col xs={24} sm={12} md={8}>
+                  <Statistic
+                    title={<div className="dark:text-white">Trạng thái</div>}
+                    value={domainData?.status}
+                    valueStyle={{
+                      color: domainData?.status === "verified" ? "#52c41a" : "#faad14",
+                      textTransform: "capitalize"
+                    }}
+                    prefix={domainData?.status === "verified" ? <CheckCircleOutlined /> : <ClockCircleOutlined />}
+                  />
+                </Col>
+                <Col xs={24} sm={12} md={8}>
+                  <Statistic
+                    title={<div className="dark:text-white">khu vực</div>}
+                    value={domainData?.region}
+                    valueStyle={{ fontSize: "16px", color: isDark ? "#f1f5f9" : "#1f1f1f" }}
+                  />
+                </Col>
+                <Col xs={24} sm={12}>
+                  <div className="text-sm">
+                    <span className="text-gray-500 dark:text-white">Created at: </span>
+                    <span className="font-medium text-gray-700 dark:text-white">
+                      {domainData?.created_at ? new Date(domainData.created_at).toLocaleString("vi-VN") : "N/A"}
+                    </span>
+                  </div>
+                </Col>
+                <Col xs={24} sm={12}>
+                  <div className="text-sm">
+                    <span className="text-gray-500 dark:text-white">Domain ID: </span>
+                    <span className="font-mono text-xs text-gray-600 dark:text-white">{domainData?.id}</span>
+                  </div>
+                </Col>
+              </Row>
+            </Card>
+
+            <Card
+              className="shadow-lg dark:bg-darkPrimary dark:border-darkBorder"
+              title={
+                <div className="flex items-center gap-2">
+                  <MailOutlined className="text-blue-500" />
+                  <span className="text-lg font-semibold dark:text-white">Lịch sử gửi email</span>
+                </div>
+              }
+            >
+              <Table
+                rowKey={(record) => record._id}
+                dataSource={listEmailLog}
+                columns={columns}
+                loading={isFetching}
+                pagination={{
+                  current: Number(queryConfig.page),
+                  pageSize: Number(queryConfig.limit),
+                  total: Number(result?.result.total || 0),
+                  showSizeChanger: true,
+                  pageSizeOptions: ["5", "10", "20", "50"],
+                  onChange: (page, pageSize) => {
+                    navigate({
+                      pathname: path.AdminEmail,
+                      search: createSearchParams({
+                        ...queryConfig,
+                        page: page.toString(),
+                        limit: pageSize.toString()
+                      }).toString()
+                    })
+                  }
+                }}
+                locale={{
+                  emptyText: <Empty description="Chưa có email nào" />
+                }}
+                scroll={{ x: 1400 }}
+                rowClassName={(_, index) =>
+                  index % 2 === 0 ? "dark:bg-darkSecond bg-[#f2f2f2]" : "dark:bg-darkPrimary bg-white"
+                }
+              />
+            </Card>
+          </Fragment>
         )}
       </motion.div>
     </div>

@@ -5,6 +5,7 @@ import StatisticalProduct from "./Components/StatisticalProduct"
 import StatisticalUser from "./Components/StatisticalUser"
 import { Tabs, TabsProps } from "antd"
 import StatisticalSupply from "./Components/StatisticalSupply"
+import StatisticalProfit from "./Components/StatisticalProfit"
 
 export default function Dashboard() {
   const items: TabsProps["items"] = [
@@ -27,6 +28,11 @@ export default function Dashboard() {
       key: "4",
       label: "Quản lý cung ứng",
       children: <StatisticalSupply />
+    },
+    {
+      key: "5",
+      label: "Quản lý lợi nhuận",
+      children: <StatisticalProfit />
     }
   ]
 

@@ -167,13 +167,13 @@ export default function StatisticalSupply() {
               <Col span={6}>
                 <div className="shadow-md p-4 bg-white border border-[#dadada] dark:bg-darkPrimary dark:border-darkBorder rounded-md">
                   <div className="text-sm text-black dark:text-white">Tổng nhà cung cấp</div>
-                  <div className="text-2xl font-semibold mt-2">{totalSuppliers || 0}</div>
+                  <div className="text-2xl font-semibold mt-2 dark:text-white">{totalSuppliers || 0}</div>
                 </div>
               </Col>
               <Col span={6}>
                 <div className="shadow-md p-4 bg-white border border-[#dadada] dark:bg-darkPrimary dark:border-darkBorder rounded-md">
                   <div className="text-sm text-black dark:text-white">Tổng bản ghi cung ứng</div>
-                  <div className="text-2xl font-semibold mt-2">{totalSupplies || 0}</div>
+                  <div className="text-2xl font-semibold mt-2 dark:text-white">{totalSupplies || 0}</div>
                 </div>
               </Col>
               <Col span={6}>
@@ -187,7 +187,7 @@ export default function StatisticalSupply() {
               <Col span={6}>
                 <div className="shadow-md p-4 bg-white border border-[#dadada] dark:bg-darkPrimary dark:border-darkBorder rounded-md">
                   <div className="text-sm text-black dark:text-white">Lead-time trung bình (ngày)</div>
-                  <div className="text-2xl font-semibold mt-2">{avgLeadTime || 0}</div>
+                  <div className="text-2xl font-semibold mt-2 dark:text-white">{avgLeadTime || 0}</div>
                 </div>
               </Col>
             </Row>

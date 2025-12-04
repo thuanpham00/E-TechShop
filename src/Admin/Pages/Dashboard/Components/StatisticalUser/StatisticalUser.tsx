@@ -255,7 +255,7 @@ export default function StatisticalUser() {
                     style={{ height: "100%" }}
                   >
                     <div className="text-[16px] font-semibold text-black dark:text-white">Tỷ lệ khách quay lại</div>
-                    <div className="text-2xl font-semibold mt-4">{retentionRate.toFixed(2)}%</div>
+                    <div className="text-2xl font-semibold mt-4 text-green-500">{retentionRate.toFixed(2)}%</div>
                   </div>
                 </Col>
               </Row>

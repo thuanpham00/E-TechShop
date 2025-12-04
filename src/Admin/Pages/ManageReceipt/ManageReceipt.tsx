@@ -489,7 +489,7 @@ export default function ManageReceipt() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.1 }}
               >
-                <ReceiptItem item={item} />
+                <ReceiptItem item={item} queryConfig={queryConfig} />
               </motion.div>
             ))}
             <Pagination

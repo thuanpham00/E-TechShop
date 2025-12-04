@@ -23,7 +23,7 @@ export interface PermissionItem {
 function App() {
   const routerClient = useRouterClient()
   const routerAdmin = useRouterAdmin()
-  const { reset, setSocket, isAuthenticated, setPermissions } = useContext(AppContext)
+  const { reset, setSocket, isAuthenticated, setPermissions, userId } = useContext(AppContext)
   const location = useLocation()
 
   useEffect(() => {
@@ -46,7 +46,7 @@ function App() {
   }, [setSocket])
 
   const listPermission = useQuery({
-    queryKey: ["listPermission"],
+    queryKey: ["listPermissionForUserUsed", userId],
     queryFn: () => {
       return PermissionAPI.getPermissionForUser()
     },
