@@ -38,12 +38,13 @@ export default function ProductDetail() {
   const [valueQuantity, setValueQuantity] = useState<number>(1)
   const navigate = useNavigate()
   const { socket } = useContext(AppContext)
+  const [quantityAvailable, setQuantityAvailable] = useState<number>(0)
 
   useEffect(() => {
     window.scroll(0, 0) // scroll mượt
   }, [])
 
-  const { data, isError, isFetching, isLoading, error, refetch } = useQuery({
+  const { data, isError, isFetching, isLoading, error } = useQuery({
     queryKey: ["productDetail", id],
     queryFn: () => {
       const controller = new AbortController()
@@ -54,7 +55,7 @@ export default function ProductDetail() {
       return collectionAPI.getProductDetail(id as string)
     },
     retry: 0, // số lần retry lại khi hủy request (dùng abort signal)
-    staleTime: 5 * 60 * 1000, // dưới 5 phút nó không gọi lại api
+    staleTime: 1 * 60 * 1000, // dưới 5 phút nó không gọi lại api
     placeholderData: keepPreviousData
   })
 
@@ -63,6 +64,12 @@ export default function ProductDetail() {
   const brandProduct = productDetail?.brand
   const categoryProduct = productDetail?.category
   const idProduct = productDetail?._id
+
+  useEffect(() => {
+    if (productDetail) {
+      setQuantityAvailable(productDetail.stock)
+    }
+  }, [productDetail])
 
   const getProductRelated = useQuery({
     queryKey: ["productRelated", idProduct], // nếu name khác gì thì cái query này sẽ fetch lại // kiểu đánh dấu
@@ -74,7 +81,7 @@ export default function ProductDetail() {
       })
     },
     retry: 0, // số lần retry lại khi hủy request (dùng abort signal)
-    staleTime: 5 * 60 * 1000, // dưới 5 phút nó không gọi lại api
+    staleTime: 10 * 60 * 1000, // dưới 5 phút nó không gọi lại api
     placeholderData: keepPreviousData,
     enabled: !!brandProduct && !!categoryProduct && !!idProduct // chỉ gọi api khi brand và category có giá trị
   })
@@ -255,8 +262,14 @@ export default function ProductDetail() {
 
   useEffect(() => {
     if (!socket) return
-    const handleRefetchProduct = () => {
-      refetch()
+    const handleRefetchProduct = (data: any) => {
+      const { dataProduct } = data.payload
+      const productUpdate = dataProduct.find((item: { id: string; stock: number }) => item.id === productDetail?._id)
+
+      if (productUpdate) {
+        console.log(productUpdate)
+        setQuantityAvailable(productUpdate.stock)
+      }
     }
 
     // update số lượng sản phẩm đồng bộ
@@ -265,7 +278,7 @@ export default function ProductDetail() {
     return () => {
       socket.off("client:update_quantity_product_display", handleRefetchProduct)
     }
-  }, [socket, refetch])
+  }, [socket, queryClient, productDetail, id])
 
   return (
     <div className="container">
@@ -441,7 +454,7 @@ export default function ProductDetail() {
                       onIncrease={handleValueQuantity}
                       max={productDetail.stock}
                     />
-                    <span className="text-gray-500">{productDetail.stock} Sản phẩm có sẵn</span>
+                    <span className="text-gray-500">{quantityAvailable} Sản phẩm có sẵn</span>
                   </div>
                 )}
                 <div className="flex items-center gap-2 mt-4 w-full flex-wrap">

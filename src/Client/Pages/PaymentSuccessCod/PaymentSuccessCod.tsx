@@ -45,7 +45,11 @@ export default function PaymentSuccessCod() {
     calledRef.current = true
 
     socket.emit("client:order_notification", {
-      payload: userId
+      payload: {
+        userId,
+        dataProduct: infoOrder.products,
+        type_payment: "cod"
+      }
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [socket])

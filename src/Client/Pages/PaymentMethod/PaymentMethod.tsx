@@ -72,7 +72,11 @@ export default function PaymentMethod() {
       const toastId = toast.loading("Đang xử lý thanh toán. Vui lòng chờ trong giây lát...")
       try {
         socket.emit("client:order_notification", {
-          payload: userId
+          payload: {
+            userId,
+            dataProduct: infoOrder.products,
+            type_payment: "vnpay"
+          }
         })
         const response = await createOrderMutation.mutateAsync(body, {
           onSuccess: () => {
