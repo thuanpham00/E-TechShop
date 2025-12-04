@@ -35,7 +35,6 @@ export type ConversationType = {
 }
 
 /**
- * 
 ✅ refetch()
 👉 Chỉ gọi lại API cho đúng cái query đang được dùng ở trang/component hiện tại.
 Không ảnh hưởng đến nơi khác.
