@@ -31,17 +31,20 @@ Repo này được thiết kế theo mô hình _monorepo_ (hoặc tách 2 thư m
 ### Giao diện Client (Người dùng)
 
 - Xem danh sách sản phẩm, tìm kiếm, bộ lọc (giá, hãng, danh mục).
-- Trang chi tiết sản phẩm (gallery ảnh, thông số, mô tả).
+- Trang chi tiết sản phẩm (gallery ảnh, thông số, mô tả, đánh giá sản phẩm).
 - Giỏ hàng (thêm/xóa/sửa số lượng).
 - Thanh toán (checkout) — form nhập địa chỉ giao hàng.
 - Tài khoản người dùng: đăng ký / đăng nhập / quản lý thông tin.
 - Hệ thống chat với quản trị viên
+- Xem đơn hàng đã mua + đánh giá đơn hàng
 - Responsive (desktop, tablet, mobile).
 
 *Ví dụ ảnh minh họa:*
-![Client Home](https://pub-9c2ae26b29c841968f1def8091e99be4.r2.dev/bg-client-home.png)
-![Client Product](https://pub-9c2ae26b29c841968f1def8091e99be4.r2.dev/bg-client-product.png)
-![Client Cart](https://pub-9c2ae26b29c841968f1def8091e99be4.r2.dev/bg-client-cart.png)
+![Client Home](https://pub-9c2ae26b29c841968f1def8091e99be4.r2.dev/client_home.jpg)
+![Client Collection](https://pub-9c2ae26b29c841968f1def8091e99be4.r2.dev/client_collection.jpg)
+![Client Product Detail](https://pub-9c2ae26b29c841968f1def8091e99be4.r2.dev/client_product_detail.jpg)
+![Client Cart](https://pub-9c2ae26b29c841968f1def8091e99be4.r2.dev/client_cart.jpg)
+![Client Order](https://pub-9c2ae26b29c841968f1def8091e99be4.r2.dev/client_order.jpg)
 
 ### Giao diện Admin (Quản trị + Nhân viên)
 
@@ -54,8 +57,11 @@ Repo này được thiết kế theo mô hình _monorepo_ (hoặc tách 2 thư m
 - Quản lý email và hệ thống chat với khách hàng
 ---
 *Ví dụ ảnh minh họa:*
-![Admin Dashboard](https://pub-9c2ae26b29c841968f1def8091e99be4.r2.dev/bg-admin.png)
-![Admin Product](https://pub-9c2ae26b29c841968f1def8091e99be4.r2.dev/bg-admin-product.png)
+![Admin Dashboard](https://pub-9c2ae26b29c841968f1def8091e99be4.r2.dev/admin_dashboard.jpg)
+![Admin Product](https://pub-9c2ae26b29c841968f1def8091e99be4.r2.dev/admin_product.jpg)
+![Admin Message 1](https://pub-9c2ae26b29c841968f1def8091e99be4.r2.dev/admin_message_1.jpg)
+![Admin Message 2](https://pub-9c2ae26b29c841968f1def8091e99be4.r2.dev/admin_message_2.jpg)
+![Admin Permission](https://pub-9c2ae26b29c841968f1def8091e99be4.r2.dev/admin_permission.jpg)
 
 ## Kiến trúc & Cấu trúc thư mục
 
