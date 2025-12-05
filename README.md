@@ -26,6 +26,126 @@ Repo này được thiết kế theo mô hình _monorepo_ (hoặc tách 2 thư m
 
 ---
 
+## Công nghệ & Thư viện sử dụng
+
+### Frontend Framework & Core
+
+- **React 18.3** - UI library với Concurrent features
+- **TypeScript** - Type-safe development
+- **Vite** - Build tool & dev server nhanh
+- **React Router DOM v7** - Client-side routing
+
+### State Management & Data Fetching
+
+- **React Query (TanStack Query v5)** - Server state management, caching, refetching
+- **React Context API** - Global state (auth, user, permissions, socket)
+- **React Hook Form** - Form state & validation
+- **Yup** - Schema validation
+
+### UI & Styling
+
+- **Tailwind CSS** - Utility-first CSS framework
+- **Ant Design (antd v5)** - Component library (Table, Modal, Steps, Select...)
+- **Radix UI** - Headless UI primitives (Popover, Dropdown, Alert Dialog)
+- **Framer Motion** - Animation library
+- **Lucide React** - Icon library
+- **Swiper** - Touch slider component
+
+### Authentication & Authorization
+
+- **JWT (JSON Web Token)** - Token-based authentication
+- **RBAC (Role-Based Access Control)** - Phân quyền theo vai trò:
+  - **ADMIN** - Toàn quyền hệ thống
+  - **SALES_STAFF** - Nhân viên bán hàng
+  - **INVENTORY_STAFF** - Nhân viên kho
+  - **CUSTOMER** - Khách hàng
+- **Custom Hooks** - `useRolePermissions`, `useCheckPermission`
+- **Route Guards** - Protected routes cho admin/client
+
+### Real-time Communication
+
+- **Socket.IO Client v4** - WebSocket cho:
+  - Real-time chat (admin ↔ customer)
+  - Live stock updates
+  - Order notifications
+  - Online status tracking
+
+### Data Visualization & Export
+
+- **Chart.js v4** - Biểu đồ thống kê (bar, line, pie)
+- **React Chart.js 2** - React wrapper cho Chart.js
+- **chartjs-plugin-datalabels** - Plugin hiển thị label trên chart
+- **XLSX** - Export Excel (đơn hàng, sản phẩm, thống kê)
+- **jsPDF + html2canvas** - Export PDF
+
+### Rich Text & Media
+
+- **TinyMCE (React)** - WYSIWYG editor cho mô tả sản phẩm
+- **React Helmet Async** - SEO meta tags
+
+### Utilities & Helpers
+
+- **Axios** - HTTP client
+- **js-cookie** - Cookie management
+- **Lodash** - Utility functions
+- **date-fns** - Date formatting & manipulation
+- **clsx / tailwind-merge** - Conditional className merging
+- **mitt** - Event emitter
+- **React Infinite Scroll** - Lazy loading danh sách
+- **React Highlight Words** - Search highlighting
+
+### Development Tools
+
+- **ESLint** - Code linting
+- **Prettier** - Code formatting
+- **TypeScript ESLint** - TypeScript linting rules
+- **Vite Plugin React** - Fast Refresh & optimizations
+
+### Key Features Implementation
+
+#### 1. Authentication Flow
+
+```typescript
+// JWT stored in localStorage
+// authContext.tsx quản lý: isAuthenticated, role, permissions
+// Protected routes kiểm tra token + role trước khi render
+```
+
+#### 2. RBAC System
+
+```typescript
+// role_permission.ts định nghĩa:
+// - Roles: ADMIN, SALES_STAFF, INVENTORY_STAFF, CUSTOMER
+// - Permissions: view_dashboard, view_orders, view_products...
+// - Mapping: Role → Permissions[]
+
+// Frontend check:
+const { hasPermission } = useRolePermissions(permissions)
+if (hasPermission("product:delete")) {
+  // Render delete button
+}
+```
+
+#### 3. Real-time Updates
+
+```typescript
+// Socket events:
+// - client:update_quantity_product_display (cập nhật tồn kho)
+// - client:order_notification (thông báo đơn hàng mới)
+// - admin:chat_message (tin nhắn chat)
+```
+
+#### 4. Data Caching & Optimization
+
+```typescript
+// React Query config:
+// - staleTime: 1-10 phút
+// - placeholderData: keepPreviousData (giữ data cũ khi refetch)
+// - queryClient.setQueryData() (cập nhật cache trực tiếp từ socket)
+```
+
+---
+
 ## Tính năng chính
 
 ### Giao diện Client (Người dùng)
@@ -34,12 +154,13 @@ Repo này được thiết kế theo mô hình _monorepo_ (hoặc tách 2 thư m
 - Trang chi tiết sản phẩm (gallery ảnh, thông số, mô tả, đánh giá sản phẩm).
 - Giỏ hàng (thêm/xóa/sửa số lượng).
 - Thanh toán (checkout) — form nhập địa chỉ giao hàng.
-- Tài khoản người dùng: đăng ký / đăng nhập / quản lý thông tin.
-- Hệ thống chat với quản trị viên
-- Xem đơn hàng đã mua + đánh giá đơn hàng
+- Tài khoản người dùng: đăng ký / đăng nhập / quản lý thông tin (JWT authentication).
+- Hệ thống chat real-time với quản trị viên (Socket.IO).
+- Xem đơn hàng đã mua + đánh giá sản phẩm.
+- Cập nhật tồn kho real-time khi có người mua.
 - Responsive (desktop, tablet, mobile).
 
-*Ví dụ ảnh minh họa:*
+_Ví dụ ảnh minh họa:_
 ![Client Home](https://pub-9c2ae26b29c841968f1def8091e99be4.r2.dev/client_home.jpg)
 ![Client Collection](https://pub-9c2ae26b29c841968f1def8091e99be4.r2.dev/client_collection.jpg)
 ![Client Product Detail](https://pub-9c2ae26b29c841968f1def8091e99be4.r2.dev/client_product_detail.jpg)
@@ -53,10 +174,15 @@ Repo này được thiết kế theo mô hình _monorepo_ (hoặc tách 2 thư m
 - Quản lý danh mục, thương hiệu.
 - Quản lý đơn hàng: xem chi tiết, thay đổi trạng thái (pending → shipped → delivered).
 - Quản lý người dùng: phân quyền (admin, staff, khách hàng).
+- **RBAC (Role-Based Access Control)**: Phân quyền chi tiết theo vai trò và permission.
 - Quản lý nhà cung cấp, cung ứng sản phẩm và nhập hàng cho hệ thống.
-- Quản lý email và hệ thống chat với khách hàng
+- Quản lý email và hệ thống chat với khách hàng (real-time với Socket.IO).
+- Thống kê doanh thu, lợi nhuận với biểu đồ trực quan (Chart.js).
+- Export báo cáo Excel/PDF.
+
 ---
-*Ví dụ ảnh minh họa:*
+
+_Ví dụ ảnh minh họa:_
 ![Admin Dashboard](https://pub-9c2ae26b29c841968f1def8091e99be4.r2.dev/admin_dashboard.jpg)
 ![Admin Product](https://pub-9c2ae26b29c841968f1def8091e99be4.r2.dev/admin_product.jpg)
 ![Admin Message 1](https://pub-9c2ae26b29c841968f1def8091e99be4.r2.dev/admin_message_1.jpg)
@@ -65,7 +191,7 @@ Repo này được thiết kế theo mô hình _monorepo_ (hoặc tách 2 thư m
 
 ## Kiến trúc & Cấu trúc thư mục
 
-``` bash
+```bash
 TechZone/
 │── dist/                  # Thư mục build sau khi chạy production
 │── media/                 # Lưu trữ media (ảnh, video...)
@@ -83,7 +209,7 @@ TechZone/
 │   │   └── client.api.ts  # API cho client
 │   │
 │   ├── Assets/            # Tài nguyên (ảnh, logo, ...)
-│   │   ├── img/           
+│   │   ├── img/
 │   │   └── logo/
 │   │
 │   ├── Client/            # Phần dành cho khách hàng
@@ -250,9 +376,7 @@ Dưới đây là ví dụ các endpoint RESTful phổ biến (server/Express):
 
 ---
 
-
 ## License & Liên hệ
 
 - License: **MIT** (mặc định — thay đổi nếu bạn muốn).
 - Tác giả / Repo: **thuanpham00** — https://github.com/thuanpham00/E-TechShop
-
